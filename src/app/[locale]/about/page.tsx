@@ -266,7 +266,7 @@ export default function AboutPage() {
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {messages.about.mission} & {messages.about.vision}
+              {messages.about.mission} {isRTL ? "و" : "&"} {messages.about.vision}
             </h2>
           </ScrollReveal>
 
@@ -532,7 +532,7 @@ export default function AboutPage() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 flex-wrap mb-3">
-                    <span className="text-xs font-bold uppercase tracking-widest text-[#7A3B5E] bg-[#7A3B5E]/10 px-3 py-1 rounded-full">Yale University</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-[#7A3B5E] bg-[#7A3B5E]/10 px-3 py-1 rounded-full">{isRTL ? 'جامعة ييل' : 'Yale University'}</span>
                   </div>
                   <h3 className="text-2xl lg:text-3xl font-bold text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
                     {isRTL ? 'دكتوراه مهنية في العلوم الصحية الاجتماعية والسلوكية' : 'Professional Doctorate in Social & Behavioral Health Sciences'}

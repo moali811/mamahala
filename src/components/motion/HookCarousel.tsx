@@ -227,7 +227,7 @@ export default function HookCarousel({ locale, isRTL }: Props) {
               onClick={() => goTo(i)}
               className="relative h-1.5 rounded-full overflow-hidden transition-all duration-300"
               style={{ width: i === current ? '48px' : '20px' }}
-              aria-label={`Slide ${i + 1}`}
+              aria-label={isRTL ? `شريحة ${i + 1}` : `Slide ${i + 1}`}
             >
               {/* Background track */}
               <div

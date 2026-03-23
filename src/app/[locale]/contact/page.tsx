@@ -87,7 +87,7 @@ export default function ContactPage() {
     {
       icon: MapPin,
       label: messages.contact.location,
-      value: 'Ottawa, ON, Canada',
+      value: isRTL ? 'أوتاوا، أونتاريو، كندا' : 'Ottawa, ON, Canada',
     },
     {
       icon: Clock,

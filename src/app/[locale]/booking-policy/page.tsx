@@ -48,20 +48,20 @@ export default function BookingPolicyPage() {
   const highlights = [
     {
       icon: Clock,
-      label: t('24-Hour Notice', 'إشعار قبل 24 ساعة'),
-      desc: t('Required for cancellations', 'مطلوب للإلغاء'),
+      label: t('24-Hour Notice', 'إشعار مسبق 24 ساعة'),
+      desc: t('Required for cancellations', 'مطلوب لجميع التغييرات والإلغاءات'),
       color: '#C4878A',
     },
     {
       icon: AlertTriangle,
-      label: t('Late Cancellation Fee: 50%', 'رسوم الإلغاء المتأخر: 50٪'),
-      desc: t('Of the full session rate', 'من سعر الجلسة الكامل'),
+      label: t('Late Cancellation Fee: 50%', 'رسوم الإلغاء المتأخر: 50%'),
+      desc: t('Of the full session rate', 'نصف المبلغ الكامل للإلغاءات المتأخرة'),
       color: '#C8A97D',
     },
     {
       icon: Ban,
       label: t('No Refunds', 'لا استرداد'),
-      desc: t('All payments are final', 'جميع المدفوعات نهائية'),
+      desc: t('All payments are final', 'المدفوعات غير قابلة للاسترداد'),
       color: '#7A3B5E',
     },
   ];
@@ -73,34 +73,34 @@ export default function BookingPolicyPage() {
       title: t('Choose Your Service', 'اختر خدمتك'),
       desc: t(
         'Browse our services and select the one that fits your needs.',
-        'تصفح خدماتنا واختر ما يناسب احتياجاتك.'
+        'تصفح فئات خدماتنا واختر الدعم المناسب لاحتياجاتك'
       ),
     },
     {
       icon: MessageCircle,
       step: '02',
-      title: t('Book via Calendly or WhatsApp', 'احجز عبر Calendly أو WhatsApp'),
+      title: t('Book via Calendly or WhatsApp', 'تواصل معنا'),
       desc: t(
         'Schedule through our online calendar or message us directly on WhatsApp.',
-        'حدد موعدك عبر التقويم الإلكتروني أو راسلنا مباشرة على واتساب.'
+        'احجز عبر الإنترنت من خلال Calendly أو تواصل معنا عبر WhatsApp'
       ),
     },
     {
       icon: CreditCard,
       step: '03',
-      title: t('Make Payment', 'قم بالدفع'),
+      title: t('Make Payment', 'أكمل الدفع'),
       desc: t(
         'Complete your payment through our secure third-party processor.',
-        'أكمل الدفع عبر معالج الدفع الآمن لدينا.'
+        'أكمل الدفع بشكل آمن عبر معالج الدفع التابع لجهة خارجية'
       ),
     },
     {
       icon: Video,
       step: '04',
-      title: t('Attend Your Session', 'احضر جلستك'),
+      title: t('Attend Your Session', 'ابدأ جلستك'),
       desc: t(
         'Join your session online via the video link provided in your confirmation email.',
-        'انضم إلى جلستك عبر رابط الفيديو المرسل في بريد التأكيد.'
+        'انضم إلى جلستك عبر الإنترنت أو احضر شخصياً في الموعد المحدد'
       ),
     },
   ];
@@ -108,53 +108,53 @@ export default function BookingPolicyPage() {
   const cancellationPoints = [
     t(
       'A minimum of 24 hours\u2019 notice is required for any cancellation.',
-      'يجب تقديم إشعار قبل 24 ساعة على الأقل لأي إلغاء.'
+      'مطلوب إشعار مسبق بحد أدنى 24 ساعة لأي تغييرات أو إلغاءات'
     ),
     t(
       'Late cancellations (less than 24 hours) are charged at 50% of the full session rate.',
-      'يتم فرض رسوم 50٪ من سعر الجلسة الكامل على الإلغاء المتأخر (أقل من 24 ساعة).'
+      'الإلغاءات المتأخرة تستوجب دفع نصف المبلغ الكامل'
     ),
     t(
       'No-shows without prior notice are charged the full session fee.',
-      'يتم فرض رسوم الجلسة الكاملة في حالة عدم الحضور دون إشعار مسبق.'
+      'نتفهم أن الظروف غير المتوقعة قد تنشأ'
     ),
     t(
       'One free reschedule per booking is allowed with 24 hours\u2019 notice.',
-      'يُسمح بإعادة جدولة مجانية واحدة لكل حجز مع إشعار قبل 24 ساعة.'
+      'تعاونكم يساعدنا في الحفاظ على جودة الخدمة لجميع عملائنا'
     ),
   ];
 
   const paymentInfo = [
     {
       icon: Lock,
-      title: t('Secure Processing', 'معالجة آمنة'),
+      title: t('Secure Processing', 'معالجة دفع آمنة'),
       desc: t(
         'All payments are processed via a secure third-party payment processor.',
-        'تتم معالجة جميع المدفوعات عبر معالج دفع آمن تابع لطرف ثالث.'
+        'تتم معالجة جميع المدفوعات بشكل آمن عبر معالج دفع تابع لجهة خارجية'
       ),
     },
     {
       icon: MessageCircle,
-      title: t('Free Initial Consultations', 'استشارات أولية مجانية'),
+      title: t('Free Initial Consultations', 'تواصل معنا للاستفسار'),
       desc: t(
         'Complimentary initial consultations are available with limited scope.',
-        'تتوفر استشارات أولية مجانية بنطاق محدود.'
+        'أي أسئلة أو نزاعات متعلقة بالدفع يجب حلها مباشرة مع المشغل'
       ),
     },
     {
       icon: Globe,
-      title: t('Regional Pricing', 'تسعير حسب المنطقة'),
+      title: t('Regional Pricing', 'وصول عالمي'),
       desc: t(
         'Pricing varies by region, age, and case complexity for accessibility.',
-        'يختلف التسعير حسب المنطقة والعمر وتعقيد الحالة لتسهيل الوصول.'
+        'خدماتنا متاحة عبر الإنترنت وشخصياً في دبي وكندا'
       ),
     },
     {
       icon: Ban,
-      title: t('Non-Refundable', 'غير قابلة للاسترداد'),
+      title: t('Non-Refundable', 'لا استرداد'),
       desc: t(
         'All payments are final and non-refundable under any circumstances.',
-        'جميع المدفوعات نهائية وغير قابلة للاسترداد تحت أي ظرف.'
+        'المدفوعات غير قابلة للاسترداد تحت أي ظرف من الظروف'
       ),
     },
   ];
@@ -164,28 +164,28 @@ export default function BookingPolicyPage() {
       icon: Video,
       text: t(
         'Sessions are conducted online via secure video conferencing.',
-        'تُعقد الجلسات عبر الإنترنت من خلال مؤتمرات فيديو آمنة.'
+        'انضم إلى جلستك عبر الإنترنت في الوقت المحدد مع اتصال إنترنت مستقر'
       ),
     },
     {
       icon: Shield,
       text: t(
         'Be in a private, quiet space for your session.',
-        'كن في مكان خاص وهادئ لجلستك.'
+        'جميع الجلسات سرية ومحمية بالكامل'
       ),
     },
     {
       icon: Wifi,
       text: t(
         'Ensure you have a stable internet connection.',
-        'تأكد من أن لديك اتصال إنترنت مستقر.'
+        'تأكد من اتصال إنترنت مستقر للجلسات عبر الإنترنت'
       ),
     },
     {
       icon: Clock,
       text: t(
         'Be on time \u2014 sessions start and end as scheduled. Late arrivals will not be extended.',
-        'كن في الموعد — تبدأ الجلسات وتنتهي كما هو مقرر. لن يتم تمديد الجلسة بسبب التأخر.'
+        'الحضور في الموعد يساعدنا في تقديم أفضل خدمة لك'
       ),
     },
   ];
@@ -250,7 +250,7 @@ export default function BookingPolicyPage() {
               className="mt-4 text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1]"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {t('Booking & Cancellation Policy', 'سياسة الحجز والإلغاء')}
+              {t('Booking & Cancellation Policy', 'سياسة الحجز')}
             </motion.h1>
 
             <motion.p
@@ -260,7 +260,7 @@ export default function BookingPolicyPage() {
             >
               {t(
                 'Our commitment to quality service starts with clear, transparent policies. Everything you need to know before your session.',
-                'يبدأ التزامنا بجودة الخدمة من سياسات واضحة وشفافة. كل ما تحتاج معرفته قبل جلستك.'
+                'يرجى قراءة سياسة الحجز قبل حجز جلستك'
               )}
             </motion.p>
 
@@ -579,7 +579,7 @@ export default function BookingPolicyPage() {
                 <p className="text-white/60 max-w-lg mx-auto mb-10 leading-relaxed">
                   {t(
                     'If you have any questions about our booking policy, cancellation terms, or need help scheduling your appointment, we\u2019re here to help.',
-                    'إذا كانت لديك أي أسئلة حول سياسة الحجز أو شروط الإلغاء أو تحتاج إلى مساعدة في تحديد موعدك، نحن هنا لمساعدتك.'
+                    'لا تتردد في التواصل معنا إذا كان لديك أي استفسارات حول سياسة الحجز'
                   )}
                 </p>
 
@@ -591,7 +591,7 @@ export default function BookingPolicyPage() {
                       icon={<Arrow className="w-4 h-4" />}
                       iconPosition="right"
                     >
-                      {t('Contact Us', 'تواصل معنا')}
+                      {t('Contact Us', 'اتصل بنا')}
                     </Button>
                   </Link>
                   <Button
@@ -605,7 +605,7 @@ export default function BookingPolicyPage() {
                     icon={<MessageCircle className="w-4 h-4" />}
                     iconPosition="left"
                   >
-                    WhatsApp
+                    {t('WhatsApp', 'تواصل عبر WhatsApp')}
                   </Button>
                 </div>
               </div>

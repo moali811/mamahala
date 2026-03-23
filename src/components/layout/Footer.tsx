@@ -186,7 +186,7 @@ export default function Footer({ locale, messages }: FooterProps) {
       <div className="border-t border-[#D4ADA8]/20">
         <div className="container-main py-6 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-[#8E8E9F]">
-            &copy; {currentYear} Mama Hala Consulting. {footer.rights}
+            &copy; {currentYear} {isRTL ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting'}. {footer.rights}
           </p>
           <div className="flex items-center gap-6">
             <Link href={`/${locale}/privacy-policy`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">

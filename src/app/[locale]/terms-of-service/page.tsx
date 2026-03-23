@@ -20,8 +20,11 @@ interface Section {
   titleEn: string;
   titleAr: string;
   content: string;
+  contentAr: string;
   list?: string[];
+  listAr?: string[];
   afterList?: string;
+  afterListAr?: string;
   highlight?: boolean;
   isLast?: boolean;
 }
@@ -33,6 +36,7 @@ const sections: Section[] = [
     titleEn: 'Agreement',
     titleAr: '\u0627\u0644\u0627\u062A\u0641\u0627\u0642\u064A\u0629',
     content: `These terms and conditions (\u201cAgreement\u201d) set forth the general terms and conditions of your use of the mamahala.ca website (\u201cWebsite\u201d or \u201cService\u201d) and any of its related products and services (collectively, \u201cServices\u201d). This Agreement is legally binding between you (\u201cUser\u201d, \u201cyou\u201d or \u201cyour\u201d) and this Website operator (\u201cOperator\u201d, \u201cwe\u201d, \u201cus\u201d or \u201cour\u201d). If you are entering into this agreement on behalf of a business or other legal entity, you represent that you have the authority to bind such entity to this agreement, in which case the terms \u201cUser\u201d, \u201cyou\u201d or \u201cyour\u201d shall refer to such entity. If you do not have such authority, or if you do not agree with the terms of this agreement, you must not accept this agreement and may not access and use the Website and Services. By accessing and using the Website and Services, you acknowledge that you have read, understood, and agree to be bound by the terms of this Agreement. You acknowledge that this Agreement is a contract between you and the Operator, even though it is electronic and is not physically signed by you, and it governs your use of the Website and Services.`,
+    contentAr: `تحدد هذه الشروط والأحكام ("الاتفاقية") الشروط والأحكام العامة لاستخدامك لموقع mamahala.ca ("الموقع" أو "الخدمة") وأي من منتجاته وخدماته ذات الصلة (يُشار إليها مجتمعة بـ "الخدمات"). هذه الاتفاقية ملزمة قانونياً بينك ("المستخدم" أو "أنت") ومشغل هذا الموقع ("المشغل" أو "نحن"). إذا كنت تدخل في هذه الاتفاقية نيابة عن شركة أو كيان قانوني آخر، فأنت تمثل أن لديك الصلاحية لإلزام هذا الكيان بهذه الاتفاقية. إذا لم يكن لديك هذه الصلاحية، أو إذا كنت لا توافق على شروط هذه الاتفاقية، فلا يجوز لك قبول هذه الاتفاقية ولا يجوز لك الوصول إلى الموقع والخدمات واستخدامها. من خلال الوصول إلى الموقع والخدمات واستخدامها، فإنك تقر بأنك قد قرأت وفهمت ووافقت على الالتزام بشروط هذه الاتفاقية.`,
   },
   {
     id: 'accounts',
@@ -40,6 +44,7 @@ const sections: Section[] = [
     titleEn: 'Accounts and Membership',
     titleAr: '\u0627\u0644\u062D\u0633\u0627\u0628\u0627\u062A \u0648\u0627\u0644\u0639\u0636\u0648\u064A\u0629',
     content: `If you create an account on the Website, you are responsible for maintaining the security of your account and you are fully responsible for all activities that occur under the account and any other actions taken in connection with it. We may monitor and review new accounts before you may sign in and/or start using the Services. Providing false contact information of any kind may result in the termination of your account. You must immediately notify us of any unauthorized uses of your account or any other breaches of security. We will not be liable for any acts or omissions by you, including any damages of any kind incurred as a result of such acts or omissions.`,
+    contentAr: `إذا أنشأت حساباً على الموقع، فأنت مسؤول عن الحفاظ على أمان حسابك وأنت مسؤول مسؤولية كاملة عن جميع الأنشطة التي تحدث تحت الحساب وأي إجراءات أخرى تُتخذ فيما يتعلق به. قد نراقب ونراجع الحسابات الجديدة قبل أن تتمكن من تسجيل الدخول و/أو البدء في استخدام الخدمات. قد يؤدي تقديم معلومات اتصال خاطئة من أي نوع إلى إنهاء حسابك. يجب عليك إخطارنا فوراً بأي استخدامات غير مصرح بها لحسابك أو أي خروقات أمنية أخرى.`,
   },
   {
     id: 'user-content',
@@ -47,6 +52,7 @@ const sections: Section[] = [
     titleEn: 'User Content',
     titleAr: '\u0645\u062D\u062A\u0648\u0649 \u0627\u0644\u0645\u0633\u062A\u062E\u062F\u0645',
     content: `We do not own any data, information or material (collectively, \u201cContent\u201d) that you submit on the Website in the course of using the Service. You shall have sole responsibility for the accuracy, quality, integrity, legality, reliability, appropriateness, and intellectual property ownership or right to use of all submitted Content. We may monitor and review the Content on the Website submitted or created using our Services by you. You grant us permission to access, copy, distribute, store, transmit, reformat, display and perform the Content of your user account solely as required for the purpose of providing the Services to you. Without limiting any of those representations or warranties, we have the right, though not the obligation, to, in our own sole discretion, refuse or remove any Content that, in our reasonable opinion, violates any of our policies or is in any way harmful or objectionable. You also grant us the license to use, reproduce, adapt, modify, publish or distribute the Content created by you or stored in your user account for commercial, marketing or any similar purpose.`,
+    contentAr: `نحن لا نملك أي بيانات أو معلومات أو مواد (يُشار إليها مجتمعة بـ "المحتوى") التي تقدمها على الموقع أثناء استخدام الخدمة. تتحمل المسؤولية الكاملة عن دقة وجودة ونزاهة وقانونية وموثوقية وملاءمة المحتوى المقدم وملكيته الفكرية أو حق استخدامه. نمنحك الإذن بالوصول إلى محتوى حسابك ونسخه وتوزيعه وتخزينه وإعادة تنسيقه وعرضه فقط حسب ما هو مطلوب لتقديم الخدمات لك.`,
   },
   {
     id: 'children',
@@ -54,6 +60,7 @@ const sections: Section[] = [
     titleEn: 'Privacy of Children',
     titleAr: '\u062E\u0635\u0648\u0635\u064A\u0629 \u0627\u0644\u0623\u0637\u0641\u0627\u0644',
     content: `We do not knowingly collect any Personal Information from children under the age of 13. If you are under the age of 13, please do not submit any Personal Information through the Website and Services.\n\nWe encourage parents and legal guardians to monitor their children\u2019s Internet usage and to help enforce this Policy by instructing their children never to provide Personal Information through the Website and Services without their permission.`,
+    contentAr: `نحن لا نجمع عن علم أي معلومات شخصية من الأطفال دون سن 13 عاماً. إذا كان عمرك أقل من 13 عاماً، يرجى عدم تقديم أي معلومات شخصية عبر الموقع والخدمات. نشجع الآباء والأوصياء القانونيين على مراقبة استخدام أطفالهم للإنترنت والمساعدة في تطبيق هذه السياسة.`,
   },
   {
     id: 'payments',
@@ -61,6 +68,7 @@ const sections: Section[] = [
     titleEn: 'Payments and Refunds',
     titleAr: '\u0627\u0644\u0645\u062F\u0641\u0648\u0639\u0627\u062A \u0648\u0627\u0644\u0627\u0633\u062A\u0631\u062F\u0627\u062F',
     content: `The Site may offer products and services for sale. The Site does not handle payments for these products directly but rather refers these payments to a secure third-party payment processor which handles all aspects of the payment process. Any payment processing issues should be resolved directly with the payment processor. All other payment-related questions, disputes, or issues must be resolved directly with the Operator. Once we have been notified by the payment processor that a payment has been made, and that the payment has successfully passed a fraud review, access will be granted to the product or service being purchased as soon as possible, however, we make no guarantees of timeliness or immediacy. Free accounts and consultations are provided with limited access to the Site that allows the user to test all available services prior to making a payment and determine if the offered services meet your needs.\n\nIn order to streamline our scheduling procedures and provide the best service to all our clients, we kindly ask for a minimum of 24 hours\u2019 notice for any appointment changes or cancellations. While we understand that unforeseen circumstances may arise, last-minute cancellations can make it difficult to accommodate other clients. We greatly appreciate your understanding and cooperation in honoring this policy, which includes payment of half the full rate for late cancellations. Your support enables us to maintain the quality of service for all our clients and sustain our business operations effectively.\n\nPayments referred to herein shall not be refundable under any circumstances, including but not limited to the termination of this Agreement for whatsoever reason.`,
+    contentAr: `قد يقدم الموقع منتجات وخدمات للبيع. لا يتعامل الموقع مع المدفوعات مباشرة بل يحيلها إلى معالج دفع آمن تابع لجهة خارجية. لتبسيط إجراءات الجدولة وتقديم أفضل خدمة لجميع عملائنا، نطلب بلطف إشعاراً مسبقاً بحد أدنى 24 ساعة لأي تغييرات أو إلغاءات للمواعيد. نتفهم أن الظروف غير المتوقعة قد تنشأ، لكن الإلغاءات في اللحظة الأخيرة تستوجب دفع نصف المبلغ الكامل. المدفوعات المشار إليها غير قابلة للاسترداد تحت أي ظرف من الظروف.`,
     highlight: true,
   },
   {
@@ -69,6 +77,7 @@ const sections: Section[] = [
     titleEn: 'Prohibited Uses',
     titleAr: '\u0627\u0644\u0627\u0633\u062A\u062E\u062F\u0627\u0645\u0627\u062A \u0627\u0644\u0645\u062D\u0638\u0648\u0631\u0629',
     content: `In addition to other terms as set forth in the Agreement, you are prohibited from using the Website and Services or Content:`,
+    contentAr: `بالإضافة إلى الشروط الأخرى المنصوص عليها في الاتفاقية، يُحظر عليك استخدام الموقع والخدمات:`,
     list: [
       'For any unlawful purpose',
       'To solicit others to perform or participate in any unlawful acts',
@@ -81,7 +90,20 @@ const sections: Section[] = [
       'For any obscene or immoral purpose',
       'To interfere with or circumvent the security features of the Website and Services, third party products and services, or the Internet',
     ],
+    listAr: [
+      'لأي غرض غير قانوني',
+      'لحث الآخرين على المشاركة في أعمال غير قانونية',
+      'لانتهاك أي لوائح دولية أو اتحادية أو إقليمية',
+      'لانتهاك حقوق الملكية الفكرية',
+      'للمضايقة أو الإساءة أو التمييز',
+      'لتقديم معلومات خاطئة أو مضللة',
+      'لتحميل فيروسات أو أكواد ضارة',
+      'للبريد المزعج أو التصيد الاحتيالي أو الزحف أو الكشط',
+      'لأي غرض فاحش أو غير أخلاقي',
+      'للتدخل في ميزات الأمان للموقع والخدمات أو التحايل عليها',
+    ],
     afterList: 'We reserve the right to terminate your use of the Website and Services for violating any of the prohibited uses.',
+    afterListAr: 'نحتفظ بالحق في إنهاء استخدامك للموقع والخدمات في حالة انتهاك أي من الاستخدامات المحظورة.',
   },
   {
     id: 'ip',
@@ -89,6 +111,7 @@ const sections: Section[] = [
     titleEn: 'Intellectual Property Rights',
     titleAr: '\u062D\u0642\u0648\u0642 \u0627\u0644\u0645\u0644\u0643\u064A\u0629 \u0627\u0644\u0641\u0643\u0631\u064A\u0629',
     content: `This Agreement does not transfer to you any intellectual property owned by the Operator or third parties, and all rights, titles, and interests in and to such property will remain (as between the parties) solely with the Operator. All trademarks, service marks, graphics and logos used in connection with the Website and Services, are trademarks or registered trademarks of the Operator or its licensors. Other trademarks, service marks, graphics and logos used in connection with the Website and Services may be the trademarks of other third parties. Your use of the Website and Services grants you no right or license to reproduce or otherwise use any of the Operator or third party trademarks.`,
+    contentAr: `لا تنقل هذه الاتفاقية إليك أي ملكية فكرية مملوكة للمشغل أو لأطراف ثالثة. جميع العلامات التجارية وعلامات الخدمة والرسومات والشعارات المستخدمة فيما يتعلق بالموقع والخدمات هي علامات تجارية مسجلة للمشغل أو المرخصين له.`,
   },
   {
     id: 'indemnification',
@@ -96,6 +119,7 @@ const sections: Section[] = [
     titleEn: 'Indemnification',
     titleAr: '\u0627\u0644\u062A\u0639\u0648\u064A\u0636',
     content: `You agree to indemnify and hold harmless the Operator, its contractors, and its licensors, and their respective directors, officers, employees, and agents from and against any and all claims and expenses, including attorneys\u2019 fees, arising out of your use of the Site, including but not limited to your violation of this Agreement.`,
+    contentAr: `أنت توافق على تعويض المشغل ومقاوليه ومرخصيه ومديريهم وموظفيهم ووكلائهم من وضد أي وجميع المطالبات والنفقات، بما في ذلك أتعاب المحاماة، الناشئة عن استخدامك للموقع.`,
   },
   {
     id: 'severability',
@@ -103,6 +127,7 @@ const sections: Section[] = [
     titleEn: 'Severability',
     titleAr: '\u0642\u0627\u0628\u0644\u064A\u0629 \u0627\u0644\u0641\u0635\u0644',
     content: `All rights and restrictions contained in this Agreement may be exercised and shall be applicable and binding only to the extent that they do not violate any applicable laws and are intended to be limited to the extent necessary so that they will not render this Agreement illegal, invalid or unenforceable. If any provision or portion of any provision of this Agreement shall be held to be illegal, invalid or unenforceable by a court of competent jurisdiction, it is the intention of the parties that the remaining provisions or portions thereof shall constitute their agreement with respect to the subject matter hereof, and all such remaining provisions or portions thereof shall remain in full force and effect.`,
+    contentAr: `إذا تبين أن أي حكم من أحكام هذه الاتفاقية غير قانوني أو باطل أو غير قابل للتنفيذ، فإن الأحكام المتبقية تظل سارية المفعول بالكامل.`,
   },
   {
     id: 'disputes',
@@ -110,6 +135,7 @@ const sections: Section[] = [
     titleEn: 'Dispute Resolution',
     titleAr: '\u062D\u0644 \u0627\u0644\u0646\u0632\u0627\u0639\u0627\u062A',
     content: `The formation, interpretation, and performance of this Agreement and any disputes arising out of it shall be governed by the substantive and procedural laws of Ontario, Canada without regard to its rules on conflicts or choice of law and, to the extent applicable, the laws of Canada. The exclusive jurisdiction and venue for actions related to the subject matter hereof shall be the courts located in Ontario, Canada, and you hereby submit to the personal jurisdiction of such courts. You hereby waive any right to a jury trial in any proceeding arising out of or related to this Agreement. The United Nations Convention on Contracts for the International Sale of Goods does not apply to this Agreement.`,
+    contentAr: `يخضع تشكيل وتفسير وأداء هذه الاتفاقية للقوانين الموضوعية والإجرائية لمقاطعة أونتاريو، كندا. يكون الاختصاص القضائي الحصري للمحاكم الموجودة في أونتاريو، كندا.`,
   },
   {
     id: 'changes',
@@ -117,6 +143,7 @@ const sections: Section[] = [
     titleEn: 'Changes and Amendments',
     titleAr: '\u0627\u0644\u062A\u063A\u064A\u064A\u0631\u0627\u062A \u0648\u0627\u0644\u062A\u0639\u062F\u064A\u0644\u0627\u062A',
     content: `We reserve the right to modify this Agreement or its terms related to the Website and Services at any time at our discretion. When we do, we will probably revise the updated date at the bottom of this page. It is your responsibility to check this Agreement periodically for changes. Your continued use of or access to the Site following the posting of any changes to this Agreement constitutes acceptance of those changes. The Operator may also, in the future, offer new services and/or features through the Site (including, the release of new tools and resources). Such new features and/or services shall be subject to the terms and conditions of this Agreement.`,
+    contentAr: `نحتفظ بالحق في تعديل هذه الاتفاقية في أي وقت وفقاً لتقديرنا. عندما نفعل ذلك، سنقوم على الأرجح بمراجعة التاريخ المحدث في أسفل هذه الصفحة. تقع على عاتقك مسؤولية التحقق من هذه الاتفاقية بشكل دوري.`,
   },
   {
     id: 'acceptance',
@@ -124,6 +151,7 @@ const sections: Section[] = [
     titleEn: 'Acceptance',
     titleAr: '\u0627\u0644\u0642\u0628\u0648\u0644',
     content: `You acknowledge that you have read this Agreement and agree to all its terms and conditions. By accessing and using the Website and Services you agree to be bound by this Agreement. If you do not agree to abide by the terms of this Agreement, you are not authorized to access or use the Website and Services.`,
+    contentAr: `أنت تقر بأنك قد قرأت هذه الاتفاقية وتوافق على جميع شروطها وأحكامها. من خلال الوصول إلى الموقع والخدمات واستخدامها، فإنك توافق على الالتزام بهذه الاتفاقية.`,
   },
   {
     id: 'contact',
@@ -131,6 +159,7 @@ const sections: Section[] = [
     titleEn: 'Contacting Us',
     titleAr: '\u0627\u062A\u0635\u0644 \u0628\u0646\u0627',
     content: `Any questions about these terms of service and privacy policy should be addressed to us via our contact form.`,
+    contentAr: `أي أسئلة حول شروط الخدمة وسياسة الخصوصية يجب توجيهها إلينا عبر نموذج الاتصال الخاص بنا.`,
     isLast: true,
   },
 ];
@@ -187,7 +216,7 @@ export default function TermsPage() {
               className="text-lg text-[#6B6580] mt-4 max-w-2xl"
             >
               {isRTL
-                ? '\u064A\u0631\u062C\u0649 \u0642\u0631\u0627\u0621\u0629 \u0647\u0630\u0647 \u0627\u0644\u0634\u0631\u0648\u0637 \u0628\u0639\u0646\u0627\u064A\u0629 \u0642\u0628\u0644 \u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0645\u0648\u0642\u0639\u0646\u0627 \u0648\u062E\u062F\u0645\u0627\u062A\u0646\u0627. \u0628\u0627\u0644\u0648\u0635\u0648\u0644 \u0625\u0644\u0649 mamahala.ca\u060C \u0641\u0625\u0646\u0643 \u062A\u0648\u0627\u0641\u0642 \u0639\u0644\u0649 \u0627\u0644\u0627\u0644\u062A\u0632\u0627\u0645 \u0628\u0647\u0630\u0647 \u0627\u0644\u0627\u062A\u0641\u0627\u0642\u064A\u0629.'
+                ? 'يرجى قراءة هذه الشروط بعناية قبل استخدام خدماتنا'
                 : 'Please read these terms carefully before using our website and services. By accessing mamahala.ca, you agree to be bound by this agreement.'}
             </motion.p>
             <motion.div
@@ -197,7 +226,7 @@ export default function TermsPage() {
             >
               <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
                 <RefreshCw className="w-3.5 h-3.5" />
-                {isRTL ? '\u0622\u062E\u0631 \u062A\u062D\u062F\u064A\u062B: 29 \u0646\u0648\u0641\u0645\u0628\u0631 2022' : 'Last updated: November 29, 2022'}
+                {isRTL ? 'آخر تحديث: 29.11.2022' : 'Last updated: November 29, 2022'}
               </span>
               <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
                 <Gavel className="w-3.5 h-3.5" />
@@ -293,7 +322,7 @@ export default function TermsPage() {
 
                   {/* Section Body */}
                   <div className="px-6 md:px-8 py-6">
-                    {section.content.split('\n\n').map((paragraph, pi) => (
+                    {(isRTL ? section.contentAr : section.content).split('\n\n').map((paragraph, pi) => (
                       <p
                         key={pi}
                         className="text-[#4A4A5C] leading-relaxed mb-4 last:mb-0 text-[15px]"
@@ -304,7 +333,7 @@ export default function TermsPage() {
 
                     {section.list && (
                       <div className="mt-4 space-y-2">
-                        {section.list.map((item, li) => (
+                        {(isRTL && section.listAr ? section.listAr : section.list).map((item, li) => (
                           <div
                             key={li}
                             className={`flex items-start gap-3 rounded-xl px-4 py-3 ${
@@ -324,7 +353,7 @@ export default function TermsPage() {
 
                     {section.afterList && (
                       <p className="text-[#4A4A5C] leading-relaxed mt-4 text-[15px] font-medium">
-                        {section.afterList}
+                        {isRTL && section.afterListAr ? section.afterListAr : section.afterList}
                       </p>
                     )}
 
@@ -353,7 +382,7 @@ export default function TermsPage() {
             className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
           >
             <ArrowUp className="w-4 h-4" />
-            {isRTL ? '\u0627\u0644\u0639\u0648\u062F\u0629 \u0625\u0644\u0649 \u0627\u0644\u0623\u0639\u0644\u0649' : 'Back to top'}
+            {isRTL ? 'العودة للأعلى' : 'Back to top'}
           </button>
         </div>
       </div>
