@@ -871,20 +871,21 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
       <div className="container-main relative z-10">
         {/* Hero Banner */}
         <ScrollReveal className={showForm ? 'mb-10' : ''}>
-          <div className="relative bg-gradient-to-br from-[#E8C4C0] via-[#D4ADA8] to-[#E8C4C0] rounded-3xl overflow-hidden">
-            <div className="grid lg:grid-cols-5 items-stretch">
+          <div className="relative bg-gradient-to-br from-[#7A3B5E] via-[#6A3352] to-[#5E2D48] rounded-3xl overflow-hidden shadow-xl shadow-[#7A3B5E]/10">
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+            <div className="grid lg:grid-cols-5 items-stretch relative">
               <div className={`flex flex-col justify-center p-10 lg:p-14 lg:col-span-3 ${isRTL ? 'lg:order-2' : 'lg:order-1'}`}>
-                <div className="inline-flex items-center gap-2 bg-white/80 rounded-full px-4 py-1.5 w-fit mb-6">
-                  <Mic className="w-4 h-4 text-[#7A3B5E]" />
-                  <span className="text-xs font-semibold text-[#7A3B5E] uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-1.5 w-fit mb-6">
+                  <Mic className="w-4 h-4 text-[#C8A97D]" />
+                  <span className="text-xs font-semibold text-white/90 uppercase tracking-wider">
                     {isRTL ? 'طلبات الإعلام' : 'Media Requests'}
                   </span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
-                  <span className="text-[#2D2A33]">{isRTL ? 'تعرّف على ' : 'Meet '}</span>
-                  <span className="text-[#7A3B5E]">{isRTL ? 'ماما هالة' : 'Mama Hala'}</span>
+                  <span className="text-white">{isRTL ? 'تعرّف على ' : 'Meet '}</span>
+                  <span className="text-[#C8A97D]">{isRTL ? 'ماما هالة' : 'Mama Hala'}</span>
                 </h2>
-                <p className="text-[#4A4A5C] leading-relaxed max-w-lg text-[15px]">
+                <p className="text-white/75 leading-relaxed max-w-lg text-[15px]">
                   {isRTL
                     ? 'دعونا نتواصل ونستكشف كيف يمكننا التعاون ومشاركة الأفكار أو بدء محادثة هادفة.'
                     : "Let's connect and explore how we can collaborate, share insights, or start a meaningful conversation."
@@ -896,14 +897,14 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                     { en: 'TV & Radio', ar: 'تلفزيون وراديو', icon: Video },
                     { en: 'Print & Online', ar: 'مطبوعات وإلكتروني', icon: FileText },
                   ].map((tag, i) => (
-                    <span key={i} className="inline-flex items-center gap-1.5 text-xs text-[#7A3B5E] bg-white/80 px-3 py-1.5 rounded-full border border-white/40">
+                    <span key={i} className="inline-flex items-center gap-1.5 text-xs text-white/80 bg-white/10 px-3 py-1.5 rounded-full border border-white/10">
                       <tag.icon className="w-3.5 h-3.5" /> {isRTL ? tag.ar : tag.en}
                     </span>
                   ))}
                 </div>
                 <motion.button
                   onClick={() => { setShowForm(!showForm); if (!showForm) setStep(0); }}
-                  className="mt-8 inline-flex items-center gap-2.5 bg-[#C8A97D] hover:bg-[#B89A6E] text-[#2D2A33] font-semibold px-7 py-3.5 rounded-xl transition-colors duration-200 shadow-lg shadow-[#C8A97D]/20 w-fit"
+                  className="mt-8 inline-flex items-center gap-2.5 bg-white text-[#7A3B5E] hover:bg-[#FAF7F2] font-semibold px-7 py-3.5 rounded-full transition-colors duration-200 shadow-lg shadow-black/10 w-fit"
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -916,8 +917,8 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
               </div>
               <div className={`relative lg:col-span-2 min-h-[300px] lg:min-h-full ${isRTL ? 'lg:order-1' : 'lg:order-2'}`}>
                 <Image src="/images/hala-office.jpg" alt="Dr. Hala Ali" fill className="object-cover object-center" />
-                <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#D4ADA8] via-[#D4ADA8]/40 to-transparent hidden lg:block`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#D4ADA8]/60 to-transparent lg:hidden" />
+                <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#7A3B5E] via-[#7A3B5E]/50 to-transparent hidden lg:block`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#7A3B5E]/70 to-transparent lg:hidden" />
               </div>
             </div>
           </div>

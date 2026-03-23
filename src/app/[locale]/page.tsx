@@ -31,6 +31,7 @@ import TextReveal from '@/components/motion/TextReveal';
 import AnimatedCounter from '@/components/motion/AnimatedCounter';
 import ParallaxImage from '@/components/motion/ParallaxImage';
 import Button from '@/components/ui/Button';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -444,7 +445,9 @@ export default function HomePage() {
       {/* ================================================================ */}
       {/*  SECTION 8: NEWSLETTER                                           */}
       {/* ================================================================ */}
-      <section className="py-20 bg-[#F3EFE8]">
+      <section className="relative py-20 bg-[#F3EFE8]">
+        <WaveDivider position="top" fillColor="#FFFFFF" variant="gentle" />
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="soft" flip />
         <div className="container-main">
           <ScrollReveal className="max-w-2xl mx-auto text-center">
             <h2
@@ -472,6 +475,7 @@ export default function HomePage() {
       {/*  SECTION 9: FINAL CTA                                            */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
+        <WaveDivider position="top" fillColor="#FAF7F2" variant="organic" />
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#7A3B5E]/[0.06] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#7A3B5E]/[0.04] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
