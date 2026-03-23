@@ -3,8 +3,8 @@
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import {
   ArrowRight,
   ArrowLeft,
@@ -45,6 +45,15 @@ export default function HomePage() {
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+
+  // Subtle parallax for About preview photo
+  const aboutRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: aboutProgress } = useScroll({
+    target: aboutRef,
+    offset: ['start end', 'end start'],
+  });
+  const aboutY = useTransform(aboutProgress, [0, 1], [30, -30]);
+  const aboutScale = useTransform(aboutProgress, [0, 0.5, 1], [0.97, 1, 0.97]);
 
   return (
     <div className="overflow-hidden">
@@ -389,11 +398,14 @@ export default function HomePage() {
               </Button>
             </ScrollReveal>
 
-            <ScrollReveal
-              direction={isRTL ? 'left' : 'right'}
+            <div
+              ref={aboutRef}
               className={isRTL ? 'lg:order-1' : 'lg:order-2'}
             >
-              <div className="relative rounded-2xl overflow-hidden shadow-[var(--shadow-card)]">
+              <motion.div
+                style={{ y: aboutY, scale: aboutScale }}
+                className="relative rounded-2xl overflow-hidden shadow-[var(--shadow-card)]"
+              >
                 <Image
                   src="/images/hala-group.png"
                   alt="Dr. Hala leading a group consultation"
@@ -401,8 +413,8 @@ export default function HomePage() {
                   height={450}
                   className="w-full h-auto object-cover"
                 />
-              </div>
-            </ScrollReveal>
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>

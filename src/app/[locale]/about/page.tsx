@@ -2,8 +2,8 @@
 
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { useState, useRef } from 'react';
 import {
   Check,
   Target,
@@ -67,6 +67,15 @@ export default function AboutPage() {
   const locale = (params?.locale as string) || 'en';
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
+
+  // Subtle parallax for portrait
+  const portraitRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress: portraitProgress } = useScroll({
+    target: portraitRef,
+    offset: ['start end', 'end start'],
+  });
+  const portraitY = useTransform(portraitProgress, [0, 1], [25, -25]);
+  const portraitScale = useTransform(portraitProgress, [0, 0.5, 1], [0.98, 1, 0.98]);
 
   return (
     <div className="overflow-hidden">
@@ -147,14 +156,20 @@ export default function AboutPage() {
         <div className="container-main">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             {/* Image */}
-            <ScrollReveal
-              direction={isRTL ? 'right' : 'left'}
+            <div
+              ref={portraitRef}
               className={isRTL ? 'lg:order-2' : 'lg:order-1'}
             >
               <div className="relative">
-                {/* Decorative frame */}
-                <div className="absolute -top-4 -left-4 w-full h-full rounded-2xl border-2 border-[#C8A97D]/20" />
-                <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.1)]">
+                {/* Decorative frame — floats gently */}
+                <motion.div
+                  className="absolute -top-4 -left-4 w-full h-full rounded-2xl border-2 border-[#C8A97D]/20"
+                  style={{ y: useTransform(portraitProgress, [0, 1], [-10, 10]) }}
+                />
+                <motion.div
+                  className="relative rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.1)]"
+                  style={{ y: portraitY, scale: portraitScale }}
+                >
                   <Image
                     src="/images/hala-confident.png"
                     alt="Dr. Hala Ali - Mama Hala"
@@ -162,7 +177,7 @@ export default function AboutPage() {
                     height={700}
                     className="w-full h-auto object-cover"
                   />
-                </div>
+                </motion.div>
                 {/* Floating accent */}
                 <motion.div
                   className="absolute -bottom-6 -right-6 bg-[#7A3B5E] text-white rounded-2xl p-5 shadow-lg"
@@ -178,7 +193,7 @@ export default function AboutPage() {
                   </p>
                 </motion.div>
               </div>
-            </ScrollReveal>
+            </div>
 
             {/* Text content */}
             <ScrollReveal
