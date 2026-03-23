@@ -15,6 +15,7 @@ import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/S
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 export default function ServiceDetailPage() {
   const params = useParams();
@@ -57,7 +58,7 @@ export default function ServiceDetailPage() {
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-[#C4878A]/8 blur-3xl" />
         </div>
-        <div className="container-main relative py-20 md:py-24">
+        <div className="container-main relative pt-20 pb-28 md:pt-24 md:pb-32">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Breadcrumb
               locale={locale}
@@ -94,6 +95,7 @@ export default function ServiceDetailPage() {
             </Badge>
           </motion.div>
         </div>
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       <div className="container-main py-16 lg:py-24">

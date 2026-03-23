@@ -20,6 +20,7 @@ import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/S
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 interface DownloadResource {
   id: string;
@@ -118,7 +119,7 @@ export default function DownloadsPage() {
       {/* ================================================================ */}
       {/*  HERO                                                            */}
       {/* ================================================================ */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden gradient-sage">
+      <section className="relative pt-32 pb-28 lg:pt-40 lg:pb-36 overflow-hidden gradient-sage">
         {/* Decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] blur-[80px]" />
@@ -154,6 +155,7 @@ export default function DownloadsPage() {
             </p>
           </motion.div>
         </div>
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       {/* ================================================================ */}
@@ -296,6 +298,7 @@ export default function DownloadsPage() {
       {/*  CTA                                                             */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
+        <WaveDivider position="top" fillColor="#FAF7F2" variant="organic" />
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#7A3B5E]/[0.06] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#7A3B5E]/[0.04] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
 

@@ -16,6 +16,7 @@ import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/S
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 // Calendly scheduling URL - update this when Mama Hala's Calendly is set up
 const CALENDLY_URL = 'https://calendly.com/admin-mamahala';
@@ -77,7 +78,7 @@ export default function BookASessionPage() {
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#C4878A]/8 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
         </div>
-        <div className="container-main relative py-24 md:py-28 text-center">
+        <div className="container-main relative pt-24 pb-32 md:pt-28 md:pb-36 text-center">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Breadcrumb
               locale={locale}
@@ -111,6 +112,7 @@ export default function BookASessionPage() {
             transition={{ delay: 0.4, duration: 0.6 }}
           />
         </div>
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       {/* Booking Options */}

@@ -17,6 +17,7 @@ import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/S
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   GraduationCap, Users, User, Heart, Leaf,
@@ -64,7 +65,7 @@ export default function ServiceCategoryPage() {
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#C4878A]/8 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
         </div>
-        <div className="container-main relative py-24 md:py-28">
+        <div className="container-main relative pt-24 pb-32 md:pt-28 md:pb-36">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <Breadcrumb
               locale={locale}
@@ -103,6 +104,7 @@ export default function ServiceCategoryPage() {
             {description}
           </motion.p>
         </div>
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       {/* Services Grid */}
@@ -240,6 +242,7 @@ export default function ServiceCategoryPage() {
 
       {/* CTA */}
       <section className="py-24 gradient-cta-dark relative overflow-hidden">
+        <WaveDivider position="top" fillColor="#F3EFE8" variant="organic" />
         <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-[#7A3B5E]/[0.06] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="container-main relative z-10">
           <ScrollReveal className="text-center max-w-2xl mx-auto">

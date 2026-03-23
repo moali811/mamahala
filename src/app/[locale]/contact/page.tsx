@@ -21,6 +21,7 @@ import ScrollReveal from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 /* ================================================================
    Contact Page
@@ -116,7 +117,7 @@ export default function ContactPage() {
           <div className="absolute bottom-0 left-[10%] w-[300px] h-[300px] rounded-full bg-[#C8A97D]/[0.08] blur-[60px]" />
         </div>
 
-        <div className="container-main relative z-10 pt-32 pb-20 lg:pt-40 lg:pb-28">
+        <div className="container-main relative z-10 pt-32 pb-28 lg:pt-40 lg:pb-36">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -144,6 +145,7 @@ export default function ContactPage() {
             {messages.contact.subtitle}
           </motion.p>
         </div>
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       {/* ================================================================ */}

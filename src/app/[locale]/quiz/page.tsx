@@ -13,6 +13,7 @@ import { getMessages, type Locale } from '@/lib/i18n';
 import { services } from '@/data/services';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 interface QuizAnswer {
   question: number;
@@ -123,7 +124,7 @@ export default function QuizPage() {
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
         </div>
-        <div className="container-main relative py-16 md:py-20 text-center">
+        <div className="container-main relative pt-16 pb-24 md:pt-20 md:pb-28 text-center">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <Sparkles className="w-8 h-8 text-[#C8A97D] mx-auto mb-4" />
             <h1 className="text-3xl md:text-4xl font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
@@ -134,6 +135,7 @@ export default function QuizPage() {
             </p>
           </motion.div>
         </div>
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       <div className="max-w-2xl mx-auto px-6 py-16">
