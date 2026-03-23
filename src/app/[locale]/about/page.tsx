@@ -669,6 +669,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
   });
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -690,7 +691,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
 
       <div className="container-main relative z-10">
         {/* Section Header with Image */}
-        <ScrollReveal className="mb-16">
+        <ScrollReveal className={showForm ? 'mb-16' : ''}>
           <div className="relative bg-gradient-to-br from-[#1E1E2A] via-[#2B2B3D] to-[#1E1E2A] rounded-3xl overflow-hidden">
             <div className="grid lg:grid-cols-5 items-stretch">
               {/* Text Side */}
@@ -702,10 +703,11 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                   </span>
                 </div>
                 <h2
-                  className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4"
+                  className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
-                  {isRTL ? 'تعرّف على ماما هالة' : 'Meet Mama Hala'}
+                  <span className="text-white">{isRTL ? 'تعرّف على ' : 'Meet '}</span>
+                  <span className="text-[#C8A97D]">{isRTL ? 'ماما هالة' : 'Mama Hala'}</span>
                 </h2>
                 <p className="text-white/70 leading-relaxed max-w-lg text-[15px]">
                   {isRTL
@@ -725,6 +727,15 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                     </span>
                   ))}
                 </div>
+                <motion.button
+                  onClick={() => setShowForm(!showForm)}
+                  className="mt-8 inline-flex items-center gap-2.5 bg-[#C8A97D] hover:bg-[#B89A6E] text-[#1E1E2A] font-semibold px-7 py-3.5 rounded-xl transition-colors duration-200 shadow-lg shadow-[#C8A97D]/20"
+                  whileHover={{ y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Send className="w-4.5 h-4.5" />
+                  {isRTL ? 'تقديم طلب مقابلة' : 'Submit an Interview Request'}
+                </motion.button>
               </div>
 
               {/* Image Side */}
@@ -743,9 +754,9 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
           </div>
         </ScrollReveal>
 
-        {/* Form */}
+        {/* Form — revealed on button click */}
         <AnimatePresence mode="wait">
-          {sent ? (
+          {!showForm ? null : sent ? (
             <motion.div
               key="success"
               initial={{ opacity: 0, scale: 0.95 }}
