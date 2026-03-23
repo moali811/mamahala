@@ -381,7 +381,93 @@ export default function AboutPage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  SECTION 3.5: FULL-WIDTH PHOTO REVEAL                           */}
+      {/*  SECTION 3.5: WHAT WE STAND FOR — CORE VALUES                   */}
+      {/* ================================================================ */}
+      <section className="relative py-28 lg:py-36 overflow-hidden">
+        {/* Dark sage background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1E1E2A] via-[#252535] to-[#1E1E2A]" />
+        {/* Subtle texture */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '48px 48px' }} />
+        {/* Decorative glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C8A97D]/[0.06] rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="container-main relative z-10">
+          <ScrollReveal className="text-center mb-16 lg:mb-20">
+            <span className="text-sm font-semibold tracking-[0.2em] uppercase text-[#C8A97D]/70 block mb-4">
+              {isRTL ? 'قيمنا الأساسية' : 'Our Core Values'}
+            </span>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1]" style={{ fontFamily: 'var(--font-heading)' }}>
+              <span className="text-white">{isRTL ? 'ما ' : 'What We '}</span>
+              <span className="text-[#C8A97D] italic">{isRTL ? 'نؤمن به' : 'Stand For'}</span>
+            </h2>
+          </ScrollReveal>
+
+          <StaggerReveal className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+            {[
+              {
+                titleEn: 'Compassion',
+                titleAr: 'التعاطف',
+                textEn: 'We lead with empathy, respect, and openness, honoring every experience without judgment.',
+                textAr: 'نقود بالتعاطف والاحترام والانفتاح، نحترم كل تجربة دون إصدار أحكام.',
+                color: '#C8A97D',
+              },
+              {
+                titleEn: 'Humancentric',
+                titleAr: 'التركيز الإنساني',
+                textEn: 'Every story is unique. Our support is thoughtful, personalized, and grounded in real-life needs.',
+                textAr: 'كل قصة فريدة. دعمنا مدروس وشخصي ومرتكز على احتياجات الحياة الواقعية.',
+                color: '#D4956B',
+              },
+              {
+                titleEn: 'Integrity',
+                titleAr: 'النزاهة',
+                textEn: 'We uphold honesty, confidentiality, and ethical practice, creating safe spaces for meaningful growth.',
+                textAr: 'نحافظ على الصدق والسرية والممارسة الأخلاقية، ونخلق مساحات آمنة للنمو الهادف.',
+                color: '#B87D5E',
+              },
+              {
+                titleEn: 'Growth',
+                titleAr: 'النمو',
+                textEn: 'We commit to continuous learning and reflective, evidence-informed practice that strengthens outcomes.',
+                textAr: 'نلتزم بالتعلم المستمر والممارسة التأملية المبنية على الأدلة التي تعزز النتائج.',
+                color: '#C8A97D',
+              },
+            ].map((val, i) => (
+              <StaggerChild key={i}>
+                <motion.div
+                  className="group relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-8 lg:p-9 h-full hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-500"
+                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                >
+                  {/* Top gradient accent line */}
+                  <div
+                    className="absolute top-0 left-6 right-6 h-[2px] rounded-full opacity-40 group-hover:opacity-80 transition-opacity duration-500"
+                    style={{ background: `linear-gradient(90deg, transparent, ${val.color}, transparent)` }}
+                  />
+                  {/* Value title — stylized */}
+                  <h3
+                    className="text-[22px] lg:text-[24px] font-bold mb-5 tracking-wide uppercase"
+                    style={{
+                      fontFamily: 'var(--font-heading)',
+                      background: `linear-gradient(135deg, ${val.color}, ${val.color}90)`,
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                    }}
+                  >
+                    {isRTL ? val.titleAr : val.titleEn}
+                  </h3>
+                  {/* Description */}
+                  <p className="text-white/55 leading-relaxed text-[14px] group-hover:text-white/75 transition-colors duration-500">
+                    {isRTL ? val.textAr : val.textEn}
+                  </p>
+                </motion.div>
+              </StaggerChild>
+            ))}
+          </StaggerReveal>
+        </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/*  SECTION 3.75: FULL-WIDTH PHOTO REVEAL                          */}
       {/* ================================================================ */}
       <section className="relative bg-white overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
