@@ -1,0 +1,306 @@
+'use client';
+
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ArrowRight, ArrowLeft, ChevronLeft, ChevronRight,
+  Calendar, MessageCircle, Sparkles, Baby, Users, User, Heart,
+  Brain, Shield, Compass, Zap, Check,
+} from 'lucide-react';
+import { getMessages, type Locale } from '@/lib/i18n';
+import { services } from '@/data/services';
+import Button from '@/components/ui/Button';
+import Badge from '@/components/ui/Badge';
+
+interface QuizAnswer {
+  question: number;
+  answer: string;
+}
+
+const questions = [
+  {
+    id: 1,
+    en: 'Who needs support?',
+    ar: 'من يحتاج الدعم؟',
+    options: [
+      { value: 'child', en: 'My child (under 12)', ar: 'طفلي (أقل من 12)', icon: Baby },
+      { value: 'teen', en: 'My teenager (13-17)', ar: 'ابني المراهق (13-17)', icon: Shield },
+      { value: 'myself', en: 'Myself', ar: 'أنا', icon: User },
+      { value: 'couple', en: 'My partner & me', ar: 'شريكي وأنا', icon: Heart },
+      { value: 'family', en: 'Our whole family', ar: 'عائلتنا بأكملها', icon: Users },
+    ],
+  },
+  {
+    id: 2,
+    en: 'What area concerns you most?',
+    ar: 'ما هو المجال الأكثر إثارة للقلق؟',
+    options: [
+      { value: 'behavior', en: 'Behavior & discipline', ar: 'السلوك والانضباط', icon: Shield },
+      { value: 'emotions', en: 'Emotional regulation', ar: 'التنظيم العاطفي', icon: Brain },
+      { value: 'communication', en: 'Communication & relationships', ar: 'التواصل والعلاقات', icon: Users },
+      { value: 'anxiety', en: 'Anxiety or stress', ar: 'القلق أو التوتر', icon: Compass },
+      { value: 'growth', en: 'Personal growth & direction', ar: 'النمو الشخصي والتوجيه', icon: Zap },
+    ],
+  },
+  {
+    id: 3,
+    en: 'Have you had counseling before?',
+    ar: 'هل سبق لك أن حصلت على استشارة؟',
+    options: [
+      { value: 'no', en: 'No, this is my first time', ar: 'لا، هذه أول مرة', icon: Sparkles },
+      { value: 'yes', en: 'Yes, I have experience', ar: 'نعم، لدي خبرة', icon: Check },
+    ],
+  },
+  {
+    id: 4,
+    en: 'How would you like to connect?',
+    ar: 'كيف تود التواصل؟',
+    options: [
+      { value: 'online', en: 'Online sessions', ar: 'جلسات عبر الإنترنت', icon: Compass },
+      { value: 'flexible', en: "I'm flexible", ar: 'أنا مرن', icon: Check },
+    ],
+  },
+];
+
+function getRecommendations(answers: QuizAnswer[]) {
+  const who = answers.find((a) => a.question === 1)?.answer;
+  const concern = answers.find((a) => a.question === 2)?.answer;
+
+  let recommended: typeof services = [];
+
+  if (who === 'child' || who === 'teen') {
+    recommended = services.filter((s) => s.category === 'youth');
+    if (concern === 'behavior') recommended = recommended.filter((s) => s.slug.includes('behavioral') || s.slug.includes('bullying'));
+    else if (concern === 'emotions') recommended = recommended.filter((s) => s.slug.includes('emotion') || s.slug.includes('cbt'));
+  } else if (who === 'couple') {
+    recommended = services.filter((s) => s.category === 'couples');
+  } else if (who === 'family') {
+    recommended = services.filter((s) => s.category === 'families');
+  } else {
+    recommended = services.filter((s) => s.category === 'adults');
+    if (concern === 'anxiety') recommended = recommended.filter((s) => s.slug.includes('anxiety') || s.slug.includes('cbt'));
+    else if (concern === 'growth') recommended = recommended.filter((s) => s.slug.includes('life-coaching') || s.slug.includes('self-development') || s.slug.includes('lifestyle'));
+  }
+
+  if (recommended.length === 0) recommended = services.filter((s) => s.slug === 'online-consultation');
+  return recommended.slice(0, 3);
+}
+
+export default function QuizPage() {
+  const params = useParams();
+  const locale = (params?.locale as string) || 'en';
+  const isRTL = locale === 'ar';
+  const messages = getMessages(locale as Locale);
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+  const BackIcon = isRTL ? ChevronRight : ChevronLeft;
+
+  const [step, setStep] = useState(0);
+  const [answers, setAnswers] = useState<QuizAnswer[]>([]);
+  const [showResults, setShowResults] = useState(false);
+
+  const currentQuestion = questions[step];
+  const progress = ((step + 1) / questions.length) * 100;
+
+  const handleSelect = (value: string) => {
+    const newAnswers = [...answers.filter((a) => a.question !== currentQuestion.id), { question: currentQuestion.id, answer: value }];
+    setAnswers(newAnswers);
+
+    if (step < questions.length - 1) {
+      setTimeout(() => setStep(step + 1), 300);
+    } else {
+      setTimeout(() => setShowResults(true), 300);
+    }
+  };
+
+  const recommendations = showResults ? getRecommendations(answers) : [];
+
+  return (
+    <div className="bg-[#FAF7F2] min-h-screen">
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#7A3B5E] via-[#7A3B5E] to-[#5E2D48]">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
+        </div>
+        <div className="container-main relative py-16 md:py-20 text-center">
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <Sparkles className="w-8 h-8 text-[#C8A97D] mx-auto mb-4" />
+            <h1 className="text-3xl md:text-4xl font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
+              {isRTL ? 'ساعدني في اختيار الدعم المناسب' : 'Help Me Choose The Right Support'}
+            </h1>
+            <p className="text-white/70 mt-3 max-w-lg mx-auto">
+              {isRTL ? 'أجب على بعض الأسئلة السريعة وسنوصيك بالخدمة الأنسب لك' : 'Answer a few quick questions and we\'ll recommend the best service for you'}
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      <div className="max-w-2xl mx-auto px-6 py-16">
+        {!showResults ? (
+          <>
+            {/* Progress Bar */}
+            <div className="mb-10">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-[#8E8E9F]">
+                  {isRTL ? `سؤال ${step + 1} من ${questions.length}` : `Question ${step + 1} of ${questions.length}`}
+                </span>
+                <span className="text-sm font-medium text-[#2B5F4E]">{Math.round(progress)}%</span>
+              </div>
+              <div className="h-2 bg-[#F3EFE8] rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-[#2B5F4E] rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.4 }}
+                />
+              </div>
+            </div>
+
+            {/* Back button */}
+            {step > 0 && (
+              <button
+                onClick={() => setStep(step - 1)}
+                className="flex items-center gap-1 text-sm text-[#8E8E9F] hover:text-[#4A4A5C] mb-6 transition-colors"
+              >
+                <BackIcon className="w-4 h-4" />
+                {isRTL ? 'السابق' : 'Back'}
+              </button>
+            )}
+
+            {/* Question */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h2 className="text-2xl font-bold text-[#1E1E2A] mb-8" style={{ fontFamily: 'var(--font-heading)' }}>
+                  {isRTL ? currentQuestion.ar : currentQuestion.en}
+                </h2>
+
+                <div className="space-y-3">
+                  {currentQuestion.options.map((option) => {
+                    const isSelected = answers.find((a) => a.question === currentQuestion.id)?.answer === option.value;
+                    const Icon = option.icon;
+                    return (
+                      <motion.button
+                        key={option.value}
+                        onClick={() => handleSelect(option.value)}
+                        className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 text-start transition-all duration-200 ${
+                          isSelected
+                            ? 'border-[#2B5F4E] bg-[#2B5F4E]/5'
+                            : 'border-[#F3EFE8] bg-white hover:border-[#2B5F4E]/30 hover:shadow-[var(--shadow-subtle)]'
+                        }`}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          isSelected ? 'bg-[#2B5F4E] text-white' : 'bg-[#F3EFE8] text-[#4A4A5C]'
+                        }`}>
+                          <Icon className="w-5 h-5" />
+                        </div>
+                        <span className={`font-medium ${isSelected ? 'text-[#2B5F4E]' : 'text-[#1E1E2A]'}`}>
+                          {isRTL ? option.ar : option.en}
+                        </span>
+                        {isSelected && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="ml-auto w-6 h-6 rounded-full bg-[#2B5F4E] flex items-center justify-center"
+                          >
+                            <Check className="w-3.5 h-3.5 text-white" />
+                          </motion.div>
+                        )}
+                      </motion.button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </>
+        ) : (
+          /* Results */
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="text-center mb-10">
+              <div className="w-16 h-16 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-8 h-8 text-[#2B5F4E]" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+                {isRTL ? 'توصياتنا لك' : 'Our Recommendations For You'}
+              </h2>
+              <p className="text-[#8E8E9F] mt-2">
+                {isRTL ? 'بناءً على إجاباتك، نوصي بالخدمات التالية' : 'Based on your answers, we recommend these services'}
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {recommendations.map((service, i) => {
+                const sName = isRTL ? service.nameAr : service.name;
+                const sDesc = isRTL ? service.shortDescAr : service.shortDesc;
+                return (
+                  <motion.div
+                    key={service.slug}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.15 }}
+                    className="bg-white rounded-2xl p-6 border border-[#F3EFE8] shadow-[var(--shadow-subtle)]"
+                  >
+                    {i === 0 && (
+                      <Badge variant="sage" size="sm" className="mb-3">
+                        {isRTL ? 'الأنسب لك' : 'Best Match'}
+                      </Badge>
+                    )}
+                    <h3 className="text-lg font-bold text-[#1E1E2A] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                      {sName}
+                    </h3>
+                    <p className="text-sm text-[#8E8E9F] mb-4">{sDesc}</p>
+                    <div className="flex items-center gap-3">
+                      <Badge variant="sand" size="sm">
+                        {messages.services.priceFrom} ${service.priceFrom}
+                      </Badge>
+                      <Badge variant="neutral" size="sm">{service.duration}</Badge>
+                    </div>
+                    <div className="flex gap-3 mt-5">
+                      <Button as="a" href={`/${locale}/book-a-session`} size="sm" icon={<Calendar className="w-4 h-4" />}>
+                        {messages.services.bookOnline}
+                      </Button>
+                      <Button
+                        as="a"
+                        href={`/${locale}/services/${service.category}/${service.slug}`}
+                        variant="ghost"
+                        size="sm"
+                      >
+                        {messages.services.learnMore}
+                      </Button>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            <div className="mt-10 text-center space-y-4">
+              <button
+                onClick={() => { setStep(0); setAnswers([]); setShowResults(false); }}
+                className="text-sm text-[#2B5F4E] font-semibold hover:text-[#1E4A3B] transition-colors"
+              >
+                {isRTL ? 'أعد الاختبار' : 'Retake Quiz'}
+              </button>
+              <p className="text-sm text-[#8E8E9F]">
+                {isRTL ? 'أو' : 'or'}{' '}
+                <a href="https://wa.me/16132222104" target="_blank" rel="noopener noreferrer" className="text-[#2B5F4E] font-medium hover:underline">
+                  {messages.services.chatWhatsApp}
+                </a>
+              </p>
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+}

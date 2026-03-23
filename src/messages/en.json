@@ -1,0 +1,216 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "families": "Families",
+    "couples": "Couples",
+    "youth": "Youth & Teens",
+    "adults": "Adults",
+    "experiential": "Experiential Therapy",
+    "resources": "Resources",
+    "blog": "Blog",
+    "faqs": "FAQs",
+    "events": "Events",
+    "programs": "Programs",
+    "downloads": "Downloads",
+    "contact": "Contact",
+    "bookNow": "Book Now",
+    "language": "عربي"
+  },
+  "hero": {
+    "greeting": "Welcome to",
+    "brand": "Mama Hala Consulting",
+    "title": "Where Healing",
+    "titleLine2": "Meets Heart",
+    "subtitle": "Professional counseling and guidance for individuals, couples, and families — rooted in evidence, delivered with warmth.",
+    "cta1": "Start Your Journey",
+    "cta2": "Help Me Choose",
+    "badge": "Certified Family Counselor",
+    "stats": {
+      "families": "500+",
+      "familiesLabel": "Families Supported",
+      "bilingual": "EN/AR",
+      "bilingualLabel": "Bilingual Support",
+      "global": "Global",
+      "globalLabel": "Online & In-Person",
+      "locations": "2",
+      "locationsLabel": "Dubai & Canada"
+    }
+  },
+  "services": {
+    "sectionTitle": "How We Can Support You",
+    "subtitle": "Specialized, evidence-based support for every stage of life",
+    "pageTitle": "Our Services",
+    "pageSubtitle": "We provide specialized support for families, couples, youth, adults, and through experiential therapy approaches.",
+    "startHere": "Start Here",
+    "startHereDesc": "Not sure where to begin? Book an initial consultation and we'll guide you.",
+    "bookSession": "Book a Session",
+    "bookOnline": "Book Online",
+    "chatWhatsApp": "Chat on WhatsApp",
+    "learnMore": "Learn More",
+    "viewAll": "View All Services",
+    "priceFrom": "From",
+    "priceDisclaimer": "Prices vary by region, age, case complexity, and service type.",
+    "whoIsThisFor": "Who Is This For?",
+    "whatToExpect": "What to Expect",
+    "ourApproach": "Our Approach",
+    "relatedServices": "Related Services",
+    "serviceCount": "services"
+  },
+  "about": {
+    "pageTitle": "About Us",
+    "sectionLabel": "A Little About",
+    "sectionTitle": "Mama Hala Consulting",
+    "description": "We are a family-focused consulting and counseling organization dedicated to strengthening lives and relationships.",
+    "story": "With over a decade of experience in family counseling and child development, Dr. Hala Ali — known lovingly as Mama Hala — has dedicated her career to empowering families, couples, and individuals. From her roots in the Middle East to establishing her practice across Dubai and Canada, she brings a unique blend of cultural understanding and evidence-based expertise.",
+    "mission": "Our Mission",
+    "missionText": "To empower families and individuals with the emotional tools, knowledge, and support they need to build stronger, healthier relationships and face life's challenges with confidence.",
+    "vision": "Our Vision",
+    "visionText": "All youth and families are emotionally healthy, empowered with the tools and knowledge to face life's challenges.",
+    "approach": "Our Approach",
+    "approachText": "We use evidence-based therapeutic methods combined with a warm, culturally sensitive approach to support our diverse community.",
+    "credentials": "Qualifications & Credentials",
+    "credentialsList": [
+      "Certified Family Counselor",
+      "ADHD/ADD Executive Function Coach",
+      "Cognitive Behavioral Therapy Practitioner",
+      "Parenting Education Specialist",
+      "Bilingual Service Provider (English & Arabic)"
+    ],
+    "whyChoose": "Why Choose Mama Hala?",
+    "reasons": [
+      {
+        "title": "Culturally Sensitive",
+        "desc": "Understanding and respecting the unique cultural dynamics of Arab and multicultural families."
+      },
+      {
+        "title": "Evidence-Based",
+        "desc": "Using proven therapeutic methods including CBT, executive function coaching, and family systems therapy."
+      },
+      {
+        "title": "Bilingual Support",
+        "desc": "Full service delivery in both English and Arabic for comfortable and effective communication."
+      },
+      {
+        "title": "Holistic Approach",
+        "desc": "Addressing the whole person — mind, emotions, relationships, and daily functioning."
+      }
+    ]
+  },
+  "method": {
+    "sectionTitle": "How We Work",
+    "subtitle": "Our proven 4-step process",
+    "steps": [
+      {
+        "title": "We Listen",
+        "description": "We start with a real conversation to understand your needs, challenges, and what support would feel most helpful right now."
+      },
+      {
+        "title": "We Design",
+        "description": "Together, we define clear goals and create a support plan tailored to your life — not a template."
+      },
+      {
+        "title": "We Support",
+        "description": "Support is delivered with care, clarity, and ethical boundaries, in a space that feels safe, respectful, and collaborative."
+      },
+      {
+        "title": "We Grow",
+        "description": "We review progress, adapt when needed, and focus on sustainable growth that continues beyond the sessions."
+      }
+    ]
+  },
+  "testimonials": {
+    "sectionTitle": "What Our Clients Say",
+    "subtitle": "Real stories of transformation and growth"
+  },
+  "booking": {
+    "pageTitle": "Book a Session",
+    "subtitle": "Choose your path and take the first step toward positive change.",
+    "newClient": "New Here?",
+    "newClientDesc": "Start with a free consultation to find the right support for you.",
+    "returningClient": "Welcome Back",
+    "returningClientDesc": "Continue your journey with",
+    "selectService": "Browse All Services",
+    "notSure": "Not sure which service is right for you?",
+    "takeQuiz": "Take Our Quick Quiz"
+  },
+  "contact": {
+    "pageTitle": "Get In Touch",
+    "subtitle": "We'd love to hear from you. Reach out to start your journey toward emotional well-being.",
+    "whatsapp": "Chat on WhatsApp",
+    "phone": "+1 613-222-2104",
+    "email": "admin@mamahala.ca",
+    "website": "mamahala.ca",
+    "formTitle": "Send Us a Message",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "emailField": "Email",
+    "phoneField": "Phone",
+    "messageField": "Your Message",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "sent": "Message Sent!",
+    "sentDesc": "Thank you for reaching out. We'll get back to you within 24 hours.",
+    "hours": "Business Hours",
+    "hoursDetail": "Monday - Saturday: 9:00 AM - 8:00 PM",
+    "location": "Ottawa, Canada & Dubai, UAE",
+    "followUs": "Follow Us"
+  },
+  "resources": {
+    "pageTitle": "Resources",
+    "subtitle": "Explore our library of articles, programs, events, and tools for growth.",
+    "blog": "Blog",
+    "blogDesc": "Articles and insights on parenting, relationships, and emotional well-being.",
+    "faqs": "FAQs",
+    "faqsDesc": "Frequently asked questions about our services and approach.",
+    "events": "Events",
+    "eventsDesc": "Upcoming workshops, webinars, and community events.",
+    "programs": "Programs",
+    "programsDesc": "Structured courses for ongoing learning and growth.",
+    "downloads": "Downloads",
+    "downloadsDesc": "Free guides, worksheets, and tools for your journey."
+  },
+  "newsletter": {
+    "title": "Stay Connected",
+    "subtitle": "Get practical tips, free resources, and updates on new programs.",
+    "leadMagnet": "Subscribe and receive our free guide: \"5 Ways to Support Your Child's Emotional Growth\"",
+    "placeholder": "Enter your email",
+    "namePlaceholder": "Your name",
+    "subscribe": "Subscribe",
+    "privacy": "We respect your privacy. Unsubscribe at any time."
+  },
+  "cta": {
+    "ready": "Ready to Begin?",
+    "readyDesc": "Take the first step toward emotional well-being. Book your consultation session today.",
+    "bookNow": "Book a Session",
+    "whatsapp": "Chat on WhatsApp",
+    "takeQuiz": "Help Me Choose"
+  },
+  "footer": {
+    "description": "A consulting organization using the power of human science and interaction to enable better quality of life and relationships.",
+    "quickLinks": "Quick Links",
+    "ourServices": "Our Services",
+    "contactUs": "Contact Us",
+    "followUs": "Follow Us",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "bookingPolicy": "Booking Policy"
+  },
+  "common": {
+    "readMore": "Read More",
+    "viewAll": "View All",
+    "backTo": "Back to",
+    "loading": "Loading...",
+    "comingSoon": "Coming Soon",
+    "free": "Free",
+    "enrollNow": "Enroll Now",
+    "joinWaitlist": "Join Waitlist",
+    "register": "Register",
+    "download": "Download",
+    "share": "Share",
+    "minutes": "min",
+    "home": "Home"
+  }
+}
