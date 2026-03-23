@@ -7,13 +7,13 @@ import type { Service, ServiceCategory, ServiceCategoryInfo } from '@/types';
 export const serviceCategories: ServiceCategoryInfo[] = [
   {
     key: 'youth',
-    name: 'Youth & Teens',
-    nameAr: 'الأطفال والمراهقون',
+    name: 'Youth',
+    nameAr: 'الشباب',
     subtitle: 'Empowering the Next Generation',
     subtitleAr: 'تمكين الجيل القادم',
     description: 'Specialized support for children, teens, and young adults navigating the challenges of growing up — from behavioral issues and emotional regulation to academic stress and social skills development.',
     descriptionAr: 'دعم متخصص للأطفال والمراهقين والشباب في مواجهة تحديات النمو — من المشكلات السلوكية والتنظيم العاطفي إلى الضغط الأكاديمي وتطوير المهارات الاجتماعية.',
-    icon: 'GraduationCap',
+    icon: 'Sparkles',
     image: '/images/hala-consultation.png',
     color: 'rose',
   },

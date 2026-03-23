@@ -20,7 +20,16 @@ import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  GraduationCap, Users, User, Heart, Leaf,
+  GraduationCap, Users, User, Heart, Leaf, Sparkles,
+};
+
+// Category accent colors for service cards
+const categoryAccents: Record<string, { gradient: string; accent: string; light: string }> = {
+  youth: { gradient: 'from-[#F0D5CA] to-[#FAF0EC]', accent: '#C4878A', light: 'bg-[#C4878A]/5' },
+  families: { gradient: 'from-[#E8D5E0] to-[#F8EEF3]', accent: '#7A3B5E', light: 'bg-[#7A3B5E]/5' },
+  adults: { gradient: 'from-[#E8E0D0] to-[#FAF5ED]', accent: '#C8A97D', light: 'bg-[#C8A97D]/5' },
+  couples: { gradient: 'from-[#E8C4C0] to-[#FAF0EC]', accent: '#C4878A', light: 'bg-[#C4878A]/5' },
+  experiential: { gradient: 'from-[#D5E8DE] to-[#EAF5EE]', accent: '#5A8A6E', light: 'bg-[#5A8A6E]/5' },
 };
 
 export default function ServiceCategoryPage() {
@@ -122,56 +131,94 @@ export default function ServiceCategoryPage() {
             </p>
           </ScrollReveal>
 
-          <StaggerReveal className="grid md:grid-cols-2 gap-5">
-            {services.map((service) => {
-              const sName = isRTL ? service.nameAr : service.name;
-              const sDesc = isRTL ? service.shortDescAr : service.shortDesc;
+          {(() => {
+            const colors = categoryAccents[category] || categoryAccents.adults;
+            return (
+              <StaggerReveal className="space-y-5">
+                {services.map((service, i) => {
+                  const sName = isRTL ? service.nameAr : service.name;
+                  const sDesc = isRTL ? service.shortDescAr : service.shortDesc;
 
-              return (
-                <StaggerChild key={service.slug}>
-                  <div className="group bg-white rounded-2xl border border-[#F3EFE8] p-6 hover:border-[#C4878A]/20 hover:shadow-[var(--shadow-card)] transition-all duration-300">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3
-                        className="text-lg font-bold text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors flex-1"
-                        style={{ fontFamily: 'var(--font-heading)' }}
+                  return (
+                    <StaggerChild key={service.slug}>
+                      <motion.div
+                        className="group relative bg-white rounded-2xl border border-[#F3EFE8] overflow-hidden hover:shadow-[var(--shadow-card)] transition-all duration-300"
+                        whileHover={{ y: -3 }}
                       >
-                        <Link href={`/${locale}/services/${category}/${service.slug}`} className="hover:underline">
-                          {sName}
-                        </Link>
-                      </h3>
-                      <Badge variant="sand" size="sm">
-                        {messages.services.priceFrom} ${service.priceFrom}
-                      </Badge>
-                    </div>
+                        {/* Accent strip */}
+                        <div
+                          className="absolute top-0 left-0 w-1.5 h-full rounded-l-2xl"
+                          style={{ background: `linear-gradient(180deg, ${colors.accent}40, ${colors.accent}15)` }}
+                        />
 
-                    <p className="text-sm text-[#8E8E9F] leading-relaxed mb-4 line-clamp-2">
-                      {sDesc}
-                    </p>
+                        <div className="flex flex-col md:flex-row items-start gap-5 p-6 md:p-7 pl-8 md:pl-9">
+                          {/* Number badge */}
+                          <div
+                            className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg"
+                            style={{ backgroundColor: `${colors.accent}10`, color: colors.accent }}
+                          >
+                            {String(i + 1).padStart(2, '0')}
+                          </div>
 
-                    <div className="flex items-center gap-3">
-                      <Link
-                        href={`/${locale}/book-a-session`}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#7A3B5E] hover:text-[#5E2D48] transition-colors"
-                      >
-                        <Calendar className="w-4 h-4" />
-                        {messages.services.bookOnline}
-                      </Link>
-                      <span className="text-[#F3EFE8]">|</span>
-                      <a
-                        href={getWhatsAppLink(service.name)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                        {messages.services.chatWhatsApp}
-                      </a>
-                    </div>
-                  </div>
-                </StaggerChild>
-              );
-            })}
-          </StaggerReveal>
+                          {/* Content */}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+                              <Link href={`/${locale}/services/${category}/${service.slug}`}>
+                                <h3
+                                  className="text-lg font-bold text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors"
+                                  style={{ fontFamily: 'var(--font-heading)' }}
+                                >
+                                  {sName}
+                                </h3>
+                              </Link>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                <Badge variant="sand" size="sm">
+                                  {messages.services.priceFrom} ${service.priceFrom}
+                                </Badge>
+                                <Badge variant="neutral" size="sm">{service.duration}</Badge>
+                              </div>
+                            </div>
+
+                            <p className="text-sm text-[#8E8E9F] leading-relaxed mb-4">
+                              {sDesc}
+                            </p>
+
+                            <div className="flex flex-wrap items-center gap-3">
+                              <Link
+                                href={`/${locale}/services/${category}/${service.slug}`}
+                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#7A3B5E] hover:text-[#5E2D48] transition-colors"
+                              >
+                                {messages.services.learnMore}
+                                <ArrowIcon className="w-3.5 h-3.5" />
+                              </Link>
+                              <span className="text-[#F3EFE8]">|</span>
+                              <Link
+                                href={`/${locale}/book-a-session`}
+                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#4A4A5C] hover:text-[#7A3B5E] transition-colors"
+                              >
+                                <Calendar className="w-3.5 h-3.5" />
+                                {messages.services.bookOnline}
+                              </Link>
+                              <span className="text-[#F3EFE8]">|</span>
+                              <a
+                                href={getWhatsAppLink(service.name)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8E8E9F] hover:text-[#25D366] transition-colors"
+                              >
+                                <MessageCircle className="w-3.5 h-3.5" />
+                                WhatsApp
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    </StaggerChild>
+                  );
+                })}
+              </StaggerReveal>
+            );
+          })()}
 
           <ScrollReveal className="mt-6 text-center">
             <p className="text-xs text-[#8E8E9F] italic">{messages.services.priceDisclaimer}</p>

@@ -35,7 +35,7 @@ import WaveDivider from '@/components/ui/WaveDivider';
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  GraduationCap, Users, User, Heart, Leaf,
+  GraduationCap, Users, User, Heart, Leaf, Sparkles: Sparkles,
 };
 
 export default function HomePage() {
@@ -191,7 +191,7 @@ export default function HomePage() {
             const cards = [
               {
                 key: 'youth',
-                icon: GraduationCap,
+                icon: Sparkles,
                 gradient: 'from-[#F0D5CA] via-[#F5E1D8] to-[#FAF0EC]',
                 accentColor: '#C4878A',
                 decorCircle: 'bg-[#C4878A]/10',
