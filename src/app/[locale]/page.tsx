@@ -30,6 +30,7 @@ import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/S
 import TextReveal from '@/components/motion/TextReveal';
 import AnimatedCounter from '@/components/motion/AnimatedCounter';
 import ParallaxImage from '@/components/motion/ParallaxImage';
+import HookCarousel from '@/components/motion/HookCarousel';
 import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 
@@ -303,32 +304,9 @@ export default function HomePage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  SECTION 3: PARALLAX BANNER                                     */}
+      {/*  SECTION 3: HOOK CAROUSEL                                        */}
       {/* ================================================================ */}
-      <ParallaxImage
-        src="/images/hala-consultation.png"
-        alt="Dr. Hala consulting with a client"
-        speed={0.3}
-        className="min-h-[400px] lg:min-h-[500px] flex items-center justify-center"
-        overlayColor="#2D2A33"
-        overlayOpacity={0.7}
-      >
-        <ScrollReveal className="text-center px-6 max-w-4xl mx-auto py-24">
-          <h2
-            className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]"
-            style={{ fontFamily: 'var(--font-heading)' }}
-          >
-            {isRTL
-              ? 'مشاعر طفلك أكبر من كلماته'
-              : "Your child's emotions feel bigger than their words"}
-          </h2>
-          <p className="mt-6 text-lg text-white/90 max-w-2xl mx-auto drop-shadow-[0_1px_4px_rgba(0,0,0,0.3)]">
-            {isRTL
-              ? 'نحن هنا لمساعدتك على فهم ودعم عالمهم العاطفي'
-              : "We're here to help you understand and support their emotional world"}
-          </p>
-        </ScrollReveal>
-      </ParallaxImage>
+      <HookCarousel locale={locale} isRTL={isRTL} />
 
       {/* ================================================================ */}
       {/*  SECTION 4: PROCESS STEPS                                       */}
