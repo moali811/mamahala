@@ -187,52 +187,107 @@ export default function HomePage() {
             </h2>
           </ScrollReveal>
 
-          <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {serviceCategories.map((cat) => {
-              const IconComponent = iconMap[cat.icon] || Users;
-              const name = isRTL ? cat.nameAr : cat.name;
-              const subtitle = isRTL ? cat.subtitleAr : cat.subtitle;
+          {(() => {
+            const cards = [
+              {
+                key: 'youth',
+                icon: GraduationCap,
+                gradient: 'from-[#F0D5CA] via-[#F5E1D8] to-[#FAF0EC]',
+                accentColor: '#C4878A',
+                decorCircle: 'bg-[#C4878A]/10',
+                patternOpacity: '0.04',
+              },
+              {
+                key: 'families',
+                icon: Users,
+                gradient: 'from-[#E8D5E0] via-[#F0DFE8] to-[#F8EEF3]',
+                accentColor: '#7A3B5E',
+                decorCircle: 'bg-[#7A3B5E]/10',
+                patternOpacity: '0.03',
+              },
+              {
+                key: 'adults',
+                icon: User,
+                gradient: 'from-[#E8E0D0] via-[#F0E8DC] to-[#FAF5ED]',
+                accentColor: '#C8A97D',
+                decorCircle: 'bg-[#C8A97D]/10',
+                patternOpacity: '0.04',
+              },
+              {
+                key: 'couples',
+                icon: Heart,
+                gradient: 'from-[#E8C4C0] via-[#F2D5D0] to-[#FAF0EC]',
+                accentColor: '#C4878A',
+                decorCircle: 'bg-[#C4878A]/10',
+                patternOpacity: '0.03',
+              },
+            ];
+            return (
+              <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 gap-6 lg:gap-8">
+                {cards.map((card) => {
+                  const cat = serviceCategories.find((c) => c.key === card.key);
+                  if (!cat) return null;
+                  const name = isRTL ? cat.nameAr : cat.name;
+                  const subtitle = isRTL ? cat.subtitleAr : cat.subtitle;
+                  const Icon = card.icon;
 
-              return (
-                <StaggerChild key={cat.key}>
-                  <Link href={`/${locale}/services/${cat.key}`}>
-                    <motion.div
-                      className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300"
-                      whileHover={{ y: -4, boxShadow: '0 8px 40px rgba(0,0,0,0.08)' }}
-                    >
-                      <div className="relative h-48 overflow-hidden">
-                        <Image
-                          src={cat.image}
-                          alt={name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-700"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                        <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                          <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                            <IconComponent className="w-5 h-5 text-white" />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="p-6">
-                        <h3
-                          className="text-lg font-bold text-[#2D2A33] mb-1 group-hover:text-[#7A3B5E] transition-colors"
-                          style={{ fontFamily: 'var(--font-heading)' }}
+                  return (
+                    <StaggerChild key={card.key}>
+                      <Link href={`/${locale}/services/${card.key}`}>
+                        <motion.div
+                          className={`group relative rounded-3xl overflow-hidden bg-gradient-to-br ${card.gradient} p-8 md:p-10 min-h-[260px] flex flex-col justify-between cursor-pointer`}
+                          whileHover={{ y: -6, boxShadow: '0 20px 60px rgba(0,0,0,0.08)' }}
+                          transition={{ duration: 0.3 }}
                         >
-                          {name}
-                        </h3>
-                        <p className="text-sm text-[#8E8E9F] leading-relaxed">{subtitle}</p>
-                        <div className="mt-4 flex items-center gap-1.5 text-[#7A3B5E] text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                          {messages.services.learnMore}
-                          <ArrowIcon className="w-4 h-4" />
-                        </div>
-                      </div>
-                    </motion.div>
-                  </Link>
-                </StaggerChild>
-              );
-            })}
-          </StaggerReveal>
+                          {/* Decorative elements */}
+                          <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-white/20 blur-3xl -translate-y-1/2 translate-x-1/4" />
+                          <div className={`absolute bottom-0 left-0 w-32 h-32 rounded-full ${card.decorCircle} blur-2xl translate-y-1/3 -translate-x-1/4`} />
+                          <div
+                            className="absolute inset-0 pointer-events-none"
+                            style={{
+                              backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 0.5px, transparent 0)',
+                              backgroundSize: '30px 30px',
+                              opacity: card.patternOpacity,
+                              color: card.accentColor,
+                            }}
+                          />
+
+                          {/* Large background icon */}
+                          <div className="absolute top-6 right-6 opacity-[0.06] group-hover:opacity-[0.1] transition-opacity duration-500">
+                            <Icon className="w-32 h-32" style={{ color: card.accentColor }} />
+                          </div>
+
+                          {/* Content */}
+                          <div className="relative z-10">
+                            <div
+                              className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 shadow-sm"
+                              style={{ backgroundColor: `${card.accentColor}15` }}
+                            >
+                              <Icon className="w-7 h-7" style={{ color: card.accentColor }} />
+                            </div>
+                            <h3
+                              className="text-xl md:text-2xl font-bold text-[#2D2A33] mb-2 group-hover:text-[#7A3B5E] transition-colors"
+                              style={{ fontFamily: 'var(--font-heading)' }}
+                            >
+                              {name}
+                            </h3>
+                            <p className="text-sm text-[#4A4A5C] leading-relaxed max-w-xs">{subtitle}</p>
+                          </div>
+
+                          {/* Bottom arrow */}
+                          <div className="relative z-10 flex items-center gap-2 mt-6 text-[#7A3B5E] text-sm font-semibold group-hover:gap-3 transition-all duration-300">
+                            {messages.services.learnMore}
+                            <ArrowIcon className="w-4 h-4" />
+                          </div>
+                        </motion.div>
+                      </Link>
+                    </StaggerChild>
+                  );
+                })}
+              </StaggerReveal>
+            );
+          })()}
+
 
           {/* Help Me Choose CTA */}
           <ScrollReveal className="mt-12 text-center" delay={0.2}>
