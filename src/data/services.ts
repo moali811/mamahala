@@ -15,7 +15,7 @@ export const serviceCategories: ServiceCategoryInfo[] = [
     descriptionAr: 'دعم متخصص للأطفال والمراهقين والشباب في مواجهة تحديات النمو — من المشكلات السلوكية والتنظيم العاطفي إلى الضغط الأكاديمي وتطوير المهارات الاجتماعية.',
     icon: 'GraduationCap',
     image: '/images/hala-consultation.png',
-    color: 'sage',
+    color: 'rose',
   },
   {
     key: 'families',
@@ -63,7 +63,7 @@ export const serviceCategories: ServiceCategoryInfo[] = [
     descriptionAr: 'مناهج علاجية مبتكرة تتجاوز العلاج بالكلام التقليدي، وتشرك الجسم والحواس والبيئة الطبيعية في عملية الشفاء.',
     icon: 'Leaf',
     image: '/images/hala-welcoming.png',
-    color: 'sage',
+    color: 'rose',
   },
 ];
 

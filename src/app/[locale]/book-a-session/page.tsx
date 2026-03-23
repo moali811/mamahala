@@ -72,7 +72,7 @@ export default function BookASessionPage() {
       />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
@@ -127,10 +127,10 @@ export default function BookASessionPage() {
                 className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-card)] p-8 flex flex-col items-center text-center cursor-pointer"
                 onClick={() => setShowCalendly(true)}
               >
-                <div className="w-16 h-16 rounded-2xl bg-[#2B5F4E]/10 flex items-center justify-center mb-5">
-                  <Calendar className="w-8 h-8 text-[#2B5F4E]" />
+                <div className="w-16 h-16 rounded-2xl bg-[#B5696B]/10 flex items-center justify-center mb-5">
+                  <Calendar className="w-8 h-8 text-[#B5696B]" />
                 </div>
-                <h3 className="text-xl font-bold text-[#1E1E2A] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+                <h3 className="text-xl font-bold text-[#2D2A33] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
                   {isRTL ? 'احجز مباشرة' : 'Book Online'}
                 </h3>
                 <p className="text-[#8E8E9F] text-sm mb-5">
@@ -140,10 +140,10 @@ export default function BookASessionPage() {
                   }
                 </p>
                 <div className="flex flex-wrap justify-center gap-2 mb-5">
-                  <span className="inline-flex items-center gap-1.5 text-xs text-[#2B5F4E] bg-[#2B5F4E]/5 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-[#B5696B] bg-[#B5696B]/5 px-3 py-1.5 rounded-full">
                     <Clock className="w-3.5 h-3.5" /> {isRTL ? '30 دقيقة' : '30 min'}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 text-xs text-[#2B5F4E] bg-[#2B5F4E]/5 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-[#B5696B] bg-[#B5696B]/5 px-3 py-1.5 rounded-full">
                     <Globe className="w-3.5 h-3.5" /> {isRTL ? 'عبر الإنترنت' : 'Online'}
                   </span>
                 </div>
@@ -162,7 +162,7 @@ export default function BookASessionPage() {
                 <div className="w-16 h-16 rounded-2xl bg-[#25D366]/10 flex items-center justify-center mb-5">
                   <MessageCircle className="w-8 h-8 text-[#25D366]" />
                 </div>
-                <h3 className="text-xl font-bold text-[#1E1E2A] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+                <h3 className="text-xl font-bold text-[#2D2A33] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
                   {isRTL ? 'تواصل عبر واتساب' : 'Chat on WhatsApp'}
                 </h3>
                 <p className="text-[#8E8E9F] text-sm mb-5">
@@ -207,11 +207,11 @@ export default function BookASessionPage() {
                 <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-card)] overflow-hidden">
                   <div className="flex items-center justify-between p-5 border-b border-[#F3EFE8]">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-[#2B5F4E]" />
+                      <div className="w-10 h-10 rounded-xl bg-[#B5696B]/10 flex items-center justify-center">
+                        <Calendar className="w-5 h-5 text-[#B5696B]" />
                       </div>
                       <div>
-                        <h3 className="font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+                        <h3 className="font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
                           {isRTL ? 'اختر موعدك' : 'Choose Your Time'}
                         </h3>
                         <p className="text-xs text-[#8E8E9F]">
@@ -221,7 +221,7 @@ export default function BookASessionPage() {
                     </div>
                     <button
                       onClick={() => setShowCalendly(false)}
-                      className="text-[#8E8E9F] hover:text-[#1E1E2A] transition-colors text-sm font-medium"
+                      className="text-[#8E8E9F] hover:text-[#2D2A33] transition-colors text-sm font-medium"
                     >
                       {isRTL ? 'إغلاق' : 'Close'} ✕
                     </button>
@@ -240,7 +240,7 @@ export default function BookASessionPage() {
           {/* Browse By Category */}
           <ScrollReveal>
             <h2
-              className="text-2xl md:text-3xl font-bold text-[#1E1E2A] mb-8 text-center"
+              className="text-2xl md:text-3xl font-bold text-[#2D2A33] mb-8 text-center"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.booking.selectService}
@@ -268,18 +268,18 @@ export default function BookASessionPage() {
                     visible: { opacity: 1, y: 0 },
                   }}
                   className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
-                    isOpen ? 'border-[#2B5F4E]/20 shadow-[var(--shadow-card)]' : 'border-[#F3EFE8] shadow-[var(--shadow-subtle)]'
+                    isOpen ? 'border-[#B5696B]/20 shadow-[var(--shadow-card)]' : 'border-[#F3EFE8] shadow-[var(--shadow-subtle)]'
                   }`}
                 >
                   <button
                     onClick={() => setOpenCategory(isOpen ? null : cat.key)}
                     className="w-full flex items-center gap-4 p-6 md:p-7 text-start"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-[#2B5F4E]/10 text-[#2B5F4E] flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-[#B5696B]/10 text-[#B5696B] flex items-center justify-center flex-shrink-0">
                       <IconComponent className="w-6 h-6" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+                      <h3 className="text-lg font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
                         {catName}
                       </h3>
                       <p className="text-sm text-[#8E8E9F] mt-0.5">{catSubtitle}</p>
@@ -311,10 +311,10 @@ export default function BookASessionPage() {
                                 return (
                                   <div
                                     key={service.slug}
-                                    className="group bg-[#FAF7F2] rounded-xl p-5 border border-[#F3EFE8] hover:border-[#2B5F4E]/20 hover:bg-white hover:shadow-[var(--shadow-subtle)] transition-all duration-300"
+                                    className="group bg-[#FAF7F2] rounded-xl p-5 border border-[#F3EFE8] hover:border-[#B5696B]/20 hover:bg-white hover:shadow-[var(--shadow-subtle)] transition-all duration-300"
                                   >
                                     <div className="flex items-start justify-between mb-2">
-                                      <h4 className="font-semibold text-[#1E1E2A] group-hover:text-[#2B5F4E] transition-colors text-sm">
+                                      <h4 className="font-semibold text-[#2D2A33] group-hover:text-[#B5696B] transition-colors text-sm">
                                         {sName}
                                       </h4>
                                       <Badge variant="sand" size="sm">${service.priceFrom}+</Badge>
@@ -328,7 +328,7 @@ export default function BookASessionPage() {
                                           setShowCalendly(true);
                                           window.scrollTo({ top: 0, behavior: 'smooth' });
                                         }}
-                                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#2B5F4E]"
+                                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#B5696B]"
                                       >
                                         <Calendar className="w-3.5 h-3.5" />
                                         {messages.services.bookOnline}
@@ -338,7 +338,7 @@ export default function BookASessionPage() {
                                         href={getWhatsAppLink(service.name)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#8E8E9F] hover:text-[#2B5F4E]"
+                                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#8E8E9F] hover:text-[#B5696B]"
                                       >
                                         <MessageCircle className="w-3.5 h-3.5" />
                                         WhatsApp
@@ -363,7 +363,7 @@ export default function BookASessionPage() {
             <p className="text-[#8E8E9F] mb-4">{messages.booking.notSure}</p>
             <Link
               href={`/${locale}/quiz`}
-              className="inline-flex items-center gap-2 text-[#2B5F4E] font-semibold hover:text-[#1E4A3B] transition-colors"
+              className="inline-flex items-center gap-2 text-[#B5696B] font-semibold hover:text-[#9E5558] transition-colors"
             >
               <Sparkles className="w-5 h-5" />
               {messages.booking.takeQuiz}

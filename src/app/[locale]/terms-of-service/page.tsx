@@ -143,7 +143,7 @@ export default function TermsPage() {
   return (
     <div className="bg-[#FAF7F2]" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
@@ -219,8 +219,8 @@ export default function TermsPage() {
         <ScrollReveal>
           <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 md:p-8">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-9 h-9 rounded-lg bg-[#2B5F4E]/10 flex items-center justify-center">
-                <List className="w-4.5 h-4.5 text-[#2B5F4E]" />
+              <div className="w-9 h-9 rounded-lg bg-[#B5696B]/10 flex items-center justify-center">
+                <List className="w-4.5 h-4.5 text-[#B5696B]" />
               </div>
               <h2 className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D]">
                 {isRTL ? '\u062C\u062F\u0648\u0644 \u0627\u0644\u0645\u062D\u062A\u0648\u064A\u0627\u062A' : 'Table of Contents'}
@@ -233,12 +233,12 @@ export default function TermsPage() {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#2B5F4E]/5 hover:text-[#2B5F4E] transition-all duration-200 group"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#B5696B]/5 hover:text-[#B5696B] transition-all duration-200 group"
                   >
                     <span className="text-xs font-mono text-[#C8A97D] w-5">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#2B5F4E] transition-colors flex-shrink-0" />
+                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#B5696B] transition-colors flex-shrink-0" />
                     <span className="truncate">{isRTL ? section.titleAr : section.titleEn}</span>
                   </a>
                 );
@@ -273,7 +273,7 @@ export default function TermsPage() {
                         : 'border-[#E8E4DD]'
                   }`}>
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      section.highlight ? 'bg-[#C8A97D]/15 text-[#C8A97D]' : 'bg-[#2B5F4E]/10 text-[#2B5F4E]'
+                      section.highlight ? 'bg-[#C8A97D]/15 text-[#C8A97D]' : 'bg-[#B5696B]/10 text-[#B5696B]'
                     }`}>
                       <Icon className="w-5 h-5" />
                     </div>
@@ -282,7 +282,7 @@ export default function TermsPage() {
                         {String(i + 1).padStart(2, '0')}
                       </span>
                       <h2
-                        className="text-lg md:text-xl font-bold text-[#1E1E2A] truncate"
+                        className="text-lg md:text-xl font-bold text-[#2D2A33] truncate"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {isRTL ? section.titleAr : section.titleEn}
@@ -337,7 +337,7 @@ export default function TermsPage() {
                       <div className="mt-4 flex flex-wrap gap-3">
                         <Link
                           href={`/${locale}/contact`}
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#2B5F4E] bg-[#2B5F4E]/5 px-4 py-2.5 rounded-xl hover:bg-[#2B5F4E]/10 transition-colors"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#B5696B] bg-[#B5696B]/5 px-4 py-2.5 rounded-xl hover:bg-[#B5696B]/10 transition-colors"
                         >
                           <Mail className="w-4 h-4" />
                           {isRTL ? '\u0646\u0645\u0648\u0630\u062C \u0627\u0644\u0627\u062A\u0635\u0627\u0644' : 'Contact Form'}
@@ -355,7 +355,7 @@ export default function TermsPage() {
         <div className="text-center mt-12">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#2B5F4E] transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#B5696B] transition-colors"
           >
             <ArrowUp className="w-4 h-4" />
             {isRTL ? '\u0627\u0644\u0639\u0648\u062F\u0629 \u0625\u0644\u0649 \u0627\u0644\u0623\u0639\u0644\u0649' : 'Back to top'}

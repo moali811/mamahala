@@ -1,6 +1,6 @@
 'use client';
 
-type BadgeVariant = 'sage' | 'plum' | 'sand' | 'terracotta' | 'neutral' | 'success' | 'outline';
+type BadgeVariant = 'sage' | 'rose' | 'plum' | 'sand' | 'terracotta' | 'neutral' | 'success' | 'outline';
 
 interface BadgeProps {
   children: React.ReactNode;
@@ -10,7 +10,8 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  sage: 'bg-[#2B5F4E]/10 text-[#2B5F4E]',
+  sage: 'bg-[#B5696B]/10 text-[#B5696B]',
+  rose: 'bg-[#B5696B]/10 text-[#B5696B]',
   plum: 'bg-[#7A3B5E]/10 text-[#7A3B5E]',
   sand: 'bg-[#C8A97D]/15 text-[#B08D5E]',
   terracotta: 'bg-[#D4836A]/10 text-[#B96A52]',

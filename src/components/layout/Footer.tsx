@@ -23,7 +23,7 @@ export default function Footer({ locale, messages }: FooterProps) {
   return (
     <footer
       dir={isRTL ? 'rtl' : 'ltr'}
-      className="bg-[#1E1E2A] text-white/80"
+      className="bg-[#2D2A33] text-white/80"
     >
       {/* Newsletter Bar */}
       <div className="border-b border-white/10">
@@ -46,7 +46,7 @@ export default function Footer({ locale, messages }: FooterProps) {
               />
               <button
                 type="submit"
-                className="rounded-full bg-[#C8A97D] px-6 py-3 text-sm font-semibold text-[#1E1E2A] hover:bg-[#D9C4A0] transition-colors whitespace-nowrap"
+                className="rounded-full bg-[#C8A97D] px-6 py-3 text-sm font-semibold text-[#2D2A33] hover:bg-[#D9C4A0] transition-colors whitespace-nowrap"
               >
                 {newsletter.subscribe}
               </button>

@@ -53,7 +53,7 @@ export default function ServiceDetailPage() {
   return (
     <div className="bg-[#FAF7F2]">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
         </div>
@@ -109,7 +109,7 @@ export default function ServiceDetailPage() {
             {/* Who Is This For */}
             <ScrollReveal>
               <h2
-                className="text-2xl font-bold text-[#1E1E2A] mb-6"
+                className="text-2xl font-bold text-[#2D2A33] mb-6"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {messages.services.whoIsThisFor}
@@ -124,8 +124,8 @@ export default function ServiceDetailPage() {
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08 }}
                   >
-                    <div className="w-6 h-6 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5 text-[#2B5F4E]" />
+                    <div className="w-6 h-6 rounded-full bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3.5 h-3.5 text-[#B5696B]" />
                     </div>
                     <span className="text-[#4A4A5C]">{item}</span>
                   </motion.div>
@@ -136,7 +136,7 @@ export default function ServiceDetailPage() {
             {/* What to Expect */}
             <ScrollReveal>
               <h2
-                className="text-2xl font-bold text-[#1E1E2A] mb-6"
+                className="text-2xl font-bold text-[#2D2A33] mb-6"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {messages.services.whatToExpect}
@@ -168,7 +168,7 @@ export default function ServiceDetailPage() {
             {/* Our Approach */}
             <ScrollReveal>
               <h2
-                className="text-2xl font-bold text-[#1E1E2A] mb-4"
+                className="text-2xl font-bold text-[#2D2A33] mb-4"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {messages.services.ourApproach}
@@ -182,7 +182,7 @@ export default function ServiceDetailPage() {
             {faqs.length > 0 && (
               <ScrollReveal>
                 <h2
-                  className="text-2xl font-bold text-[#1E1E2A] mb-6"
+                  className="text-2xl font-bold text-[#2D2A33] mb-6"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
                   {isRTL ? 'أسئلة شائعة' : 'Frequently Asked Questions'}
@@ -210,7 +210,7 @@ export default function ServiceDetailPage() {
                 transition={{ delay: 0.3 }}
               >
                 <h3
-                  className="text-xl font-bold text-[#1E1E2A] mb-2"
+                  className="text-xl font-bold text-[#2D2A33] mb-2"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
                   {messages.services.bookSession}
@@ -249,7 +249,7 @@ export default function ServiceDetailPage() {
               {/* Related Services */}
               {relatedServices.length > 0 && (
                 <div className="bg-white rounded-2xl p-6 border border-[#F3EFE8]">
-                  <h4 className="text-sm font-semibold text-[#1E1E2A] uppercase tracking-wider mb-4">
+                  <h4 className="text-sm font-semibold text-[#2D2A33] uppercase tracking-wider mb-4">
                     {messages.services.relatedServices}
                   </h4>
                   <div className="space-y-3">
@@ -257,7 +257,7 @@ export default function ServiceDetailPage() {
                       <Link
                         key={rs.slug}
                         href={`/${locale}/services/${category}/${rs.slug}`}
-                        className="block text-sm text-[#4A4A5C] hover:text-[#2B5F4E] transition-colors py-1"
+                        className="block text-sm text-[#4A4A5C] hover:text-[#B5696B] transition-colors py-1"
                       >
                         {isRTL ? rs.nameAr : rs.name}
                         <span className="text-xs text-[#8E8E9F] block">
@@ -284,7 +284,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between p-5 text-start"
       >
-        <span className="font-medium text-[#1E1E2A] text-sm">{question}</span>
+        <span className="font-medium text-[#2D2A33] text-sm">{question}</span>
         <ChevronDown className={`w-4 h-4 text-[#8E8E9F] transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (

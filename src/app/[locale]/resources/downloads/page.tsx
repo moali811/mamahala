@@ -167,7 +167,7 @@ export default function DownloadsPage() {
               {isRTL ? 'مكتبة الموارد' : 'Resource Library'}
             </span>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl text-[#1E1E2A] leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl text-[#2D2A33] leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? 'الموارد المتاحة للتحميل' : 'Downloadable Resources'}
@@ -186,14 +186,14 @@ export default function DownloadsPage() {
               return (
                 <StaggerChild key={resource.id}>
                   <motion.div
-                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#2B5F4E]/20 transition-all duration-300 h-full flex flex-col"
+                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#B5696B]/20 transition-all duration-300 h-full flex flex-col"
                     whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
                     {/* Top accent + icon area */}
                     <div className="relative bg-gradient-to-br from-[#F3EFE8] to-[#FAF7F2] p-8 text-center">
                       <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.06)] mb-4">
-                        <TypeIcon className="w-7 h-7 text-[#2B5F4E]" />
+                        <TypeIcon className="w-7 h-7 text-[#B5696B]" />
                       </div>
 
                       {/* Price tag */}
@@ -224,7 +224,7 @@ export default function DownloadsPage() {
 
                       {/* Title */}
                       <h3
-                        className="text-lg font-bold text-[#1E1E2A] mb-3 group-hover:text-[#2B5F4E] transition-colors duration-200"
+                        className="text-lg font-bold text-[#2D2A33] mb-3 group-hover:text-[#B5696B] transition-colors duration-200"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {title}
@@ -253,7 +253,7 @@ export default function DownloadsPage() {
                                   value={email}
                                   onChange={(e) => handleEmailChange(resource.id, e.target.value)}
                                   placeholder={isRTL ? 'بريدك الإلكتروني' : 'Your email'}
-                                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] text-[#1E1E2A] placeholder-[#8E8E9F] focus:outline-none focus:ring-2 focus:ring-[#2B5F4E]/20 focus:border-[#2B5F4E]/40 transition-all"
+                                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] text-[#2D2A33] placeholder-[#8E8E9F] focus:outline-none focus:ring-2 focus:ring-[#B5696B]/20 focus:border-[#B5696B]/40 transition-all"
                                 />
                               </div>
                               <Button
@@ -269,7 +269,7 @@ export default function DownloadsPage() {
                           /* Paid resource: purchase button */
                           <div className="flex items-center justify-between">
                             <span
-                              className="text-lg font-bold text-[#1E1E2A]"
+                              className="text-lg font-bold text-[#2D2A33]"
                               style={{ fontFamily: 'var(--font-heading)' }}
                             >
                               CAD ${resource.price.toFixed(2)}
@@ -321,7 +321,7 @@ export default function DownloadsPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#2B5F4E] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

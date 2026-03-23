@@ -92,20 +92,20 @@ export default function ServicesPage() {
               transition={{ duration: 0.3 }}
             >
               {/* Gradient accent border top */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#2B5F4E] via-[#C8A97D] to-[#7A3B5E]" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#B5696B] via-[#C8A97D] to-[#7A3B5E]" />
 
               <div className="p-8 sm:p-10 lg:p-14">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                   <div className={`flex items-start gap-5 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
                     {/* Icon */}
-                    <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2B5F4E] to-[#1E4A3B] flex items-center justify-center shadow-lg shadow-[#2B5F4E]/20">
+                    <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#B5696B] to-[#9E5558] flex items-center justify-center shadow-lg shadow-[#B5696B]/20">
                       <Phone className="w-7 h-7 text-white" />
                     </div>
 
                     <div>
                       <div className="flex items-center gap-3 mb-2 flex-wrap">
                         <h2
-                          className="text-2xl sm:text-3xl font-bold text-[#1E1E2A]"
+                          className="text-2xl sm:text-3xl font-bold text-[#2D2A33]"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {messages.services.startHere}
@@ -147,7 +147,7 @@ export default function ServicesPage() {
               {messages.nav.services}
             </span>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl text-[#1E1E2A] leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl text-[#2D2A33] leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.services.pageTitle}
@@ -165,7 +165,7 @@ export default function ServicesPage() {
                 <StaggerChild key={cat.key}>
                   <Link href={`/${locale}/services/${cat.key}`} className="block h-full">
                     <motion.div
-                      className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#2B5F4E]/20 transition-all duration-300 h-full flex flex-col"
+                      className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#B5696B]/20 transition-all duration-300 h-full flex flex-col"
                       whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
                       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     >
@@ -198,7 +198,7 @@ export default function ServicesPage() {
                       {/* Content */}
                       <div className="p-6 flex-1 flex flex-col">
                         <h3
-                          className="text-lg font-bold text-[#1E1E2A] mb-2 group-hover:text-[#2B5F4E] transition-colors duration-200"
+                          className="text-lg font-bold text-[#2D2A33] mb-2 group-hover:text-[#B5696B] transition-colors duration-200"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {name}
@@ -208,7 +208,7 @@ export default function ServicesPage() {
                         </p>
 
                         {/* Learn More link */}
-                        <div className={`mt-5 flex items-center gap-1.5 text-[#2B5F4E] text-sm font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        <div className={`mt-5 flex items-center gap-1.5 text-[#B5696B] text-sm font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
                           <span>{messages.services.learnMore}</span>
                           <ArrowIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
                         </div>
@@ -232,7 +232,7 @@ export default function ServicesPage() {
               <Sparkles className="w-7 h-7 text-[#7A3B5E]" />
             </div>
             <h2
-              className="text-2xl sm:text-3xl font-bold text-[#1E1E2A] mb-3"
+              className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-3"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.booking.notSure}
@@ -280,7 +280,7 @@ export default function ServicesPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#2B5F4E] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

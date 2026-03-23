@@ -5,36 +5,41 @@
    Premium wellness/psychology brand tokens
    ================================================================ */
 
-/* --- Color Palette --- */
+/* --- Color Palette — Sunset/Warm Inspired --- */
 :root {
-  /* Primary */
-  --color-sage: #2B5F4E;
-  --color-sage-light: #3A7A65;
-  --color-sage-dark: #1E4A3B;
-  --color-sage-50: #f0f7f4;
-  --color-sage-100: #d9ede5;
-  --color-sage-200: #b3dbcb;
+  /* Primary — Dusty Rose */
+  --color-rose: #B5696B;
+  --color-rose-light: #D08E90;
+  --color-rose-dark: #9E5558;
+  --color-rose-50: #FDF5F5;
+  --color-rose-100: #F9E8E8;
+  --color-rose-200: #F0CDCE;
 
-  /* Secondary */
+  /* Secondary — Deep Plum */
   --color-plum: #7A3B5E;
   --color-plum-light: #9B4E79;
   --color-plum-dark: #5E2D48;
   --color-plum-50: #faf5f8;
   --color-plum-100: #f0e0ea;
 
-  /* Accent */
+  /* Accent — Warm Gold */
   --color-sand: #C8A97D;
   --color-sand-light: #D9C4A0;
   --color-sand-dark: #B08D5E;
 
+  /* Accent — Warm Terracotta */
   --color-terracotta: #D4836A;
   --color-terracotta-light: #E09E89;
   --color-terracotta-dark: #B96A52;
 
-  /* Neutrals */
-  --color-charcoal: #1E1E2A;
+  /* Surface — Soft Peach */
+  --color-peach: #F9E8E2;
+  --color-peach-light: #FDF4F0;
+
+  /* Neutrals — Warmed Up */
+  --color-charcoal: #2D2A33;
   --color-slate: #4A4A5C;
-  --color-mist: #8E8E9F;
+  --color-mist: #6B6580;
   --color-linen: #FAF7F2;
   --color-cloud: #F3EFE8;
   --color-white: #FFFFFF;
@@ -45,11 +50,11 @@
   --color-error: #C45B5B;
   --color-info: #5B8AC4;
 
-  /* Shadows */
+  /* Shadows — Warmed */
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
   --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.08);
-  --shadow-glow-sage: 0 8px 30px rgba(43, 95, 78, 0.15);
+  --shadow-glow-rose: 0 8px 30px rgba(181, 105, 107, 0.15);
   --shadow-glow-plum: 0 8px 30px rgba(122, 59, 94, 0.15);
 
   /* Typography */
@@ -121,7 +126,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* --- Focus Styles --- */
 *:focus-visible {
-  outline: 2px solid var(--color-sage);
+  outline: 2px solid var(--color-rose);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -156,7 +161,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Gradient text */
 @utility gradient-text-sage {
-  background: linear-gradient(135deg, var(--color-sage) 0%, var(--color-sage-light) 100%);
+  background: linear-gradient(135deg, var(--color-rose) 0%, var(--color-rose-light) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -180,7 +185,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Gradient backgrounds */
 @utility gradient-sage {
-  background: linear-gradient(135deg, var(--color-sage) 0%, var(--color-sage-dark) 100%);
+  background: linear-gradient(135deg, var(--color-rose) 0%, var(--color-rose-dark) 100%);
 }
 
 @utility gradient-plum {

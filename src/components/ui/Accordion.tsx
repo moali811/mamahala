@@ -42,7 +42,7 @@ export default function Accordion({ items, defaultOpen = null, className = '', a
             key={item.id}
             className={`
               bg-white rounded-2xl border transition-all duration-300 overflow-hidden
-              ${isOpen ? 'border-[#2B5F4E]/20 shadow-[var(--shadow-card)]' : 'border-[#F3EFE8] shadow-[var(--shadow-subtle)]'}
+              ${isOpen ? 'border-[#B5696B]/20 shadow-[var(--shadow-card)]' : 'border-[#F3EFE8] shadow-[var(--shadow-subtle)]'}
             `}
           >
             <button
@@ -53,7 +53,7 @@ export default function Accordion({ items, defaultOpen = null, className = '', a
               {item.icon && (
                 <div className="flex-shrink-0">{item.icon}</div>
               )}
-              <span className="flex-1 font-semibold text-[#1E1E2A] text-lg" style={{ fontFamily: 'var(--font-heading)' }}>
+              <span className="flex-1 font-semibold text-[#2D2A33] text-lg" style={{ fontFamily: 'var(--font-heading)' }}>
                 {item.title}
               </span>
               <ChevronDown

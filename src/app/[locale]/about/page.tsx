@@ -74,7 +74,7 @@ export default function AboutPage() {
       {/* ================================================================ */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]" />
         {/* Decorative orbs */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
@@ -179,7 +179,7 @@ export default function AboutPage() {
                 </div>
                 {/* Floating accent */}
                 <motion.div
-                  className="absolute -bottom-6 -right-6 bg-[#2B5F4E] text-white rounded-2xl p-5 shadow-lg"
+                  className="absolute -bottom-6 -right-6 bg-[#B5696B] text-white rounded-2xl p-5 shadow-lg"
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={viewportOnce}
@@ -203,7 +203,7 @@ export default function AboutPage() {
                 {isRTL ? 'قصتنا' : 'Our Story'}
               </span>
               <h2
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1E2A] leading-tight mb-8"
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] leading-tight mb-8"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {messages.about.sectionTitle}
@@ -212,7 +212,7 @@ export default function AboutPage() {
                 {/* Personal quote with accent border */}
                 <div className={`relative ${isRTL ? 'pr-6 border-r-4' : 'pl-6 border-l-4'} border-[#C8A97D]`}>
                   <Quote className="absolute top-0 left-0 w-8 h-8 text-[#C8A97D]/20 -translate-x-2 -translate-y-2" />
-                  <p className="text-[#1E1E2A] leading-relaxed text-lg italic" style={{ fontFamily: 'var(--font-heading)' }}>
+                  <p className="text-[#2D2A33] leading-relaxed text-lg italic" style={{ fontFamily: 'var(--font-heading)' }}>
                     {isRTL
                       ? 'بصفتي أمًا مخلصة لمراهقَين، وزوجة وفية، ومستشارة عطوفة، كرّست حياتي لتعزيز رفاهية الأسر، مستلهمة من التحوّل العميق داخل عائلتي.'
                       : 'As a dedicated mother of two teenagers, a devoted wife, and a compassionate counselor, I\'ve committed my life to enhancing the well-being of families, drawing from the profound transformation within my own family.'
@@ -262,7 +262,7 @@ export default function AboutPage() {
               {isRTL ? 'ما نؤمن به' : 'What We Stand For'}
             </span>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1E2A] text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.about.mission} & {messages.about.vision}
@@ -287,8 +287,8 @@ export default function AboutPage() {
                 ],
                 gradientFrom: '#FAE8E0',
                 gradientTo: '#FDF4F0',
-                hoverFrom: '#2B5F4E',
-                hoverTo: '#1E4A3B',
+                hoverFrom: '#B5696B',
+                hoverTo: '#9E5558',
                 direction: isRTL ? 'right' : 'left',
                 delay: 0.1,
               },
@@ -332,7 +332,7 @@ export default function AboutPage() {
                         <div className="w-14 h-14 rounded-2xl bg-[#C8A97D]/15 flex items-center justify-center mb-6">
                           <CardIcon className="w-7 h-7 text-[#C8A97D]" />
                         </div>
-                        <h3 className="text-2xl font-bold text-[#1E1E2A] mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
+                        <h3 className="text-2xl font-bold text-[#2D2A33] mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
                           {isRTL ? card.titleAr : card.titleEn}
                         </h3>
                         <p className="text-[#4A4A5C] leading-relaxed text-[15px] max-w-sm">
@@ -385,7 +385,7 @@ export default function AboutPage() {
       {/* ================================================================ */}
       <section className="relative py-28 lg:py-36 overflow-hidden">
         {/* Dark sage background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#1E1E2A] via-[#252535] to-[#1E1E2A]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#2D2A33] via-[#252535] to-[#2D2A33]" />
         {/* Subtle texture */}
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '48px 48px' }} />
         {/* Decorative glow */}
@@ -488,7 +488,7 @@ export default function AboutPage() {
               >
                 <stat.icon className="w-5 h-5 text-[#C8A97D] flex-shrink-0" />
                 <div>
-                  <p className="text-2xl lg:text-3xl font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>{stat.value}</p>
+                  <p className="text-2xl lg:text-3xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>{stat.value}</p>
                   <p className="text-xs text-[#8E8E9F] font-medium">{isRTL ? stat.labelAr : stat.labelEn}</p>
                 </div>
               </motion.div>
@@ -508,7 +508,7 @@ export default function AboutPage() {
               {isRTL ? 'المؤهلات والخبرات' : 'Qualifications & Expertise'}
             </span>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1E2A] text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? 'أساس الخبرة' : 'Foundation of Expertise'}
@@ -524,7 +524,7 @@ export default function AboutPage() {
           {/* Yale — Hero Feature Card */}
           <ScrollReveal className="mb-8">
             <motion.div
-              className="relative bg-gradient-to-br from-[#2B5F4E] to-[#1E4A3B] rounded-3xl p-10 lg:p-14 overflow-hidden"
+              className="relative bg-gradient-to-br from-[#B5696B] to-[#9E5558] rounded-3xl p-10 lg:p-14 overflow-hidden"
               whileHover={{ boxShadow: '0 20px 60px rgba(43,95,78,0.2)' }}
             >
               <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-white/[0.04]" />
@@ -557,13 +557,13 @@ export default function AboutPage() {
             {[
               { Icon: Brain, titleEn: 'Executive Function Coach', titleAr: 'مدربة وظائف تنفيذية', subtitleEn: 'ADD/ADHD Certified', subtitleAr: 'معتمدة', color: '#7A3B5E' },
               { Icon: Heart, titleEn: 'Art & Science of Parenting', titleAr: 'فن وعلم الأبوة', subtitleEn: 'Specialized', subtitleAr: 'متخصصة', color: '#C8A97D' },
-              { Icon: BookOpen, titleEn: 'Counseling Psychology', titleAr: 'علم النفس الإرشادي', subtitleEn: 'University of Toronto', subtitleAr: 'جامعة تورنتو', color: '#2B5F4E' },
+              { Icon: BookOpen, titleEn: 'Counseling Psychology', titleAr: 'علم النفس الإرشادي', subtitleEn: 'University of Toronto', subtitleAr: 'جامعة تورنتو', color: '#B5696B' },
               { Icon: Shield, titleEn: 'Psychological First Aid', titleAr: 'الإسعافات النفسية', subtitleEn: 'Certified', subtitleAr: 'معتمدة', color: '#7A3B5E' },
               { Icon: Sparkles, titleEn: 'CBT Specialist', titleAr: 'متخصصة CBT', subtitleEn: 'Evidence-Based', subtitleAr: 'مبنية على الأدلة', color: '#C8A97D' },
             ].map((cred, i) => (
               <motion.div
                 key={i}
-                className="group bg-white rounded-xl p-5 border border-[#F3EFE8] hover:border-[#2B5F4E]/15 transition-all duration-300 text-center"
+                className="group bg-white rounded-xl p-5 border border-[#F3EFE8] hover:border-[#B5696B]/15 transition-all duration-300 text-center"
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={viewportOnce}
@@ -573,7 +573,7 @@ export default function AboutPage() {
                 <div className="w-10 h-10 mx-auto rounded-xl flex items-center justify-center mb-3" style={{ backgroundColor: cred.color + '12' }}>
                   <cred.Icon className="w-5 h-5" style={{ color: cred.color }} />
                 </div>
-                <h4 className="font-bold text-[#1E1E2A] text-[13px] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                <h4 className="font-bold text-[#2D2A33] text-[13px] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
                   {isRTL ? cred.titleAr : cred.titleEn}
                 </h4>
                 <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: cred.color }}>
@@ -606,7 +606,7 @@ export default function AboutPage() {
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 relative overflow-hidden">
         {/* Deep sage gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2B5F4E] via-[#234F40] to-[#1A3D30]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#A55D60] to-[#8E4B4E]" />
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
@@ -651,7 +651,7 @@ export default function AboutPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#2B5F4E] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>
@@ -681,10 +681,10 @@ export default function AboutPage() {
 type FormErrors = Record<string, string>;
 
 const STEPS = [
-  { key: 'info', iconEn: 'Contact', iconAr: 'معلوماتك', Icon: User, color: '#2B5F4E' },
+  { key: 'info', iconEn: 'Contact', iconAr: 'معلوماتك', Icon: User, color: '#B5696B' },
   { key: 'program', iconEn: 'Program', iconAr: 'البرنامج', Icon: FileText, color: '#7A3B5E' },
   { key: 'details', iconEn: 'Details', iconAr: 'التفاصيل', Icon: Calendar, color: '#C8A97D' },
-  { key: 'promo', iconEn: 'Promotion', iconAr: 'الترويج', Icon: Sparkles, color: '#2B5F4E' },
+  { key: 'promo', iconEn: 'Promotion', iconAr: 'الترويج', Icon: Sparkles, color: '#B5696B' },
 ] as const;
 
 /* Extracted form field components — defined outside to prevent remount on every keystroke */
@@ -703,8 +703,8 @@ function FormSelect({ name, label, options, value, error, isTouched, isRTL, onCh
           name={name} value={value} onChange={onChange} onBlur={onBlur} required={required}
           className={`w-full appearance-none bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all pr-10 focus:outline-none focus:ring-2 ${
             hasError ? 'border-red-400 focus:border-red-400 focus:ring-red-100 text-red-700'
-            : value ? 'border-[#2B5F4E]/30 text-[#1E1E2A] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
-            : 'border-[#F3EFE8] text-[#8E8E9F] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+            : value ? 'border-[#B5696B]/30 text-[#2D2A33] focus:border-[#B5696B] focus:ring-[#B5696B]/10'
+            : 'border-[#F3EFE8] text-[#8E8E9F] focus:border-[#B5696B] focus:ring-[#B5696B]/10'
           }`}
         >
           {options.map(o => (<option key={o.value} value={o.value}>{isRTL ? o.labelAr : o.label}</option>))}
@@ -732,13 +732,13 @@ function FormInput({ name, label, value, error, isTouched, type = 'text', onChan
           min={type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
           className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all focus:outline-none focus:ring-2 ${
             hasError ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
-            : isValid ? 'border-[#2B5F4E]/30 focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
-            : 'border-[#F3EFE8] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
-          } text-[#1E1E2A] ${isValid ? 'pr-10' : ''}`}
+            : isValid ? 'border-[#B5696B]/30 focus:border-[#B5696B] focus:ring-[#B5696B]/10'
+            : 'border-[#F3EFE8] focus:border-[#B5696B] focus:ring-[#B5696B]/10'
+          } text-[#2D2A33] ${isValid ? 'pr-10' : ''}`}
         />
         {isValid && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <Check className="w-4 h-4 text-[#2B5F4E]" />
+            <Check className="w-4 h-4 text-[#B5696B]" />
           </div>
         )}
       </div>
@@ -871,12 +871,12 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
   return (
     <section className="py-24 lg:py-32 bg-[#FAF7F2] relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full bg-[#7A3B5E]/[0.03] blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-[#2B5F4E]/[0.03] blur-[80px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-[#B5696B]/[0.03] blur-[80px] pointer-events-none" />
 
       <div className="container-main relative z-10">
         {/* Hero Banner */}
         <ScrollReveal className={showForm ? 'mb-10' : ''}>
-          <div className="relative bg-gradient-to-br from-[#1E1E2A] via-[#2B2B3D] to-[#1E1E2A] rounded-3xl overflow-hidden">
+          <div className="relative bg-gradient-to-br from-[#2D2A33] via-[#2B2B3D] to-[#2D2A33] rounded-3xl overflow-hidden">
             <div className="grid lg:grid-cols-5 items-stretch">
               <div className={`flex flex-col justify-center p-10 lg:p-14 lg:col-span-3 ${isRTL ? 'lg:order-2' : 'lg:order-1'}`}>
                 <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 w-fit mb-6">
@@ -908,7 +908,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                 </div>
                 <motion.button
                   onClick={() => { setShowForm(!showForm); if (!showForm) setStep(0); }}
-                  className="mt-8 inline-flex items-center gap-2.5 bg-[#C8A97D] hover:bg-[#B89A6E] text-[#1E1E2A] font-semibold px-7 py-3.5 rounded-xl transition-colors duration-200 shadow-lg shadow-[#C8A97D]/20 w-fit"
+                  className="mt-8 inline-flex items-center gap-2.5 bg-[#C8A97D] hover:bg-[#B89A6E] text-[#2D2A33] font-semibold px-7 py-3.5 rounded-xl transition-colors duration-200 shadow-lg shadow-[#C8A97D]/20 w-fit"
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -921,8 +921,8 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
               </div>
               <div className={`relative lg:col-span-2 min-h-[300px] lg:min-h-full ${isRTL ? 'lg:order-1' : 'lg:order-2'}`}>
                 <Image src="/images/hala-office.jpg" alt="Dr. Hala Ali" fill className="object-cover object-center" />
-                <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#1E1E2A] via-[#1E1E2A]/40 to-transparent hidden lg:block`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E2A]/60 to-transparent lg:hidden" />
+                <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#2D2A33] via-[#2D2A33]/40 to-transparent hidden lg:block`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#2D2A33]/60 to-transparent lg:hidden" />
               </div>
             </div>
           </div>
@@ -941,11 +941,11 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-                className="w-20 h-20 mx-auto mb-6 bg-[#2B5F4E]/10 rounded-full flex items-center justify-center"
+                className="w-20 h-20 mx-auto mb-6 bg-[#B5696B]/10 rounded-full flex items-center justify-center"
               >
-                <CheckCircle2 className="w-10 h-10 text-[#2B5F4E]" />
+                <CheckCircle2 className="w-10 h-10 text-[#B5696B]" />
               </motion.div>
-              <h3 className="text-2xl font-bold text-[#1E1E2A] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+              <h3 className="text-2xl font-bold text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
                 {isRTL ? 'تم إرسال طلبك بنجاح!' : 'Request Submitted Successfully!'}
               </h3>
               <p className="text-[#8E8E9F] mb-6">
@@ -969,11 +969,11 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                   <span className="text-xs font-medium text-[#8E8E9F]">
                     {isRTL ? `الخطوة ${step + 1} من 4` : `Step ${step + 1} of 4`}
                   </span>
-                  <span className="text-xs font-semibold text-[#2B5F4E]">{pct}%</span>
+                  <span className="text-xs font-semibold text-[#B5696B]">{pct}%</span>
                 </div>
                 <div className="h-1.5 bg-[#F3EFE8] rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-[#2B5F4E] to-[#C8A97D] rounded-full"
+                    className="h-full bg-gradient-to-r from-[#B5696B] to-[#C8A97D] rounded-full"
                     initial={false}
                     animate={{ width: `${Math.max(((step + 1) / 4) * 100, 5)}%` }}
                     transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -990,13 +990,13 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                         key={s.key}
                         onClick={() => { if (i < step) setStep(i); else if (i === step + 1 && validateStep(step)) setStep(i); }}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                          isActive ? 'bg-white shadow-sm text-[#1E1E2A] border border-[#F3EFE8]'
-                          : isDone ? 'text-[#2B5F4E] cursor-pointer hover:bg-white/60'
+                          isActive ? 'bg-white shadow-sm text-[#2D2A33] border border-[#F3EFE8]'
+                          : isDone ? 'text-[#B5696B] cursor-pointer hover:bg-white/60'
                           : 'text-[#8E8E9F] cursor-default'
                         }`}
                       >
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                          isDone ? 'bg-[#2B5F4E] text-white' : isActive ? 'bg-[#2B5F4E]/10 text-[#2B5F4E]' : 'bg-[#F3EFE8] text-[#8E8E9F]'
+                          isDone ? 'bg-[#B5696B] text-white' : isActive ? 'bg-[#B5696B]/10 text-[#B5696B]' : 'bg-[#F3EFE8] text-[#8E8E9F]'
                         }`}>
                           {isDone ? <Check className="w-3 h-3" /> : <Icon className="w-3 h-3" />}
                         </div>
@@ -1024,7 +1024,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                           {(() => { const Icon = STEPS[step].Icon; return <Icon className="w-5 h-5" style={{ color: STEPS[step].color }} />; })()}
                         </div>
                         <div>
-                          <h3 className="font-bold text-[#1E1E2A] text-lg" style={{ fontFamily: 'var(--font-heading)' }}>
+                          <h3 className="font-bold text-[#2D2A33] text-lg" style={{ fontFamily: 'var(--font-heading)' }}>
                             {step === 0 ? (isRTL ? 'معلوماتك' : 'Your Information')
                             : step === 1 ? (isRTL ? 'معلومات البرنامج' : 'Program Information')
                             : step === 2 ? (isRTL ? 'تفاصيل الطلب' : 'Request Details')
@@ -1085,10 +1085,10 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                               onBlur={() => handleBlur('deliverables')}
                               required
                               rows={4}
-                              className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm text-[#1E1E2A] focus:outline-none focus:ring-2 transition-all resize-none ${
+                              className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm text-[#2D2A33] focus:outline-none focus:ring-2 transition-all resize-none ${
                                 touched.deliverables && errors.deliverables
                                   ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
-                                  : 'border-[#F3EFE8] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+                                  : 'border-[#F3EFE8] focus:border-[#B5696B] focus:ring-[#B5696B]/10'
                               }`}
                               placeholder={isRTL ? 'صف المخرجات المتوقعة...' : 'Describe the expected deliverables...'}
                             />
@@ -1114,8 +1114,8 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                                   key={opt}
                                   className={`flex items-center gap-2.5 px-6 py-3.5 rounded-xl border cursor-pointer transition-all duration-200 ${
                                     formData.willMention === opt
-                                      ? 'bg-[#2B5F4E] text-white border-[#2B5F4E] shadow-md shadow-[#2B5F4E]/15'
-                                      : 'bg-[#FAF7F2] text-[#4A4A5C] border-[#F3EFE8] hover:border-[#2B5F4E]/30 hover:bg-white'
+                                      ? 'bg-[#B5696B] text-white border-[#B5696B] shadow-md shadow-[#B5696B]/15'
+                                      : 'bg-[#FAF7F2] text-[#4A4A5C] border-[#F3EFE8] hover:border-[#B5696B]/30 hover:bg-white'
                                   }`}
                                 >
                                   <input type="radio" name="willMention" value={opt} checked={formData.willMention === opt} onChange={handleChange} className="sr-only" />
@@ -1139,7 +1139,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                     <button
                       type="button"
                       onClick={goBack}
-                      className="flex items-center gap-2 text-sm font-medium text-[#8E8E9F] hover:text-[#1E1E2A] transition-colors px-4 py-2"
+                      className="flex items-center gap-2 text-sm font-medium text-[#8E8E9F] hover:text-[#2D2A33] transition-colors px-4 py-2"
                     >
                       <ChevronDown className={`w-4 h-4 ${isRTL ? '-rotate-90' : 'rotate-90'}`} />
                       {isRTL ? 'السابق' : 'Back'}

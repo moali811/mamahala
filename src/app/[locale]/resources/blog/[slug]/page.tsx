@@ -37,7 +37,7 @@ const blogPosts = [
     catAr: 'الشباب',
     time: 5,
     date: '2025-03-15',
-    gradient: 'from-[#2B5F4E] to-[#1E4A3B]',
+    gradient: 'from-[#B5696B] to-[#9E5558]',
     content: [
       'Children often express their emotional needs in subtle ways that can be easy to overlook. As parents and caregivers, recognizing these signs early can make a significant difference in your child\'s emotional development and overall well-being. Understanding your child\'s emotional landscape is the first step toward providing the support they need.',
       'One of the most common signs is a sudden change in behavior. If your normally outgoing child becomes withdrawn, or if a calm child starts acting out more frequently, these shifts often signal underlying emotional distress. Pay attention to changes in sleep patterns, appetite, and social interactions as well — these physical manifestations often accompany emotional struggles.',
@@ -103,7 +103,7 @@ const blogPosts = [
     catAr: 'البالغين',
     time: 8,
     date: '2025-02-20',
-    gradient: 'from-[#4A4A5C] to-[#1E1E2A]',
+    gradient: 'from-[#4A4A5C] to-[#2D2A33]',
     content: [
       'Anxiety is one of the most common mental health experiences, affecting millions of people worldwide. While some level of anxiety is a normal and even helpful response to stress, chronic or excessive anxiety can significantly impact your quality of life, relationships, and ability to function. Understanding the difference between normal worry and an anxiety disorder is the first step toward getting the help you need.',
       'Normal anxiety tends to be proportional to the situation, temporary, and manageable. An anxiety disorder, on the other hand, involves persistent, excessive worry that is difficult to control and interferes with daily activities. Physical symptoms like rapid heartbeat, difficulty breathing, muscle tension, and sleep disturbances are also common indicators that anxiety has moved beyond the normal range.',
@@ -136,7 +136,7 @@ export default function BlogPostPage() {
       <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2]">
         <div className="text-center">
           <h1
-            className="text-3xl font-bold text-[#1E1E2A] mb-4"
+            className="text-3xl font-bold text-[#2D2A33] mb-4"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
             {isRTL ? 'المقال غير موجود' : 'Post Not Found'}
@@ -270,7 +270,7 @@ export default function BlogPostPage() {
                     <p
                       key={index}
                       className="text-[#4A4A5C] leading-[1.8] text-[16px] lg:text-[17px]"
-                      style={index === 0 ? { fontSize: '18px', color: '#1E1E2A', fontWeight: 500 } : undefined}
+                      style={index === 0 ? { fontSize: '18px', color: '#2D2A33', fontWeight: 500 } : undefined}
                     >
                       {paragraph}
                     </p>
@@ -281,11 +281,11 @@ export default function BlogPostPage() {
                 <div className="mt-10 pt-8 border-t border-[#F3EFE8]">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center">
-                        <User className="w-5 h-5 text-[#2B5F4E]" />
+                      <div className="w-10 h-10 rounded-full bg-[#B5696B]/10 flex items-center justify-center">
+                        <User className="w-5 h-5 text-[#B5696B]" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-[#1E1E2A]">
+                        <p className="text-sm font-semibold text-[#2D2A33]">
                           Dr. Hala Ali
                         </p>
                         <p className="text-xs text-[#8E8E9F]">
@@ -293,7 +293,7 @@ export default function BlogPostPage() {
                         </p>
                       </div>
                     </div>
-                    <button className="flex items-center gap-2 text-[#8E8E9F] hover:text-[#2B5F4E] transition-colors">
+                    <button className="flex items-center gap-2 text-[#8E8E9F] hover:text-[#B5696B] transition-colors">
                       <Share2 className="w-4 h-4" />
                       <span className="text-sm">{messages.common.share}</span>
                     </button>
@@ -371,7 +371,7 @@ export default function BlogPostPage() {
               {isRTL ? 'اقرأ أيضًا' : 'Keep Reading'}
             </span>
             <h2
-              className="text-3xl sm:text-4xl font-bold text-[#1E1E2A]"
+              className="text-3xl sm:text-4xl font-bold text-[#2D2A33]"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? 'مقالات ذات صلة' : 'Related Articles'}
@@ -383,7 +383,7 @@ export default function BlogPostPage() {
               <StaggerChild key={related.slug}>
                 <Link href={`/${locale}/resources/blog/${related.slug}`}>
                   <motion.article
-                    className="group bg-white rounded-3xl overflow-hidden border border-transparent hover:border-[#2B5F4E]/10 transition-all duration-300"
+                    className="group bg-white rounded-3xl overflow-hidden border border-transparent hover:border-[#B5696B]/10 transition-all duration-300"
                     whileHover={{
                       y: -4,
                       boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
@@ -411,12 +411,12 @@ export default function BlogPostPage() {
 
                     <div className="p-6">
                       <h3
-                        className="text-lg font-bold text-[#1E1E2A] leading-snug mb-3 group-hover:text-[#2B5F4E] transition-colors duration-300"
+                        className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#B5696B] transition-colors duration-300"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {isRTL ? related.titleAr : related.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-[#2B5F4E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                      <div className="flex items-center gap-2 text-[#B5696B] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
                         <span>{messages.common.readMore}</span>
                         <Arrow className="w-4 h-4" />
                       </div>

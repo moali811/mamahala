@@ -141,7 +141,7 @@ export default function ProgramsPage() {
               {isRTL ? 'استكشف' : 'Explore'}
             </span>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl text-[#1E1E2A] leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl text-[#2D2A33] leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? 'برامجنا المتاحة' : 'Our Available Programs'}
@@ -159,12 +159,12 @@ export default function ProgramsPage() {
               return (
                 <StaggerChild key={program.id}>
                   <motion.div
-                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#2B5F4E]/20 transition-all duration-300 h-full flex flex-col"
+                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#B5696B]/20 transition-all duration-300 h-full flex flex-col"
                     whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
                     {/* Gradient accent top */}
-                    <div className="h-1.5 bg-gradient-to-r from-[#2B5F4E] via-[#C8A97D] to-[#7A3B5E]" />
+                    <div className="h-1.5 bg-gradient-to-r from-[#B5696B] via-[#C8A97D] to-[#7A3B5E]" />
 
                     <div className="p-8 flex-1 flex flex-col">
                       {/* Header: type badge + status badge */}
@@ -187,7 +187,7 @@ export default function ProgramsPage() {
 
                       {/* Title */}
                       <h3
-                        className="text-xl sm:text-2xl font-bold text-[#1E1E2A] mb-3 group-hover:text-[#2B5F4E] transition-colors duration-200"
+                        className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#B5696B] transition-colors duration-200"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {title}
@@ -215,8 +215,8 @@ export default function ProgramsPage() {
                               key={idx}
                               className="flex items-center gap-3 text-sm text-[#4A4A5C]"
                             >
-                              <div className="w-6 h-6 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-[#2B5F4E]" />
+                              <div className="w-6 h-6 rounded-full bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-[#B5696B]" />
                               </div>
                               <span>{isRTL ? mod.ar : mod.en}</span>
                             </div>
@@ -227,7 +227,7 @@ export default function ProgramsPage() {
                       {/* Footer: price + CTA */}
                       <div className="flex items-center justify-between flex-wrap gap-4 pt-6 border-t border-[#F3EFE8]">
                         {program.price && (
-                          <span className="text-lg font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+                          <span className="text-lg font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
                             {program.price}
                           </span>
                         )}
@@ -279,7 +279,7 @@ export default function ProgramsPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#2B5F4E] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

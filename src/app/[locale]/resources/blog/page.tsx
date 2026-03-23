@@ -28,7 +28,7 @@ const blogPosts = [
     cat: 'Youth',
     catAr: 'الشباب',
     time: 5,
-    gradient: 'from-[#2B5F4E] to-[#1E4A3B]',
+    gradient: 'from-[#B5696B] to-[#9E5558]',
   },
   {
     slug: 'communication-techniques',
@@ -55,7 +55,7 @@ const blogPosts = [
     cat: 'Adults',
     catAr: 'البالغين',
     time: 8,
-    gradient: 'from-[#4A4A5C] to-[#1E1E2A]',
+    gradient: 'from-[#4A4A5C] to-[#2D2A33]',
   },
 ];
 
@@ -95,7 +95,7 @@ export default function BlogListingPage() {
       {/*  HERO                                                            */}
       {/* ================================================================ */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]" />
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
           <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />
@@ -189,7 +189,7 @@ export default function BlogListingPage() {
                     px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300
                     ${
                       activeCategory === cat
-                        ? 'bg-[#2B5F4E] text-white shadow-[0_4px_12px_rgba(43,95,78,0.3)]'
+                        ? 'bg-[#B5696B] text-white shadow-[0_4px_12px_rgba(43,95,78,0.3)]'
                         : 'bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] border border-[#F3EFE8]'
                     }
                   `}
@@ -207,7 +207,7 @@ export default function BlogListingPage() {
               <StaggerChild key={post.slug}>
                 <Link href={`/${locale}/resources/blog/${post.slug}`}>
                   <motion.article
-                    className="group bg-white rounded-3xl overflow-hidden border border-transparent hover:border-[#2B5F4E]/10 transition-all duration-300"
+                    className="group bg-white rounded-3xl overflow-hidden border border-transparent hover:border-[#B5696B]/10 transition-all duration-300"
                     whileHover={{
                       y: -4,
                       boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
@@ -236,12 +236,12 @@ export default function BlogListingPage() {
                     {/* Content */}
                     <div className="p-6 lg:p-8">
                       <h3
-                        className="text-lg font-bold text-[#1E1E2A] leading-snug mb-3 group-hover:text-[#2B5F4E] transition-colors duration-300"
+                        className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#B5696B] transition-colors duration-300"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {isRTL ? post.titleAr : post.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-[#2B5F4E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                      <div className="flex items-center gap-2 text-[#B5696B] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
                         <span>{messages.common.readMore}</span>
                         <Arrow className="w-4 h-4" />
                       </div>
@@ -260,7 +260,7 @@ export default function BlogListingPage() {
       <section className="py-24 lg:py-32 bg-white">
         <div className="container-main">
           <ScrollReveal>
-            <div className="relative bg-gradient-to-br from-[#2B5F4E] to-[#1E4A3B] rounded-3xl p-10 lg:p-16 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-[#B5696B] to-[#9E5558] rounded-3xl p-10 lg:p-16 overflow-hidden">
               {/* Decorative elements */}
               <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/[0.06]" />
               <div className="absolute -bottom-10 -left-10 w-60 h-60 rounded-full bg-[#C8A97D]/[0.08]" />
@@ -297,7 +297,7 @@ export default function BlogListingPage() {
                   />
                   <Button
                     variant="secondary"
-                    className="!bg-white !text-[#2B5F4E] hover:!bg-[#F3EFE8]"
+                    className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
                   >
                     {messages.newsletter.subscribe}
                   </Button>

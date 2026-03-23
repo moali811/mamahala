@@ -145,11 +145,11 @@ export default function QuizPage() {
                 <span className="text-sm text-[#8E8E9F]">
                   {isRTL ? `سؤال ${step + 1} من ${questions.length}` : `Question ${step + 1} of ${questions.length}`}
                 </span>
-                <span className="text-sm font-medium text-[#2B5F4E]">{Math.round(progress)}%</span>
+                <span className="text-sm font-medium text-[#B5696B]">{Math.round(progress)}%</span>
               </div>
               <div className="h-2 bg-[#F3EFE8] rounded-full overflow-hidden">
                 <motion.div
-                  className="h-full bg-[#2B5F4E] rounded-full"
+                  className="h-full bg-[#B5696B] rounded-full"
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.4 }}
@@ -177,7 +177,7 @@ export default function QuizPage() {
                 exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <h2 className="text-2xl font-bold text-[#1E1E2A] mb-8" style={{ fontFamily: 'var(--font-heading)' }}>
+                <h2 className="text-2xl font-bold text-[#2D2A33] mb-8" style={{ fontFamily: 'var(--font-heading)' }}>
                   {isRTL ? currentQuestion.ar : currentQuestion.en}
                 </h2>
 
@@ -191,24 +191,24 @@ export default function QuizPage() {
                         onClick={() => handleSelect(option.value)}
                         className={`w-full flex items-center gap-4 p-5 rounded-2xl border-2 text-start transition-all duration-200 ${
                           isSelected
-                            ? 'border-[#2B5F4E] bg-[#2B5F4E]/5'
-                            : 'border-[#F3EFE8] bg-white hover:border-[#2B5F4E]/30 hover:shadow-[var(--shadow-subtle)]'
+                            ? 'border-[#B5696B] bg-[#B5696B]/5'
+                            : 'border-[#F3EFE8] bg-white hover:border-[#B5696B]/30 hover:shadow-[var(--shadow-subtle)]'
                         }`}
                         whileTap={{ scale: 0.98 }}
                       >
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                          isSelected ? 'bg-[#2B5F4E] text-white' : 'bg-[#F3EFE8] text-[#4A4A5C]'
+                          isSelected ? 'bg-[#B5696B] text-white' : 'bg-[#F3EFE8] text-[#4A4A5C]'
                         }`}>
                           <Icon className="w-5 h-5" />
                         </div>
-                        <span className={`font-medium ${isSelected ? 'text-[#2B5F4E]' : 'text-[#1E1E2A]'}`}>
+                        <span className={`font-medium ${isSelected ? 'text-[#B5696B]' : 'text-[#2D2A33]'}`}>
                           {isRTL ? option.ar : option.en}
                         </span>
                         {isSelected && (
                           <motion.div
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            className="ml-auto w-6 h-6 rounded-full bg-[#2B5F4E] flex items-center justify-center"
+                            className="ml-auto w-6 h-6 rounded-full bg-[#B5696B] flex items-center justify-center"
                           >
                             <Check className="w-3.5 h-3.5 text-white" />
                           </motion.div>
@@ -228,10 +228,10 @@ export default function QuizPage() {
             transition={{ duration: 0.5 }}
           >
             <div className="text-center mb-10">
-              <div className="w-16 h-16 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-8 h-8 text-[#2B5F4E]" />
+              <div className="w-16 h-16 rounded-full bg-[#B5696B]/10 flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-8 h-8 text-[#B5696B]" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+              <h2 className="text-2xl md:text-3xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
                 {isRTL ? 'توصياتنا لك' : 'Our Recommendations For You'}
               </h2>
               <p className="text-[#8E8E9F] mt-2">
@@ -256,7 +256,7 @@ export default function QuizPage() {
                         {isRTL ? 'الأنسب لك' : 'Best Match'}
                       </Badge>
                     )}
-                    <h3 className="text-lg font-bold text-[#1E1E2A] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                    <h3 className="text-lg font-bold text-[#2D2A33] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
                       {sName}
                     </h3>
                     <p className="text-sm text-[#8E8E9F] mb-4">{sDesc}</p>
@@ -287,13 +287,13 @@ export default function QuizPage() {
             <div className="mt-10 text-center space-y-4">
               <button
                 onClick={() => { setStep(0); setAnswers([]); setShowResults(false); }}
-                className="text-sm text-[#2B5F4E] font-semibold hover:text-[#1E4A3B] transition-colors"
+                className="text-sm text-[#B5696B] font-semibold hover:text-[#9E5558] transition-colors"
               >
                 {isRTL ? 'أعد الاختبار' : 'Retake Quiz'}
               </button>
               <p className="text-sm text-[#8E8E9F]">
                 {isRTL ? 'أو' : 'or'}{' '}
-                <a href="https://wa.me/16132222104" target="_blank" rel="noopener noreferrer" className="text-[#2B5F4E] font-medium hover:underline">
+                <a href="https://wa.me/16132222104" target="_blank" rel="noopener noreferrer" className="text-[#B5696B] font-medium hover:underline">
                   {messages.services.chatWhatsApp}
                 </a>
               </p>

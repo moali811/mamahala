@@ -49,7 +49,7 @@ export default function BookingPolicyPage() {
       icon: Clock,
       label: t('24-Hour Notice', 'إشعار قبل 24 ساعة'),
       desc: t('Required for cancellations', 'مطلوب للإلغاء'),
-      color: '#2B5F4E',
+      color: '#B5696B',
     },
     {
       icon: AlertTriangle,
@@ -196,7 +196,7 @@ export default function BookingPolicyPage() {
       {/* ================================================================ */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]" />
         {/* Decorative orbs */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
@@ -309,7 +309,7 @@ export default function BookingPolicyPage() {
                       />
                     </div>
                     <h3
-                      className="text-base font-bold text-[#1E1E2A] mb-1"
+                      className="text-base font-bold text-[#2D2A33] mb-1"
                       style={{ fontFamily: 'var(--font-heading)' }}
                     >
                       {item.label}
@@ -330,11 +330,11 @@ export default function BookingPolicyPage() {
         <div className="container-main max-w-5xl">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-14">
-              <p className="text-sm font-semibold tracking-[0.15em] uppercase text-[#2B5F4E] mb-3">
+              <p className="text-sm font-semibold tracking-[0.15em] uppercase text-[#B5696B] mb-3">
                 {t('Getting Started', 'البدء')}
               </p>
               <h2
-                className="text-3xl md:text-4xl font-bold text-[#1E1E2A]"
+                className="text-3xl md:text-4xl font-bold text-[#2D2A33]"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {t('How to Book a Session', 'كيفية حجز جلسة')}
@@ -357,14 +357,14 @@ export default function BookingPolicyPage() {
                     className="relative bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 h-full"
                     whileHover={{ y: -4, transition: { duration: 0.3 } }}
                   >
-                    <span className="text-[40px] font-bold text-[#2B5F4E]/[0.07] absolute top-4 right-5 leading-none select-none" style={{ fontFamily: 'var(--font-heading)' }}>
+                    <span className="text-[40px] font-bold text-[#B5696B]/[0.07] absolute top-4 right-5 leading-none select-none" style={{ fontFamily: 'var(--font-heading)' }}>
                       {step.step}
                     </span>
-                    <div className="w-12 h-12 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center mb-4">
-                      <Icon className="w-5 h-5 text-[#2B5F4E]" />
+                    <div className="w-12 h-12 rounded-xl bg-[#B5696B]/10 flex items-center justify-center mb-4">
+                      <Icon className="w-5 h-5 text-[#B5696B]" />
                     </div>
                     <h3
-                      className="text-base font-bold text-[#1E1E2A] mb-2"
+                      className="text-base font-bold text-[#2D2A33] mb-2"
                       style={{ fontFamily: 'var(--font-heading)' }}
                     >
                       {step.title}
@@ -394,7 +394,7 @@ export default function BookingPolicyPage() {
                 </div>
                 <div>
                   <h2
-                    className="text-xl md:text-2xl font-bold text-[#1E1E2A]"
+                    className="text-xl md:text-2xl font-bold text-[#2D2A33]"
                     style={{ fontFamily: 'var(--font-heading)' }}
                   >
                     {t('Cancellation Policy', 'سياسة الإلغاء')}
@@ -423,8 +423,8 @@ export default function BookingPolicyPage() {
                     viewport={{ once: true, margin: '-40px' }}
                     transition={{ delay: idx * 0.1, duration: 0.5, ease }}
                   >
-                    <div className="w-6 h-6 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#2B5F4E]" />
+                    <div className="w-6 h-6 rounded-full bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-[#B5696B]" />
                     </div>
                     <p className="text-[15px] text-[#4A4A5C] leading-relaxed">
                       {point}
@@ -455,7 +455,7 @@ export default function BookingPolicyPage() {
                 {t('Payments', 'المدفوعات')}
               </p>
               <h2
-                className="text-3xl md:text-4xl font-bold text-[#1E1E2A]"
+                className="text-3xl md:text-4xl font-bold text-[#2D2A33]"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {t('Payment Information', 'معلومات الدفع')}
@@ -477,7 +477,7 @@ export default function BookingPolicyPage() {
                     </div>
                     <div>
                       <h3
-                        className="text-base font-bold text-[#1E1E2A] mb-1.5"
+                        className="text-base font-bold text-[#2D2A33] mb-1.5"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {item.title}
@@ -502,14 +502,14 @@ export default function BookingPolicyPage() {
           <ScrollReveal>
             <div className="bg-white rounded-3xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] overflow-hidden">
               {/* Header */}
-              <div className="bg-gradient-to-r from-[#2B5F4E]/5 via-transparent to-transparent border-b border-[#F3EFE8] px-6 md:px-10 py-6">
+              <div className="bg-gradient-to-r from-[#B5696B]/5 via-transparent to-transparent border-b border-[#F3EFE8] px-6 md:px-10 py-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0">
-                    <Video className="w-5 h-5 text-[#2B5F4E]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0">
+                    <Video className="w-5 h-5 text-[#B5696B]" />
                   </div>
                   <div>
                     <h2
-                      className="text-xl md:text-2xl font-bold text-[#1E1E2A]"
+                      className="text-xl md:text-2xl font-bold text-[#2D2A33]"
                       style={{ fontFamily: 'var(--font-heading)' }}
                     >
                       {t('Session Guidelines', 'إرشادات الجلسة')}
@@ -537,8 +537,8 @@ export default function BookingPolicyPage() {
                       viewport={{ once: true, margin: '-40px' }}
                       transition={{ delay: idx * 0.1, duration: 0.5, ease }}
                     >
-                      <div className="w-10 h-10 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-[#2B5F4E]" />
+                      <div className="w-10 h-10 rounded-xl bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-5 h-5 text-[#B5696B]" />
                       </div>
                       <p className="text-[15px] text-[#4A4A5C] leading-relaxed pt-2">
                         {guideline.text}
@@ -560,7 +560,7 @@ export default function BookingPolicyPage() {
           <ScrollReveal>
             <div className="relative rounded-3xl overflow-hidden">
               {/* Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]" />
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-0 right-[20%] w-[300px] h-[300px] rounded-full bg-white/[0.04] blur-[80px]" />
                 <div className="absolute bottom-0 left-[10%] w-[250px] h-[250px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />

@@ -140,7 +140,7 @@ export default function EventsPage() {
               {isRTL ? 'ما هو قادم' : "What's Coming"}
             </span>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl text-[#1E1E2A] leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl text-[#2D2A33] leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? 'الفعاليات القادمة' : 'Upcoming Events'}
@@ -160,13 +160,13 @@ export default function EventsPage() {
               return (
                 <StaggerChild key={event.id}>
                   <motion.div
-                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#2B5F4E]/20 transition-all duration-300"
+                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#B5696B]/20 transition-all duration-300"
                     whileHover={{ y: -4, boxShadow: '0 12px 48px rgba(0,0,0,0.08)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <div className="flex flex-col md:flex-row">
                       {/* Date badge - prominent left column */}
-                      <div className="flex-shrink-0 w-full md:w-40 bg-gradient-to-br from-[#2B5F4E] to-[#1E4A3B] p-6 md:p-8 flex flex-row md:flex-col items-center justify-center gap-3 md:gap-1 text-white">
+                      <div className="flex-shrink-0 w-full md:w-40 bg-gradient-to-br from-[#B5696B] to-[#9E5558] p-6 md:p-8 flex flex-row md:flex-col items-center justify-center gap-3 md:gap-1 text-white">
                         <span className="text-sm font-semibold uppercase tracking-wider opacity-80">
                           {month}
                         </span>
@@ -194,7 +194,7 @@ export default function EventsPage() {
 
                         {/* Title */}
                         <h3
-                          className="text-xl sm:text-2xl font-bold text-[#1E1E2A] mb-3 group-hover:text-[#2B5F4E] transition-colors duration-200"
+                          className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#B5696B] transition-colors duration-200"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {title}
@@ -258,7 +258,7 @@ export default function EventsPage() {
               {isRTL ? 'أرشيف' : 'Archive'}
             </span>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl text-[#1E1E2A] leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl text-[#2D2A33] leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? 'الفعاليات السابقة' : 'Past Events'}
@@ -310,7 +310,7 @@ export default function EventsPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#2B5F4E] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

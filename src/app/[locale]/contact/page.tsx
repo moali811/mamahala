@@ -109,7 +109,7 @@ export default function ContactPage() {
       {/* ================================================================ */}
       {/*  HERO                                                           */}
       {/* ================================================================ */}
-      <section className="relative bg-[#2B5F4E] overflow-hidden">
+      <section className="relative bg-[#B5696B] overflow-hidden">
         {/* Decorative shapes */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
@@ -159,7 +159,7 @@ export default function ContactPage() {
             >
               <div className="bg-white rounded-3xl p-8 sm:p-10 lg:p-12 shadow-[var(--shadow-card)]">
                 <h2
-                  className="text-2xl sm:text-3xl font-bold text-[#1E1E2A] mb-8"
+                  className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-8"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
                   {messages.contact.formTitle}
@@ -184,12 +184,12 @@ export default function ContactPage() {
                           damping: 15,
                           delay: 0.15,
                         }}
-                        className="w-20 h-20 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center mb-6"
+                        className="w-20 h-20 rounded-full bg-[#B5696B]/10 flex items-center justify-center mb-6"
                       >
-                        <CheckCircle2 className="w-10 h-10 text-[#2B5F4E]" />
+                        <CheckCircle2 className="w-10 h-10 text-[#B5696B]" />
                       </motion.div>
                       <h3
-                        className="text-2xl font-bold text-[#1E1E2A] mb-2"
+                        className="text-2xl font-bold text-[#2D2A33] mb-2"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {messages.contact.sent}
@@ -258,20 +258,20 @@ export default function ContactPage() {
                           required
                           placeholder={messages.contact.messageField}
                           className="
-                            peer w-full px-4 pt-6 pb-3 rounded-xl border bg-white text-[#1E1E2A]
+                            peer w-full px-4 pt-6 pb-3 rounded-xl border bg-white text-[#2D2A33]
                             transition-all duration-200 outline-none resize-none
-                            border-[#F3EFE8] focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10
-                            hover:border-[#2B5F4E]/30 placeholder-transparent
+                            border-[#F3EFE8] focus:border-[#B5696B] focus:ring-2 focus:ring-[#B5696B]/10
+                            hover:border-[#B5696B]/30 placeholder-transparent
                           "
                         />
                         <label
                           htmlFor="message"
                           className="
-                            absolute left-4 top-2 text-xs font-medium text-[#2B5F4E]
+                            absolute left-4 top-2 text-xs font-medium text-[#B5696B]
                             transition-all duration-200 pointer-events-none
                             peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm
                             peer-placeholder-shown:text-[#8E8E9F] peer-placeholder-shown:font-normal
-                            peer-focus:top-2 peer-focus:text-xs peer-focus:font-medium peer-focus:text-[#2B5F4E]
+                            peer-focus:top-2 peer-focus:text-xs peer-focus:font-medium peer-focus:text-[#B5696B]
                           "
                         >
                           {messages.contact.messageField}
@@ -336,15 +336,15 @@ export default function ContactPage() {
                 {contactCards.map((card, i) => {
                   const Icon = card.icon;
                   const inner = (
-                    <div className="flex items-start gap-4 bg-white rounded-2xl p-5 border border-[#F3EFE8] hover:border-[#2B5F4E]/20 hover:shadow-[var(--shadow-subtle)] transition-all duration-300 h-full">
-                      <div className="w-11 h-11 rounded-xl bg-[#2B5F4E]/[0.08] flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-[#2B5F4E]" />
+                    <div className="flex items-start gap-4 bg-white rounded-2xl p-5 border border-[#F3EFE8] hover:border-[#B5696B]/20 hover:shadow-[var(--shadow-subtle)] transition-all duration-300 h-full">
+                      <div className="w-11 h-11 rounded-xl bg-[#B5696B]/[0.08] flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-5 h-5 text-[#B5696B]" />
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-semibold uppercase tracking-wider text-[#8E8E9F] mb-0.5">
                           {card.label}
                         </p>
-                        <p className="text-[15px] font-medium text-[#1E1E2A] leading-snug">
+                        <p className="text-[15px] font-medium text-[#2D2A33] leading-snug">
                           {card.value}
                         </p>
                       </div>
@@ -364,7 +364,7 @@ export default function ContactPage() {
 
               {/* Social Media */}
               <div className="bg-white rounded-2xl p-6 border border-[#F3EFE8]">
-                <p className="text-sm font-semibold text-[#1E1E2A] mb-4">
+                <p className="text-sm font-semibold text-[#2D2A33] mb-4">
                   {messages.contact.followUs}
                 </p>
                 <div className="flex items-center gap-3">
@@ -377,7 +377,7 @@ export default function ContactPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={s.label}
-                        className="w-11 h-11 rounded-xl bg-[#FAF7F2] flex items-center justify-center text-[#4A4A5C] hover:bg-[#2B5F4E] hover:text-white transition-all duration-200"
+                        className="w-11 h-11 rounded-xl bg-[#FAF7F2] flex items-center justify-center text-[#4A4A5C] hover:bg-[#B5696B] hover:text-white transition-all duration-200"
                         whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.95 }}
                       >

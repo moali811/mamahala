@@ -59,7 +59,7 @@ export default function ServiceCategoryPage() {
   return (
     <div className="bg-[#FAF7F2]">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
@@ -111,7 +111,7 @@ export default function ServiceCategoryPage() {
         <div className="container-main">
           <ScrollReveal className="mb-12">
             <h2
-              className="text-2xl md:text-3xl font-bold text-[#1E1E2A]"
+              className="text-2xl md:text-3xl font-bold text-[#2D2A33]"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? `خدمات ${name}` : `${name} Services`}
@@ -128,10 +128,10 @@ export default function ServiceCategoryPage() {
 
               return (
                 <StaggerChild key={service.slug}>
-                  <div className="group bg-white rounded-2xl border border-[#F3EFE8] p-6 hover:border-[#2B5F4E]/20 hover:shadow-[var(--shadow-card)] transition-all duration-300">
+                  <div className="group bg-white rounded-2xl border border-[#F3EFE8] p-6 hover:border-[#B5696B]/20 hover:shadow-[var(--shadow-card)] transition-all duration-300">
                     <div className="flex items-start justify-between mb-3">
                       <h3
-                        className="text-lg font-bold text-[#1E1E2A] group-hover:text-[#2B5F4E] transition-colors flex-1"
+                        className="text-lg font-bold text-[#2D2A33] group-hover:text-[#B5696B] transition-colors flex-1"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         <Link href={`/${locale}/services/${category}/${service.slug}`} className="hover:underline">
@@ -150,7 +150,7 @@ export default function ServiceCategoryPage() {
                     <div className="flex items-center gap-3">
                       <Link
                         href={`/${locale}/book-a-session`}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#2B5F4E] hover:text-[#1E4A3B] transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#B5696B] hover:text-[#9E5558] transition-colors"
                       >
                         <Calendar className="w-4 h-4" />
                         {messages.services.bookOnline}
@@ -160,7 +160,7 @@ export default function ServiceCategoryPage() {
                         href={getWhatsAppLink(service.name)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8E8E9F] hover:text-[#2B5F4E] transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8E8E9F] hover:text-[#B5696B] transition-colors"
                       >
                         <MessageCircle className="w-4 h-4" />
                         {messages.services.chatWhatsApp}
@@ -184,7 +184,7 @@ export default function ServiceCategoryPage() {
           <div className="container-main">
             <ScrollReveal className="text-center mb-12">
               <h2
-                className="text-2xl md:text-3xl font-bold text-[#1E1E2A]"
+                className="text-2xl md:text-3xl font-bold text-[#2D2A33]"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {messages.testimonials.sectionTitle}
@@ -204,7 +204,7 @@ export default function ServiceCategoryPage() {
                       &ldquo;{isRTL ? t.textAr : t.text}&rdquo;
                     </p>
                     <div>
-                      <p className="font-semibold text-[#2B5F4E]">{t.name}</p>
+                      <p className="font-semibold text-[#B5696B]">{t.name}</p>
                       <p className="text-xs text-[#8E8E9F]">{isRTL ? t.roleAr : t.role}</p>
                     </div>
                   </div>
@@ -219,7 +219,7 @@ export default function ServiceCategoryPage() {
       <section className="py-16 bg-[#F3EFE8]">
         <div className="container-main">
           <ScrollReveal className="mb-8">
-            <h3 className="text-xl font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+            <h3 className="text-xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
               {isRTL ? 'استكشف خدمات أخرى' : 'Explore Other Services'}
             </h3>
           </ScrollReveal>
@@ -230,7 +230,7 @@ export default function ServiceCategoryPage() {
                 <Link
                   key={c.key}
                   href={`/${locale}/services/${c.key}`}
-                  className="px-5 py-2.5 rounded-full bg-white text-sm font-medium text-[#4A4A5C] hover:text-[#2B5F4E] hover:shadow-[var(--shadow-subtle)] transition-all"
+                  className="px-5 py-2.5 rounded-full bg-white text-sm font-medium text-[#4A4A5C] hover:text-[#B5696B] hover:shadow-[var(--shadow-subtle)] transition-all"
                 >
                   {isRTL ? c.nameAr : c.name}
                 </Link>
@@ -258,7 +258,7 @@ export default function ServiceCategoryPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#2B5F4E] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

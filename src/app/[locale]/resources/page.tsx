@@ -21,11 +21,11 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 
 const resourceTypes = [
-  { key: 'blog', icon: BookOpen, color: '#2B5F4E', bgColor: '#2B5F4E' },
+  { key: 'blog', icon: BookOpen, color: '#B5696B', bgColor: '#B5696B' },
   { key: 'programs', icon: GraduationCap, color: '#7A3B5E', bgColor: '#7A3B5E' },
   { key: 'events', icon: CalendarDays, color: '#C8A97D', bgColor: '#C8A97D' },
   { key: 'downloads', icon: Download, color: '#4A4A5C', bgColor: '#4A4A5C' },
-  { key: 'faqs', icon: HelpCircle, color: '#2B5F4E', bgColor: '#2B5F4E' },
+  { key: 'faqs', icon: HelpCircle, color: '#B5696B', bgColor: '#B5696B' },
 ] as const;
 
 export default function ResourcesPage() {
@@ -59,7 +59,7 @@ export default function ResourcesPage() {
       {/* ================================================================ */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]" />
         {/* Decorative orbs */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
@@ -151,7 +151,7 @@ export default function ResourcesPage() {
                 <StaggerChild key={resource.key}>
                   <Link href={`/${locale}/resources/${resource.key}`}>
                     <motion.div
-                      className="group relative bg-white rounded-3xl p-8 lg:p-10 h-full border border-transparent hover:border-[#2B5F4E]/10 transition-all duration-300 cursor-pointer"
+                      className="group relative bg-white rounded-3xl p-8 lg:p-10 h-full border border-transparent hover:border-[#B5696B]/10 transition-all duration-300 cursor-pointer"
                       whileHover={{
                         y: -4,
                         boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
@@ -159,7 +159,7 @@ export default function ResourcesPage() {
                     >
                       {/* Number accent */}
                       <span
-                        className="absolute top-6 right-6 text-5xl font-bold text-[#2B5F4E]/[0.04]"
+                        className="absolute top-6 right-6 text-5xl font-bold text-[#B5696B]/[0.04]"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {String(index + 1).padStart(2, '0')}
@@ -177,7 +177,7 @@ export default function ResourcesPage() {
                       </div>
 
                       <h3
-                        className="text-xl font-bold text-[#1E1E2A] mb-3"
+                        className="text-xl font-bold text-[#2D2A33] mb-3"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {titleKeys[resource.key]}
@@ -187,7 +187,7 @@ export default function ResourcesPage() {
                       </p>
 
                       {/* Arrow link */}
-                      <div className="flex items-center gap-2 text-[#2B5F4E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                      <div className="flex items-center gap-2 text-[#B5696B] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
                         <span>{isRTL ? 'استكشف' : 'Explore'}</span>
                         <Arrow className="w-4 h-4" />
                       </div>
@@ -204,7 +204,7 @@ export default function ResourcesPage() {
       {/*  CTA                                                             */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2B5F4E] via-[#234F40] to-[#1A3D30]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#A55D60] to-[#8E4B4E]" />
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
         <div
@@ -246,7 +246,7 @@ export default function ResourcesPage() {
                 href={`/${locale}/contact`}
                 variant="secondary"
                 size="lg"
-                className="!bg-white !text-[#2B5F4E] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
               >
                 {messages.contact.pageTitle}
               </Button>

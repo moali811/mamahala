@@ -19,8 +19,8 @@ export default function Breadcrumb({ items, locale, light = false }: BreadcrumbP
   const Chevron = isRTL ? ChevronLeft : ChevronRight;
 
   const baseColor = light ? 'text-white/60' : 'text-[#8E8E9F]';
-  const activeColor = light ? 'text-white' : 'text-[#1E1E2A]';
-  const hoverColor = light ? 'hover:text-white' : 'hover:text-[#2B5F4E]';
+  const activeColor = light ? 'text-white' : 'text-[#2D2A33]';
+  const hoverColor = light ? 'hover:text-white' : 'hover:text-[#B5696B]';
 
   return (
     <nav
