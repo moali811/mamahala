@@ -669,6 +669,66 @@ const STEPS = [
   { key: 'promo', iconEn: 'Promotion', iconAr: 'الترويج', Icon: Sparkles, color: '#2B5F4E' },
 ] as const;
 
+/* Extracted form field components — defined outside to prevent remount on every keystroke */
+function FormSelect({ name, label, options, value, error, isTouched, isRTL, onChange, onBlur, required = false }: {
+  name: string; label: string; value: string; error?: string; isTouched?: boolean; isRTL: boolean;
+  options: { value: string; label: string; labelAr: string }[];
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onBlur: () => void; required?: boolean;
+}) {
+  const hasError = isTouched && error;
+  return (
+    <div>
+      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">{label}</label>
+      <div className="relative">
+        <select
+          name={name} value={value} onChange={onChange} onBlur={onBlur} required={required}
+          className={`w-full appearance-none bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all pr-10 focus:outline-none focus:ring-2 ${
+            hasError ? 'border-red-400 focus:border-red-400 focus:ring-red-100 text-red-700'
+            : value ? 'border-[#2B5F4E]/30 text-[#1E1E2A] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+            : 'border-[#F3EFE8] text-[#8E8E9F] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+          }`}
+        >
+          {options.map(o => (<option key={o.value} value={o.value}>{isRTL ? o.labelAr : o.label}</option>))}
+        </select>
+        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E9F] pointer-events-none" />
+      </div>
+      {hasError && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-red-400" /> {error}</p>}
+    </div>
+  );
+}
+
+function FormInput({ name, label, value, error, isTouched, type = 'text', onChange, onBlur, required = false, fullWidth = false }: {
+  name: string; label: string; value: string; error?: string; isTouched?: boolean; type?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: () => void; required?: boolean; fullWidth?: boolean;
+}) {
+  const hasError = isTouched && error;
+  const isValid = isTouched && !error && value.trim();
+  return (
+    <div className={fullWidth ? 'sm:col-span-2' : ''}>
+      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">{label}</label>
+      <div className="relative">
+        <input
+          type={type} name={name} value={value} onChange={onChange} onBlur={onBlur} required={required}
+          min={type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
+          className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all focus:outline-none focus:ring-2 ${
+            hasError ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+            : isValid ? 'border-[#2B5F4E]/30 focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+            : 'border-[#F3EFE8] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+          } text-[#1E1E2A] ${isValid ? 'pr-10' : ''}`}
+        />
+        {isValid && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <Check className="w-4 h-4 text-[#2B5F4E]" />
+          </div>
+        )}
+      </div>
+      {hasError && <p className="text-xs text-red-500 mt-1.5 flex items-center gap-1"><span className="w-1 h-1 rounded-full bg-red-400" /> {error}</p>}
+    </div>
+  );
+}
+
 function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean }) {
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '', phone: '',
@@ -788,87 +848,6 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
     await new Promise(r => setTimeout(r, 2000));
     setSending(false);
     setSent(true);
-  };
-
-  // Styled select component
-  const StyledSelect = ({ name, label, options, required = false }: {
-    name: string; label: string;
-    options: { value: string; label: string; labelAr: string }[];
-    required?: boolean;
-  }) => {
-    const val = formData[name as keyof typeof formData];
-    const hasError = touched[name] && errors[name];
-    return (
-      <div>
-        <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">{label}</label>
-        <div className="relative">
-          <select
-            name={name}
-            value={val}
-            onChange={handleChange}
-            onBlur={() => handleBlur(name)}
-            required={required}
-            className={`w-full appearance-none bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all pr-10 focus:outline-none focus:ring-2 ${
-              hasError
-                ? 'border-red-400 focus:border-red-400 focus:ring-red-100 text-red-700'
-                : val ? 'border-[#2B5F4E]/30 text-[#1E1E2A] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
-                : 'border-[#F3EFE8] text-[#8E8E9F] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
-            }`}
-          >
-            {options.map(o => (
-              <option key={o.value} value={o.value}>{isRTL ? o.labelAr : o.label}</option>
-            ))}
-          </select>
-          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E9F] pointer-events-none" />
-        </div>
-        {hasError && (
-          <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
-            <span className="w-1 h-1 rounded-full bg-red-400" /> {errors[name]}
-          </motion.p>
-        )}
-      </div>
-    );
-  };
-
-  // Styled input with validation
-  const ValidatedInput = ({ name, label, type = 'text', required = false, fullWidth = false }: {
-    name: string; label: string; type?: string; required?: boolean; fullWidth?: boolean;
-  }) => {
-    const val = formData[name as keyof typeof formData];
-    const hasError = touched[name] && errors[name];
-    const isValid = touched[name] && !errors[name] && val.trim();
-    return (
-      <div className={fullWidth ? 'sm:col-span-2' : ''}>
-        <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">{label}</label>
-        <div className="relative">
-          <input
-            type={type}
-            name={name}
-            value={val}
-            onChange={handleChange}
-            onBlur={() => handleBlur(name)}
-            required={required}
-            min={type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
-            className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all focus:outline-none focus:ring-2 ${
-              hasError
-                ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
-                : isValid ? 'border-[#2B5F4E]/30 focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
-                : 'border-[#F3EFE8] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
-            } text-[#1E1E2A] ${isValid ? 'pr-10' : ''}`}
-          />
-          {isValid && (
-            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute right-3 top-1/2 -translate-y-1/2">
-              <Check className="w-4 h-4 text-[#2B5F4E]" />
-            </motion.div>
-          )}
-        </div>
-        {hasError && (
-          <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
-            <span className="w-1 h-1 rounded-full bg-red-400" /> {errors[name]}
-          </motion.p>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -1045,32 +1024,32 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                       {/* Step 1: Contact */}
                       {step === 0 && (
                         <div className="grid sm:grid-cols-2 gap-5">
-                          <ValidatedInput name="firstName" label={isRTL ? 'الاسم الأول *' : 'First Name *'} required />
-                          <ValidatedInput name="lastName" label={isRTL ? 'اسم العائلة *' : 'Last Name *'} required />
-                          <ValidatedInput name="email" label={isRTL ? 'البريد الإلكتروني *' : 'Email *'} type="email" required />
-                          <ValidatedInput name="phone" label={isRTL ? 'الهاتف *' : 'Phone *'} type="tel" required />
+                          <FormInput name="firstName" label={isRTL ? 'الاسم الأول *' : 'First Name *'} value={formData.firstName} error={errors.firstName} isTouched={touched.firstName} onChange={handleChange} onBlur={() => handleBlur('firstName')} required />
+                          <FormInput name="lastName" label={isRTL ? 'اسم العائلة *' : 'Last Name *'} value={formData.lastName} error={errors.lastName} isTouched={touched.lastName} onChange={handleChange} onBlur={() => handleBlur('lastName')} required />
+                          <FormInput name="email" label={isRTL ? 'البريد الإلكتروني *' : 'Email *'} type="email" value={formData.email} error={errors.email} isTouched={touched.email} onChange={handleChange} onBlur={() => handleBlur('email')} required />
+                          <FormInput name="phone" label={isRTL ? 'الهاتف *' : 'Phone *'} type="tel" value={formData.phone} error={errors.phone} isTouched={touched.phone} onChange={handleChange} onBlur={() => handleBlur('phone')} required />
                         </div>
                       )}
 
                       {/* Step 2: Program */}
                       {step === 1 && (
                         <div className="grid sm:grid-cols-2 gap-5">
-                          <ValidatedInput name="publication" label={isRTL ? 'اسم المنشور / البرنامج *' : 'Name of Publication / Program *'} required />
-                          <ValidatedInput name="interviewer" label={isRTL ? 'اسم المحاور(ين) *' : 'Name of Interviewer(s) *'} required />
-                          <StyledSelect name="mediaType" label={isRTL ? 'نوع الوسيلة الإعلامية *' : 'Type of Media *'} options={mediaTypes} required />
-                          <ValidatedInput name="audience" label={isRTL ? 'من هو جمهورك الأساسي؟' : 'Who is your primary audience?'} />
-                          <ValidatedInput name="platforms" label={isRTL ? 'على أي منصات تنشر المحتوى؟' : 'On which platforms do you publish?'} />
-                          <ValidatedInput name="website" label={isRTL ? 'الموقع الإلكتروني' : 'Website'} type="url" />
+                          <FormInput name="publication" label={isRTL ? 'اسم المنشور / البرنامج *' : 'Name of Publication / Program *'} value={formData.publication} error={errors.publication} isTouched={touched.publication} onChange={handleChange} onBlur={() => handleBlur('publication')} required />
+                          <FormInput name="interviewer" label={isRTL ? 'اسم المحاور(ين) *' : 'Name of Interviewer(s) *'} value={formData.interviewer} error={errors.interviewer} isTouched={touched.interviewer} onChange={handleChange} onBlur={() => handleBlur('interviewer')} required />
+                          <FormSelect name="mediaType" label={isRTL ? 'نوع الوسيلة الإعلامية *' : 'Type of Media *'} options={mediaTypes} value={formData.mediaType} error={errors.mediaType} isTouched={touched.mediaType} isRTL={isRTL} onChange={handleChange} onBlur={() => handleBlur('mediaType')} required />
+                          <FormInput name="audience" label={isRTL ? 'من هو جمهورك الأساسي؟' : 'Who is your primary audience?'} value={formData.audience} error={errors.audience} isTouched={touched.audience} onChange={handleChange} onBlur={() => handleBlur('audience')} />
+                          <FormInput name="platforms" label={isRTL ? 'على أي منصات تنشر المحتوى؟' : 'On which platforms do you publish?'} value={formData.platforms} error={errors.platforms} isTouched={touched.platforms} onChange={handleChange} onBlur={() => handleBlur('platforms')} />
+                          <FormInput name="website" label={isRTL ? 'الموقع الإلكتروني' : 'Website'} type="url" value={formData.website} error={errors.website} isTouched={touched.website} onChange={handleChange} onBlur={() => handleBlur('website')} />
                         </div>
                       )}
 
                       {/* Step 3: Details */}
                       {step === 2 && (
                         <div className="grid sm:grid-cols-2 gap-5">
-                          <ValidatedInput name="proposedDate" label={isRTL ? 'التاريخ المقترح' : 'Proposed Interview Date'} type="date" />
-                          <ValidatedInput name="proposedTime" label={isRTL ? 'الوقت المقترح' : 'Proposed Time'} type="time" />
-                          <ValidatedInput name="topic" label={isRTL ? 'موضوع المقابلة المقترح *' : 'Proposed Interview Topic *'} required fullWidth />
-                          <StyledSelect name="recordingMethod" label={isRTL ? 'طريقة التسجيل المفضلة *' : 'Preferred Method of Recording *'} options={recordingMethods} required />
+                          <FormInput name="proposedDate" label={isRTL ? 'التاريخ المقترح' : 'Proposed Interview Date'} type="date" value={formData.proposedDate} error={errors.proposedDate} isTouched={touched.proposedDate} onChange={handleChange} onBlur={() => handleBlur('proposedDate')} />
+                          <FormInput name="proposedTime" label={isRTL ? 'الوقت المقترح' : 'Proposed Time'} type="time" value={formData.proposedTime} error={errors.proposedTime} isTouched={touched.proposedTime} onChange={handleChange} onBlur={() => handleBlur('proposedTime')} />
+                          <FormInput name="topic" label={isRTL ? 'موضوع المقابلة المقترح *' : 'Proposed Interview Topic *'} value={formData.topic} error={errors.topic} isTouched={touched.topic} onChange={handleChange} onBlur={() => handleBlur('topic')} required fullWidth />
+                          <FormSelect name="recordingMethod" label={isRTL ? 'طريقة التسجيل المفضلة *' : 'Preferred Method of Recording *'} options={recordingMethods} value={formData.recordingMethod} error={errors.recordingMethod} isTouched={touched.recordingMethod} isRTL={isRTL} onChange={handleChange} onBlur={() => handleBlur('recordingMethod')} required />
                         </div>
                       )}
 
