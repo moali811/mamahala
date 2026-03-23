@@ -130,7 +130,7 @@ export default function ServiceCategoryPage() {
                   <div className="group bg-white rounded-2xl border border-[#F3EFE8] p-6 hover:border-[#C4878A]/20 hover:shadow-[var(--shadow-card)] transition-all duration-300">
                     <div className="flex items-start justify-between mb-3">
                       <h3
-                        className="text-lg font-bold text-[#2D2A33] group-hover:text-[#C4878A] transition-colors flex-1"
+                        className="text-lg font-bold text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors flex-1"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         <Link href={`/${locale}/services/${category}/${service.slug}`} className="hover:underline">
@@ -149,7 +149,7 @@ export default function ServiceCategoryPage() {
                     <div className="flex items-center gap-3">
                       <Link
                         href={`/${locale}/book-a-session`}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#C4878A] hover:text-[#B07578] transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#7A3B5E] hover:text-[#5E2D48] transition-colors"
                       >
                         <Calendar className="w-4 h-4" />
                         {messages.services.bookOnline}
@@ -159,7 +159,7 @@ export default function ServiceCategoryPage() {
                         href={getWhatsAppLink(service.name)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8E8E9F] hover:text-[#C4878A] transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
                       >
                         <MessageCircle className="w-4 h-4" />
                         {messages.services.chatWhatsApp}
@@ -203,7 +203,7 @@ export default function ServiceCategoryPage() {
                       &ldquo;{isRTL ? t.textAr : t.text}&rdquo;
                     </p>
                     <div>
-                      <p className="font-semibold text-[#C4878A]">{t.name}</p>
+                      <p className="font-semibold text-[#7A3B5E]">{t.name}</p>
                       <p className="text-xs text-[#8E8E9F]">{isRTL ? t.roleAr : t.role}</p>
                     </div>
                   </div>
@@ -229,7 +229,7 @@ export default function ServiceCategoryPage() {
                 <Link
                   key={c.key}
                   href={`/${locale}/services/${c.key}`}
-                  className="px-5 py-2.5 rounded-full bg-white text-sm font-medium text-[#4A4A5C] hover:text-[#C4878A] hover:shadow-[var(--shadow-subtle)] transition-all"
+                  className="px-5 py-2.5 rounded-full bg-white text-sm font-medium text-[#4A4A5C] hover:text-[#7A3B5E] hover:shadow-[var(--shadow-subtle)] transition-all"
                 >
                   {isRTL ? c.nameAr : c.name}
                 </Link>
@@ -244,12 +244,12 @@ export default function ServiceCategoryPage() {
         <div className="container-main relative z-10">
           <ScrollReveal className="text-center max-w-2xl mx-auto">
             <h2
-              className="text-3xl sm:text-4xl font-bold text-white text-balance"
+              className="text-3xl sm:text-4xl font-bold !text-white text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.cta.ready}
             </h2>
-            <p className="mt-4 text-white/80 leading-relaxed">{messages.cta.readyDesc}</p>
+            <p className="mt-4 !text-white/80 leading-relaxed">{messages.cta.readyDesc}</p>
             <div className="flex flex-wrap justify-center gap-4 mt-8">
               <Button
                 as="a"
@@ -257,7 +257,7 @@ export default function ServiceCategoryPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

@@ -192,7 +192,7 @@ export default function DownloadsPage() {
                     {/* Top accent + icon area */}
                     <div className="relative bg-gradient-to-br from-[#F3EFE8] to-[#FAF7F2] p-8 text-center">
                       <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.06)] mb-4">
-                        <TypeIcon className="w-7 h-7 text-[#C4878A]" />
+                        <TypeIcon className="w-7 h-7 text-[#7A3B5E]" />
                       </div>
 
                       {/* Price tag */}
@@ -223,7 +223,7 @@ export default function DownloadsPage() {
 
                       {/* Title */}
                       <h3
-                        className="text-lg font-bold text-[#2D2A33] mb-3 group-hover:text-[#C4878A] transition-colors duration-200"
+                        className="text-lg font-bold text-[#2D2A33] mb-3 group-hover:text-[#7A3B5E] transition-colors duration-200"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {title}
@@ -252,7 +252,7 @@ export default function DownloadsPage() {
                                   value={email}
                                   onChange={(e) => handleEmailChange(resource.id, e.target.value)}
                                   placeholder={isRTL ? 'بريدك الإلكتروني' : 'Your email'}
-                                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] text-[#2D2A33] placeholder-[#8E8E9F] focus:outline-none focus:ring-2 focus:ring-[#C4878A]/20 focus:border-[#C4878A]/40 transition-all"
+                                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] text-[#2D2A33] placeholder-[#8E8E9F] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/40 transition-all"
                                 />
                               </div>
                               <Button
@@ -305,12 +305,12 @@ export default function DownloadsPage() {
               <Sparkles className="w-7 h-7 text-[#C8A97D]" />
             </div>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold !text-white leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.cta.ready}
             </h2>
-            <p className="mt-6 text-lg lg:text-xl text-white/80 leading-relaxed max-w-xl mx-auto">
+            <p className="mt-6 text-lg lg:text-xl !text-white/80 leading-relaxed max-w-xl mx-auto">
               {messages.cta.readyDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-10">
@@ -320,7 +320,7 @@ export default function DownloadsPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

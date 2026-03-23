@@ -215,13 +215,13 @@ export default function HomePage() {
                       </div>
                       <div className="p-6">
                         <h3
-                          className="text-lg font-bold text-[#2D2A33] mb-1 group-hover:text-[#C4878A] transition-colors"
+                          className="text-lg font-bold text-[#2D2A33] mb-1 group-hover:text-[#7A3B5E] transition-colors"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {name}
                         </h3>
                         <p className="text-sm text-[#8E8E9F] leading-relaxed">{subtitle}</p>
-                        <div className="mt-4 flex items-center gap-1.5 text-[#C4878A] text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="mt-4 flex items-center gap-1.5 text-[#7A3B5E] text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           {messages.services.learnMore}
                           <ArrowIcon className="w-4 h-4" />
                         </div>
@@ -254,18 +254,19 @@ export default function HomePage() {
         alt="Dr. Hala consulting with a client"
         speed={0.3}
         className="min-h-[400px] lg:min-h-[500px] flex items-center justify-center"
-        overlayOpacity={0.6}
+        overlayColor="#2D2A33"
+        overlayOpacity={0.7}
       >
         <ScrollReveal className="text-center px-6 max-w-4xl mx-auto py-24">
           <h2
-            className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance"
+            className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)]"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
             {isRTL
               ? 'مشاعر طفلك أكبر من كلماته'
               : "Your child's emotions feel bigger than their words"}
           </h2>
-          <p className="mt-6 text-lg text-white/80 max-w-2xl mx-auto">
+          <p className="mt-6 text-lg text-white/90 max-w-2xl mx-auto drop-shadow-[0_1px_4px_rgba(0,0,0,0.3)]">
             {isRTL
               ? 'نحن هنا لمساعدتك على فهم ودعم عالمهم العاطفي'
               : "We're here to help you understand and support their emotional world"}
@@ -396,7 +397,7 @@ export default function HomePage() {
             </div>
             <Link
               href={`/${locale}/resources/blog`}
-              className="hidden md:flex items-center gap-1.5 text-[#C4878A] font-semibold text-sm hover:gap-2.5 transition-all"
+              className="hidden md:flex items-center gap-1.5 text-[#7A3B5E] font-semibold text-sm hover:gap-2.5 transition-all"
             >
               {messages.common.viewAll}
               <ArrowIcon className="w-4 h-4" />
@@ -413,16 +414,16 @@ export default function HomePage() {
                 <Link href={`/${locale}/resources/blog`}>
                   <div className="group bg-[#FAF7F2] rounded-2xl overflow-hidden hover:shadow-[var(--shadow-card)] transition-all duration-300">
                     <div className="h-48 bg-gradient-to-br from-[#C4878A]/10 to-[#7A3B5E]/10 flex items-center justify-center">
-                      <BookOpen className="w-10 h-10 text-[#C4878A]/30" />
+                      <BookOpen className="w-10 h-10 text-[#7A3B5E]/30" />
                     </div>
                     <div className="p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-[#C4878A]/10 text-[#C4878A]">
+                        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-[#C4878A]/10 text-[#7A3B5E]">
                           {post.cat}
                         </span>
                         <span className="text-xs text-[#8E8E9F]">{post.time} {isRTL ? 'دقيقة' : 'read'}</span>
                       </div>
-                      <h3 className="font-bold text-[#2D2A33] group-hover:text-[#C4878A] transition-colors leading-snug" style={{ fontFamily: 'var(--font-heading)' }}>
+                      <h3 className="font-bold text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors leading-snug" style={{ fontFamily: 'var(--font-heading)' }}>
                         {isRTL ? post.titleAr : post.title}
                       </h3>
                     </div>
@@ -433,7 +434,7 @@ export default function HomePage() {
           </StaggerReveal>
 
           <div className="mt-8 text-center md:hidden">
-            <Link href={`/${locale}/resources/blog`} className="text-[#C4878A] font-semibold text-sm">
+            <Link href={`/${locale}/resources/blog`} className="text-[#7A3B5E] font-semibold text-sm">
               {messages.common.viewAll} →
             </Link>
           </div>
@@ -458,7 +459,7 @@ export default function HomePage() {
               <input
                 type="email"
                 placeholder={messages.newsletter.placeholder}
-                className="flex-1 rounded-full border border-[#C4878A]/20 px-5 py-3 text-sm bg-white outline-none focus:border-[#C4878A] focus:ring-2 focus:ring-[#C4878A]/10 transition-all"
+                className="flex-1 rounded-full border border-[#C4878A]/20 px-5 py-3 text-sm bg-white outline-none focus:border-[#7A3B5E] focus:ring-2 focus:ring-[#7A3B5E]/10 transition-all"
               />
               <Button type="submit">{messages.newsletter.subscribe}</Button>
             </form>
@@ -477,12 +478,12 @@ export default function HomePage() {
         <div className="container-main relative z-10">
           <ScrollReveal className="text-center max-w-3xl mx-auto">
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold !text-white leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.cta.ready}
             </h2>
-            <p className="mt-6 text-lg lg:text-xl text-white/80 leading-relaxed max-w-xl mx-auto">
+            <p className="mt-6 text-lg lg:text-xl !text-white/80 leading-relaxed max-w-xl mx-auto">
               {messages.cta.readyDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-10">
@@ -492,7 +493,7 @@ export default function HomePage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>
@@ -587,7 +588,7 @@ function TestimonialsSection({
                 </p>
 
                 <div>
-                  <p className="font-bold text-[#C4878A] text-lg">{t.name}</p>
+                  <p className="font-bold text-[#7A3B5E] text-lg">{t.name}</p>
                   <p className="text-sm text-[#8E8E9F] mt-0.5">{isRTL ? t.roleAr : t.role}</p>
                 </div>
               </motion.div>
@@ -599,7 +600,7 @@ function TestimonialsSection({
             <button
               onClick={prev}
               aria-label="Previous testimonial"
-              className="w-11 h-11 rounded-full bg-white shadow-[var(--shadow-subtle)] flex items-center justify-center hover:bg-[#C4878A] hover:text-white text-[#C4878A] transition-all duration-200"
+              className="w-11 h-11 rounded-full bg-white shadow-[var(--shadow-subtle)] flex items-center justify-center hover:bg-[#7A3B5E] hover:text-white text-[#7A3B5E] transition-all duration-200"
             >
               {isRTL ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
             </button>
@@ -610,7 +611,7 @@ function TestimonialsSection({
                   onClick={() => setCurrent(i)}
                   aria-label={`Go to testimonial ${i + 1}`}
                   className={`rounded-full transition-all duration-300 ${
-                    i === current ? 'bg-[#C4878A] w-8 h-2.5' : 'bg-[#C8A97D]/25 hover:bg-[#C8A97D]/50 w-2.5 h-2.5'
+                    i === current ? 'bg-[#7A3B5E] w-8 h-2.5' : 'bg-[#C8A97D]/25 hover:bg-[#C8A97D]/50 w-2.5 h-2.5'
                   }`}
                 />
               ))}
@@ -618,7 +619,7 @@ function TestimonialsSection({
             <button
               onClick={next}
               aria-label="Next testimonial"
-              className="w-11 h-11 rounded-full bg-white shadow-[var(--shadow-subtle)] flex items-center justify-center hover:bg-[#C4878A] hover:text-white text-[#C4878A] transition-all duration-200"
+              className="w-11 h-11 rounded-full bg-white shadow-[var(--shadow-subtle)] flex items-center justify-center hover:bg-[#7A3B5E] hover:text-white text-[#7A3B5E] transition-all duration-200"
             >
               {isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
             </button>

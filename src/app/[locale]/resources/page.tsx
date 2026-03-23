@@ -158,7 +158,7 @@ export default function ResourcesPage() {
                     >
                       {/* Number accent */}
                       <span
-                        className="absolute top-6 right-6 text-5xl font-bold text-[#C4878A]/[0.04]"
+                        className="absolute top-6 right-6 text-5xl font-bold text-[#7A3B5E]/[0.04]"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {String(index + 1).padStart(2, '0')}
@@ -186,7 +186,7 @@ export default function ResourcesPage() {
                       </p>
 
                       {/* Arrow link */}
-                      <div className="flex items-center gap-2 text-[#C4878A] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                      <div className="flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
                         <span>{isRTL ? 'استكشف' : 'Explore'}</span>
                         <Arrow className="w-4 h-4" />
                       </div>
@@ -245,7 +245,7 @@ export default function ResourcesPage() {
                 href={`/${locale}/contact`}
                 variant="secondary"
                 size="lg"
-                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
               >
                 {messages.contact.pageTitle}
               </Button>

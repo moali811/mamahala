@@ -178,7 +178,7 @@ export default function AboutPage() {
                 </div>
                 {/* Floating accent */}
                 <motion.div
-                  className="absolute -bottom-6 -right-6 bg-[#C4878A] text-white rounded-2xl p-5 shadow-lg"
+                  className="absolute -bottom-6 -right-6 bg-[#7A3B5E] text-white rounded-2xl p-5 shadow-lg"
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={viewportOnce}
@@ -357,14 +357,14 @@ export default function AboutPage() {
                           <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
                             <CardIcon className="w-5 h-5 text-[#C8A97D]" />
                           </div>
-                          <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
+                          <h3 className="text-xl font-bold !text-white" style={{ fontFamily: 'var(--font-heading)' }}>
                             {isRTL ? card.titleAr : card.titleEn}
                           </h3>
                         </div>
                         <div className="w-10 h-0.5 bg-[#C8A97D]/40 rounded-full mb-5" />
                         <div className="space-y-4 flex-1">
                           {(isRTL ? card.detailAr : card.detailEn).map((para, pi) => (
-                            <p key={pi} className="text-white/80 leading-relaxed text-[14px]">
+                            <p key={pi} className="!text-white/80 leading-relaxed text-[14px]">
                               {para}
                             </p>
                           ))}
@@ -396,7 +396,7 @@ export default function AboutPage() {
               {isRTL ? 'قيمنا الأساسية' : 'Our Core Values'}
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1]" style={{ fontFamily: 'var(--font-heading)' }}>
-              <span className="text-white">{isRTL ? 'ما ' : 'What We '}</span>
+              <span className="!text-white">{isRTL ? 'ما ' : 'What We '}</span>
               <span className="text-[#C8A97D] italic">{isRTL ? 'نؤمن به' : 'Stand For'}</span>
             </h2>
           </ScrollReveal>
@@ -455,7 +455,7 @@ export default function AboutPage() {
                     {isRTL ? val.titleAr : val.titleEn}
                   </h3>
                   {/* Description */}
-                  <p className="text-white/55 leading-relaxed text-[14px] group-hover:text-white/75 transition-colors duration-500">
+                  <p className="!text-white/55 leading-relaxed text-[14px] group-hover:!text-white/75 transition-colors duration-500">
                     {isRTL ? val.textAr : val.textEn}
                   </p>
                 </motion.div>
@@ -536,11 +536,11 @@ export default function AboutPage() {
                   <div className="flex items-center gap-3 flex-wrap mb-3">
                     <span className="text-xs font-bold uppercase tracking-widest text-[#C8A97D] bg-[#C8A97D]/15 px-3 py-1 rounded-full">Yale University</span>
                   </div>
-                  <h3 className="text-2xl lg:text-3xl font-bold text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+                  <h3 className="text-2xl lg:text-3xl font-bold !text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
                     {isRTL ? 'دكتوراه مهنية في العلوم الصحية الاجتماعية والسلوكية' : 'Professional Doctorate in Social & Behavioral Health Sciences'}
                   </h3>
-                  <p className="text-sm text-white/60 mb-1">{isRTL ? 'تخصص: الطفل والأسرة' : 'Specialization: Child and Family'}</p>
-                  <p className="text-white/75 leading-relaxed text-[15px] max-w-2xl mt-3">
+                  <p className="text-sm !text-white/60 mb-1">{isRTL ? 'تخصص: الطفل والأسرة' : 'Specialization: Child and Family'}</p>
+                  <p className="!text-white/75 leading-relaxed text-[15px] max-w-2xl mt-3">
                     {isRTL
                       ? 'مزودة برؤى ومنهجيات متطورة لدعم الأطفال والأسر بفعالية.'
                       : 'Equipped with cutting-edge insights and methodologies to support children and families effectively.'
@@ -629,18 +629,18 @@ export default function AboutPage() {
               transition={{ delay: 0.1, duration: 0.5, ease }}
             >
               <Sparkles className="w-4 h-4 text-[#C8A97D]" />
-              <span className="text-sm text-white/80 font-medium">
+              <span className="text-sm !text-white/80 font-medium">
                 {isRTL ? 'ابدأ رحلتك اليوم' : 'Start Your Journey Today'}
               </span>
             </motion.div>
 
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold !text-white leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.cta.ready}
             </h2>
-            <p className="mt-6 text-lg lg:text-xl text-white/80 leading-relaxed max-w-xl mx-auto">
+            <p className="mt-6 text-lg lg:text-xl !text-white/80 leading-relaxed max-w-xl mx-auto">
               {messages.cta.readyDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-10">
@@ -650,7 +650,7 @@ export default function AboutPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>
@@ -702,8 +702,8 @@ function FormSelect({ name, label, options, value, error, isTouched, isRTL, onCh
           name={name} value={value} onChange={onChange} onBlur={onBlur} required={required}
           className={`w-full appearance-none bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all pr-10 focus:outline-none focus:ring-2 ${
             hasError ? 'border-red-400 focus:border-red-400 focus:ring-red-100 text-red-700'
-            : value ? 'border-[#C4878A]/30 text-[#2D2A33] focus:border-[#C4878A] focus:ring-[#C4878A]/10'
-            : 'border-[#F3EFE8] text-[#8E8E9F] focus:border-[#C4878A] focus:ring-[#C4878A]/10'
+            : value ? 'border-[#C4878A]/30 text-[#2D2A33] focus:border-[#7A3B5E] focus:ring-[#7A3B5E]/10'
+            : 'border-[#F3EFE8] text-[#8E8E9F] focus:border-[#7A3B5E] focus:ring-[#7A3B5E]/10'
           }`}
         >
           {options.map(o => (<option key={o.value} value={o.value}>{isRTL ? o.labelAr : o.label}</option>))}
@@ -731,13 +731,13 @@ function FormInput({ name, label, value, error, isTouched, type = 'text', onChan
           min={type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
           className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all focus:outline-none focus:ring-2 ${
             hasError ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
-            : isValid ? 'border-[#C4878A]/30 focus:border-[#C4878A] focus:ring-[#C4878A]/10'
-            : 'border-[#F3EFE8] focus:border-[#C4878A] focus:ring-[#C4878A]/10'
+            : isValid ? 'border-[#C4878A]/30 focus:border-[#7A3B5E] focus:ring-[#7A3B5E]/10'
+            : 'border-[#F3EFE8] focus:border-[#7A3B5E] focus:ring-[#7A3B5E]/10'
           } text-[#2D2A33] ${isValid ? 'pr-10' : ''}`}
         />
         {isValid && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <Check className="w-4 h-4 text-[#C4878A]" />
+            <Check className="w-4 h-4 text-[#7A3B5E]" />
           </div>
         )}
       </div>
@@ -880,15 +880,15 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
               <div className={`flex flex-col justify-center p-10 lg:p-14 lg:col-span-3 ${isRTL ? 'lg:order-2' : 'lg:order-1'}`}>
                 <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 w-fit mb-6">
                   <Mic className="w-4 h-4 text-[#C8A97D]" />
-                  <span className="text-xs font-semibold text-white/80 uppercase tracking-wider">
+                  <span className="text-xs font-semibold !text-white/80 uppercase tracking-wider">
                     {isRTL ? 'طلبات الإعلام' : 'Media Requests'}
                   </span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
-                  <span className="text-white">{isRTL ? 'تعرّف على ' : 'Meet '}</span>
+                  <span className="!text-white">{isRTL ? 'تعرّف على ' : 'Meet '}</span>
                   <span className="text-[#C8A97D]">{isRTL ? 'ماما هالة' : 'Mama Hala'}</span>
                 </h2>
-                <p className="text-white/70 leading-relaxed max-w-lg text-[15px]">
+                <p className="!text-white/70 leading-relaxed max-w-lg text-[15px]">
                   {isRTL
                     ? 'دعونا نتواصل ونستكشف كيف يمكننا التعاون ومشاركة الأفكار أو بدء محادثة هادفة.'
                     : "Let's connect and explore how we can collaborate, share insights, or start a meaningful conversation."
@@ -942,7 +942,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                 transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
                 className="w-20 h-20 mx-auto mb-6 bg-[#C4878A]/10 rounded-full flex items-center justify-center"
               >
-                <CheckCircle2 className="w-10 h-10 text-[#C4878A]" />
+                <CheckCircle2 className="w-10 h-10 text-[#7A3B5E]" />
               </motion.div>
               <h3 className="text-2xl font-bold text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
                 {isRTL ? 'تم إرسال طلبك بنجاح!' : 'Request Submitted Successfully!'}
@@ -968,7 +968,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                   <span className="text-xs font-medium text-[#8E8E9F]">
                     {isRTL ? `الخطوة ${step + 1} من 4` : `Step ${step + 1} of 4`}
                   </span>
-                  <span className="text-xs font-semibold text-[#C4878A]">{pct}%</span>
+                  <span className="text-xs font-semibold text-[#7A3B5E]">{pct}%</span>
                 </div>
                 <div className="h-1.5 bg-[#F3EFE8] rounded-full overflow-hidden">
                   <motion.div
@@ -990,12 +990,12 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                         onClick={() => { if (i < step) setStep(i); else if (i === step + 1 && validateStep(step)) setStep(i); }}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                           isActive ? 'bg-white shadow-sm text-[#2D2A33] border border-[#F3EFE8]'
-                          : isDone ? 'text-[#C4878A] cursor-pointer hover:bg-white/60'
+                          : isDone ? 'text-[#7A3B5E] cursor-pointer hover:bg-white/60'
                           : 'text-[#8E8E9F] cursor-default'
                         }`}
                       >
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                          isDone ? 'bg-[#C4878A] text-white' : isActive ? 'bg-[#C4878A]/10 text-[#C4878A]' : 'bg-[#F3EFE8] text-[#8E8E9F]'
+                          isDone ? 'bg-[#7A3B5E] text-white' : isActive ? 'bg-[#C4878A]/10 text-[#7A3B5E]' : 'bg-[#F3EFE8] text-[#8E8E9F]'
                         }`}>
                           {isDone ? <Check className="w-3 h-3" /> : <Icon className="w-3 h-3" />}
                         </div>
@@ -1087,7 +1087,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                               className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm text-[#2D2A33] focus:outline-none focus:ring-2 transition-all resize-none ${
                                 touched.deliverables && errors.deliverables
                                   ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
-                                  : 'border-[#F3EFE8] focus:border-[#C4878A] focus:ring-[#C4878A]/10'
+                                  : 'border-[#F3EFE8] focus:border-[#7A3B5E] focus:ring-[#7A3B5E]/10'
                               }`}
                               placeholder={isRTL ? 'صف المخرجات المتوقعة...' : 'Describe the expected deliverables...'}
                             />
@@ -1113,7 +1113,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                                   key={opt}
                                   className={`flex items-center gap-2.5 px-6 py-3.5 rounded-xl border cursor-pointer transition-all duration-200 ${
                                     formData.willMention === opt
-                                      ? 'bg-[#C4878A] text-white border-[#C4878A] shadow-md shadow-[#C4878A]/15'
+                                      ? 'bg-[#7A3B5E] text-white border-[#C4878A] shadow-md shadow-[#7A3B5E]/15'
                                       : 'bg-[#FAF7F2] text-[#4A4A5C] border-[#F3EFE8] hover:border-[#C4878A]/30 hover:bg-white'
                                   }`}
                                 >

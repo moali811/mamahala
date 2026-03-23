@@ -219,7 +219,7 @@ export default function TermsPage() {
           <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 md:p-8">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-9 h-9 rounded-lg bg-[#C4878A]/10 flex items-center justify-center">
-                <List className="w-4.5 h-4.5 text-[#C4878A]" />
+                <List className="w-4.5 h-4.5 text-[#7A3B5E]" />
               </div>
               <h2 className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D]">
                 {isRTL ? '\u062C\u062F\u0648\u0644 \u0627\u0644\u0645\u062D\u062A\u0648\u064A\u0627\u062A' : 'Table of Contents'}
@@ -232,12 +232,12 @@ export default function TermsPage() {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#C4878A]/5 hover:text-[#C4878A] transition-all duration-200 group"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#7A3B5E]/5 hover:text-[#7A3B5E] transition-all duration-200 group"
                   >
                     <span className="text-xs font-mono text-[#C8A97D] w-5">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#C4878A] transition-colors flex-shrink-0" />
+                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#7A3B5E] transition-colors flex-shrink-0" />
                     <span className="truncate">{isRTL ? section.titleAr : section.titleEn}</span>
                   </a>
                 );
@@ -272,7 +272,7 @@ export default function TermsPage() {
                         : 'border-[#E8E4DD]'
                   }`}>
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      section.highlight ? 'bg-[#C8A97D]/15 text-[#C8A97D]' : 'bg-[#C4878A]/10 text-[#C4878A]'
+                      section.highlight ? 'bg-[#C8A97D]/15 text-[#C8A97D]' : 'bg-[#C4878A]/10 text-[#7A3B5E]'
                     }`}>
                       <Icon className="w-5 h-5" />
                     </div>
@@ -336,7 +336,7 @@ export default function TermsPage() {
                       <div className="mt-4 flex flex-wrap gap-3">
                         <Link
                           href={`/${locale}/contact`}
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#C4878A] bg-[#C4878A]/5 px-4 py-2.5 rounded-xl hover:bg-[#C4878A]/10 transition-colors"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#7A3B5E] bg-[#C4878A]/5 px-4 py-2.5 rounded-xl hover:bg-[#7A3B5E]/10 transition-colors"
                         >
                           <Mail className="w-4 h-4" />
                           {isRTL ? '\u0646\u0645\u0648\u0630\u062C \u0627\u0644\u0627\u062A\u0635\u0627\u0644' : 'Contact Form'}
@@ -354,7 +354,7 @@ export default function TermsPage() {
         <div className="text-center mt-12">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#C4878A] transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
           >
             <ArrowUp className="w-4 h-4" />
             {isRTL ? '\u0627\u0644\u0639\u0648\u062F\u0629 \u0625\u0644\u0649 \u0627\u0644\u0623\u0639\u0644\u0649' : 'Back to top'}

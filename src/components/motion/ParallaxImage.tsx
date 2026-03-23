@@ -47,10 +47,13 @@ export default function ParallaxImage({
         />
       </motion.div>
 
-      {/* Overlay */}
+      {/* Overlay — gradient for better text readability */}
       <div
         className="absolute inset-0"
-        style={{ backgroundColor: overlayColor, opacity: overlayOpacity }}
+        style={{
+          background: `linear-gradient(180deg, ${overlayColor}dd 0%, ${overlayColor}cc 40%, ${overlayColor}88 100%)`,
+          opacity: overlayOpacity,
+        }}
       />
 
       {/* Content */}

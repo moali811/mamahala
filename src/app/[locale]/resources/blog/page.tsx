@@ -188,7 +188,7 @@ export default function BlogListingPage() {
                     px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300
                     ${
                       activeCategory === cat
-                        ? 'bg-[#C4878A] text-white shadow-[0_4px_12px_rgba(43,95,78,0.3)]'
+                        ? 'bg-[#7A3B5E] text-white shadow-[0_4px_12px_rgba(43,95,78,0.3)]'
                         : 'bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] border border-[#F3EFE8]'
                     }
                   `}
@@ -235,12 +235,12 @@ export default function BlogListingPage() {
                     {/* Content */}
                     <div className="p-6 lg:p-8">
                       <h3
-                        className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#C4878A] transition-colors duration-300"
+                        className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#7A3B5E] transition-colors duration-300"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {isRTL ? post.titleAr : post.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-[#C4878A] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                      <div className="flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
                         <span>{messages.common.readMore}</span>
                         <Arrow className="w-4 h-4" />
                       </div>
@@ -296,7 +296,7 @@ export default function BlogListingPage() {
                   />
                   <Button
                     variant="secondary"
-                    className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
+                    className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
                   >
                     {messages.newsletter.subscribe}
                   </Button>

@@ -193,7 +193,7 @@ export default function EventsPage() {
 
                         {/* Title */}
                         <h3
-                          className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#C4878A] transition-colors duration-200"
+                          className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#7A3B5E] transition-colors duration-200"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {title}
@@ -294,12 +294,12 @@ export default function EventsPage() {
               <Sparkles className="w-7 h-7 text-[#C8A97D]" />
             </div>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold !text-white leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.cta.ready}
             </h2>
-            <p className="mt-6 text-lg lg:text-xl text-white/80 leading-relaxed max-w-xl mx-auto">
+            <p className="mt-6 text-lg lg:text-xl !text-white/80 leading-relaxed max-w-xl mx-auto">
               {messages.cta.readyDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-10">
@@ -309,7 +309,7 @@ export default function EventsPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

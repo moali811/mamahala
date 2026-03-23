@@ -29,7 +29,7 @@ export default function FAQsPage() {
     content: <p>{isRTL ? faq.answerAr : faq.answer}</p>,
     icon: (
       <div className="w-9 h-9 rounded-full bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0">
-        <HelpCircle className="w-4 h-4 text-[#C4878A]" />
+        <HelpCircle className="w-4 h-4 text-[#7A3B5E]" />
       </div>
     ),
   }));
@@ -187,7 +187,7 @@ export default function FAQsPage() {
                 variant="secondary"
                 size="lg"
                 icon={<MessageCircle className="w-5 h-5" />}
-                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
               >
                 {messages.contact.pageTitle}
               </Button>

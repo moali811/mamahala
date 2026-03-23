@@ -145,7 +145,7 @@ export default function QuizPage() {
                 <span className="text-sm text-[#8E8E9F]">
                   {isRTL ? `سؤال ${step + 1} من ${questions.length}` : `Question ${step + 1} of ${questions.length}`}
                 </span>
-                <span className="text-sm font-medium text-[#C4878A]">{Math.round(progress)}%</span>
+                <span className="text-sm font-medium text-[#7A3B5E]">{Math.round(progress)}%</span>
               </div>
               <div className="h-2 bg-[#F3EFE8] rounded-full overflow-hidden">
                 <motion.div
@@ -197,11 +197,11 @@ export default function QuizPage() {
                         whileTap={{ scale: 0.98 }}
                       >
                         <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                          isSelected ? 'bg-[#C4878A] text-white' : 'bg-[#F3EFE8] text-[#4A4A5C]'
+                          isSelected ? 'bg-[#7A3B5E] text-white' : 'bg-[#F3EFE8] text-[#4A4A5C]'
                         }`}>
                           <Icon className="w-5 h-5" />
                         </div>
-                        <span className={`font-medium ${isSelected ? 'text-[#C4878A]' : 'text-[#2D2A33]'}`}>
+                        <span className={`font-medium ${isSelected ? 'text-[#7A3B5E]' : 'text-[#2D2A33]'}`}>
                           {isRTL ? option.ar : option.en}
                         </span>
                         {isSelected && (
@@ -229,7 +229,7 @@ export default function QuizPage() {
           >
             <div className="text-center mb-10">
               <div className="w-16 h-16 rounded-full bg-[#C4878A]/10 flex items-center justify-center mx-auto mb-4">
-                <Sparkles className="w-8 h-8 text-[#C4878A]" />
+                <Sparkles className="w-8 h-8 text-[#7A3B5E]" />
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
                 {isRTL ? 'توصياتنا لك' : 'Our Recommendations For You'}
@@ -287,13 +287,13 @@ export default function QuizPage() {
             <div className="mt-10 text-center space-y-4">
               <button
                 onClick={() => { setStep(0); setAnswers([]); setShowResults(false); }}
-                className="text-sm text-[#C4878A] font-semibold hover:text-[#B07578] transition-colors"
+                className="text-sm text-[#7A3B5E] font-semibold hover:text-[#5E2D48] transition-colors"
               >
                 {isRTL ? 'أعد الاختبار' : 'Retake Quiz'}
               </button>
               <p className="text-sm text-[#8E8E9F]">
                 {isRTL ? 'أو' : 'or'}{' '}
-                <a href="https://wa.me/16132222104" target="_blank" rel="noopener noreferrer" className="text-[#C4878A] font-medium hover:underline">
+                <a href="https://wa.me/16132222104" target="_blank" rel="noopener noreferrer" className="text-[#7A3B5E] font-medium hover:underline">
                   {messages.services.chatWhatsApp}
                 </a>
               </p>

@@ -97,7 +97,7 @@ export default function ServicesPage() {
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                   <div className={`flex items-start gap-5 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
                     {/* Icon */}
-                    <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C4878A] to-[#B07578] flex items-center justify-center shadow-lg shadow-[#C4878A]/20">
+                    <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C4878A] to-[#B07578] flex items-center justify-center shadow-lg shadow-[#7A3B5E]/20">
                       <Phone className="w-7 h-7 text-white" />
                     </div>
 
@@ -197,7 +197,7 @@ export default function ServicesPage() {
                       {/* Content */}
                       <div className="p-6 flex-1 flex flex-col">
                         <h3
-                          className="text-lg font-bold text-[#2D2A33] mb-2 group-hover:text-[#C4878A] transition-colors duration-200"
+                          className="text-lg font-bold text-[#2D2A33] mb-2 group-hover:text-[#7A3B5E] transition-colors duration-200"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {name}
@@ -207,7 +207,7 @@ export default function ServicesPage() {
                         </p>
 
                         {/* Learn More link */}
-                        <div className={`mt-5 flex items-center gap-1.5 text-[#C4878A] text-sm font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        <div className={`mt-5 flex items-center gap-1.5 text-[#7A3B5E] text-sm font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
                           <span>{messages.services.learnMore}</span>
                           <ArrowIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
                         </div>
@@ -264,12 +264,12 @@ export default function ServicesPage() {
         <div className="container-main relative z-10">
           <ScrollReveal className="text-center max-w-3xl mx-auto">
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold !text-white leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.cta.ready}
             </h2>
-            <p className="mt-6 text-lg lg:text-xl text-white/80 leading-relaxed max-w-xl mx-auto">
+            <p className="mt-6 text-lg lg:text-xl !text-white/80 leading-relaxed max-w-xl mx-auto">
               {messages.cta.readyDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-10">
@@ -279,7 +279,7 @@ export default function ServicesPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

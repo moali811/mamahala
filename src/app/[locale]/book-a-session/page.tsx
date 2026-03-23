@@ -127,7 +127,7 @@ export default function BookASessionPage() {
                 onClick={() => setShowCalendly(true)}
               >
                 <div className="w-16 h-16 rounded-2xl bg-[#C4878A]/10 flex items-center justify-center mb-5">
-                  <Calendar className="w-8 h-8 text-[#C4878A]" />
+                  <Calendar className="w-8 h-8 text-[#7A3B5E]" />
                 </div>
                 <h3 className="text-xl font-bold text-[#2D2A33] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
                   {isRTL ? 'احجز مباشرة' : 'Book Online'}
@@ -139,10 +139,10 @@ export default function BookASessionPage() {
                   }
                 </p>
                 <div className="flex flex-wrap justify-center gap-2 mb-5">
-                  <span className="inline-flex items-center gap-1.5 text-xs text-[#C4878A] bg-[#C4878A]/5 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-[#7A3B5E] bg-[#C4878A]/5 px-3 py-1.5 rounded-full">
                     <Clock className="w-3.5 h-3.5" /> {isRTL ? '30 دقيقة' : '30 min'}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 text-xs text-[#C4878A] bg-[#C4878A]/5 px-3 py-1.5 rounded-full">
+                  <span className="inline-flex items-center gap-1.5 text-xs text-[#7A3B5E] bg-[#C4878A]/5 px-3 py-1.5 rounded-full">
                     <Globe className="w-3.5 h-3.5" /> {isRTL ? 'عبر الإنترنت' : 'Online'}
                   </span>
                 </div>
@@ -207,7 +207,7 @@ export default function BookASessionPage() {
                   <div className="flex items-center justify-between p-5 border-b border-[#F3EFE8]">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-[#C4878A]/10 flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-[#C4878A]" />
+                        <Calendar className="w-5 h-5 text-[#7A3B5E]" />
                       </div>
                       <div>
                         <h3 className="font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
@@ -274,7 +274,7 @@ export default function BookASessionPage() {
                     onClick={() => setOpenCategory(isOpen ? null : cat.key)}
                     className="w-full flex items-center gap-4 p-6 md:p-7 text-start"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-[#C4878A]/10 text-[#C4878A] flex items-center justify-center flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-[#C4878A]/10 text-[#7A3B5E] flex items-center justify-center flex-shrink-0">
                       <IconComponent className="w-6 h-6" />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -313,7 +313,7 @@ export default function BookASessionPage() {
                                     className="group bg-[#FAF7F2] rounded-xl p-5 border border-[#F3EFE8] hover:border-[#C4878A]/20 hover:bg-white hover:shadow-[var(--shadow-subtle)] transition-all duration-300"
                                   >
                                     <div className="flex items-start justify-between mb-2">
-                                      <h4 className="font-semibold text-[#2D2A33] group-hover:text-[#C4878A] transition-colors text-sm">
+                                      <h4 className="font-semibold text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors text-sm">
                                         {sName}
                                       </h4>
                                       <Badge variant="sand" size="sm">${service.priceFrom}+</Badge>
@@ -327,7 +327,7 @@ export default function BookASessionPage() {
                                           setShowCalendly(true);
                                           window.scrollTo({ top: 0, behavior: 'smooth' });
                                         }}
-                                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#C4878A]"
+                                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#7A3B5E]"
                                       >
                                         <Calendar className="w-3.5 h-3.5" />
                                         {messages.services.bookOnline}
@@ -337,7 +337,7 @@ export default function BookASessionPage() {
                                         href={getWhatsAppLink(service.name)}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#8E8E9F] hover:text-[#C4878A]"
+                                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#8E8E9F] hover:text-[#7A3B5E]"
                                       >
                                         <MessageCircle className="w-3.5 h-3.5" />
                                         WhatsApp
@@ -362,7 +362,7 @@ export default function BookASessionPage() {
             <p className="text-[#8E8E9F] mb-4">{messages.booking.notSure}</p>
             <Link
               href={`/${locale}/quiz`}
-              className="inline-flex items-center gap-2 text-[#C4878A] font-semibold hover:text-[#B07578] transition-colors"
+              className="inline-flex items-center gap-2 text-[#7A3B5E] font-semibold hover:text-[#5E2D48] transition-colors"
             >
               <Sparkles className="w-5 h-5" />
               {messages.booking.takeQuiz}

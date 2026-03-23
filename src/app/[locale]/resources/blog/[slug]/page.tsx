@@ -282,7 +282,7 @@ export default function BlogPostPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-[#C4878A]/10 flex items-center justify-center">
-                        <User className="w-5 h-5 text-[#C4878A]" />
+                        <User className="w-5 h-5 text-[#7A3B5E]" />
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-[#2D2A33]">
@@ -293,7 +293,7 @@ export default function BlogPostPage() {
                         </p>
                       </div>
                     </div>
-                    <button className="flex items-center gap-2 text-[#8E8E9F] hover:text-[#C4878A] transition-colors">
+                    <button className="flex items-center gap-2 text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
                       <Share2 className="w-4 h-4" />
                       <span className="text-sm">{messages.common.share}</span>
                     </button>
@@ -411,12 +411,12 @@ export default function BlogPostPage() {
 
                     <div className="p-6">
                       <h3
-                        className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#C4878A] transition-colors duration-300"
+                        className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#7A3B5E] transition-colors duration-300"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {isRTL ? related.titleAr : related.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-[#C4878A] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                      <div className="flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
                         <span>{messages.common.readMore}</span>
                         <Arrow className="w-4 h-4" />
                       </div>

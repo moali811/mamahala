@@ -124,7 +124,7 @@ export default function ServiceDetailPage() {
                     transition={{ delay: i * 0.08 }}
                   >
                     <div className="w-6 h-6 rounded-full bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5 text-[#C4878A]" />
+                      <Check className="w-3.5 h-3.5 text-[#7A3B5E]" />
                     </div>
                     <span className="text-[#4A4A5C]">{item}</span>
                   </motion.div>
@@ -256,7 +256,7 @@ export default function ServiceDetailPage() {
                       <Link
                         key={rs.slug}
                         href={`/${locale}/services/${category}/${rs.slug}`}
-                        className="block text-sm text-[#4A4A5C] hover:text-[#C4878A] transition-colors py-1"
+                        className="block text-sm text-[#4A4A5C] hover:text-[#7A3B5E] transition-colors py-1"
                       >
                         {isRTL ? rs.nameAr : rs.name}
                         <span className="text-xs text-[#8E8E9F] block">

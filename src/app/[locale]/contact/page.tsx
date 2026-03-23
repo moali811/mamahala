@@ -186,7 +186,7 @@ export default function ContactPage() {
                         }}
                         className="w-20 h-20 rounded-full bg-[#C4878A]/10 flex items-center justify-center mb-6"
                       >
-                        <CheckCircle2 className="w-10 h-10 text-[#C4878A]" />
+                        <CheckCircle2 className="w-10 h-10 text-[#7A3B5E]" />
                       </motion.div>
                       <h3
                         className="text-2xl font-bold text-[#2D2A33] mb-2"
@@ -260,18 +260,18 @@ export default function ContactPage() {
                           className="
                             peer w-full px-4 pt-6 pb-3 rounded-xl border bg-white text-[#2D2A33]
                             transition-all duration-200 outline-none resize-none
-                            border-[#F3EFE8] focus:border-[#C4878A] focus:ring-2 focus:ring-[#C4878A]/10
+                            border-[#F3EFE8] focus:border-[#7A3B5E] focus:ring-2 focus:ring-[#7A3B5E]/10
                             hover:border-[#C4878A]/30 placeholder-transparent
                           "
                         />
                         <label
                           htmlFor="message"
                           className="
-                            absolute left-4 top-2 text-xs font-medium text-[#C4878A]
+                            absolute left-4 top-2 text-xs font-medium text-[#7A3B5E]
                             transition-all duration-200 pointer-events-none
                             peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm
                             peer-placeholder-shown:text-[#8E8E9F] peer-placeholder-shown:font-normal
-                            peer-focus:top-2 peer-focus:text-xs peer-focus:font-medium peer-focus:text-[#C4878A]
+                            peer-focus:top-2 peer-focus:text-xs peer-focus:font-medium peer-focus:text-[#7A3B5E]
                           "
                         >
                           {messages.contact.messageField}
@@ -338,7 +338,7 @@ export default function ContactPage() {
                   const inner = (
                     <div className="flex items-start gap-4 bg-white rounded-2xl p-5 border border-[#F3EFE8] hover:border-[#C4878A]/20 hover:shadow-[var(--shadow-subtle)] transition-all duration-300 h-full">
                       <div className="w-11 h-11 rounded-xl bg-[#C4878A]/[0.08] flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-[#C4878A]" />
+                        <Icon className="w-5 h-5 text-[#7A3B5E]" />
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-semibold uppercase tracking-wider text-[#8E8E9F] mb-0.5">
@@ -377,7 +377,7 @@ export default function ContactPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={s.label}
-                        className="w-11 h-11 rounded-xl bg-[#FAF7F2] flex items-center justify-center text-[#4A4A5C] hover:bg-[#C4878A] hover:text-white transition-all duration-200"
+                        className="w-11 h-11 rounded-xl bg-[#FAF7F2] flex items-center justify-center text-[#4A4A5C] hover:bg-[#7A3B5E] hover:text-white transition-all duration-200"
                         whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.95 }}
                       >

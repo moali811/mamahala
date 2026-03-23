@@ -329,7 +329,7 @@ export default function BookingPolicyPage() {
         <div className="container-main max-w-5xl">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-14">
-              <p className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C4878A] mb-3">
+              <p className="text-sm font-semibold tracking-[0.15em] uppercase text-[#7A3B5E] mb-3">
                 {t('Getting Started', 'البدء')}
               </p>
               <h2
@@ -356,11 +356,11 @@ export default function BookingPolicyPage() {
                     className="relative bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 h-full"
                     whileHover={{ y: -4, transition: { duration: 0.3 } }}
                   >
-                    <span className="text-[40px] font-bold text-[#C4878A]/[0.07] absolute top-4 right-5 leading-none select-none" style={{ fontFamily: 'var(--font-heading)' }}>
+                    <span className="text-[40px] font-bold text-[#7A3B5E]/[0.07] absolute top-4 right-5 leading-none select-none" style={{ fontFamily: 'var(--font-heading)' }}>
                       {step.step}
                     </span>
                     <div className="w-12 h-12 rounded-xl bg-[#C4878A]/10 flex items-center justify-center mb-4">
-                      <Icon className="w-5 h-5 text-[#C4878A]" />
+                      <Icon className="w-5 h-5 text-[#7A3B5E]" />
                     </div>
                     <h3
                       className="text-base font-bold text-[#2D2A33] mb-2"
@@ -423,7 +423,7 @@ export default function BookingPolicyPage() {
                     transition={{ delay: idx * 0.1, duration: 0.5, ease }}
                   >
                     <div className="w-6 h-6 rounded-full bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#C4878A]" />
+                      <CheckCircle2 className="w-4 h-4 text-[#7A3B5E]" />
                     </div>
                     <p className="text-[15px] text-[#4A4A5C] leading-relaxed">
                       {point}
@@ -504,7 +504,7 @@ export default function BookingPolicyPage() {
               <div className="bg-gradient-to-r from-[#C4878A]/5 via-transparent to-transparent border-b border-[#F3EFE8] px-6 md:px-10 py-6">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-xl bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0">
-                    <Video className="w-5 h-5 text-[#C4878A]" />
+                    <Video className="w-5 h-5 text-[#7A3B5E]" />
                   </div>
                   <div>
                     <h2
@@ -537,7 +537,7 @@ export default function BookingPolicyPage() {
                       transition={{ delay: idx * 0.1, duration: 0.5, ease }}
                     >
                       <div className="w-10 h-10 rounded-xl bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-[#C4878A]" />
+                        <Icon className="w-5 h-5 text-[#7A3B5E]" />
                       </div>
                       <p className="text-[15px] text-[#4A4A5C] leading-relaxed pt-2">
                         {guideline.text}

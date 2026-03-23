@@ -55,7 +55,7 @@ export default function AnimatedCounter({ value, label, className = '' }: Animat
       transition={{ duration: 0.5 }}
     >
       <div
-        className="text-3xl lg:text-4xl font-bold text-[#C4878A]"
+        className="text-3xl lg:text-4xl font-bold text-[#7A3B5E]"
         style={{ fontFamily: 'var(--font-heading)' }}
       >
         {displayValue}
