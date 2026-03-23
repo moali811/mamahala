@@ -7,7 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowRight, ArrowLeft, ChevronLeft, ChevronRight,
   Calendar, MessageCircle, Sparkles, Baby, Users, User, Heart,
-  Brain, Shield, Compass, Zap, Check,
+  Brain, Shield, Compass, Zap, Check, Flame, BookOpen, HeartHandshake,
+  Lightbulb, AlertTriangle, HandHeart, Eye, MessageSquare, Frown,
+  GraduationCap, TreePine, Activity,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { services } from '@/data/services';
@@ -20,7 +22,67 @@ interface QuizAnswer {
   answer: string;
 }
 
-const questions = [
+// Q2 options tailored to each Q1 answer
+const concernOptionsMap: Record<string, Array<{ value: string; en: string; ar: string; desc: string; descAr: string; icon: React.ComponentType<{ className?: string }> }>> = {
+  child: [
+    { value: 'emotions', en: 'Big emotions & meltdowns', ar: 'مشاعر كبيرة ونوبات غضب', desc: 'Tantrums, crying spells, difficulty calming down', descAr: 'نوبات غضب، بكاء، صعوبة في التهدئة', icon: Flame },
+    { value: 'behavior', en: 'Challenging behavior', ar: 'سلوك صعب', desc: 'Defiance, aggression, not listening, acting out', descAr: 'تحدي، عدوانية، عدم الاستماع، تصرفات سلبية', icon: AlertTriangle },
+    { value: 'focus', en: 'Focus & attention (ADHD)', ar: 'التركيز والانتباه (ADHD)', desc: 'Difficulty concentrating, hyperactivity, impulsivity', descAr: 'صعوبة في التركيز، فرط نشاط، اندفاعية', icon: Zap },
+    { value: 'anxiety', en: 'Fears, anxiety & worry', ar: 'مخاوف وقلق وتوتر', desc: 'Separation anxiety, social fears, nightmares, phobias', descAr: 'قلق الانفصال، مخاوف اجتماعية، كوابيس', icon: Shield },
+    { value: 'social', en: 'Social skills & friendships', ar: 'المهارات الاجتماعية والصداقات', desc: 'Difficulty making friends, bullying, shyness', descAr: 'صعوبة في تكوين صداقات، تنمر، خجل', icon: Users },
+    { value: 'school', en: 'School struggles', ar: 'صعوبات مدرسية', desc: 'Academic challenges, school refusal, learning gaps', descAr: 'تحديات أكاديمية، رفض المدرسة، فجوات تعلم', icon: GraduationCap },
+  ],
+  teen: [
+    { value: 'behavior', en: 'Risky or rebellious behavior', ar: 'سلوك خطير أو متمرد', desc: 'Substance use, lying, sneaking out, rule-breaking', descAr: 'تعاطي مواد، كذب، تسلل، كسر القواعد', icon: AlertTriangle },
+    { value: 'emotions', en: 'Mood swings & emotional outbursts', ar: 'تقلبات مزاجية ونوبات عاطفية', desc: 'Anger, irritability, withdrawal, low motivation', descAr: 'غضب، عصبية، انسحاب، انخفاض الدافع', icon: Flame },
+    { value: 'anxiety', en: 'Anxiety, depression or self-harm', ar: 'قلق، اكتئاب أو إيذاء ذاتي', desc: 'Persistent worry, sadness, low self-esteem, self-harm concerns', descAr: 'قلق مستمر، حزن، تدني تقدير الذات، مخاوف إيذاء ذاتي', icon: Frown },
+    { value: 'screens', en: 'Screen addiction & digital life', ar: 'إدمان الشاشات والحياة الرقمية', desc: 'Gaming addiction, social media issues, cyberbullying', descAr: 'إدمان الألعاب، مشاكل وسائل التواصل، التنمر الإلكتروني', icon: Eye },
+    { value: 'identity', en: 'Identity & peer pressure', ar: 'الهوية وضغط الأقران', desc: 'Struggling with identity, fitting in, cultural conflicts', descAr: 'صراع مع الهوية، الاندماج، صراعات ثقافية', icon: Compass },
+    { value: 'academic', en: 'Academic pressure & future planning', ar: 'ضغط أكاديمي وتخطيط مستقبلي', desc: 'Study stress, career confusion, exam anxiety', descAr: 'ضغط الدراسة، حيرة مهنية، قلق الامتحانات', icon: GraduationCap },
+  ],
+  myself: [
+    { value: 'anxiety', en: 'Anxiety, stress or overwhelm', ar: 'قلق، توتر أو إرهاق', desc: 'Racing thoughts, panic attacks, burnout, constant worry', descAr: 'أفكار متسارعة، نوبات هلع، إرهاق، قلق مستمر', icon: Brain },
+    { value: 'depression', en: 'Low mood or depression', ar: 'مزاج منخفض أو اكتئاب', desc: 'Feeling stuck, hopeless, unmotivated, loss of interest', descAr: 'الشعور بالعجز، فقدان الأمل، انخفاض الدافعية', icon: Frown },
+    { value: 'anger', en: 'Anger management', ar: 'إدارة الغضب', desc: 'Frequent anger, difficulty controlling reactions, outbursts', descAr: 'غضب متكرر، صعوبة في السيطرة على ردود الفعل', icon: Flame },
+    { value: 'growth', en: 'Personal growth & life direction', ar: 'النمو الشخصي واتجاه الحياة', desc: 'Life transitions, finding purpose, building confidence', descAr: 'تحولات حياتية، إيجاد الهدف، بناء الثقة', icon: Lightbulb },
+    { value: 'self-esteem', en: 'Self-esteem & confidence', ar: 'تقدير الذات والثقة', desc: 'Negative self-talk, people-pleasing, boundaries', descAr: 'حديث ذاتي سلبي، إرضاء الآخرين، الحدود', icon: Shield },
+    { value: 'lifestyle', en: 'Lifestyle & wellness coaching', ar: 'تدريب نمط الحياة والعافية', desc: 'Healthy habits, work-life balance, goal setting', descAr: 'عادات صحية، توازن بين العمل والحياة، تحديد الأهداف', icon: Activity },
+  ],
+  couple: [
+    { value: 'communication', en: 'Communication breakdown', ar: 'انهيار التواصل', desc: 'Constant arguments, not feeling heard, emotional distance', descAr: 'شجارات مستمرة، عدم الشعور بالاستماع، مسافة عاطفية', icon: MessageSquare },
+    { value: 'trust', en: 'Trust & betrayal issues', ar: 'مشاكل الثقة والخيانة', desc: 'Infidelity recovery, rebuilding trust, transparency', descAr: 'التعافي من الخيانة، إعادة بناء الثقة، الشفافية', icon: Shield },
+    { value: 'premarital', en: 'Pre-marriage preparation', ar: 'التحضير لما قبل الزواج', desc: 'Readiness assessment, expectations, conflict styles', descAr: 'تقييم الاستعداد، التوقعات، أنماط النزاع', icon: HeartHandshake },
+    { value: 'intimacy', en: 'Emotional or physical disconnect', ar: 'انفصال عاطفي أو جسدي', desc: 'Lost connection, different needs, feeling like roommates', descAr: 'فقدان الاتصال، احتياجات مختلفة، الشعور كشركاء سكن', icon: Heart },
+    { value: 'conflict', en: 'Recurring conflicts & patterns', ar: 'نزاعات وأنماط متكررة', desc: 'Same fights on repeat, power struggles, resentment', descAr: 'نفس الشجارات تتكرر، صراعات السلطة، الاستياء', icon: Flame },
+    { value: 'parenting', en: 'Co-parenting disagreements', ar: 'خلافات الأبوة المشتركة', desc: 'Different parenting styles, discipline conflicts, blended families', descAr: 'أنماط أبوة مختلفة، نزاعات التأديب، العائلات المختلطة', icon: Users },
+  ],
+  family: [
+    { value: 'communication', en: 'Family communication & conflict', ar: 'التواصل والنزاع العائلي', desc: 'Constant tension, yelling, siblings fighting, no one listens', descAr: 'توتر مستمر، صراخ، شجارات الأخوة، لا أحد يستمع', icon: MessageSquare },
+    { value: 'parenting', en: 'Parenting challenges', ar: 'تحديات الأبوة', desc: 'Discipline strategies, setting boundaries, consistency', descAr: 'استراتيجيات التأديب، وضع الحدود، الاتساق', icon: HandHeart },
+    { value: 'transition', en: 'Family transition or crisis', ar: 'انتقال عائلي أو أزمة', desc: 'Divorce, relocation, loss, new family member, blending families', descAr: 'طلاق، انتقال، فقدان، فرد جديد، دمج عائلات', icon: Compass },
+    { value: 'dynamics', en: 'Unhealthy family patterns', ar: 'أنماط عائلية غير صحية', desc: 'Codependency, favoritism, toxic patterns, generational trauma', descAr: 'التبعية، المحاباة، أنماط سامة، صدمات بين الأجيال', icon: AlertTriangle },
+    { value: 'teens', en: 'Struggling with a teen at home', ar: 'صعوبات مع مراهق في المنزل', desc: 'Parent-teen conflicts, boundaries being pushed, disconnect', descAr: 'نزاعات الوالد-المراهق، دفع الحدود، انفصال', icon: Shield },
+    { value: 'wellbeing', en: 'Building a healthier family culture', ar: 'بناء ثقافة عائلية أكثر صحة', desc: 'Quality time, emotional safety, better routines', descAr: 'وقت نوعي، أمان عاطفي، روتين أفضل', icon: TreePine },
+  ],
+};
+
+type QuizOption = {
+  value: string;
+  en: string;
+  ar: string;
+  desc?: string;
+  descAr?: string;
+  icon: React.ComponentType<{ className?: string }>;
+};
+
+type QuizQuestion = {
+  id: number;
+  en: string;
+  ar: string;
+  options: QuizOption[];
+};
+
+const baseQuestions: QuizQuestion[] = [
   {
     id: 1,
     en: 'Who needs support?',
@@ -28,7 +90,7 @@ const questions = [
     options: [
       { value: 'child', en: 'My child (under 12)', ar: 'طفلي (أقل من 12)', icon: Baby },
       { value: 'teen', en: 'My teenager (13-17)', ar: 'ابني المراهق (13-17)', icon: Shield },
-      { value: 'myself', en: 'Myself', ar: 'أنا', icon: User },
+      { value: 'myself', en: 'Myself', ar: 'أنا شخصيًا', icon: User },
       { value: 'couple', en: 'My partner & me', ar: 'شريكي وأنا', icon: Heart },
       { value: 'family', en: 'Our whole family', ar: 'عائلتنا بأكملها', icon: Users },
     ],
@@ -37,21 +99,15 @@ const questions = [
     id: 2,
     en: 'What area concerns you most?',
     ar: 'ما هو المجال الأكثر إثارة للقلق؟',
-    options: [
-      { value: 'behavior', en: 'Behavior & discipline', ar: 'السلوك والانضباط', icon: Shield },
-      { value: 'emotions', en: 'Emotional regulation', ar: 'التنظيم العاطفي', icon: Brain },
-      { value: 'communication', en: 'Communication & relationships', ar: 'التواصل والعلاقات', icon: Users },
-      { value: 'anxiety', en: 'Anxiety or stress', ar: 'القلق أو التوتر', icon: Compass },
-      { value: 'growth', en: 'Personal growth & direction', ar: 'النمو الشخصي والتوجيه', icon: Zap },
-    ],
+    options: [], // dynamically populated
   },
   {
     id: 3,
     en: 'Have you had counseling before?',
-    ar: 'هل سبق لك أن حصلت على استشارة؟',
+    ar: 'هل سبق لك أن حصلت على استشارة من قبل؟',
     options: [
       { value: 'no', en: 'No, this is my first time', ar: 'لا، هذه أول مرة', icon: Sparkles },
-      { value: 'yes', en: 'Yes, I have experience', ar: 'نعم، لدي خبرة', icon: Check },
+      { value: 'yes', en: 'Yes, I have experience', ar: 'نعم، لدي تجربة سابقة', icon: Check },
     ],
   },
   {
@@ -71,20 +127,56 @@ function getRecommendations(answers: QuizAnswer[]) {
 
   let recommended: typeof services = [];
 
-  if (who === 'child' || who === 'teen') {
+  if (who === 'child') {
     recommended = services.filter((s) => s.category === 'youth');
-    if (concern === 'behavior') recommended = recommended.filter((s) => s.slug.includes('behavioral') || s.slug.includes('bullying'));
+    if (concern === 'emotions') recommended = recommended.filter((s) => s.slug.includes('emotion') || s.slug.includes('cbt'));
+    else if (concern === 'behavior') recommended = recommended.filter((s) => s.slug.includes('behavioral'));
+    else if (concern === 'focus') recommended = recommended.filter((s) => s.slug.includes('adhd') || s.slug.includes('executive') || s.slug.includes('cbt'));
+    else if (concern === 'anxiety') recommended = recommended.filter((s) => s.slug.includes('anxiety') || s.slug.includes('cbt') || s.slug.includes('emotion'));
+    else if (concern === 'social') recommended = recommended.filter((s) => s.slug.includes('bullying') || s.slug.includes('social') || s.slug.includes('emotion'));
+    else if (concern === 'school') recommended = recommended.filter((s) => s.slug.includes('adhd') || s.slug.includes('executive') || s.slug.includes('behavioral'));
+  } else if (who === 'teen') {
+    recommended = services.filter((s) => s.category === 'youth');
+    if (concern === 'behavior') recommended = recommended.filter((s) => s.slug.includes('behavioral') || s.slug.includes('teen'));
     else if (concern === 'emotions') recommended = recommended.filter((s) => s.slug.includes('emotion') || s.slug.includes('cbt'));
+    else if (concern === 'anxiety') recommended = recommended.filter((s) => s.slug.includes('anxiety') || s.slug.includes('cbt') || s.slug.includes('emotion'));
+    else if (concern === 'screens') recommended = recommended.filter((s) => s.slug.includes('behavioral') || s.slug.includes('teen'));
+    else if (concern === 'identity') recommended = recommended.filter((s) => s.slug.includes('self') || s.slug.includes('emotion') || s.slug.includes('cbt'));
+    else if (concern === 'academic') recommended = recommended.filter((s) => s.slug.includes('adhd') || s.slug.includes('executive') || s.slug.includes('behavioral'));
   } else if (who === 'couple') {
     recommended = services.filter((s) => s.category === 'couples');
+    if (concern === 'premarital') recommended = recommended.filter((s) => s.slug.includes('pre-marriage') || s.slug.includes('premarital'));
+    else if (concern === 'communication') recommended = recommended.filter((s) => s.slug.includes('communication') || s.slug.includes('couples-counseling'));
+    else if (concern === 'trust') recommended = recommended.filter((s) => s.slug.includes('counseling') || s.slug.includes('restoration'));
+    else if (concern === 'intimacy') recommended = recommended.filter((s) => s.slug.includes('counseling') || s.slug.includes('enrichment'));
+    else if (concern === 'conflict') recommended = recommended.filter((s) => s.slug.includes('conflict') || s.slug.includes('counseling'));
+    else if (concern === 'parenting') recommended = recommended.filter((s) => s.slug.includes('co-parenting') || s.slug.includes('parenting'));
   } else if (who === 'family') {
     recommended = services.filter((s) => s.category === 'families');
+    if (concern === 'parenting') recommended = recommended.filter((s) => s.slug.includes('parenting') || s.slug.includes('education'));
+    else if (concern === 'communication') recommended = recommended.filter((s) => s.slug.includes('communication') || s.slug.includes('family-counseling'));
+    else if (concern === 'transition') recommended = recommended.filter((s) => s.slug.includes('crisis') || s.slug.includes('counseling'));
+    else if (concern === 'dynamics') recommended = recommended.filter((s) => s.slug.includes('counseling') || s.slug.includes('parenting'));
+    else if (concern === 'teens') recommended = [...services.filter((s) => s.category === 'families'), ...services.filter((s) => s.category === 'youth' && s.slug.includes('teen'))];
+    else if (concern === 'wellbeing') recommended = recommended.filter((s) => s.slug.includes('enrichment') || s.slug.includes('education') || s.slug.includes('parenting'));
   } else {
+    // myself
     recommended = services.filter((s) => s.category === 'adults');
-    if (concern === 'anxiety') recommended = recommended.filter((s) => s.slug.includes('anxiety') || s.slug.includes('cbt'));
+    if (concern === 'anxiety') recommended = recommended.filter((s) => s.slug.includes('anxiety') || s.slug.includes('cbt') || s.slug.includes('stress'));
+    else if (concern === 'depression') recommended = recommended.filter((s) => s.slug.includes('cbt') || s.slug.includes('counseling') || s.slug.includes('self'));
+    else if (concern === 'anger') recommended = recommended.filter((s) => s.slug.includes('anger') || s.slug.includes('cbt'));
     else if (concern === 'growth') recommended = recommended.filter((s) => s.slug.includes('life-coaching') || s.slug.includes('self-development') || s.slug.includes('lifestyle'));
+    else if (concern === 'self-esteem') recommended = recommended.filter((s) => s.slug.includes('self') || s.slug.includes('cbt') || s.slug.includes('coaching'));
+    else if (concern === 'lifestyle') recommended = recommended.filter((s) => s.slug.includes('lifestyle') || s.slug.includes('coaching') || s.slug.includes('wellness'));
   }
 
+  // Fallback: if no specific match, show all in category, or consultation
+  if (recommended.length === 0) {
+    if (who === 'child' || who === 'teen') recommended = services.filter((s) => s.category === 'youth');
+    else if (who === 'couple') recommended = services.filter((s) => s.category === 'couples');
+    else if (who === 'family') recommended = services.filter((s) => s.category === 'families');
+    else recommended = services.filter((s) => s.category === 'adults');
+  }
   if (recommended.length === 0) recommended = services.filter((s) => s.slug === 'online-consultation');
   return recommended.slice(0, 3);
 }
@@ -100,6 +192,15 @@ export default function QuizPage() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
   const [showResults, setShowResults] = useState(false);
+
+  // Dynamically build Q2 based on Q1 answer
+  const whoAnswer = answers.find((a) => a.question === 1)?.answer || '';
+  const questions: QuizQuestion[] = baseQuestions.map((q) => {
+    if (q.id === 2) {
+      return { ...q, options: concernOptionsMap[whoAnswer] || concernOptionsMap['myself'] };
+    }
+    return q;
+  });
 
   const currentQuestion = questions[step];
   const progress = ((step + 1) / questions.length) * 100;
@@ -203,9 +304,16 @@ export default function QuizPage() {
                         }`}>
                           <Icon className="w-5 h-5" />
                         </div>
-                        <span className={`font-medium ${isSelected ? 'text-[#7A3B5E]' : 'text-[#2D2A33]'}`}>
-                          {isRTL ? option.ar : option.en}
-                        </span>
+                        <div className="flex-1 min-w-0">
+                          <span className={`font-medium block ${isSelected ? 'text-[#7A3B5E]' : 'text-[#2D2A33]'}`}>
+                            {isRTL ? option.ar : option.en}
+                          </span>
+                          {option.desc && (
+                            <span className="text-xs text-[#8E8E9F] mt-0.5 block leading-relaxed">
+                              {isRTL ? option.descAr : option.desc}
+                            </span>
+                          )}
+                        </div>
                         {isSelected && (
                           <motion.div
                             initial={{ scale: 0 }}
