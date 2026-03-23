@@ -4,353 +4,624 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-  CalendarCheck, Clock, XCircle, RefreshCw, CreditCard,
-  AlertTriangle, Video, Globe, MessageSquare, Mail,
-  TimerOff, Ban, CheckCircle2, Gavel,
+  Calendar,
+  Clock,
+  MessageCircle,
+  CreditCard,
+  Video,
+  AlertTriangle,
+  Ban,
+  CheckCircle2,
+  Shield,
+  Globe,
+  Phone,
+  ArrowRight,
+  ArrowLeft,
+  Wifi,
+  Lock,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
-import { fadeUp, staggerContainer } from '@/lib/animations';
-import ScrollReveal from '@/components/motion/ScrollReveal';
+import { fadeUp, staggerContainer, ease } from '@/lib/animations';
+import ScrollReveal, {
+  StaggerReveal,
+  StaggerChild,
+} from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
+import Button from '@/components/ui/Button';
 
-interface Section {
-  id: string;
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  content: string;
-  list?: string[];
-  afterList?: string;
-  highlight?: boolean;
-  isLast?: boolean;
-}
-
-const sections: Section[] = [
-  {
-    id: 'booking',
-    icon: CalendarCheck,
-    title: 'Booking Sessions',
-    content: `Sessions can be booked through our website via Calendly or by contacting us on WhatsApp. We recommend booking at least 48 hours in advance to ensure availability.\n\nAll bookings are confirmed once payment has been received and processed through our secure third-party payment system. You will receive an email confirmation with your session details, including the date, time, and meeting link for online sessions.`,
-  },
-  {
-    id: 'session-format',
-    icon: Video,
-    title: 'Session Format',
-    content: `Most sessions are conducted online via secure video conferencing to support our global client base. Sessions are available in both English and Arabic.\n\nSession duration varies by service type but is typically between 30 and 60 minutes. Please ensure you are in a quiet, private environment for your session with a stable internet connection.`,
-    list: [
-      'Initial Consultation: 30 minutes',
-      'Individual Sessions: 45\u201360 minutes',
-      'Couples & Family Sessions: 60 minutes',
-      'Experiential Therapy: Duration varies by activity',
-    ],
-  },
-  {
-    id: 'pricing',
-    icon: CreditCard,
-    title: 'Pricing & Payment',
-    content: `Our pricing is region-based and takes into account factors such as age, case complexity, and service type. Starting rates are listed on our services pages, and exact pricing will be confirmed during your initial consultation.\n\nPayment is required prior to or at the time of the session. We accept payments through our secure third-party payment processor. All payment processing issues should be resolved directly with the processor.`,
-    list: [
-      'Prices vary by region (Middle East, North America, other)',
-      'Age-adjusted pricing available for youth services',
-      'Package rates available for ongoing support plans',
-      'Free initial consultations are available with limited scope',
-    ],
-    highlight: true,
-  },
-  {
-    id: 'cancellation',
-    icon: XCircle,
-    title: 'Cancellation Policy',
-    content: `We kindly ask for a minimum of 24 hours\u2019 notice for any appointment cancellations. While we understand that unforeseen circumstances may arise, last-minute cancellations make it difficult to accommodate other clients.`,
-    list: [
-      '24+ hours notice: Free cancellation, no charge',
-      'Less than 24 hours notice: 50% of the session fee applies',
-      'No-show without notice: Full session fee applies',
-    ],
-    afterList: 'Your understanding and cooperation in honoring this policy enables us to maintain the quality of service for all our clients and sustain our business operations effectively.',
-    highlight: true,
-  },
-  {
-    id: 'rescheduling',
-    icon: RefreshCw,
-    title: 'Rescheduling',
-    content: `We understand that life happens. Sessions can be rescheduled free of charge with at least 24 hours\u2019 notice. We allow one reschedule per booking to ensure fair scheduling for all clients.\n\nTo reschedule, please contact us via WhatsApp or email at admin@mamahala.ca with your preferred new time. We will do our best to accommodate your request based on availability.`,
-  },
-  {
-    id: 'late-arrivals',
-    icon: TimerOff,
-    title: 'Late Arrivals',
-    content: `If you arrive late to your session, the session will begin and end at the originally scheduled time. Session time will not be extended to compensate for late arrival.\n\nIf you are more than 15 minutes late without prior communication, the session may be considered a no-show and the full session fee will apply. Please contact us as soon as possible if you are running late.`,
-  },
-  {
-    id: 'refunds',
-    icon: Ban,
-    title: 'Refunds',
-    content: `Payments are not refundable under any circumstances, including but not limited to the termination of any agreement for whatsoever reason. This applies to all session fees, package payments, program enrollments, and digital product purchases.\n\nIf you are unsatisfied with a session or service, we encourage you to reach out to us directly so we can discuss how to best support you moving forward.`,
-    highlight: true,
-  },
-  {
-    id: 'confidentiality',
-    icon: CheckCircle2,
-    title: 'Confidentiality & Ethics',
-    content: `All information shared during sessions is treated with the highest level of confidentiality in accordance with professional ethical guidelines and applicable privacy laws in Canada and the UAE.\n\nExceptions to confidentiality may apply only in situations where there is an imminent risk of harm to yourself or others, suspected abuse of a minor or vulnerable person, or when required by a court order.`,
-  },
-  {
-    id: 'emergencies',
-    icon: AlertTriangle,
-    title: 'Emergency Disclaimer',
-    content: `Our counseling and coaching services are not a substitute for emergency mental health care, medical treatment, or psychiatric intervention. If you or someone you know is in immediate danger or experiencing a mental health crisis, please contact your local emergency services immediately.\n\nMama Hala Consulting is not an emergency service provider and cannot provide crisis intervention support.`,
-    highlight: true,
-  },
-  {
-    id: 'global',
-    icon: Globe,
-    title: 'Global Service Delivery',
-    content: `Mama Hala Consulting is registered and operates from Dubai, UAE and Canada. Services are provided remotely to clients worldwide. Session times are scheduled based on mutual availability across time zones.\n\nBy booking a session, you acknowledge that the applicable laws and regulations governing our services are those of Ontario, Canada, and the Operator\u2019s professional licensing jurisdiction.`,
-  },
-  {
-    id: 'changes',
-    icon: Gavel,
-    title: 'Changes to This Policy',
-    content: `We reserve the right to modify this Booking Policy at any time. Changes will be posted on this page with an updated date. Your continued use of our services after changes are posted constitutes your acceptance of the revised policy.\n\nIt is your responsibility to review this policy periodically for updates.`,
-  },
-  {
-    id: 'contact',
-    icon: MessageSquare,
-    title: 'Questions?',
-    content: `If you have any questions about our booking policy, cancellation terms, or need assistance with your appointment, please don\u2019t hesitate to reach out.`,
-    isLast: true,
-  },
-];
+/* ================================================================
+   Booking & Cancellation Policy Page
+   ================================================================ */
 
 export default function BookingPolicyPage() {
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
+  const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
+  const Arrow = isRTL ? ArrowLeft : ArrowRight;
+
+  /* ---- Bilingual text helpers ---- */
+  const t = (en: string, ar: string) => (isRTL ? ar : en);
+
+  /* ---- Data ---- */
+  const highlights = [
+    {
+      icon: Clock,
+      label: t('24-Hour Notice', 'إشعار قبل 24 ساعة'),
+      desc: t('Required for cancellations', 'مطلوب للإلغاء'),
+      color: '#2B5F4E',
+    },
+    {
+      icon: AlertTriangle,
+      label: t('Late Cancellation Fee: 50%', 'رسوم الإلغاء المتأخر: 50٪'),
+      desc: t('Of the full session rate', 'من سعر الجلسة الكامل'),
+      color: '#C8A97D',
+    },
+    {
+      icon: Ban,
+      label: t('No Refunds', 'لا استرداد'),
+      desc: t('All payments are final', 'جميع المدفوعات نهائية'),
+      color: '#7A3B5E',
+    },
+  ];
+
+  const bookingSteps = [
+    {
+      icon: Calendar,
+      step: '01',
+      title: t('Choose Your Service', 'اختر خدمتك'),
+      desc: t(
+        'Browse our services and select the one that fits your needs.',
+        'تصفح خدماتنا واختر ما يناسب احتياجاتك.'
+      ),
+    },
+    {
+      icon: MessageCircle,
+      step: '02',
+      title: t('Book via Calendly or WhatsApp', 'احجز عبر Calendly أو WhatsApp'),
+      desc: t(
+        'Schedule through our online calendar or message us directly on WhatsApp.',
+        'حدد موعدك عبر التقويم الإلكتروني أو راسلنا مباشرة على واتساب.'
+      ),
+    },
+    {
+      icon: CreditCard,
+      step: '03',
+      title: t('Make Payment', 'قم بالدفع'),
+      desc: t(
+        'Complete your payment through our secure third-party processor.',
+        'أكمل الدفع عبر معالج الدفع الآمن لدينا.'
+      ),
+    },
+    {
+      icon: Video,
+      step: '04',
+      title: t('Attend Your Session', 'احضر جلستك'),
+      desc: t(
+        'Join your session online via the video link provided in your confirmation email.',
+        'انضم إلى جلستك عبر رابط الفيديو المرسل في بريد التأكيد.'
+      ),
+    },
+  ];
+
+  const cancellationPoints = [
+    t(
+      'A minimum of 24 hours\u2019 notice is required for any cancellation.',
+      'يجب تقديم إشعار قبل 24 ساعة على الأقل لأي إلغاء.'
+    ),
+    t(
+      'Late cancellations (less than 24 hours) are charged at 50% of the full session rate.',
+      'يتم فرض رسوم 50٪ من سعر الجلسة الكامل على الإلغاء المتأخر (أقل من 24 ساعة).'
+    ),
+    t(
+      'No-shows without prior notice are charged the full session fee.',
+      'يتم فرض رسوم الجلسة الكاملة في حالة عدم الحضور دون إشعار مسبق.'
+    ),
+    t(
+      'One free reschedule per booking is allowed with 24 hours\u2019 notice.',
+      'يُسمح بإعادة جدولة مجانية واحدة لكل حجز مع إشعار قبل 24 ساعة.'
+    ),
+  ];
+
+  const paymentInfo = [
+    {
+      icon: Lock,
+      title: t('Secure Processing', 'معالجة آمنة'),
+      desc: t(
+        'All payments are processed via a secure third-party payment processor.',
+        'تتم معالجة جميع المدفوعات عبر معالج دفع آمن تابع لطرف ثالث.'
+      ),
+    },
+    {
+      icon: MessageCircle,
+      title: t('Free Initial Consultations', 'استشارات أولية مجانية'),
+      desc: t(
+        'Complimentary initial consultations are available with limited scope.',
+        'تتوفر استشارات أولية مجانية بنطاق محدود.'
+      ),
+    },
+    {
+      icon: Globe,
+      title: t('Regional Pricing', 'تسعير حسب المنطقة'),
+      desc: t(
+        'Pricing varies by region, age, and case complexity for accessibility.',
+        'يختلف التسعير حسب المنطقة والعمر وتعقيد الحالة لتسهيل الوصول.'
+      ),
+    },
+    {
+      icon: Ban,
+      title: t('Non-Refundable', 'غير قابلة للاسترداد'),
+      desc: t(
+        'All payments are final and non-refundable under any circumstances.',
+        'جميع المدفوعات نهائية وغير قابلة للاسترداد تحت أي ظرف.'
+      ),
+    },
+  ];
+
+  const sessionGuidelines = [
+    {
+      icon: Video,
+      text: t(
+        'Sessions are conducted online via secure video conferencing.',
+        'تُعقد الجلسات عبر الإنترنت من خلال مؤتمرات فيديو آمنة.'
+      ),
+    },
+    {
+      icon: Shield,
+      text: t(
+        'Be in a private, quiet space for your session.',
+        'كن في مكان خاص وهادئ لجلستك.'
+      ),
+    },
+    {
+      icon: Wifi,
+      text: t(
+        'Ensure you have a stable internet connection.',
+        'تأكد من أن لديك اتصال إنترنت مستقر.'
+      ),
+    },
+    {
+      icon: Clock,
+      text: t(
+        'Be on time \u2014 sessions start and end as scheduled. Late arrivals will not be extended.',
+        'كن في الموعد — تبدأ الجلسات وتنتهي كما هو مقرر. لن يتم تمديد الجلسة بسبب التأخر.'
+      ),
+    },
+  ];
 
   return (
-    <div className="bg-[#FAF7F2]">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#C8A97D] via-[#B8956A] to-[#A07A52]">
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/30 blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#2B5F4E]/20 blur-3xl" />
+    <div className="overflow-hidden" dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* ================================================================ */}
+      {/*  HERO                                                            */}
+      {/* ================================================================ */}
+      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+        {/* Gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]" />
+        {/* Decorative orbs */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
+          <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />
         </div>
-        <div className="container-main relative py-24 md:py-28">
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+        {/* Subtle dot pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+            backgroundSize: '40px 40px',
+          }}
+        />
+
+        <div className="container-main relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease }}
+          >
             <Breadcrumb
-              locale={locale}
-              light
               items={[
                 { label: messages.nav.home, href: `/${locale}` },
-                { label: messages.footer.bookingPolicy },
+                {
+                  label: t('Booking Policy', 'سياسة الحجز'),
+                },
               ]}
+              locale={locale}
+              light
             />
           </motion.div>
+
           <motion.div
-            className="mt-8 max-w-3xl"
+            className="mt-10 max-w-3xl"
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
           >
-            <motion.div variants={fadeUp} custom={0} className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-white/15 flex items-center justify-center">
-                <CalendarCheck className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-sm font-semibold tracking-[0.15em] uppercase text-white/80">
-                Booking
-              </span>
-            </motion.div>
+            <motion.p
+              variants={fadeUp}
+              custom={0}
+              className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D]"
+            >
+              {t('Policy', 'السياسة')}
+            </motion.p>
+
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-white"
+              className="mt-4 text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.1]"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              Booking Policy
+              {t('Booking & Cancellation Policy', 'سياسة الحجز والإلغاء')}
             </motion.h1>
+
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="text-lg text-white/80 mt-4 max-w-2xl"
+              className="mt-5 text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
             >
-              Everything you need to know about scheduling, cancellations, payments, and what to expect from your sessions with Dr. Hala.
+              {t(
+                'Our commitment to quality service starts with clear, transparent policies. Everything you need to know before your session.',
+                'يبدأ التزامنا بجودة الخدمة من سياسات واضحة وشفافة. كل ما تحتاج معرفته قبل جلستك.'
+              )}
             </motion.p>
-            <motion.div
-              variants={fadeUp}
-              custom={3}
-              className="flex items-center gap-4 mt-6 text-sm text-white/60"
-            >
-              <span className="inline-flex items-center gap-1.5 bg-white/15 px-3 py-1.5 rounded-full">
+
+            <motion.div variants={fadeUp} custom={3} className="mt-6">
+              <span className="inline-flex items-center gap-2 text-xs font-medium text-white/50 bg-white/[0.08] backdrop-blur-sm px-4 py-2 rounded-full border border-white/10">
                 <Clock className="w-3.5 h-3.5" />
-                24h cancellation notice
-              </span>
-              <span className="inline-flex items-center gap-1.5 bg-white/15 px-3 py-1.5 rounded-full">
-                <Globe className="w-3.5 h-3.5" />
-                Dubai &amp; Canada
+                {t('Last updated: 29.11.2022', 'آخر تحديث: 29.11.2022')}
               </span>
             </motion.div>
           </motion.div>
         </div>
+
         {/* Curved bottom */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 60" className="w-full h-8 md:h-12" preserveAspectRatio="none">
+          <svg
+            viewBox="0 0 1440 60"
+            className="w-full h-8 md:h-12"
+            preserveAspectRatio="none"
+          >
             <path d="M0,60 L0,30 Q720,0 1440,30 L1440,60 Z" fill="#FAF7F2" />
           </svg>
         </div>
       </section>
 
-      {/* Table of Contents */}
-      <div className="container-main max-w-5xl pt-8 pb-4">
-        <ScrollReveal>
-          <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 md:p-8">
-            <h2 className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] mb-4">
-              Table of Contents
-            </h2>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
-              {sections.map((section, i) => {
-                const Icon = section.icon;
-                return (
-                  <a
-                    key={section.id}
-                    href={`#${section.id}`}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#C8A97D]/5 hover:text-[#A07A52] transition-all duration-200 group"
+      {/* ================================================================ */}
+      {/*  KEY HIGHLIGHTS BANNER                                           */}
+      {/* ================================================================ */}
+      <section className="bg-[#FAF7F2] -mt-4 relative z-10">
+        <div className="container-main max-w-5xl">
+          <StaggerReveal className="grid md:grid-cols-3 gap-4 md:gap-6">
+            {highlights.map((item) => {
+              const Icon = item.icon;
+              return (
+                <StaggerChild key={item.label}>
+                  <motion.div
+                    className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 text-center"
+                    whileHover={{ y: -4, transition: { duration: 0.3 } }}
                   >
-                    <span className="text-xs font-mono text-[#C8A97D] w-5">
-                      {String(i + 1).padStart(2, '0')}
-                    </span>
-                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#C8A97D] transition-colors flex-shrink-0" />
-                    <span className="truncate">{section.title}</span>
-                  </a>
-                );
-              })}
-            </div>
-          </div>
-        </ScrollReveal>
-      </div>
-
-      {/* Sections */}
-      <div className="container-main max-w-5xl py-8 pb-24">
-        <div className="space-y-6">
-          {sections.map((section, i) => {
-            const Icon = section.icon;
-            return (
-              <ScrollReveal key={section.id}>
-                <div
-                  id={section.id}
-                  className={`bg-white rounded-2xl border shadow-[var(--shadow-subtle)] scroll-mt-24 overflow-hidden ${
-                    section.highlight
-                      ? 'border-[#C8A97D]/30 ring-1 ring-[#C8A97D]/10'
-                      : 'border-[#F3EFE8]'
-                  }`}
-                >
-                  {/* Section Header */}
-                  <div className={`flex items-center gap-4 px-6 md:px-8 py-5 border-b ${
-                    section.highlight ? 'border-[#C8A97D]/20 bg-[#C8A97D]/5' : 'border-[#F3EFE8]'
-                  }`}>
-                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      section.highlight ? 'bg-[#C8A97D]/15 text-[#C8A97D]' : 'bg-[#2B5F4E]/10 text-[#2B5F4E]'
-                    }`}>
-                      <Icon className="w-5 h-5" />
+                    <div
+                      className="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center mb-4"
+                      style={{ backgroundColor: `${item.color}10` }}
+                    >
+                      <Icon
+                        className="w-6 h-6"
+                        style={{ color: item.color }}
+                      />
                     </div>
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <span className="text-xs font-mono text-[#C8A97D] bg-[#C8A97D]/10 px-2 py-0.5 rounded-md">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <h2
-                        className="text-lg md:text-xl font-bold text-[#1E1E2A] truncate"
+                    <h3
+                      className="text-base font-bold text-[#1E1E2A] mb-1"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      {item.label}
+                    </h3>
+                    <p className="text-sm text-[#8E8E9F]">{item.desc}</p>
+                  </motion.div>
+                </StaggerChild>
+              );
+            })}
+          </StaggerReveal>
+        </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/*  HOW TO BOOK                                                     */}
+      {/* ================================================================ */}
+      <section className="bg-[#FAF7F2] py-20 md:py-28">
+        <div className="container-main max-w-5xl">
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <p className="text-sm font-semibold tracking-[0.15em] uppercase text-[#2B5F4E] mb-3">
+                {t('Getting Started', 'البدء')}
+              </p>
+              <h2
+                className="text-3xl md:text-4xl font-bold text-[#1E1E2A]"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {t('How to Book a Session', 'كيفية حجز جلسة')}
+              </h2>
+              <p className="mt-4 text-[#8E8E9F] leading-relaxed">
+                {t(
+                  'Booking a session with Dr. Hala is simple. Follow these four steps to get started on your journey.',
+                  'حجز جلسة مع د. هالة سهل وبسيط. اتبع هذه الخطوات الأربع للبدء في رحلتك.'
+                )}
+              </p>
+            </div>
+          </ScrollReveal>
+
+          <StaggerReveal className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {bookingSteps.map((step) => {
+              const Icon = step.icon;
+              return (
+                <StaggerChild key={step.step}>
+                  <motion.div
+                    className="relative bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 h-full"
+                    whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                  >
+                    <span className="text-[40px] font-bold text-[#2B5F4E]/[0.07] absolute top-4 right-5 leading-none select-none" style={{ fontFamily: 'var(--font-heading)' }}>
+                      {step.step}
+                    </span>
+                    <div className="w-12 h-12 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center mb-4">
+                      <Icon className="w-5 h-5 text-[#2B5F4E]" />
+                    </div>
+                    <h3
+                      className="text-base font-bold text-[#1E1E2A] mb-2"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      {step.title}
+                    </h3>
+                    <p className="text-sm text-[#8E8E9F] leading-relaxed">
+                      {step.desc}
+                    </p>
+                  </motion.div>
+                </StaggerChild>
+              );
+            })}
+          </StaggerReveal>
+        </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/*  CANCELLATION POLICY                                             */}
+      {/* ================================================================ */}
+      <section className="bg-[#FAF7F2] pb-20 md:pb-28">
+        <div className="container-main max-w-5xl">
+          <ScrollReveal>
+            <div className="relative rounded-3xl overflow-hidden border border-[#C8A97D]/30 ring-1 ring-[#C8A97D]/10 bg-white">
+              {/* Warning header */}
+              <div className="bg-gradient-to-r from-[#C8A97D]/10 via-[#C8A97D]/5 to-transparent border-b border-[#C8A97D]/20 px-6 md:px-10 py-5 flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-[#C8A97D]/15 flex items-center justify-center flex-shrink-0">
+                  <AlertTriangle className="w-5 h-5 text-[#C8A97D]" />
+                </div>
+                <div>
+                  <h2
+                    className="text-xl md:text-2xl font-bold text-[#1E1E2A]"
+                    style={{ fontFamily: 'var(--font-heading)' }}
+                  >
+                    {t('Cancellation Policy', 'سياسة الإلغاء')}
+                  </h2>
+                  <p className="text-sm text-[#8E8E9F] mt-0.5">
+                    {t(
+                      'Please review these important terms carefully',
+                      'يرجى مراجعة هذه الشروط المهمة بعناية'
+                    )}
+                  </p>
+                </div>
+                <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-[#C8A97D] bg-[#C8A97D]/10 px-3 py-1 rounded-full ms-auto flex-shrink-0">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  {t('Important', 'مهم')}
+                </span>
+              </div>
+
+              {/* Points */}
+              <div className="px-6 md:px-10 py-8 space-y-4">
+                {cancellationPoints.map((point, idx) => (
+                  <motion.div
+                    key={idx}
+                    className="flex items-start gap-4 bg-[#FAF7F2] rounded-xl px-5 py-4"
+                    initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: '-40px' }}
+                    transition={{ delay: idx * 0.1, duration: 0.5, ease }}
+                  >
+                    <div className="w-6 h-6 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-[#2B5F4E]" />
+                    </div>
+                    <p className="text-[15px] text-[#4A4A5C] leading-relaxed">
+                      {point}
+                    </p>
+                  </motion.div>
+                ))}
+
+                <p className="text-sm text-[#8E8E9F] leading-relaxed pt-2 px-1">
+                  {t(
+                    'Your understanding and cooperation in honoring this policy enables us to maintain the quality of service for all our clients.',
+                    'تفهمكم وتعاونكم في الالتزام بهذه السياسة يمكّننا من الحفاظ على جودة الخدمة لجميع عملائنا.'
+                  )}
+                </p>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/*  PAYMENT INFORMATION                                             */}
+      {/* ================================================================ */}
+      <section className="bg-white py-20 md:py-28">
+        <div className="container-main max-w-5xl">
+          <ScrollReveal>
+            <div className="text-center max-w-2xl mx-auto mb-14">
+              <p className="text-sm font-semibold tracking-[0.15em] uppercase text-[#7A3B5E] mb-3">
+                {t('Payments', 'المدفوعات')}
+              </p>
+              <h2
+                className="text-3xl md:text-4xl font-bold text-[#1E1E2A]"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {t('Payment Information', 'معلومات الدفع')}
+              </h2>
+            </div>
+          </ScrollReveal>
+
+          <StaggerReveal className="grid sm:grid-cols-2 gap-6">
+            {paymentInfo.map((item) => {
+              const Icon = item.icon;
+              return (
+                <StaggerChild key={item.title}>
+                  <motion.div
+                    className="bg-[#FAF7F2] rounded-2xl border border-[#F3EFE8] p-6 flex items-start gap-5 h-full"
+                    whileHover={{ y: -4, transition: { duration: 0.3 } }}
+                  >
+                    <div className="w-12 h-12 rounded-xl bg-[#7A3B5E]/10 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-[#7A3B5E]" />
+                    </div>
+                    <div>
+                      <h3
+                        className="text-base font-bold text-[#1E1E2A] mb-1.5"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
-                        {section.title}
-                      </h2>
+                        {item.title}
+                      </h3>
+                      <p className="text-sm text-[#8E8E9F] leading-relaxed">
+                        {item.desc}
+                      </p>
                     </div>
-                    {section.highlight && (
-                      <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-[#C8A97D] bg-[#C8A97D]/10 px-3 py-1 rounded-full flex-shrink-0">
-                        <AlertTriangle className="w-3.5 h-3.5" />
-                        Important
-                      </span>
-                    )}
+                  </motion.div>
+                </StaggerChild>
+              );
+            })}
+          </StaggerReveal>
+        </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/*  SESSION GUIDELINES                                              */}
+      {/* ================================================================ */}
+      <section className="bg-[#FAF7F2] py-20 md:py-28">
+        <div className="container-main max-w-5xl">
+          <ScrollReveal>
+            <div className="bg-white rounded-3xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] overflow-hidden">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-[#2B5F4E]/5 via-transparent to-transparent border-b border-[#F3EFE8] px-6 md:px-10 py-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0">
+                    <Video className="w-5 h-5 text-[#2B5F4E]" />
                   </div>
-
-                  {/* Section Body */}
-                  <div className="px-6 md:px-8 py-6">
-                    {section.content.split('\n\n').map((paragraph, pi) => (
-                      <p
-                        key={pi}
-                        className="text-[#4A4A5C] leading-relaxed mb-4 last:mb-0 text-[15px]"
-                      >
-                        {paragraph}
-                      </p>
-                    ))}
-
-                    {section.list && (
-                      <div className="mt-4 space-y-2">
-                        {section.list.map((item, li) => (
-                          <div
-                            key={li}
-                            className="flex items-start gap-3 bg-[#FAF7F2] rounded-xl px-4 py-3"
-                          >
-                            <div className="w-5 h-5 rounded-full bg-[#C8A97D]/15 flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-[#C8A97D]" />
-                            </div>
-                            <span className="text-sm text-[#4A4A5C] leading-relaxed">{item}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {section.afterList && (
-                      <p className="text-[#4A4A5C] leading-relaxed mt-4 text-[15px]">
-                        {section.afterList}
-                      </p>
-                    )}
-
-                    {section.isLast && (
-                      <div className="mt-4 flex flex-wrap gap-3">
-                        <Link
-                          href={`/${locale}/contact`}
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#2B5F4E] bg-[#2B5F4E]/5 px-4 py-2.5 rounded-xl hover:bg-[#2B5F4E]/10 transition-colors"
-                        >
-                          <MessageSquare className="w-4 h-4" />
-                          Contact Form
-                        </Link>
-                        <a
-                          href="https://wa.me/16132222104"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#25D366] bg-[#25D366]/5 px-4 py-2.5 rounded-xl hover:bg-[#25D366]/10 transition-colors"
-                        >
-                          <MessageSquare className="w-4 h-4" />
-                          WhatsApp
-                        </a>
-                        <a
-                          href="mailto:admin@mamahala.ca"
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#7A3B5E] bg-[#7A3B5E]/5 px-4 py-2.5 rounded-xl hover:bg-[#7A3B5E]/10 transition-colors"
-                        >
-                          <Mail className="w-4 h-4" />
-                          admin@mamahala.ca
-                        </a>
-                      </div>
-                    )}
+                  <div>
+                    <h2
+                      className="text-xl md:text-2xl font-bold text-[#1E1E2A]"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      {t('Session Guidelines', 'إرشادات الجلسة')}
+                    </h2>
+                    <p className="text-sm text-[#8E8E9F] mt-0.5">
+                      {t(
+                        'Prepare for your session to get the most out of it',
+                        'استعد لجلستك للحصول على أقصى استفادة'
+                      )}
+                    </p>
                   </div>
                 </div>
-              </ScrollReveal>
-            );
-          })}
-        </div>
+              </div>
 
-        {/* Back to top */}
-        <div className="text-center mt-12">
-          <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#C8A97D] transition-colors"
-          >
-            <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-            Back to top
-          </button>
+              {/* Tips */}
+              <div className="px-6 md:px-10 py-8 space-y-4">
+                {sessionGuidelines.map((guideline, idx) => {
+                  const Icon = guideline.icon;
+                  return (
+                    <motion.div
+                      key={idx}
+                      className="flex items-start gap-4 rounded-xl px-5 py-4 hover:bg-[#FAF7F2] transition-colors duration-200"
+                      initial={{ opacity: 0, y: 15 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true, margin: '-40px' }}
+                      transition={{ delay: idx * 0.1, duration: 0.5, ease }}
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-5 h-5 text-[#2B5F4E]" />
+                      </div>
+                      <p className="text-[15px] text-[#4A4A5C] leading-relaxed pt-2">
+                        {guideline.text}
+                      </p>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          </ScrollReveal>
         </div>
-      </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/*  CONTACT CTA                                                     */}
+      {/* ================================================================ */}
+      <section className="bg-[#FAF7F2] pb-24 md:pb-32">
+        <div className="container-main max-w-5xl">
+          <ScrollReveal>
+            <div className="relative rounded-3xl overflow-hidden">
+              {/* Background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3B]" />
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-0 right-[20%] w-[300px] h-[300px] rounded-full bg-white/[0.04] blur-[80px]" />
+                <div className="absolute bottom-0 left-[10%] w-[250px] h-[250px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />
+              </div>
+              <div
+                className="absolute inset-0 opacity-[0.03]"
+                style={{
+                  backgroundImage:
+                    'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+                  backgroundSize: '40px 40px',
+                }}
+              />
+
+              {/* Content */}
+              <div className="relative z-10 px-8 md:px-14 py-14 md:py-20 text-center">
+                <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-6">
+                  <Phone className="w-6 h-6 text-white" />
+                </div>
+                <h2
+                  className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-4"
+                  style={{ fontFamily: 'var(--font-heading)' }}
+                >
+                  {t('Have Questions?', 'هل لديك أسئلة؟')}
+                </h2>
+                <p className="text-white/60 max-w-lg mx-auto mb-10 leading-relaxed">
+                  {t(
+                    'If you have any questions about our booking policy, cancellation terms, or need help scheduling your appointment, we\u2019re here to help.',
+                    'إذا كانت لديك أي أسئلة حول سياسة الحجز أو شروط الإلغاء أو تحتاج إلى مساعدة في تحديد موعدك، نحن هنا لمساعدتك.'
+                  )}
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                  <Link href={`/${locale}/contact`}>
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      icon={<Arrow className="w-4 h-4" />}
+                      iconPosition="right"
+                    >
+                      {t('Contact Us', 'تواصل معنا')}
+                    </Button>
+                  </Link>
+                  <Button
+                    as="a"
+                    href="https://wa.me/16132222104"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    variant="outline"
+                    size="lg"
+                    className="!border-white/20 !text-white hover:!bg-white/10"
+                    icon={<MessageCircle className="w-4 h-4" />}
+                    iconPosition="left"
+                  >
+                    WhatsApp
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
     </div>
   );
 }

@@ -98,8 +98,8 @@ export default function ContactPage() {
   const socials = [
     { icon: Instagram, href: 'https://www.instagram.com/mamahala.ca/', label: 'Instagram' },
     { icon: Facebook, href: 'https://www.facebook.com/mamahala.ca', label: 'Facebook' },
-    { icon: Youtube, href: 'https://youtube.com/@MamaHala-ca', label: 'YouTube' },
-    { icon: TiktokIcon, href: 'https://www.tiktok.com/@mamahala.ca', label: 'TikTok' },
+    { icon: Youtube, href: 'https://youtube.com/@MamaHala-ca?si=pwg5_hhRIfXt-usP', label: 'YouTube' },
+    { icon: TiktokIcon, href: 'https://www.tiktok.com/@mamahala.ca?_t=8jv2H8Tkli2&_r=1', label: 'TikTok' },
     { icon: SnapchatIcon, href: 'https://www.snapchat.com/add/mamahala.ca', label: 'Snapchat' },
     { icon: TelegramIcon, href: 'https://t.me/+Ut1Xms3zRX5jMmNh', label: 'Telegram' },
   ];

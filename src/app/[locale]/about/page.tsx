@@ -267,6 +267,67 @@ export default function AboutPage() {
       </section>
 
       {/* ================================================================ */}
+      {/*  SECTION 3.5: FULL-WIDTH PHOTO REVEAL                           */}
+      {/* ================================================================ */}
+      <section className="relative bg-white overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+          <div className="grid lg:grid-cols-5 items-stretch min-h-[500px]">
+            {/* Text Column */}
+            <ScrollReveal
+              direction={isRTL ? 'right' : 'left'}
+              className={`flex flex-col justify-center py-16 lg:py-24 lg:col-span-2 ${isRTL ? 'lg:order-2 lg:pl-12' : 'lg:order-1 lg:pr-12'}`}
+            >
+              <div className="w-12 h-1 bg-[#C8A97D] rounded-full mb-6" />
+              <h2
+                className="text-3xl sm:text-4xl font-bold text-[#1E1E2A] leading-tight mb-6"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {isRTL ? 'دعم مهني بدفء إنساني' : 'Professional Care with a Personal Touch'}
+              </h2>
+              <p className="text-[#4A4A5C] leading-relaxed mb-6">
+                {isRTL
+                  ? 'تقدم د. هالة علي نهجًا فريدًا يجمع بين الخبرة المهنية والدفء الإنساني. مع خلفية ثقافية غنية وسنوات من الخبرة، تفهم التحديات التي تواجه العائلات والأفراد في عالمنا المعاصر.'
+                  : 'Dr. Hala Ali brings a unique approach that combines professional expertise with genuine warmth. With a rich cultural background and years of experience, she understands the challenges families and individuals face in our modern world.'
+                }
+              </p>
+              <div className="space-y-3">
+                {[
+                  { en: 'Evidence-based therapeutic methods', ar: 'أساليب علاجية مبنية على الأدلة' },
+                  { en: 'Culturally sensitive approach', ar: 'نهج حساس ثقافيًا' },
+                  { en: 'Bilingual support (English & Arabic)', ar: 'دعم ثنائي اللغة (عربي وإنجليزي)' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-6 h-6 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0">
+                      <Check className="w-3.5 h-3.5 text-[#2B5F4E]" />
+                    </div>
+                    <span className="text-sm text-[#1E1E2A] font-medium">{isRTL ? item.ar : item.en}</span>
+                  </div>
+                ))}
+              </div>
+            </ScrollReveal>
+
+            {/* Image Column */}
+            <motion.div
+              className={`relative lg:col-span-3 min-h-[400px] lg:min-h-full ${isRTL ? 'lg:order-1' : 'lg:order-2'}`}
+              initial={{ opacity: 0, scale: 1.05 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={viewportOnce}
+              transition={{ duration: 0.8, ease }}
+            >
+              <Image
+                src="/images/hala-hero.png"
+                alt="Dr. Hala Ali - Professional Counselor"
+                fill
+                className="object-cover object-top"
+              />
+              {/* Soft gradient fade into text column */}
+              <div className={`absolute inset-y-0 ${isRTL ? 'right-0 bg-gradient-to-l' : 'left-0 bg-gradient-to-r'} from-white via-white/60 to-transparent w-24 hidden lg:block`} />
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ================================================================ */}
       {/*  SECTION 4: CREDENTIALS                                         */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-32 bg-[#FAF7F2]">

@@ -4,10 +4,9 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-  ShieldCheck, Eye, Server, UserCheck, Baby, Database,
-  Mail, Share2, Clock, Cookie, ExternalLink, Lock,
-  AlertOctagon, Search, RefreshCw, CheckCircle,
-  MessageSquare, Gavel,
+  Shield, Database, User, Baby, Server, Mail, Share2, Clock,
+  Cookie, Link as LinkIcon, Lock, AlertTriangle, Eye, Settings,
+  CheckCircle2, Phone,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer } from '@/lib/animations';
@@ -28,9 +27,9 @@ interface Section {
 const sections: Section[] = [
   {
     id: 'disclaimer',
-    icon: ShieldCheck,
-    title: 'A Legal Disclaimer',
-    content: `This policy was last updated on 29.11.2022.\n\nWe respect your privacy and are committed to protecting it through our compliance with this privacy policy (\u201cPolicy\u201d). This Policy commitment is based on the Personal Information Protection and Electronic Documents Act (Canada) (\u201cPIPEDA\u201d). This Policy describes the types of information we may collect from you or that you may provide (\u201cPersonal Information\u201d) on the www.mamahala.ca website (\u201cWebsite\u201d or \u201cService\u201d) and any of its related products and services (collectively, \u201cServices\u201d), and our practices for collecting, using, maintaining, protecting, and disclosing that Personal Information. It also describes the choices available to you regarding our use of your Personal Information and how you can access and update it.\n\nThis Policy is a legally binding agreement between you (\u201cUser\u201d, \u201cyou\u201d or \u201cyour\u201d) and this Website operator (\u201cOperator\u201d, \u201cwe\u201d, \u201cus\u201d or \u201cour\u201d). If you are entering into this agreement on behalf of a business or other legal entity, you represent that you have the authority to bind such entity to this agreement, in which case the terms \u201cUser\u201d, \u201cyou\u201d or \u201cyour\u201d shall refer to such entity. If you do not have such authority, or if you do not agree with the terms of this agreement, you must not accept this agreement and may not access and use the Website and Services. By accessing and using the Website and Services, you acknowledge that you have read, understood, and agree to be bound by the terms of this Policy. This Policy does not apply to the practices of companies that we do not own or control, or to individuals that we do not employ or manage.`,
+    icon: Shield,
+    title: 'Legal Disclaimer',
+    content: `We respect your privacy and are committed to protecting it through our compliance with this privacy policy (\u201cPolicy\u201d). This Policy commitment is based on the Personal Information Protection and Electronic Documents Act (Canada) (\u201cPIPEDA\u201d). This Policy describes the types of information we may collect from you or that you may provide (\u201cPersonal Information\u201d) on the www.mamahala.ca website (\u201cWebsite\u201d or \u201cService\u201d) and any of its related products and services (collectively, \u201cServices\u201d), and our practices for collecting, using, maintaining, protecting, and disclosing that Personal Information. It also describes the choices available to you regarding our use of your Personal Information and how you can access and update it.\n\nThis Policy is a legally binding agreement between you (\u201cUser\u201d, \u201cyou\u201d or \u201cyour\u201d) and this Website operator (\u201cOperator\u201d, \u201cwe\u201d, \u201cus\u201d or \u201cour\u201d). If you are entering into this agreement on behalf of a business or other legal entity, you represent that you have the authority to bind such entity to this agreement, in which case the terms \u201cUser\u201d, \u201cyou\u201d or \u201cyour\u201d shall refer to such entity. If you do not have such authority, or if you do not agree with the terms of this agreement, you must not accept this agreement and may not access and use the Website and Services. By accessing and using the Website and Services, you acknowledge that you have read, understood, and agree to be bound by the terms of this Policy. This Policy does not apply to the practices of companies that we do not own or control, or to individuals that we do not employ or manage.`,
     highlight: true,
   },
   {
@@ -41,7 +40,7 @@ const sections: Section[] = [
   },
   {
     id: 'personal-info',
-    icon: UserCheck,
+    icon: User,
     title: 'Collection of Personal Information',
     content: `You can access and use the Website and Services without telling us who you are or revealing any information by which someone could identify you as a specific, identifiable individual. If, however, you wish to use some of the features offered on the Website, you may be asked to provide certain Personal Information (for example, your name and e-mail address).\n\nWe receive and store any information you knowingly provide to us when you publish content, or fill any forms on the Website. When required, this information may include the following:`,
     list: [
@@ -59,7 +58,7 @@ const sections: Section[] = [
     id: 'children',
     icon: Baby,
     title: 'Privacy of Children',
-    content: `We do not knowingly collect any Personal Information from children under the age of 13. If you are under the age of 13, please do not submit any Personal Information through the Website and Services.\n\nWe encourage parents and legal guardians to monitor their children\u2019s Internet usage and to help enforce this Policy by instructing their children never to provide Personal Information through the Website and Services without their permission.`,
+    content: `We do not knowingly collect any Personal Information from children under the age of 13. If you are under the age of 13, please do not submit any Personal Information through the Website and Services. We encourage parents and legal guardians to monitor their children\u2019s Internet usage and to help enforce this Policy by instructing their children never to provide Personal Information through the Website and Services without their permission.`,
   },
   {
     id: 'use-processing',
@@ -84,7 +83,7 @@ const sections: Section[] = [
     id: 'email',
     icon: Mail,
     title: 'Email Policies',
-    content: `If you choose to correspond with us through email, we may retain the content of your email messages together with your email address and our responses. We provide the same protections for these electronic communications that we employ in the maintenance of information received online, mail, and telephone.\n\nAll e-mails sent by us will be in compliance with the Canadian Anti-Spam Legislation (\u201cCASL\u201d), including clearly stating who the e-mail is from and provide clear information on how to contact the sender.`,
+    content: `If you choose to correspond with us through email, we may retain the content of your email messages together with your email address and our responses. We provide the same protections for these electronic communications that we employ in the maintenance of information received online, mail, and telephone. All e-mails sent by us will be in compliance with the Canadian Anti-Spam Legislation (\u201cCASL\u201d), including clearly stating who the e-mail is from and provide clear information on how to contact the sender.`,
   },
   {
     id: 'disclosure',
@@ -96,7 +95,7 @@ const sections: Section[] = [
     id: 'retention',
     icon: Clock,
     title: 'Retention of Information',
-    content: `We will retain and use your Personal Information for the period necessary to comply with our legal obligations, to enforce our agreements, resolve disputes, and unless a longer retention period is required or permitted by law.\n\nWe may use any aggregated data derived from or incorporating your Personal Information after you update or delete it, but not in a manner that would identify you personally.`,
+    content: `We will retain and use your Personal Information for the period necessary to comply with our legal obligations, to enforce our agreements, resolve disputes, and unless a longer retention period is required or permitted by law. We may use any aggregated data derived from or incorporating your Personal Information after you update or delete it, but not in a manner that would identify you personally.`,
   },
   {
     id: 'cookies',
@@ -106,7 +105,7 @@ const sections: Section[] = [
   },
   {
     id: 'links',
-    icon: ExternalLink,
+    icon: LinkIcon,
     title: 'Links to Other Resources',
     content: `The Website and Services may contain links to other resources that are not owned or controlled by us. Please be aware that we are not responsible for the privacy practices of such other resources or third parties. We encourage you to be aware when you leave the Website and Services and to read the privacy statements of each and every resource that may collect Personal Information.`,
   },
@@ -114,38 +113,38 @@ const sections: Section[] = [
     id: 'security',
     icon: Lock,
     title: 'Information Security',
-    content: `We maintain reasonable administrative, technical, and physical safeguards in an effort to protect against unauthorized access, use, modification, and disclosure of Personal Information in our control and custody. However, no data transmission over the Internet or wireless network can be guaranteed.\n\nTherefore, while we strive to protect your Personal Information, you acknowledge that (i) there are security and privacy limitations of the Internet which are beyond our control; (ii) the security, integrity, and privacy of any and all information and data exchanged between you and the Website and Services cannot be guaranteed; and (iii) any such information and data may be viewed or tampered with in transit by a third party, despite best efforts.`,
+    content: `We maintain reasonable administrative, technical, and physical safeguards in an effort to protect against unauthorized access, use, modification, and disclosure of Personal Information in our control and custody. However, no data transmission over the Internet or wireless network can be guaranteed. Therefore, while we strive to protect your Personal Information, you acknowledge that (i) there are security and privacy limitations of the Internet which are beyond our control; (ii) the security, integrity, and privacy of any and all information and data exchanged between you and the Website and Services cannot be guaranteed; and (iii) any such information and data may be viewed or tampered with in transit by a third party, despite best efforts.`,
     highlight: true,
   },
   {
     id: 'data-breach',
-    icon: AlertOctagon,
+    icon: AlertTriangle,
     title: 'Data Breach',
-    content: `In the event we become aware that the security of the Website and Services has been compromised or Users\u2019 Personal Information has been disclosed to unrelated third parties as a result of external activity, including, but not limited to, security attacks or fraud, we reserve the right to take reasonably appropriate measures, including, but not limited to, investigation and reporting, as well as notification to and cooperation with law enforcement authorities. In the event of a data breach, we will make reasonable efforts to notify affected individuals if we believe that there is a reasonable risk of harm to the User as a result of the breach or if notice is otherwise required by law. When we do, we will post a notice on the Website.`,
+    content: `In the event we become aware that the security of the Website and Services has been compromised or Users\u2019 Personal Information has been disclosed to unrelated third parties as a result of external activity, including, but not limited to, security attacks or fraud, we reserve the right to take reasonably appropriate measures, including, but not limited to, investigation and reporting, as well as notification to and cooperation with law enforcement authorities. In the event of a data breach, we will make reasonable efforts to notify affected individuals if we believe that there is a reasonable risk of harm to the User as a result of the breach or if notice is otherwise required by law. When we do, we will probably post a notice on the Website.`,
   },
   {
     id: 'access',
-    icon: Search,
+    icon: Eye,
     title: 'Access to Personal Information',
     content: `We will respond promptly to any request for access to your personal information and will advise you of the cost, if any, prior to the retrieval of such records or information. We will not respond to requests for access to personal information that are frivolous, vexatious or repetitious. In certain circumstances, we may be unable to provide access to some or all of the personal information that we hold about you.`,
   },
   {
     id: 'changes',
-    icon: RefreshCw,
+    icon: Settings,
     title: 'Changes and Amendments',
-    content: `We reserve the right to modify this Policy or its terms related to the Website and Services at any time at our discretion. When we do, we will revise the updated date at the bottom of this page. An updated version of this Policy will be effective immediately upon the posting of the revised Policy unless otherwise specified. Your continued use of the Website and Services after the effective date of the revised Policy (or such other act specified at that time) will constitute your consent to those changes.`,
+    content: `We reserve the right to modify this Policy or its terms related to the Website and Services at any time at our discretion. When we do, we will probably revise the updated date at the bottom of this page. An updated version of this Policy will be effective immediately upon the posting of the revised Policy unless otherwise specified. Your continued use of the Website and Services after the effective date of the revised Policy (or such other act specified at that time) will constitute your consent to those changes.`,
   },
   {
     id: 'acceptance',
-    icon: CheckCircle,
+    icon: CheckCircle2,
     title: 'Acceptance of This Policy',
     content: `You acknowledge that you have read this Policy and agree to all its terms and conditions. By accessing and using the Website and Services and submitting your information you agree to be bound by this Policy. If you do not agree to abide by the terms of this Policy, you are not authorized to access or use the Website and Services.`,
   },
   {
     id: 'contact',
-    icon: MessageSquare,
+    icon: Phone,
     title: 'Contacting Us',
-    content: `Any questions about these terms of service and privacy policy should be addressed to us via our contact form or at admin@mamahala.ca.`,
+    content: `Any questions about these terms of service and privacy policy should be addressed to us via our contact form.`,
     isLast: true,
   },
 ];
@@ -158,7 +157,7 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="bg-[#FAF7F2]">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#7A3B5E] via-[#7A3B5E] to-[#5E2D48]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#2B5F4E] via-[#2B5F4E] to-[#1E4A3A]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
@@ -170,7 +169,7 @@ export default function PrivacyPolicyPage() {
               light
               items={[
                 { label: messages.nav.home, href: `/${locale}` },
-                { label: messages.footer.privacy },
+                { label: 'Privacy Policy' },
               ]}
             />
           </motion.div>
@@ -182,7 +181,7 @@ export default function PrivacyPolicyPage() {
           >
             <motion.div variants={fadeUp} custom={0} className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                <Eye className="w-6 h-6 text-[#C8A97D]" />
+                <Shield className="w-6 h-6 text-[#C8A97D]" />
               </div>
               <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D]">
                 Privacy
@@ -209,11 +208,11 @@ export default function PrivacyPolicyPage() {
               className="flex items-center gap-4 mt-6 text-sm text-white/50"
             >
               <span className="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
-                <RefreshCw className="w-3.5 h-3.5" />
-                Last updated: November 29, 2022
+                <Clock className="w-3.5 h-3.5" />
+                Last updated: 29.11.2022
               </span>
               <span className="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
-                <Gavel className="w-3.5 h-3.5" />
+                <Shield className="w-3.5 h-3.5" />
                 PIPEDA Compliant
               </span>
             </motion.div>
@@ -241,12 +240,12 @@ export default function PrivacyPolicyPage() {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#7A3B5E]/5 hover:text-[#7A3B5E] transition-all duration-200 group"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#2B5F4E]/5 hover:text-[#2B5F4E] transition-all duration-200 group"
                   >
                     <span className="text-xs font-mono text-[#C8A97D] w-5">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#7A3B5E] transition-colors flex-shrink-0" />
+                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#2B5F4E] transition-colors flex-shrink-0" />
                     <span className="truncate">{section.title}</span>
                   </a>
                 );
@@ -261,22 +260,25 @@ export default function PrivacyPolicyPage() {
         <div className="space-y-6">
           {sections.map((section, i) => {
             const Icon = section.icon;
+            const isAlternate = i % 2 === 1;
             return (
               <ScrollReveal key={section.id}>
                 <div
                   id={section.id}
-                  className={`bg-white rounded-2xl border shadow-[var(--shadow-subtle)] scroll-mt-24 overflow-hidden ${
+                  className={`rounded-2xl border shadow-[var(--shadow-subtle)] scroll-mt-24 overflow-hidden ${
                     section.highlight
-                      ? 'border-[#7A3B5E]/20 ring-1 ring-[#7A3B5E]/10'
-                      : 'border-[#F3EFE8]'
+                      ? 'border-[#2B5F4E]/20 ring-1 ring-[#2B5F4E]/10 bg-white'
+                      : isAlternate
+                        ? 'border-[#F3EFE8] bg-[#FAF7F2]'
+                        : 'border-[#F3EFE8] bg-white'
                   }`}
                 >
                   {/* Section Header */}
                   <div className={`flex items-center gap-4 px-6 md:px-8 py-5 border-b ${
-                    section.highlight ? 'border-[#7A3B5E]/15 bg-[#7A3B5E]/5' : 'border-[#F3EFE8]'
+                    section.highlight ? 'border-[#2B5F4E]/15 bg-[#2B5F4E]/5' : 'border-[#F3EFE8]'
                   }`}>
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      section.highlight ? 'bg-[#7A3B5E]/15 text-[#7A3B5E]' : 'bg-[#2B5F4E]/10 text-[#2B5F4E]'
+                      section.highlight ? 'bg-[#2B5F4E]/15 text-[#2B5F4E]' : 'bg-[#2B5F4E]/10 text-[#2B5F4E]'
                     }`}>
                       <Icon className="w-5 h-5" />
                     </div>
@@ -292,8 +294,8 @@ export default function PrivacyPolicyPage() {
                       </h2>
                     </div>
                     {section.highlight && (
-                      <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-[#7A3B5E] bg-[#7A3B5E]/10 px-3 py-1 rounded-full flex-shrink-0">
-                        <ShieldCheck className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-[#2B5F4E] bg-[#2B5F4E]/10 px-3 py-1 rounded-full flex-shrink-0">
+                        <Shield className="w-3.5 h-3.5" />
                         Key Section
                       </span>
                     )}
@@ -333,21 +335,14 @@ export default function PrivacyPolicyPage() {
                     )}
 
                     {section.isLast && (
-                      <div className="mt-4 flex flex-wrap gap-3">
+                      <div className="mt-6">
                         <Link
                           href={`/${locale}/contact`}
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#2B5F4E] bg-[#2B5F4E]/5 px-4 py-2.5 rounded-xl hover:bg-[#2B5F4E]/10 transition-colors"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-[#2B5F4E] px-5 py-3 rounded-xl hover:bg-[#244F41] transition-colors shadow-sm"
                         >
-                          <MessageSquare className="w-4 h-4" />
-                          Contact Form
+                          <Phone className="w-4 h-4" />
+                          Contact Us
                         </Link>
-                        <a
-                          href="mailto:admin@mamahala.ca"
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#7A3B5E] bg-[#7A3B5E]/5 px-4 py-2.5 rounded-xl hover:bg-[#7A3B5E]/10 transition-colors"
-                        >
-                          <Mail className="w-4 h-4" />
-                          admin@mamahala.ca
-                        </a>
                       </div>
                     )}
                   </div>
@@ -361,7 +356,7 @@ export default function PrivacyPolicyPage() {
         <div className="text-center mt-12">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#2B5F4E] transition-colors"
           >
             <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
