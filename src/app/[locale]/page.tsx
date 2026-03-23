@@ -123,16 +123,16 @@ export default function HomePage() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.3, ease }}
             >
-              <div className="relative h-[500px] lg:h-[600px]">
+              <div className="relative h-[520px] lg:h-[640px]">
                 {/* Blob mask */}
                 <div className="absolute inset-0 blob bg-[#2B5F4E]/10" />
-                <div className="absolute inset-4 blob overflow-hidden">
+                <div className="absolute -inset-2 lg:inset-0 blob overflow-hidden">
                   <Image
                     src="/images/hala-confident.png"
                     alt="Dr. Hala Ali - Mama Hala"
                     fill
                     priority
-                    className="object-cover object-top"
+                    className="object-cover object-[70%_15%] scale-110"
                   />
                 </div>
                 {/* Decorative floating elements */}
