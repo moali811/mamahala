@@ -12,6 +12,7 @@ import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import ScrollReveal from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 interface Section {
   id: string;
@@ -217,12 +218,7 @@ export default function PrivacyPolicyPage() {
             </motion.div>
           </motion.div>
         </div>
-        {/* Curved bottom */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 60" className="w-full h-8 md:h-12" preserveAspectRatio="none">
-            <path d="M0,60 L0,30 Q720,0 1440,30 L1440,60 Z" fill="#FAF7F2" />
-          </svg>
-        </div>
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       {/* Table of Contents */}

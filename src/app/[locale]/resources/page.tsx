@@ -19,6 +19,7 @@ import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/S
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 const resourceTypes = [
   { key: 'blog', icon: BookOpen, color: '#C4878A', bgColor: '#C4878A' },
@@ -57,7 +58,7 @@ export default function ResourcesPage() {
       {/* ================================================================ */}
       {/*  HERO                                                            */}
       {/* ================================================================ */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
+      <section className="relative pt-32 pb-28 lg:pt-40 lg:pb-36 overflow-hidden">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
         {/* Decorative orbs */}
@@ -121,21 +122,7 @@ export default function ResourcesPage() {
           </motion.div>
         </div>
 
-        {/* Bottom curve */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg
-            viewBox="0 0 1440 60"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-auto block"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0 60V30C360 0 720 0 1080 30C1260 45 1380 55 1440 60V60H0Z"
-              fill="#FAF7F2"
-            />
-          </svg>
-        </div>
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       {/* ================================================================ */}

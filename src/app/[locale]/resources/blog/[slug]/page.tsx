@@ -20,6 +20,7 @@ import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/S
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import WaveDivider from '@/components/ui/WaveDivider';
 
 const badgeVariants: Record<string, 'sage' | 'plum' | 'sand' | 'neutral'> = {
   Youth: 'sage',
@@ -158,10 +159,10 @@ export default function BlogPostPage() {
       {/* ================================================================ */}
       {/*  HERO                                                            */}
       {/* ================================================================ */}
-      <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
-        <div className={`absolute inset-0 bg-gradient-to-br ${post.gradient}`} />
+      <section className="relative pt-32 pb-28 lg:pt-40 lg:pb-36 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
+          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.08] blur-[80px]" />
           <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />
         </div>
         <div
@@ -202,7 +203,7 @@ export default function BlogPostPage() {
               <Badge
                 variant={badgeVariants[post.cat] || 'sage'}
                 size="md"
-                className="!bg-white/20 !text-white"
+                className="!bg-[#C4878A]/15 !text-[#7A3B5E]"
               >
                 {category}
               </Badge>
@@ -211,7 +212,7 @@ export default function BlogPostPage() {
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-[1.15] tracking-tight"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#2D2A33] leading-[1.15] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {title}
@@ -221,7 +222,7 @@ export default function BlogPostPage() {
             <motion.div
               variants={fadeUp}
               custom={2}
-              className="mt-6 flex flex-wrap items-center gap-4 text-white/70 text-sm"
+              className="mt-6 flex flex-wrap items-center gap-4 text-[#6B6580] text-sm"
             >
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4" />
@@ -241,20 +242,7 @@ export default function BlogPostPage() {
           </motion.div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg
-            viewBox="0 0 1440 60"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-auto block"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M0 60V30C360 0 720 0 1080 30C1260 45 1380 55 1440 60V60H0Z"
-              fill="#FAF7F2"
-            />
-          </svg>
-        </div>
+        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       {/* ================================================================ */}
@@ -324,7 +312,7 @@ export default function BlogPostPage() {
                   transition={{ delay: 0.1, duration: 0.5, ease }}
                 >
                   <Mail className="w-4 h-4 text-[#C8A97D]" />
-                  <span className="text-sm text-white/80 font-medium">
+                  <span className="text-sm text-[#4A4A5C] font-medium">
                     {messages.newsletter.title}
                   </span>
                 </motion.div>
