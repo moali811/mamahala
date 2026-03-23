@@ -15,6 +15,9 @@ import {
   Calendar,
   MessageCircle,
   Quote,
+  GraduationCap,
+  BookOpen,
+  Shield,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer, ease, viewportOnce } from '@/lib/animations';
@@ -342,82 +345,146 @@ export default function AboutPage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  SECTION 4: CREDENTIALS                                         */}
+      {/*  SECTION 4: FOUNDATION OF EXPERTISE                              */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-32 bg-[#FAF7F2]">
         <div className="container-main">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Credentials list */}
-            <ScrollReveal
-              direction={isRTL ? 'right' : 'left'}
-              className={isRTL ? 'lg:order-2' : 'lg:order-1'}
+          {/* Section Header */}
+          <ScrollReveal className="text-center mb-16">
+            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-3">
+              {isRTL ? 'المؤهلات والخبرات' : 'Qualifications & Expertise'}
+            </span>
+            <h2
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1E2A] text-balance"
+              style={{ fontFamily: 'var(--font-heading)' }}
             >
-              <span className="text-xs font-semibold tracking-[0.25em] uppercase text-[#8E8E9F] block mb-3">
-                {isRTL ? 'المؤهلات' : 'Qualifications'}
-              </span>
-              <h2
-                className="text-3xl sm:text-4xl font-bold text-[#1E1E2A] leading-tight mb-10"
-                style={{ fontFamily: 'var(--font-heading)' }}
-              >
-                {messages.about.credentials}
-              </h2>
+              {isRTL ? 'أساس الخبرة' : 'Foundation of Expertise'}
+            </h2>
+            <p className="text-[#4A4A5C] max-w-2xl mx-auto mt-4 leading-relaxed">
+              {isRTL
+                ? 'رحلة مهنية تتميز بالسعي الدؤوب نحو التميز التعليمي وتطوير المهارات'
+                : 'A professional journey marked by a relentless pursuit of educational excellence and skill development'
+              }
+            </p>
+          </ScrollReveal>
 
-              <motion.div
-                className="space-y-4"
-                initial="hidden"
-                whileInView="visible"
-                viewport={viewportOnce}
-                variants={{
-                  hidden: {},
-                  visible: {
-                    transition: { staggerChildren: 0.1, delayChildren: 0.2 },
-                  },
-                }}
-              >
-                {messages.about.credentialsList.map(
-                  (credential: string, index: number) => (
-                    <motion.div
-                      key={index}
-                      className="flex items-center gap-4 bg-white rounded-xl px-6 py-4 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#F3EFE8]"
-                      variants={{
-                        hidden: { opacity: 0, x: isRTL ? 20 : -20 },
-                        visible: {
-                          opacity: 1,
-                          x: 0,
-                          transition: { duration: 0.5, ease },
-                        },
-                      }}
-                    >
-                      <div className="w-9 h-9 rounded-full bg-[#2B5F4E]/10 flex items-center justify-center flex-shrink-0">
-                        <Check className="w-4.5 h-4.5 text-[#2B5F4E]" />
+          {/* Credentials Grid */}
+          <div className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+            {/* Card 1: Yale Doctorate */}
+            {[
+              {
+                icon: GraduationCap,
+                color: 'bg-[#2B5F4E]',
+                iconBg: 'bg-[#2B5F4E]/10',
+                iconColor: 'text-[#2B5F4E]',
+                titleEn: 'Professional Doctorate — Yale University',
+                titleAr: 'دكتوراه مهنية — جامعة ييل',
+                descEn: 'Professional Doctorate Degree in Social and Behavioral Health Sciences (Child and Family), equipped with cutting-edge insights and methodologies to support children and families effectively.',
+                descAr: 'درجة الدكتوراه المهنية في العلوم الصحية الاجتماعية والسلوكية (الطفل والأسرة)، مزودة برؤى ومنهجيات متطورة لدعم الأطفال والأسر بفعالية.',
+                badge: 'Yale University',
+              },
+              {
+                icon: Brain,
+                color: 'bg-[#7A3B5E]',
+                iconBg: 'bg-[#7A3B5E]/10',
+                iconColor: 'text-[#7A3B5E]',
+                titleEn: 'Executive Function Coach (ADD/ADHD)',
+                titleAr: 'مدربة وظائف تنفيذية (ADD/ADHD)',
+                descEn: 'Certified Executive Function Coach, developing tailored strategies to help individuals achieve their full potential.',
+                descAr: 'مدربة معتمدة في الوظائف التنفيذية، تطور استراتيجيات مخصصة لمساعدة الأفراد على تحقيق إمكاناتهم الكاملة.',
+                badge: 'Certified',
+              },
+              {
+                icon: Heart,
+                color: 'bg-[#C8A97D]',
+                iconBg: 'bg-[#C8A97D]/10',
+                iconColor: 'text-[#C8A97D]',
+                titleEn: 'Art & Science of Parenting and Relationships',
+                titleAr: 'فن وعلم الأبوة والعلاقات',
+                descEn: 'A specialized program that honed the ability to nurture healthy family dynamics and strengthen relationship bonds.',
+                descAr: 'برنامج متخصص صقل القدرة على رعاية ديناميكيات أسرية صحية وتعزيز روابط العلاقات.',
+                badge: 'Specialized',
+              },
+              {
+                icon: BookOpen,
+                color: 'bg-[#2B5F4E]',
+                iconBg: 'bg-[#2B5F4E]/10',
+                iconColor: 'text-[#2B5F4E]',
+                titleEn: 'Counseling Psychology — University of Toronto',
+                titleAr: 'علم النفس الإرشادي — جامعة تورنتو',
+                descEn: 'Completed a Counseling Psychology program at the University of Toronto, deepening understanding of mental health and therapeutic approaches.',
+                descAr: 'أكملت برنامج علم النفس الإرشادي في جامعة تورنتو، مما عمّق فهم الصحة النفسية والمناهج العلاجية.',
+                badge: 'University of Toronto',
+              },
+              {
+                icon: Shield,
+                color: 'bg-[#7A3B5E]',
+                iconBg: 'bg-[#7A3B5E]/10',
+                iconColor: 'text-[#7A3B5E]',
+                titleEn: 'Psychological First Aid',
+                titleAr: 'الإسعافات النفسية الأولية',
+                descEn: 'Certified in Psychological First Aid, providing immediate and effective support in crisis situations.',
+                descAr: 'معتمدة في الإسعافات النفسية الأولية، تقدم دعمًا فوريًا وفعالًا في حالات الأزمات.',
+                badge: 'Certified',
+              },
+              {
+                icon: Sparkles,
+                color: 'bg-[#C8A97D]',
+                iconBg: 'bg-[#C8A97D]/10',
+                iconColor: 'text-[#C8A97D]',
+                titleEn: 'Cognitive Behavioral Therapy (CBT)',
+                titleAr: 'العلاج السلوكي المعرفي (CBT)',
+                descEn: 'Certified CBT specialist, employing evidence-based techniques to address a variety of mental health challenges and promote lasting change within individuals and families.',
+                descAr: 'متخصصة معتمدة في العلاج السلوكي المعرفي، تستخدم تقنيات قائمة على الأدلة لمعالجة تحديات الصحة النفسية وتعزيز التغيير الدائم.',
+                badge: 'Certified',
+              },
+            ].map((cred, i) => {
+              const Icon = cred.icon;
+              return (
+                <motion.div
+                  key={i}
+                  className="group bg-white rounded-2xl p-7 border border-[#F3EFE8] hover:border-[#2B5F4E]/15 transition-all duration-300"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={viewportOnce}
+                  transition={{ delay: i * 0.08, duration: 0.5, ease }}
+                  whileHover={{ y: -4, boxShadow: '0 12px 40px rgba(0,0,0,0.08)' }}
+                >
+                  <div className="flex items-start gap-5">
+                    <div className={`w-12 h-12 rounded-xl ${cred.iconBg} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className={`w-6 h-6 ${cred.iconColor}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap mb-2">
+                        <h3 className="font-bold text-[#1E1E2A] text-[15px]" style={{ fontFamily: 'var(--font-heading)' }}>
+                          {isRTL ? cred.titleAr : cred.titleEn}
+                        </h3>
+                        <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${cred.iconBg} ${cred.iconColor}`}>
+                          {cred.badge}
+                        </span>
                       </div>
-                      <span className="text-[#1E1E2A] font-medium text-[15px]">
-                        {credential}
-                      </span>
-                    </motion.div>
-                  )
-                )}
-              </motion.div>
-            </ScrollReveal>
-
-            {/* Image */}
-            <ScrollReveal
-              direction={isRTL ? 'left' : 'right'}
-              className={isRTL ? 'lg:order-1' : 'lg:order-2'}
-            >
-              <div className="relative rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.1)]">
-                <Image
-                  src="/images/hala-group.png"
-                  alt="Mama Hala Consulting Group"
-                  width={600}
-                  height={450}
-                  className="w-full h-auto object-cover"
-                />
-                {/* Overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E2A]/20 to-transparent" />
-              </div>
-            </ScrollReveal>
+                      <p className="text-sm text-[#8E8E9F] leading-relaxed">
+                        {isRTL ? cred.descAr : cred.descEn}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
+
+          {/* Closing statement */}
+          <ScrollReveal className="text-center mt-14 max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-3 bg-white rounded-2xl px-8 py-5 border border-[#F3EFE8] shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+              <Heart className="w-5 h-5 text-[#7A3B5E] flex-shrink-0" />
+              <p className="text-[#4A4A5C] text-sm leading-relaxed italic">
+                {isRTL
+                  ? 'هذا المزيج من الخبرة الشخصية والمهنية يشكل أساس ممارستي، حيث أسعى لتعزيز المرونة والتفاهم والنمو داخل الأسر.'
+                  : 'This blend of personal experience and professional expertise forms the foundation of my practice, where I aim to foster resilience, understanding, and growth within families.'
+                }
+              </p>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
