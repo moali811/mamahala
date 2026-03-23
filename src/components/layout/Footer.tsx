@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Phone, Mail, MapPin, Clock, Instagram, Facebook, Youtube } from 'lucide-react';
+import { SnapchatIcon, TelegramIcon, TiktokIcon } from '@/components/icons/SocialIcons';
 import type { Locale } from '@/types';
 
 interface FooterProps {
@@ -79,9 +80,12 @@ export default function Footer({ locale, messages }: FooterProps) {
             </p>
             <div className="flex items-center gap-3">
               {[
-                { icon: Instagram, href: 'https://instagram.com/mamahalaconsulting', label: 'Instagram' },
-                { icon: Facebook, href: 'https://facebook.com/mamahalaconsulting', label: 'Facebook' },
-                { icon: Youtube, href: 'https://youtube.com/@mamahalaconsulting', label: 'YouTube' },
+                { icon: Instagram, href: 'https://www.instagram.com/mamahala.ca/', label: 'Instagram' },
+                { icon: Facebook, href: 'https://www.facebook.com/mamahala.ca', label: 'Facebook' },
+                { icon: Youtube, href: 'https://youtube.com/@MamaHala-ca', label: 'YouTube' },
+                { icon: TiktokIcon, href: 'https://www.tiktok.com/@mamahala.ca', label: 'TikTok' },
+                { icon: SnapchatIcon, href: 'https://www.snapchat.com/add/mamahala.ca', label: 'Snapchat' },
+                { icon: TelegramIcon, href: 'https://t.me/+Ut1Xms3zRX5jMmNh', label: 'Telegram' },
               ].map(({ icon: Icon, href, label }) => (
                 <a
                   key={label}

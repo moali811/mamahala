@@ -15,6 +15,7 @@ import {
   Facebook,
   Youtube,
 } from 'lucide-react';
+import { SnapchatIcon, TelegramIcon, TiktokIcon } from '@/components/icons/SocialIcons';
 import { getMessages, type Locale } from '@/lib/i18n';
 import ScrollReveal from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
@@ -95,9 +96,12 @@ export default function ContactPage() {
   ];
 
   const socials = [
-    { icon: Instagram, href: 'https://instagram.com/mamahalaconsulting', label: 'Instagram' },
-    { icon: Facebook, href: 'https://facebook.com/mamahalaconsulting', label: 'Facebook' },
-    { icon: Youtube, href: 'https://youtube.com/@mamahalaconsulting', label: 'YouTube' },
+    { icon: Instagram, href: 'https://www.instagram.com/mamahala.ca/', label: 'Instagram' },
+    { icon: Facebook, href: 'https://www.facebook.com/mamahala.ca', label: 'Facebook' },
+    { icon: Youtube, href: 'https://youtube.com/@MamaHala-ca', label: 'YouTube' },
+    { icon: TiktokIcon, href: 'https://www.tiktok.com/@mamahala.ca', label: 'TikTok' },
+    { icon: SnapchatIcon, href: 'https://www.snapchat.com/add/mamahala.ca', label: 'Snapchat' },
+    { icon: TelegramIcon, href: 'https://t.me/+Ut1Xms3zRX5jMmNh', label: 'Telegram' },
   ];
 
   return (
