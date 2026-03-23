@@ -270,49 +270,58 @@ export default function AboutPage() {
           </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {/* Mission Card */}
-            <ScrollReveal direction={isRTL ? 'right' : 'left'} delay={0.1}>
-              <div className="relative h-full bg-gradient-to-br from-[#2B5F4E] to-[#1E4A3B] rounded-3xl p-10 lg:p-12 text-white overflow-hidden">
-                {/* Decorative circle */}
-                <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/[0.06]" />
-                <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-6">
-                    <Target className="w-7 h-7 text-[#C8A97D]" />
+            {[
+              {
+                Icon: Target,
+                titleEn: 'Our Mission',
+                titleAr: 'مهمتنا',
+                textEn: 'To Nurture Healthier Relationships Through Care, Trust and Understanding.',
+                textAr: 'رعاية علاقات أكثر صحة من خلال الاهتمام والثقة والتفاهم.',
+                gradientFrom: '#FAE8E0',
+                gradientTo: '#FDF4F0',
+                accentColor: '#C8A97D',
+                direction: isRTL ? 'right' : 'left',
+                delay: 0.1,
+              },
+              {
+                Icon: Eye,
+                titleEn: 'Our Vision',
+                titleAr: 'رؤيتنا',
+                textEn: "A world where children, youth & families are emotionally healthy and equipped with the tools and knowledge to face life's challenges.",
+                textAr: 'عالم يكون فيه الأطفال والشباب والأسر أصحاء عاطفيًا ومجهزين بالأدوات والمعرفة لمواجهة تحديات الحياة.',
+                gradientFrom: '#FDE8E0',
+                gradientTo: '#FEF2EE',
+                accentColor: '#C8A97D',
+                direction: isRTL ? 'left' : 'right',
+                delay: 0.2,
+              },
+            ].map((card, i) => (
+              <ScrollReveal key={i} direction={card.direction as 'left' | 'right'} delay={card.delay}>
+                <motion.div
+                  className="group relative h-full rounded-3xl p-10 lg:p-12 overflow-hidden cursor-default border border-transparent hover:border-[#C8A97D]/20 transition-all duration-500"
+                  style={{ background: `linear-gradient(135deg, ${card.gradientFrom}, ${card.gradientTo})` }}
+                  whileHover={{ y: -6, boxShadow: '0 20px 60px rgba(200,169,125,0.15)' }}
+                >
+                  {/* Decorative circle */}
+                  <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#C8A97D]/[0.06] group-hover:bg-[#C8A97D]/[0.12] transition-colors duration-500" />
+                  <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-[#C8A97D]/[0.04] group-hover:bg-[#C8A97D]/[0.08] transition-colors duration-500" />
+                  <div className="relative z-10 flex flex-col items-center text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-[#C8A97D]/15 flex items-center justify-center mb-6 group-hover:bg-[#C8A97D]/25 transition-colors duration-300">
+                      <card.Icon className="w-7 h-7 text-[#C8A97D]" />
+                    </div>
+                    <h3
+                      className="text-2xl font-bold text-[#1E1E2A] mb-5"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      {isRTL ? card.titleAr : card.titleEn}
+                    </h3>
+                    <p className="text-[#4A4A5C] leading-relaxed text-[15px] max-w-sm">
+                      {isRTL ? card.textAr : card.textEn}
+                    </p>
                   </div>
-                  <h3
-                    className="text-2xl font-bold mb-4"
-                    style={{ fontFamily: 'var(--font-heading)' }}
-                  >
-                    {messages.about.mission}
-                  </h3>
-                  <p className="text-white/80 leading-relaxed text-[15px]">
-                    {messages.about.missionText}
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
-
-            {/* Vision Card */}
-            <ScrollReveal direction={isRTL ? 'left' : 'right'} delay={0.2}>
-              <div className="relative h-full bg-gradient-to-br from-[#7A3B5E] to-[#5E2D48] rounded-3xl p-10 lg:p-12 text-white overflow-hidden">
-                {/* Decorative circle */}
-                <div className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-white/[0.06]" />
-                <div className="relative z-10">
-                  <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center mb-6">
-                    <Eye className="w-7 h-7 text-[#C8A97D]" />
-                  </div>
-                  <h3
-                    className="text-2xl font-bold mb-4"
-                    style={{ fontFamily: 'var(--font-heading)' }}
-                  >
-                    {messages.about.vision}
-                  </h3>
-                  <p className="text-white/80 leading-relaxed text-[15px]">
-                    {messages.about.visionText}
-                  </p>
-                </div>
-              </div>
-            </ScrollReveal>
+                </motion.div>
+              </ScrollReveal>
+            ))}
           </div>
         </div>
       </section>
