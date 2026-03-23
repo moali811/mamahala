@@ -402,7 +402,7 @@ export default function HomePage() {
                       className="block text-4xl font-bold mb-4 text-[#C8A97D]"
                       style={{ fontFamily: 'var(--font-heading)' }}
                     >
-                      {String(index + 1).padStart(2, '0')}.
+                      {String(index + 1).padStart(2, '0')}
                     </span>
                     <h3
                       className="text-xl font-bold text-[#2D2A33] mb-3"
