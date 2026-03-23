@@ -161,21 +161,80 @@ export default function HomePage() {
             </motion.div>
           </div>
 
-          {/* Trust Badges */}
+          {/* Trust Bar */}
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 py-12 border-t border-[#F3EFE8] mt-8"
+            className="mt-10 py-8 border-t border-[#F3EFE8]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6, ease }}
           >
-            {Object.entries({
-              families: { value: messages.hero.stats.families, label: messages.hero.stats.familiesLabel },
-              bilingual: { value: messages.hero.stats.bilingual, label: messages.hero.stats.bilingualLabel },
-              global: { value: messages.hero.stats.global, label: messages.hero.stats.globalLabel },
-              locations: { value: messages.hero.stats.locations, label: messages.hero.stats.locationsLabel },
-            }).map(([key, { value, label }]) => (
-              <AnimatedCounter key={key} value={value} label={label} />
-            ))}
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-4">
+              {[
+                {
+                  icon: Heart,
+                  value: '500+',
+                  label: isRTL ? 'عائلة تم دعمها' : 'Families Supported',
+                  desc: isRTL ? 'عبر دبي وكندا' : 'Across Dubai & Canada',
+                  color: '#C4878A',
+                },
+                {
+                  icon: GraduationCap,
+                  value: isRTL ? 'ييل' : 'Yale',
+                  label: isRTL ? 'دكتوراه مهنية' : 'Professional Doctorate',
+                  desc: isRTL ? 'صحة الطفل والأسرة' : 'Child & Family Health',
+                  color: '#7A3B5E',
+                },
+                {
+                  icon: Users,
+                  value: '23+',
+                  label: isRTL ? 'خدمة متخصصة' : 'Specialized Services',
+                  desc: isRTL ? 'للأفراد والأسر والأزواج' : 'Individuals, families & couples',
+                  color: '#C8A97D',
+                },
+                {
+                  icon: MessageCircle,
+                  value: isRTL ? 'ثنائي' : 'Bilingual',
+                  label: isRTL ? 'عربي / English' : 'English / عربي',
+                  desc: isRTL ? 'دعم بلغتين' : 'Culturally sensitive support',
+                  color: '#C4878A',
+                },
+                {
+                  icon: Calendar,
+                  value: isRTL ? 'عبر الإنترنت' : 'Online',
+                  label: isRTL ? 'وحضوري' : '& In-Person',
+                  desc: isRTL ? 'جلسات مرنة عالمياً' : 'Flexible sessions worldwide',
+                  color: '#7A3B5E',
+                },
+              ].map((stat, i) => {
+                const Icon = stat.icon;
+                return (
+                  <motion.div
+                    key={i}
+                    className="group flex items-start gap-3 lg:flex-col lg:items-center lg:text-center"
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9 + i * 0.1, duration: 0.5 }}
+                  >
+                    <div
+                      className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                      style={{ backgroundColor: `${stat.color}12` }}
+                    >
+                      <Icon className="w-5 h-5" style={{ color: stat.color }} />
+                    </div>
+                    <div>
+                      <div
+                        className="text-xl lg:text-2xl font-bold text-[#2D2A33]"
+                        style={{ fontFamily: 'var(--font-heading)' }}
+                      >
+                        {stat.value}
+                      </div>
+                      <div className="text-sm font-medium text-[#4A4A5C]">{stat.label}</div>
+                      <div className="text-xs text-[#8E8E9F] mt-0.5 hidden lg:block">{stat.desc}</div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </motion.div>
         </div>
       </section>
