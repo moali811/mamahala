@@ -128,7 +128,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 blob bg-[#2B5F4E]/10" />
                 <div className="absolute inset-4 blob overflow-hidden">
                   <Image
-                    src="/images/hala-hero.png"
+                    src="/images/hala-confident.png"
                     alt="Dr. Hala Ali - Mama Hala"
                     fill
                     priority
