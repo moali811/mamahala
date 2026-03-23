@@ -285,8 +285,8 @@ export default function EventsPage() {
       {/*  CTA                                                             */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#7A3B5E]/[0.06] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#7A3B5E]/[0.04] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
         <div className="container-main relative z-10">
           <ScrollReveal className="text-center max-w-3xl mx-auto">
@@ -294,12 +294,12 @@ export default function EventsPage() {
               <Sparkles className="w-7 h-7 text-[#C8A97D]" />
             </div>
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold !text-white leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#2D2A33] leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.cta.ready}
             </h2>
-            <p className="mt-6 text-lg lg:text-xl !text-white/80 leading-relaxed max-w-xl mx-auto">
+            <p className="mt-6 text-lg lg:text-xl text-[#4A4A5C] leading-relaxed max-w-xl mx-auto">
               {messages.cta.readyDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-10">
@@ -309,7 +309,7 @@ export default function EventsPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
+                className=""
               >
                 {messages.cta.bookNow}
               </Button>
@@ -321,7 +321,7 @@ export default function EventsPage() {
                 variant="outline"
                 size="lg"
                 icon={<MessageCircle className="w-5 h-5" />}
-                className="!border-white/30 !text-white hover:!bg-white/10"
+                className="!border-[#7A3B5E]/20 !text-[#7A3B5E] hover:!bg-[#7A3B5E]/5"
               >
                 {messages.cta.whatsapp}
               </Button>

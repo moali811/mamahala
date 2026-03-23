@@ -345,26 +345,25 @@ export default function AboutPage() {
                       </div>
                     </div>
 
-                    {/* === BACK FACE (rich gradient — on hover) === */}
+                    {/* === BACK FACE (warm peach — on hover) === */}
                     <div
-                      className="absolute inset-0 p-10 lg:p-12 rounded-3xl opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 pointer-events-none group-hover:pointer-events-auto"
-                      style={{ background: `linear-gradient(135deg, ${card.hoverFrom}, ${card.hoverTo})` }}
+                      className="absolute inset-0 p-10 lg:p-12 rounded-3xl opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 pointer-events-none group-hover:pointer-events-auto bg-gradient-to-br from-[#F0D5CA] to-[#E8C4C0]"
                     >
-                      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/[0.05]" />
-                      <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/[0.03]" />
+                      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#7A3B5E]/[0.05]" />
+                      <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-[#7A3B5E]/[0.03]" />
                       <div className="relative z-10 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-5">
-                          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                            <CardIcon className="w-5 h-5 text-[#C8A97D]" />
+                          <div className="w-10 h-10 rounded-xl bg-[#7A3B5E]/10 flex items-center justify-center">
+                            <CardIcon className="w-5 h-5 text-[#7A3B5E]" />
                           </div>
-                          <h3 className="text-xl font-bold !text-white" style={{ fontFamily: 'var(--font-heading)' }}>
+                          <h3 className="text-xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
                             {isRTL ? card.titleAr : card.titleEn}
                           </h3>
                         </div>
-                        <div className="w-10 h-0.5 bg-[#C8A97D]/40 rounded-full mb-5" />
+                        <div className="w-10 h-0.5 bg-[#7A3B5E]/30 rounded-full mb-5" />
                         <div className="space-y-4 flex-1">
                           {(isRTL ? card.detailAr : card.detailEn).map((para, pi) => (
-                            <p key={pi} className="!text-white/80 leading-relaxed text-[14px]">
+                            <p key={pi} className="text-[#4A4A5C] leading-relaxed text-[14px]">
                               {para}
                             </p>
                           ))}
@@ -383,21 +382,21 @@ export default function AboutPage() {
       {/*  SECTION 3.5: WHAT WE STAND FOR — CORE VALUES                   */}
       {/* ================================================================ */}
       <section className="relative py-28 lg:py-36 overflow-hidden">
-        {/* Dark sage background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2D2A33] via-[#252535] to-[#2D2A33]" />
+        {/* Warm light background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F3EFE8] via-[#F0D5CA] to-[#E8C4C0]" />
         {/* Subtle texture */}
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '48px 48px' }} />
         {/* Decorative glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#C8A97D]/[0.06] rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#7A3B5E]/[0.06] rounded-full blur-[120px] pointer-events-none" />
 
         <div className="container-main relative z-10">
           <ScrollReveal className="text-center mb-16 lg:mb-20">
-            <span className="text-sm font-semibold tracking-[0.2em] uppercase text-[#C8A97D]/70 block mb-4">
+            <span className="text-sm font-semibold tracking-[0.2em] uppercase text-[#7A3B5E]/70 block mb-4">
               {isRTL ? 'قيمنا الأساسية' : 'Our Core Values'}
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.1]" style={{ fontFamily: 'var(--font-heading)' }}>
-              <span className="!text-white">{isRTL ? 'ما ' : 'What We '}</span>
-              <span className="text-[#C8A97D] italic">{isRTL ? 'نؤمن به' : 'Stand For'}</span>
+              <span className="text-[#2D2A33]">{isRTL ? 'ما ' : 'What We '}</span>
+              <span className="text-[#7A3B5E] italic">{isRTL ? 'نؤمن به' : 'Stand For'}</span>
             </h2>
           </ScrollReveal>
 
@@ -434,7 +433,7 @@ export default function AboutPage() {
             ].map((val, i) => (
               <StaggerChild key={i}>
                 <motion.div
-                  className="group relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.08] rounded-2xl p-8 lg:p-9 h-full hover:bg-white/[0.08] hover:border-white/[0.15] transition-all duration-500"
+                  className="group relative bg-white border border-[#D4ADA8]/15 rounded-2xl p-8 lg:p-9 h-full hover:bg-white hover:border-[#D4ADA8]/30 transition-all duration-500"
                   whileHover={{ y: -8, transition: { duration: 0.3 } }}
                 >
                   {/* Top gradient accent line */}
@@ -444,18 +443,15 @@ export default function AboutPage() {
                   />
                   {/* Value title — stylized */}
                   <h3
-                    className="text-[22px] lg:text-[24px] font-bold mb-5 tracking-wide uppercase"
+                    className="text-[22px] lg:text-[24px] font-bold mb-5 tracking-wide uppercase text-[#7A3B5E]"
                     style={{
                       fontFamily: 'var(--font-heading)',
-                      background: `linear-gradient(135deg, ${val.color}, ${val.color}90)`,
-                      WebkitBackgroundClip: 'text',
-                      WebkitTextFillColor: 'transparent',
                     }}
                   >
                     {isRTL ? val.titleAr : val.titleEn}
                   </h3>
                   {/* Description */}
-                  <p className="!text-white/55 leading-relaxed text-[14px] group-hover:!text-white/75 transition-colors duration-500">
+                  <p className="text-[#4A4A5C] leading-relaxed text-[14px] group-hover:text-[#2D2A33] transition-colors duration-500">
                     {isRTL ? val.textAr : val.textEn}
                   </p>
                 </motion.div>
@@ -523,24 +519,24 @@ export default function AboutPage() {
           {/* Yale — Hero Feature Card */}
           <ScrollReveal className="mb-8">
             <motion.div
-              className="relative bg-gradient-to-br from-[#C4878A] to-[#B07578] rounded-3xl p-10 lg:p-14 overflow-hidden"
-              whileHover={{ boxShadow: '0 20px 60px rgba(43,95,78,0.2)' }}
+              className="relative bg-gradient-to-br from-[#F0D5CA] to-[#E8C4C0] rounded-3xl p-10 lg:p-14 overflow-hidden"
+              whileHover={{ boxShadow: '0 20px 60px rgba(122,59,94,0.1)' }}
             >
-              <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-white/[0.04]" />
-              <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-[#C8A97D]/[0.06]" />
+              <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-[#7A3B5E]/[0.04]" />
+              <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-[#7A3B5E]/[0.06]" />
               <div className="relative z-10 flex flex-col md:flex-row items-start gap-8">
-                <div className="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center flex-shrink-0">
-                  <GraduationCap className="w-10 h-10 text-[#C8A97D]" />
+                <div className="w-20 h-20 rounded-2xl bg-[#7A3B5E]/10 flex items-center justify-center flex-shrink-0">
+                  <GraduationCap className="w-10 h-10 text-[#7A3B5E]" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 flex-wrap mb-3">
-                    <span className="text-xs font-bold uppercase tracking-widest text-[#C8A97D] bg-[#C8A97D]/15 px-3 py-1 rounded-full">Yale University</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-[#7A3B5E] bg-[#7A3B5E]/10 px-3 py-1 rounded-full">Yale University</span>
                   </div>
-                  <h3 className="text-2xl lg:text-3xl font-bold !text-white mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+                  <h3 className="text-2xl lg:text-3xl font-bold text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
                     {isRTL ? 'دكتوراه مهنية في العلوم الصحية الاجتماعية والسلوكية' : 'Professional Doctorate in Social & Behavioral Health Sciences'}
                   </h3>
-                  <p className="text-sm !text-white/60 mb-1">{isRTL ? 'تخصص: الطفل والأسرة' : 'Specialization: Child and Family'}</p>
-                  <p className="!text-white/75 leading-relaxed text-[15px] max-w-2xl mt-3">
+                  <p className="text-sm text-[#6B6580] mb-1">{isRTL ? 'تخصص: الطفل والأسرة' : 'Specialization: Child and Family'}</p>
+                  <p className="text-[#4A4A5C] leading-relaxed text-[15px] max-w-2xl mt-3">
                     {isRTL
                       ? 'مزودة برؤى ومنهجيات متطورة لدعم الأطفال والأسر بفعالية.'
                       : 'Equipped with cutting-edge insights and methodologies to support children and families effectively.'
@@ -604,17 +600,17 @@ export default function AboutPage() {
       {/*  SECTION 7: CTA                                                 */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 relative overflow-hidden">
-        {/* Deep sage gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#C4878A] via-[#B8888A] to-[#A06466]" />
+        {/* Warm gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F3EFE8] via-[#F0D5CA] to-[#E8C4C0]" />
         {/* Decorative elements */}
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#7A3B5E]/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#7A3B5E]/[0.06] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
         {/* Subtle pattern */}
         <div
           className="absolute inset-0 opacity-[0.02] pointer-events-none"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
+              'radial-gradient(circle at 1px 1px, #7A3B5E 1px, transparent 0)',
             backgroundSize: '48px 48px',
           }}
         />
@@ -622,25 +618,25 @@ export default function AboutPage() {
         <div className="container-main relative z-10">
           <ScrollReveal className="text-center max-w-3xl mx-auto">
             <motion.div
-              className="inline-flex items-center gap-2 bg-white/10 rounded-full px-5 py-2 mb-8"
+              className="inline-flex items-center gap-2 bg-white/60 rounded-full px-5 py-2 mb-8"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={viewportOnce}
               transition={{ delay: 0.1, duration: 0.5, ease }}
             >
-              <Sparkles className="w-4 h-4 text-[#C8A97D]" />
-              <span className="text-sm !text-white/80 font-medium">
+              <Sparkles className="w-4 h-4 text-[#7A3B5E]" />
+              <span className="text-sm text-[#7A3B5E] font-medium">
                 {isRTL ? 'ابدأ رحلتك اليوم' : 'Start Your Journey Today'}
               </span>
             </motion.div>
 
             <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold !text-white leading-tight text-balance"
+              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#2D2A33] leading-tight text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.cta.ready}
             </h2>
-            <p className="mt-6 text-lg lg:text-xl !text-white/80 leading-relaxed max-w-xl mx-auto">
+            <p className="mt-6 text-lg lg:text-xl text-[#4A4A5C] leading-relaxed max-w-xl mx-auto">
               {messages.cta.readyDesc}
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-10">
@@ -650,7 +646,7 @@ export default function AboutPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
+                className="!bg-[#7A3B5E] !text-white hover:!bg-[#5E2D48]"
               >
                 {messages.cta.bookNow}
               </Button>
@@ -662,7 +658,7 @@ export default function AboutPage() {
                 variant="outline"
                 size="lg"
                 icon={<MessageCircle className="w-5 h-5" />}
-                className="!border-white/30 !text-white hover:!bg-white/10"
+                className="!border-[#7A3B5E]/30 !text-[#7A3B5E] hover:!bg-[#7A3B5E]/10"
               >
                 {messages.cta.whatsapp}
               </Button>
@@ -875,20 +871,20 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
       <div className="container-main relative z-10">
         {/* Hero Banner */}
         <ScrollReveal className={showForm ? 'mb-10' : ''}>
-          <div className="relative bg-gradient-to-br from-[#2D2A33] via-[#2B2B3D] to-[#2D2A33] rounded-3xl overflow-hidden">
+          <div className="relative bg-gradient-to-br from-[#E8C4C0] via-[#D4ADA8] to-[#E8C4C0] rounded-3xl overflow-hidden">
             <div className="grid lg:grid-cols-5 items-stretch">
               <div className={`flex flex-col justify-center p-10 lg:p-14 lg:col-span-3 ${isRTL ? 'lg:order-2' : 'lg:order-1'}`}>
-                <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 w-fit mb-6">
-                  <Mic className="w-4 h-4 text-[#C8A97D]" />
-                  <span className="text-xs font-semibold !text-white/80 uppercase tracking-wider">
+                <div className="inline-flex items-center gap-2 bg-white/80 rounded-full px-4 py-1.5 w-fit mb-6">
+                  <Mic className="w-4 h-4 text-[#7A3B5E]" />
+                  <span className="text-xs font-semibold text-[#7A3B5E] uppercase tracking-wider">
                     {isRTL ? 'طلبات الإعلام' : 'Media Requests'}
                   </span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
-                  <span className="!text-white">{isRTL ? 'تعرّف على ' : 'Meet '}</span>
-                  <span className="text-[#C8A97D]">{isRTL ? 'ماما هالة' : 'Mama Hala'}</span>
+                  <span className="text-[#2D2A33]">{isRTL ? 'تعرّف على ' : 'Meet '}</span>
+                  <span className="text-[#7A3B5E]">{isRTL ? 'ماما هالة' : 'Mama Hala'}</span>
                 </h2>
-                <p className="!text-white/70 leading-relaxed max-w-lg text-[15px]">
+                <p className="text-[#4A4A5C] leading-relaxed max-w-lg text-[15px]">
                   {isRTL
                     ? 'دعونا نتواصل ونستكشف كيف يمكننا التعاون ومشاركة الأفكار أو بدء محادثة هادفة.'
                     : "Let's connect and explore how we can collaborate, share insights, or start a meaningful conversation."
@@ -900,7 +896,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                     { en: 'TV & Radio', ar: 'تلفزيون وراديو', icon: Video },
                     { en: 'Print & Online', ar: 'مطبوعات وإلكتروني', icon: FileText },
                   ].map((tag, i) => (
-                    <span key={i} className="inline-flex items-center gap-1.5 text-xs text-white/60 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                    <span key={i} className="inline-flex items-center gap-1.5 text-xs text-[#7A3B5E] bg-white/80 px-3 py-1.5 rounded-full border border-white/40">
                       <tag.icon className="w-3.5 h-3.5" /> {isRTL ? tag.ar : tag.en}
                     </span>
                   ))}
@@ -920,8 +916,8 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
               </div>
               <div className={`relative lg:col-span-2 min-h-[300px] lg:min-h-full ${isRTL ? 'lg:order-1' : 'lg:order-2'}`}>
                 <Image src="/images/hala-office.jpg" alt="Dr. Hala Ali" fill className="object-cover object-center" />
-                <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#2D2A33] via-[#2D2A33]/40 to-transparent hidden lg:block`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#2D2A33]/60 to-transparent lg:hidden" />
+                <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#D4ADA8] via-[#D4ADA8]/40 to-transparent hidden lg:block`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#D4ADA8]/60 to-transparent lg:hidden" />
               </div>
             </div>
           </div>

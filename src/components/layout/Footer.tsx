@@ -23,30 +23,30 @@ export default function Footer({ locale, messages }: FooterProps) {
   return (
     <footer
       dir={isRTL ? 'rtl' : 'ltr'}
-      className="bg-[#2D2A33] text-white/80"
+      className="bg-gradient-to-b from-[#F3EFE8] to-[#EDE6DC]"
     >
       {/* Newsletter Bar */}
-      <div className="border-b border-white/10">
+      <div className="border-b border-[#D4ADA8]/20">
         <div className="container-main py-10">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <h3
-                className="text-xl font-bold text-white mb-1"
+                className="text-xl font-bold text-[#2D2A33] mb-1"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {newsletter.title}
               </h3>
-              <p className="text-sm text-white/60">{newsletter.subtitle}</p>
+              <p className="text-sm text-[#6B6580]">{newsletter.subtitle}</p>
             </div>
             <form className="flex w-full max-w-md gap-2" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="email"
                 placeholder={newsletter.placeholder}
-                className="flex-1 rounded-full bg-white/10 border border-white/10 px-5 py-3 text-sm text-white placeholder-white/40 outline-none focus:border-[#C8A97D]/50 focus:ring-1 focus:ring-[#C8A97D]/30 transition-all"
+                className="flex-1 rounded-full bg-white border border-[#D4ADA8]/20 px-5 py-3 text-sm text-[#2D2A33] placeholder-[#8E8E9F] outline-none focus:border-[#7A3B5E]/40 focus:ring-1 focus:ring-[#7A3B5E]/20 transition-all"
               />
               <button
                 type="submit"
-                className="rounded-full bg-[#C8A97D] px-6 py-3 text-sm font-semibold text-[#2D2A33] hover:bg-[#D9C4A0] transition-colors whitespace-nowrap"
+                className="rounded-full bg-[#7A3B5E] px-6 py-3 text-sm font-semibold text-white hover:bg-[#5E2D48] transition-colors whitespace-nowrap"
               >
                 {newsletter.subscribe}
               </button>
@@ -69,13 +69,13 @@ export default function Footer({ locale, messages }: FooterProps) {
                 className="h-9 w-9 rounded-full object-contain"
               />
               <span
-                className="text-sm font-semibold text-white"
+                className="text-sm font-semibold text-[#2D2A33]"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {isRTL ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting'}
               </span>
             </Link>
-            <p className="text-sm text-white/50 leading-relaxed mb-6 max-w-xs">
+            <p className="text-sm text-[#6B6580] leading-relaxed mb-6 max-w-xs">
               {footer.description}
             </p>
             <div className="flex items-center gap-3">
@@ -93,7 +93,7 @@ export default function Footer({ locale, messages }: FooterProps) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/50 hover:text-white transition-all duration-200"
+                  className="w-9 h-9 rounded-full bg-[#D4ADA8]/15 flex items-center justify-center hover:bg-[#7A3B5E] text-[#7A3B5E] hover:text-white transition-all duration-200"
                 >
                   <Icon size={16} />
                 </a>
@@ -103,7 +103,7 @@ export default function Footer({ locale, messages }: FooterProps) {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-5">
+            <h4 className="text-sm font-semibold text-[#2D2A33] uppercase tracking-wider mb-5">
               {footer.quickLinks}
             </h4>
             <ul className="space-y-3">
@@ -117,7 +117,7 @@ export default function Footer({ locale, messages }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/50 hover:text-[#C8A97D] transition-colors duration-200"
+                    className="text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -128,7 +128,7 @@ export default function Footer({ locale, messages }: FooterProps) {
 
           {/* Services */}
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-5">
+            <h4 className="text-sm font-semibold text-[#2D2A33] uppercase tracking-wider mb-5">
               {footer.ourServices}
             </h4>
             <ul className="space-y-3">
@@ -142,7 +142,7 @@ export default function Footer({ locale, messages }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-white/50 hover:text-[#C8A97D] transition-colors duration-200"
+                    className="text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -153,29 +153,29 @@ export default function Footer({ locale, messages }: FooterProps) {
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm font-semibold text-white uppercase tracking-wider mb-5">
+            <h4 className="text-sm font-semibold text-[#2D2A33] uppercase tracking-wider mb-5">
               {footer.contactUs}
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <Phone size={16} className="text-[#C8A97D] mt-0.5 flex-shrink-0" />
-                <a href="tel:+16132222104" className="text-sm text-white/50 hover:text-[#C8A97D] transition-colors">
+                <Phone size={16} className="text-[#7A3B5E] mt-0.5 flex-shrink-0" />
+                <a href="tel:+16132222104" className="text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
                   {contact.phone}
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <Mail size={16} className="text-[#C8A97D] mt-0.5 flex-shrink-0" />
-                <a href="mailto:admin@mamahala.ca" className="text-sm text-white/50 hover:text-[#C8A97D] transition-colors">
+                <Mail size={16} className="text-[#7A3B5E] mt-0.5 flex-shrink-0" />
+                <a href="mailto:admin@mamahala.ca" className="text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
                   {contact.email}
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <MapPin size={16} className="text-[#C8A97D] mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-white/50">{contact.location}</span>
+                <MapPin size={16} className="text-[#7A3B5E] mt-0.5 flex-shrink-0" />
+                <span className="text-sm text-[#6B6580]">{contact.location}</span>
               </li>
               <li className="flex items-start gap-3">
-                <Clock size={16} className="text-[#C8A97D] mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-white/50">{contact.hoursDetail}</span>
+                <Clock size={16} className="text-[#7A3B5E] mt-0.5 flex-shrink-0" />
+                <span className="text-sm text-[#6B6580]">{contact.hoursDetail}</span>
               </li>
             </ul>
           </div>
@@ -183,19 +183,19 @@ export default function Footer({ locale, messages }: FooterProps) {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-white/10">
+      <div className="border-t border-[#D4ADA8]/20">
         <div className="container-main py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-white/40">
+          <p className="text-xs text-[#8E8E9F]">
             &copy; {currentYear} Mama Hala Consulting. {footer.rights}
           </p>
           <div className="flex items-center gap-6">
-            <Link href={`/${locale}/privacy-policy`} className="text-xs text-white/40 hover:text-white/60 transition-colors">
+            <Link href={`/${locale}/privacy-policy`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
               {footer.privacy}
             </Link>
-            <Link href={`/${locale}/terms-of-service`} className="text-xs text-white/40 hover:text-white/60 transition-colors">
+            <Link href={`/${locale}/terms-of-service`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
               {footer.terms}
             </Link>
-            <Link href={`/${locale}/booking-policy`} className="text-xs text-white/40 hover:text-white/60 transition-colors">
+            <Link href={`/${locale}/booking-policy`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
               {footer.bookingPolicy}
             </Link>
           </div>
