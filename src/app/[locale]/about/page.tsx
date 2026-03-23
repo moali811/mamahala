@@ -2,7 +2,8 @@
 
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import {
   Check,
   Target,
@@ -18,14 +19,47 @@ import {
   GraduationCap,
   BookOpen,
   Shield,
+  Mic,
+  Send,
+  User,
+  Mail,
+  Phone,
+  FileText,
+  Video,
+  Clock,
+  CheckCircle2,
+  ChevronDown,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer, ease, viewportOnce } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
+import Input from '@/components/ui/Input';
 
 const reasonIcons = [Globe, Brain, MessageCircle, HandHeart];
+
+const mediaTypes = [
+  { value: '', label: 'Choose one', labelAr: 'اختر واحدًا' },
+  { value: 'podcast', label: 'Podcast', labelAr: 'بودكاست' },
+  { value: 'tv', label: 'TV / Broadcast', labelAr: 'تلفزيون / بث' },
+  { value: 'radio', label: 'Radio', labelAr: 'راديو' },
+  { value: 'print', label: 'Print / Magazine', labelAr: 'مطبوعات / مجلة' },
+  { value: 'online', label: 'Online / Blog', labelAr: 'إلكتروني / مدونة' },
+  { value: 'social', label: 'Social Media', labelAr: 'وسائل التواصل' },
+  { value: 'panel', label: 'Panel / Conference', labelAr: 'ندوة / مؤتمر' },
+  { value: 'other', label: 'Other', labelAr: 'أخرى' },
+];
+
+const recordingMethods = [
+  { value: '', label: 'Choose one', labelAr: 'اختر واحدًا' },
+  { value: 'zoom', label: 'Zoom', labelAr: 'زووم' },
+  { value: 'teams', label: 'Microsoft Teams', labelAr: 'مايكروسوفت تيمز' },
+  { value: 'phone', label: 'Phone Call', labelAr: 'مكالمة هاتفية' },
+  { value: 'in-person', label: 'In-Person', labelAr: 'حضوري' },
+  { value: 'studio', label: 'Studio Recording', labelAr: 'تسجيل استوديو' },
+  { value: 'other', label: 'Other', labelAr: 'أخرى' },
+];
 
 export default function AboutPage() {
   const params = useParams();
@@ -545,7 +579,12 @@ export default function AboutPage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  SECTION 6: CTA                                                 */}
+      {/*  SECTION 6: INTERVIEW & MEDIA REQUEST                           */}
+      {/* ================================================================ */}
+      <InterviewSection locale={locale} isRTL={isRTL} />
+
+      {/* ================================================================ */}
+      {/*  SECTION 7: CTA                                                 */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 relative overflow-hidden">
         {/* Deep sage gradient */}
@@ -615,5 +654,356 @@ export default function AboutPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+/* ================================================================ */
+/*  INTERVIEW & MEDIA REQUEST COMPONENT                             */
+/* ================================================================ */
+function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean }) {
+  const [formData, setFormData] = useState({
+    firstName: '', lastName: '', email: '', phone: '',
+    publication: '', interviewer: '', mediaType: '', audience: '', platforms: '', website: '',
+    proposedDate: '', proposedTime: '', amPm: 'AM', topic: '', recordingMethod: '',
+    deliverables: '', willMention: '',
+  });
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSending(true);
+    await new Promise(r => setTimeout(r, 2000));
+    setSending(false);
+    setSent(true);
+  };
+
+  return (
+    <section className="py-24 lg:py-32 bg-[#FAF7F2] relative overflow-hidden">
+      {/* Subtle decorative elements */}
+      <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full bg-[#7A3B5E]/[0.03] blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-[#2B5F4E]/[0.03] blur-[80px] pointer-events-none" />
+
+      <div className="container-main relative z-10">
+        {/* Section Header with Image */}
+        <ScrollReveal className="mb-16">
+          <div className="relative bg-gradient-to-br from-[#1E1E2A] via-[#2B2B3D] to-[#1E1E2A] rounded-3xl overflow-hidden">
+            <div className="grid lg:grid-cols-5 items-stretch">
+              {/* Text Side */}
+              <div className={`flex flex-col justify-center p-10 lg:p-14 lg:col-span-3 ${isRTL ? 'lg:order-2' : 'lg:order-1'}`}>
+                <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 w-fit mb-6">
+                  <Mic className="w-4 h-4 text-[#C8A97D]" />
+                  <span className="text-xs font-semibold text-white/80 uppercase tracking-wider">
+                    {isRTL ? 'طلبات الإعلام' : 'Media Requests'}
+                  </span>
+                </div>
+                <h2
+                  className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4"
+                  style={{ fontFamily: 'var(--font-heading)' }}
+                >
+                  {isRTL ? 'تعرّف على ماما هالة' : 'Meet Mama Hala'}
+                </h2>
+                <p className="text-white/70 leading-relaxed max-w-lg text-[15px]">
+                  {isRTL
+                    ? 'دعونا نتواصل ونستكشف كيف يمكننا التعاون ومشاركة الأفكار أو بدء محادثة هادفة. يرجى تقديم طلبك للمقابلات أو المشاركات الإعلامية أو النقاشات المهنية.'
+                    : "Let's connect and explore how we can collaborate, share insights, or start a meaningful conversation. Please submit your request for interviews, media features, or professional discussions."
+                  }
+                </p>
+                <div className="flex flex-wrap gap-4 mt-6">
+                  {[
+                    { en: 'Podcasts', ar: 'بودكاست', icon: Mic },
+                    { en: 'TV & Radio', ar: 'تلفزيون وراديو', icon: Video },
+                    { en: 'Print & Online', ar: 'مطبوعات وإلكتروني', icon: FileText },
+                  ].map((tag, i) => (
+                    <span key={i} className="inline-flex items-center gap-1.5 text-xs text-white/60 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                      <tag.icon className="w-3.5 h-3.5" />
+                      {isRTL ? tag.ar : tag.en}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Image Side */}
+              <div className={`relative lg:col-span-2 min-h-[300px] lg:min-h-full ${isRTL ? 'lg:order-1' : 'lg:order-2'}`}>
+                <Image
+                  src="/images/hala-office.jpg"
+                  alt="Dr. Hala Ali - Interview & Media"
+                  fill
+                  className="object-cover object-center"
+                />
+                {/* Gradient overlay blending into dark background */}
+                <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#1E1E2A] via-[#1E1E2A]/40 to-transparent hidden lg:block`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E2A]/60 to-transparent lg:hidden" />
+              </div>
+            </div>
+          </div>
+        </ScrollReveal>
+
+        {/* Form */}
+        <AnimatePresence mode="wait">
+          {sent ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="max-w-2xl mx-auto text-center py-16"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
+                className="w-20 h-20 mx-auto mb-6 bg-[#2B5F4E]/10 rounded-full flex items-center justify-center"
+              >
+                <CheckCircle2 className="w-10 h-10 text-[#2B5F4E]" />
+              </motion.div>
+              <h3 className="text-2xl font-bold text-[#1E1E2A] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+                {isRTL ? 'تم إرسال طلبك بنجاح!' : 'Request Submitted Successfully!'}
+              </h3>
+              <p className="text-[#8E8E9F]">
+                {isRTL
+                  ? 'شكرًا لاهتمامك. سنراجع طلبك ونتواصل معك في أقرب وقت ممكن.'
+                  : 'Thank you for your interest. We\'ll review your request and get back to you as soon as possible.'
+                }
+              </p>
+            </motion.div>
+          ) : (
+            <motion.form
+              key="form"
+              onSubmit={handleSubmit}
+              className="max-w-4xl mx-auto"
+              initial={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              {/* STEP 1: Your Information */}
+              <ScrollReveal>
+                <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-8 lg:p-10 mb-6">
+                  <div className="flex items-center gap-3 mb-7">
+                    <div className="w-10 h-10 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center">
+                      <User className="w-5 h-5 text-[#2B5F4E]" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+                        {isRTL ? 'معلوماتك' : 'Your Information'}
+                      </h3>
+                      <p className="text-xs text-[#8E8E9F]">{isRTL ? 'معلومات الاتصال الخاصة بك' : 'Your contact details'}</p>
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <Input label={isRTL ? 'الاسم الأول *' : 'First Name *'} name="firstName" value={formData.firstName} onChange={handleChange} required />
+                    <Input label={isRTL ? 'اسم العائلة *' : 'Last Name *'} name="lastName" value={formData.lastName} onChange={handleChange} required />
+                    <Input label={isRTL ? 'البريد الإلكتروني *' : 'Email *'} name="email" type="email" value={formData.email} onChange={handleChange} required />
+                    <Input label={isRTL ? 'الهاتف *' : 'Phone *'} name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* STEP 2: Program Information */}
+              <ScrollReveal>
+                <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-8 lg:p-10 mb-6">
+                  <div className="flex items-center gap-3 mb-7">
+                    <div className="w-10 h-10 rounded-xl bg-[#7A3B5E]/10 flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-[#7A3B5E]" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+                        {isRTL ? 'معلومات البرنامج' : 'Program Information'}
+                      </h3>
+                      <p className="text-xs text-[#8E8E9F]">{isRTL ? 'عن المنشور أو البرنامج' : 'About your publication or program'}</p>
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <Input label={isRTL ? 'اسم المنشور / البرنامج *' : 'Name of Publication / Program *'} name="publication" value={formData.publication} onChange={handleChange} required />
+                    <Input label={isRTL ? 'اسم المحاور(ين) *' : 'Name of Interviewer(s) *'} name="interviewer" value={formData.interviewer} onChange={handleChange} required />
+                    <div className="relative">
+                      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">
+                        {isRTL ? 'نوع الوسيلة الإعلامية *' : 'Type of Media *'}
+                      </label>
+                      <div className="relative">
+                        <select
+                          name="mediaType"
+                          value={formData.mediaType}
+                          onChange={handleChange}
+                          required
+                          className="w-full appearance-none bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-4 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all pr-10"
+                        >
+                          {mediaTypes.map(mt => (
+                            <option key={mt.value} value={mt.value}>{isRTL ? mt.labelAr : mt.label}</option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E9F] pointer-events-none" />
+                      </div>
+                    </div>
+                    <Input label={isRTL ? 'من هو جمهورك الأساسي؟' : 'Who is your primary audience?'} name="audience" value={formData.audience} onChange={handleChange} />
+                    <Input label={isRTL ? 'على أي منصات تنشر المحتوى؟' : 'On which platforms do you publish?'} name="platforms" value={formData.platforms} onChange={handleChange} />
+                    <Input label={isRTL ? 'الموقع الإلكتروني' : 'Website'} name="website" type="url" value={formData.website} onChange={handleChange} />
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* STEP 3: Request Details */}
+              <ScrollReveal>
+                <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-8 lg:p-10 mb-6">
+                  <div className="flex items-center gap-3 mb-7">
+                    <div className="w-10 h-10 rounded-xl bg-[#C8A97D]/10 flex items-center justify-center">
+                      <Calendar className="w-5 h-5 text-[#C8A97D]" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+                        {isRTL ? 'تفاصيل الطلب' : 'Request Details'}
+                      </h3>
+                      <p className="text-xs text-[#8E8E9F]">{isRTL ? 'جدولة ومعلومات الموضوع' : 'Scheduling and topic information'}</p>
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <Input label={isRTL ? 'التاريخ المقترح' : 'Proposed Interview Date'} name="proposedDate" type="date" value={formData.proposedDate} onChange={handleChange} />
+                    <div>
+                      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">
+                        {isRTL ? 'الوقت المقترح' : 'Proposed Time'}
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="time"
+                          name="proposedTime"
+                          value={formData.proposedTime}
+                          onChange={handleChange}
+                          className="flex-1 bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-4 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all"
+                        />
+                        <select
+                          name="amPm"
+                          value={formData.amPm}
+                          onChange={handleChange}
+                          className="bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-3 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all"
+                        >
+                          <option value="AM">AM</option>
+                          <option value="PM">PM</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="sm:col-span-2">
+                      <Input label={isRTL ? 'موضوع المقابلة المقترح *' : 'Proposed Interview Topic *'} name="topic" value={formData.topic} onChange={handleChange} required />
+                    </div>
+                    <div className="relative">
+                      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">
+                        {isRTL ? 'طريقة التسجيل المفضلة *' : 'Preferred Method of Recording *'}
+                      </label>
+                      <div className="relative">
+                        <select
+                          name="recordingMethod"
+                          value={formData.recordingMethod}
+                          onChange={handleChange}
+                          required
+                          className="w-full appearance-none bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-4 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all pr-10"
+                        >
+                          {recordingMethods.map(rm => (
+                            <option key={rm.value} value={rm.value}>{isRTL ? rm.labelAr : rm.label}</option>
+                          ))}
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E9F] pointer-events-none" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* STEP 4: Promotion Details */}
+              <ScrollReveal>
+                <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-8 lg:p-10 mb-8">
+                  <div className="flex items-center gap-3 mb-7">
+                    <div className="w-10 h-10 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-[#2B5F4E]" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
+                        {isRTL ? 'تفاصيل الترويج' : 'Promotion Details'}
+                      </h3>
+                      <p className="text-xs text-[#8E8E9F]">{isRTL ? 'المخرجات والترويج' : 'Deliverables and promotion'}</p>
+                    </div>
+                  </div>
+                  <div className="space-y-5">
+                    <div>
+                      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">
+                        {isRTL ? 'ما هي المخرجات من هذه الفرصة؟ *' : 'What are the deliverables from this opportunity? *'}
+                      </label>
+                      <textarea
+                        name="deliverables"
+                        value={formData.deliverables}
+                        onChange={handleChange}
+                        required
+                        rows={3}
+                        className="w-full bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-4 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all resize-none"
+                        placeholder={isRTL ? 'صف المخرجات المتوقعة...' : 'Describe the expected deliverables...'}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-[#4A4A5C] mb-3">
+                        {isRTL
+                          ? 'هل أنت مستعد لذكر د. هالة علي | مجموعة ماما هالة الاستشارية في ترويجك؟'
+                          : 'Are you willing to mention Dr. Hala Ali | Mama Hala Consulting Group in your promotion?'
+                        }
+                      </label>
+                      <div className="flex gap-3">
+                        {['Yes', 'No'].map(opt => (
+                          <label
+                            key={opt}
+                            className={`flex items-center gap-2 px-5 py-3 rounded-xl border cursor-pointer transition-all duration-200 ${
+                              formData.willMention === opt
+                                ? 'bg-[#2B5F4E] text-white border-[#2B5F4E]'
+                                : 'bg-[#FAF7F2] text-[#4A4A5C] border-[#F3EFE8] hover:border-[#2B5F4E]/30'
+                            }`}
+                          >
+                            <input
+                              type="radio"
+                              name="willMention"
+                              value={opt}
+                              checked={formData.willMention === opt}
+                              onChange={handleChange}
+                              className="sr-only"
+                            />
+                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                              formData.willMention === opt ? 'border-white' : 'border-[#8E8E9F]'
+                            }`}>
+                              {formData.willMention === opt && <div className="w-2 h-2 rounded-full bg-white" />}
+                            </div>
+                            <span className="text-sm font-medium">
+                              {isRTL ? (opt === 'Yes' ? 'نعم' : 'لا') : opt}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* Submit Button */}
+              <ScrollReveal className="text-center">
+                <Button
+                  type="submit"
+                  size="lg"
+                  icon={sending ? undefined : <Send className="w-5 h-5" />}
+                  className="min-w-[240px]"
+                  disabled={sending}
+                >
+                  {sending
+                    ? (isRTL ? 'جارٍ الإرسال...' : 'Sending...')
+                    : (isRTL ? 'أرسل طلبك' : 'Send Your Request')
+                  }
+                </Button>
+                <p className="text-xs text-[#8E8E9F] mt-4">
+                  {isRTL
+                    ? 'سنرد على طلبك خلال 2-3 أيام عمل.'
+                    : 'We typically respond to requests within 2-3 business days.'
+                  }
+                </p>
+              </ScrollReveal>
+            </motion.form>
+          )}
+        </AnimatePresence>
+      </div>
+    </section>
   );
 }
