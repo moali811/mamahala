@@ -658,43 +658,229 @@ export default function AboutPage() {
 }
 
 /* ================================================================ */
-/*  INTERVIEW & MEDIA REQUEST COMPONENT                             */
+/*  INTERVIEW & MEDIA REQUEST — MULTI-STEP WIZARD                   */
 /* ================================================================ */
+type FormErrors = Record<string, string>;
+
+const STEPS = [
+  { key: 'info', iconEn: 'Contact', iconAr: 'معلوماتك', Icon: User, color: '#2B5F4E' },
+  { key: 'program', iconEn: 'Program', iconAr: 'البرنامج', Icon: FileText, color: '#7A3B5E' },
+  { key: 'details', iconEn: 'Details', iconAr: 'التفاصيل', Icon: Calendar, color: '#C8A97D' },
+  { key: 'promo', iconEn: 'Promotion', iconAr: 'الترويج', Icon: Sparkles, color: '#2B5F4E' },
+] as const;
+
 function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean }) {
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '', phone: '',
     publication: '', interviewer: '', mediaType: '', audience: '', platforms: '', website: '',
-    proposedDate: '', proposedTime: '', amPm: 'AM', topic: '', recordingMethod: '',
+    proposedDate: '', proposedTime: '', topic: '', recordingMethod: '',
     deliverables: '', willMention: '',
   });
+  const [step, setStep] = useState(0);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [showForm, setShowForm] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setTouched(prev => ({ ...prev, [name]: true }));
+    // Clear error on change
+    if (errors[name]) setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
   };
+
+  const handleBlur = (name: string) => {
+    setTouched(prev => ({ ...prev, [name]: true }));
+    validateField(name, formData[name as keyof typeof formData]);
+  };
+
+  const validateField = (name: string, value: string): string | null => {
+    let err: string | null = null;
+    const t = (en: string, ar: string) => isRTL ? ar : en;
+
+    switch (name) {
+      case 'firstName':
+      case 'lastName':
+        if (!value.trim()) err = t('This field is required', 'هذا الحقل مطلوب');
+        else if (value.trim().length < 2) err = t('At least 2 characters', 'حرفان على الأقل');
+        break;
+      case 'email':
+        if (!value.trim()) err = t('Email is required', 'البريد الإلكتروني مطلوب');
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) err = t('Enter a valid email', 'أدخل بريدًا صالحًا');
+        break;
+      case 'phone':
+        if (!value.trim()) err = t('Phone is required', 'رقم الهاتف مطلوب');
+        else if (!/^[+]?[\d\s()-]{7,}$/.test(value)) err = t('Enter a valid phone number', 'أدخل رقم هاتف صالح');
+        break;
+      case 'publication':
+        if (!value.trim()) err = t('Publication name is required', 'اسم المنشور مطلوب');
+        break;
+      case 'interviewer':
+        if (!value.trim()) err = t('Interviewer name is required', 'اسم المحاور مطلوب');
+        break;
+      case 'mediaType':
+        if (!value) err = t('Please select a media type', 'يرجى اختيار نوع الإعلام');
+        break;
+      case 'topic':
+        if (!value.trim()) err = t('Topic is required', 'الموضوع مطلوب');
+        else if (value.trim().length < 10) err = t('Please provide more detail (10+ chars)', 'يرجى التفصيل أكثر (10+ أحرف)');
+        break;
+      case 'recordingMethod':
+        if (!value) err = t('Please select a recording method', 'يرجى اختيار طريقة التسجيل');
+        break;
+      case 'deliverables':
+        if (!value.trim()) err = t('Deliverables are required', 'المخرجات مطلوبة');
+        break;
+      case 'proposedDate':
+        if (value && new Date(value) < new Date(new Date().toDateString()))
+          err = t('Date cannot be in the past', 'لا يمكن أن يكون التاريخ في الماضي');
+        break;
+    }
+    if (err) setErrors(prev => ({ ...prev, [name]: err! }));
+    return err;
+  };
+
+  // Step-specific required fields
+  const stepFields: string[][] = [
+    ['firstName', 'lastName', 'email', 'phone'],
+    ['publication', 'interviewer', 'mediaType'],
+    ['topic', 'recordingMethod'],
+    ['deliverables'],
+  ];
+
+  const validateStep = (s: number): boolean => {
+    const fields = stepFields[s];
+    let valid = true;
+    const newErrors: FormErrors = {};
+    fields.forEach(f => {
+      const err = validateField(f, formData[f as keyof typeof formData]);
+      if (err) { newErrors[f] = err; valid = false; }
+    });
+    // Also validate date if provided
+    if (s === 2 && formData.proposedDate) {
+      const err = validateField('proposedDate', formData.proposedDate);
+      if (err) { newErrors['proposedDate'] = err; valid = false; }
+    }
+    setErrors(prev => ({ ...prev, ...newErrors }));
+    // Mark all fields as touched
+    const newTouched: Record<string, boolean> = {};
+    fields.forEach(f => { newTouched[f] = true; });
+    setTouched(prev => ({ ...prev, ...newTouched }));
+    return valid;
+  };
+
+  const goNext = () => {
+    if (validateStep(step)) setStep(s => Math.min(s + 1, 3));
+  };
+  const goBack = () => setStep(s => Math.max(s - 1, 0));
+
+  // Completion percentage
+  const filledRequired = stepFields.flat().filter(f => formData[f as keyof typeof formData].trim()).length;
+  const totalRequired = stepFields.flat().length;
+  const pct = Math.round((filledRequired / totalRequired) * 100);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateStep(step)) return;
     setSending(true);
     await new Promise(r => setTimeout(r, 2000));
     setSending(false);
     setSent(true);
   };
 
+  // Styled select component
+  const StyledSelect = ({ name, label, options, required = false }: {
+    name: string; label: string;
+    options: { value: string; label: string; labelAr: string }[];
+    required?: boolean;
+  }) => {
+    const val = formData[name as keyof typeof formData];
+    const hasError = touched[name] && errors[name];
+    return (
+      <div>
+        <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">{label}</label>
+        <div className="relative">
+          <select
+            name={name}
+            value={val}
+            onChange={handleChange}
+            onBlur={() => handleBlur(name)}
+            required={required}
+            className={`w-full appearance-none bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all pr-10 focus:outline-none focus:ring-2 ${
+              hasError
+                ? 'border-red-400 focus:border-red-400 focus:ring-red-100 text-red-700'
+                : val ? 'border-[#2B5F4E]/30 text-[#1E1E2A] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+                : 'border-[#F3EFE8] text-[#8E8E9F] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+            }`}
+          >
+            {options.map(o => (
+              <option key={o.value} value={o.value}>{isRTL ? o.labelAr : o.label}</option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E9F] pointer-events-none" />
+        </div>
+        {hasError && (
+          <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-red-400" /> {errors[name]}
+          </motion.p>
+        )}
+      </div>
+    );
+  };
+
+  // Styled input with validation
+  const ValidatedInput = ({ name, label, type = 'text', required = false, fullWidth = false }: {
+    name: string; label: string; type?: string; required?: boolean; fullWidth?: boolean;
+  }) => {
+    const val = formData[name as keyof typeof formData];
+    const hasError = touched[name] && errors[name];
+    const isValid = touched[name] && !errors[name] && val.trim();
+    return (
+      <div className={fullWidth ? 'sm:col-span-2' : ''}>
+        <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">{label}</label>
+        <div className="relative">
+          <input
+            type={type}
+            name={name}
+            value={val}
+            onChange={handleChange}
+            onBlur={() => handleBlur(name)}
+            required={required}
+            min={type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
+            className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all focus:outline-none focus:ring-2 ${
+              hasError
+                ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                : isValid ? 'border-[#2B5F4E]/30 focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+                : 'border-[#F3EFE8] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+            } text-[#1E1E2A] ${isValid ? 'pr-10' : ''}`}
+          />
+          {isValid && (
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute right-3 top-1/2 -translate-y-1/2">
+              <Check className="w-4 h-4 text-[#2B5F4E]" />
+            </motion.div>
+          )}
+        </div>
+        {hasError && (
+          <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-500 mt-1.5 flex items-center gap-1">
+            <span className="w-1 h-1 rounded-full bg-red-400" /> {errors[name]}
+          </motion.p>
+        )}
+      </div>
+    );
+  };
+
   return (
     <section className="py-24 lg:py-32 bg-[#FAF7F2] relative overflow-hidden">
-      {/* Subtle decorative elements */}
       <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full bg-[#7A3B5E]/[0.03] blur-[100px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-[#2B5F4E]/[0.03] blur-[80px] pointer-events-none" />
 
       <div className="container-main relative z-10">
-        {/* Section Header with Image */}
-        <ScrollReveal className={showForm ? 'mb-16' : ''}>
+        {/* Hero Banner */}
+        <ScrollReveal className={showForm ? 'mb-10' : ''}>
           <div className="relative bg-gradient-to-br from-[#1E1E2A] via-[#2B2B3D] to-[#1E1E2A] rounded-3xl overflow-hidden">
             <div className="grid lg:grid-cols-5 items-stretch">
-              {/* Text Side */}
               <div className={`flex flex-col justify-center p-10 lg:p-14 lg:col-span-3 ${isRTL ? 'lg:order-2' : 'lg:order-1'}`}>
                 <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 w-fit mb-6">
                   <Mic className="w-4 h-4 text-[#C8A97D]" />
@@ -702,51 +888,42 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                     {isRTL ? 'طلبات الإعلام' : 'Media Requests'}
                   </span>
                 </div>
-                <h2
-                  className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4"
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
+                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
                   <span className="text-white">{isRTL ? 'تعرّف على ' : 'Meet '}</span>
                   <span className="text-[#C8A97D]">{isRTL ? 'ماما هالة' : 'Mama Hala'}</span>
                 </h2>
                 <p className="text-white/70 leading-relaxed max-w-lg text-[15px]">
                   {isRTL
-                    ? 'دعونا نتواصل ونستكشف كيف يمكننا التعاون ومشاركة الأفكار أو بدء محادثة هادفة. يرجى تقديم طلبك للمقابلات أو المشاركات الإعلامية أو النقاشات المهنية.'
-                    : "Let's connect and explore how we can collaborate, share insights, or start a meaningful conversation. Please submit your request for interviews, media features, or professional discussions."
+                    ? 'دعونا نتواصل ونستكشف كيف يمكننا التعاون ومشاركة الأفكار أو بدء محادثة هادفة.'
+                    : "Let's connect and explore how we can collaborate, share insights, or start a meaningful conversation."
                   }
                 </p>
-                <div className="flex flex-wrap gap-4 mt-6">
+                <div className="flex flex-wrap gap-3 mt-6">
                   {[
                     { en: 'Podcasts', ar: 'بودكاست', icon: Mic },
                     { en: 'TV & Radio', ar: 'تلفزيون وراديو', icon: Video },
                     { en: 'Print & Online', ar: 'مطبوعات وإلكتروني', icon: FileText },
                   ].map((tag, i) => (
                     <span key={i} className="inline-flex items-center gap-1.5 text-xs text-white/60 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
-                      <tag.icon className="w-3.5 h-3.5" />
-                      {isRTL ? tag.ar : tag.en}
+                      <tag.icon className="w-3.5 h-3.5" /> {isRTL ? tag.ar : tag.en}
                     </span>
                   ))}
                 </div>
                 <motion.button
-                  onClick={() => setShowForm(!showForm)}
-                  className="mt-8 inline-flex items-center gap-2.5 bg-[#C8A97D] hover:bg-[#B89A6E] text-[#1E1E2A] font-semibold px-7 py-3.5 rounded-xl transition-colors duration-200 shadow-lg shadow-[#C8A97D]/20"
+                  onClick={() => { setShowForm(!showForm); if (!showForm) setStep(0); }}
+                  className="mt-8 inline-flex items-center gap-2.5 bg-[#C8A97D] hover:bg-[#B89A6E] text-[#1E1E2A] font-semibold px-7 py-3.5 rounded-xl transition-colors duration-200 shadow-lg shadow-[#C8A97D]/20 w-fit"
                   whileHover={{ y: -2 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <Send className="w-4.5 h-4.5" />
-                  {isRTL ? 'تقديم طلب مقابلة' : 'Submit an Interview Request'}
+                  {showForm ? (
+                    <><ChevronDown className="w-4 h-4 rotate-180" /> {isRTL ? 'إغلاق النموذج' : 'Close Form'}</>
+                  ) : (
+                    <><Send className="w-4 h-4" /> {isRTL ? 'تقديم طلب مقابلة' : 'Submit an Interview Request'}</>
+                  )}
                 </motion.button>
               </div>
-
-              {/* Image Side */}
               <div className={`relative lg:col-span-2 min-h-[300px] lg:min-h-full ${isRTL ? 'lg:order-1' : 'lg:order-2'}`}>
-                <Image
-                  src="/images/hala-office.jpg"
-                  alt="Dr. Hala Ali - Interview & Media"
-                  fill
-                  className="object-cover object-center"
-                />
-                {/* Gradient overlay blending into dark background */}
+                <Image src="/images/hala-office.jpg" alt="Dr. Hala Ali" fill className="object-cover object-center" />
                 <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#1E1E2A] via-[#1E1E2A]/40 to-transparent hidden lg:block`} />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E2A]/60 to-transparent lg:hidden" />
               </div>
@@ -754,13 +931,13 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
           </div>
         </ScrollReveal>
 
-        {/* Form — revealed on button click */}
+        {/* Multi-Step Form */}
         <AnimatePresence mode="wait">
           {!showForm ? null : sent ? (
             <motion.div
               key="success"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               className="max-w-2xl mx-auto text-center py-16"
             >
               <motion.div
@@ -774,244 +951,221 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
               <h3 className="text-2xl font-bold text-[#1E1E2A] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
                 {isRTL ? 'تم إرسال طلبك بنجاح!' : 'Request Submitted Successfully!'}
               </h3>
-              <p className="text-[#8E8E9F]">
-                {isRTL
-                  ? 'شكرًا لاهتمامك. سنراجع طلبك ونتواصل معك في أقرب وقت ممكن.'
-                  : 'Thank you for your interest. We\'ll review your request and get back to you as soon as possible.'
-                }
+              <p className="text-[#8E8E9F] mb-6">
+                {isRTL ? 'شكرًا لاهتمامك. سنراجع طلبك ونتواصل معك خلال 2-3 أيام عمل.' : 'Thank you for your interest. We\'ll review your request and get back to you within 2-3 business days.'}
               </p>
+              <Button as="a" href={`/${locale}/contact`} variant="outline" icon={<MessageCircle className="w-4 h-4" />}>
+                {isRTL ? 'صفحة التواصل' : 'Contact Page'}
+              </Button>
             </motion.div>
           ) : (
-            <motion.form
-              key="form"
-              onSubmit={handleSubmit}
-              className="max-w-4xl mx-auto"
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+            <motion.div
+              key="wizard"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* STEP 1: Your Information */}
-              <ScrollReveal>
-                <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-8 lg:p-10 mb-6">
-                  <div className="flex items-center gap-3 mb-7">
-                    <div className="w-10 h-10 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center">
-                      <User className="w-5 h-5 text-[#2B5F4E]" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
-                        {isRTL ? 'معلوماتك' : 'Your Information'}
-                      </h3>
-                      <p className="text-xs text-[#8E8E9F]">{isRTL ? 'معلومات الاتصال الخاصة بك' : 'Your contact details'}</p>
-                    </div>
-                  </div>
-                  <div className="grid sm:grid-cols-2 gap-5">
-                    <Input label={isRTL ? 'الاسم الأول *' : 'First Name *'} name="firstName" value={formData.firstName} onChange={handleChange} required />
-                    <Input label={isRTL ? 'اسم العائلة *' : 'Last Name *'} name="lastName" value={formData.lastName} onChange={handleChange} required />
-                    <Input label={isRTL ? 'البريد الإلكتروني *' : 'Email *'} name="email" type="email" value={formData.email} onChange={handleChange} required />
-                    <Input label={isRTL ? 'الهاتف *' : 'Phone *'} name="phone" type="tel" value={formData.phone} onChange={handleChange} required />
-                  </div>
+              {/* Progress Bar */}
+              <div className="max-w-4xl mx-auto mb-8">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-medium text-[#8E8E9F]">
+                    {isRTL ? `الخطوة ${step + 1} من 4` : `Step ${step + 1} of 4`}
+                  </span>
+                  <span className="text-xs font-semibold text-[#2B5F4E]">{pct}%</span>
                 </div>
-              </ScrollReveal>
-
-              {/* STEP 2: Program Information */}
-              <ScrollReveal>
-                <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-8 lg:p-10 mb-6">
-                  <div className="flex items-center gap-3 mb-7">
-                    <div className="w-10 h-10 rounded-xl bg-[#7A3B5E]/10 flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-[#7A3B5E]" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
-                        {isRTL ? 'معلومات البرنامج' : 'Program Information'}
-                      </h3>
-                      <p className="text-xs text-[#8E8E9F]">{isRTL ? 'عن المنشور أو البرنامج' : 'About your publication or program'}</p>
-                    </div>
-                  </div>
-                  <div className="grid sm:grid-cols-2 gap-5">
-                    <Input label={isRTL ? 'اسم المنشور / البرنامج *' : 'Name of Publication / Program *'} name="publication" value={formData.publication} onChange={handleChange} required />
-                    <Input label={isRTL ? 'اسم المحاور(ين) *' : 'Name of Interviewer(s) *'} name="interviewer" value={formData.interviewer} onChange={handleChange} required />
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">
-                        {isRTL ? 'نوع الوسيلة الإعلامية *' : 'Type of Media *'}
-                      </label>
-                      <div className="relative">
-                        <select
-                          name="mediaType"
-                          value={formData.mediaType}
-                          onChange={handleChange}
-                          required
-                          className="w-full appearance-none bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-4 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all pr-10"
-                        >
-                          {mediaTypes.map(mt => (
-                            <option key={mt.value} value={mt.value}>{isRTL ? mt.labelAr : mt.label}</option>
-                          ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E9F] pointer-events-none" />
-                      </div>
-                    </div>
-                    <Input label={isRTL ? 'من هو جمهورك الأساسي؟' : 'Who is your primary audience?'} name="audience" value={formData.audience} onChange={handleChange} />
-                    <Input label={isRTL ? 'على أي منصات تنشر المحتوى؟' : 'On which platforms do you publish?'} name="platforms" value={formData.platforms} onChange={handleChange} />
-                    <Input label={isRTL ? 'الموقع الإلكتروني' : 'Website'} name="website" type="url" value={formData.website} onChange={handleChange} />
-                  </div>
+                <div className="h-1.5 bg-[#F3EFE8] rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-[#2B5F4E] to-[#C8A97D] rounded-full"
+                    initial={false}
+                    animate={{ width: `${Math.max(((step + 1) / 4) * 100, 5)}%` }}
+                    transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                  />
                 </div>
-              </ScrollReveal>
-
-              {/* STEP 3: Request Details */}
-              <ScrollReveal>
-                <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-8 lg:p-10 mb-6">
-                  <div className="flex items-center gap-3 mb-7">
-                    <div className="w-10 h-10 rounded-xl bg-[#C8A97D]/10 flex items-center justify-center">
-                      <Calendar className="w-5 h-5 text-[#C8A97D]" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
-                        {isRTL ? 'تفاصيل الطلب' : 'Request Details'}
-                      </h3>
-                      <p className="text-xs text-[#8E8E9F]">{isRTL ? 'جدولة ومعلومات الموضوع' : 'Scheduling and topic information'}</p>
-                    </div>
-                  </div>
-                  <div className="grid sm:grid-cols-2 gap-5">
-                    <Input label={isRTL ? 'التاريخ المقترح' : 'Proposed Interview Date'} name="proposedDate" type="date" value={formData.proposedDate} onChange={handleChange} />
-                    <div>
-                      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">
-                        {isRTL ? 'الوقت المقترح' : 'Proposed Time'}
-                      </label>
-                      <div className="flex gap-2">
-                        <input
-                          type="time"
-                          name="proposedTime"
-                          value={formData.proposedTime}
-                          onChange={handleChange}
-                          className="flex-1 bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-4 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all"
-                        />
-                        <select
-                          name="amPm"
-                          value={formData.amPm}
-                          onChange={handleChange}
-                          className="bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-3 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all"
-                        >
-                          <option value="AM">AM</option>
-                          <option value="PM">PM</option>
-                        </select>
-                      </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <Input label={isRTL ? 'موضوع المقابلة المقترح *' : 'Proposed Interview Topic *'} name="topic" value={formData.topic} onChange={handleChange} required />
-                    </div>
-                    <div className="relative">
-                      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">
-                        {isRTL ? 'طريقة التسجيل المفضلة *' : 'Preferred Method of Recording *'}
-                      </label>
-                      <div className="relative">
-                        <select
-                          name="recordingMethod"
-                          value={formData.recordingMethod}
-                          onChange={handleChange}
-                          required
-                          className="w-full appearance-none bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-4 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all pr-10"
-                        >
-                          {recordingMethods.map(rm => (
-                            <option key={rm.value} value={rm.value}>{isRTL ? rm.labelAr : rm.label}</option>
-                          ))}
-                        </select>
-                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E9F] pointer-events-none" />
-                      </div>
-                    </div>
-                  </div>
+                {/* Step indicators */}
+                <div className="flex justify-between mt-4">
+                  {STEPS.map((s, i) => {
+                    const Icon = s.Icon;
+                    const isActive = i === step;
+                    const isDone = i < step;
+                    return (
+                      <button
+                        key={s.key}
+                        onClick={() => { if (i < step) setStep(i); else if (i === step + 1 && validateStep(step)) setStep(i); }}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                          isActive ? 'bg-white shadow-sm text-[#1E1E2A] border border-[#F3EFE8]'
+                          : isDone ? 'text-[#2B5F4E] cursor-pointer hover:bg-white/60'
+                          : 'text-[#8E8E9F] cursor-default'
+                        }`}
+                      >
+                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                          isDone ? 'bg-[#2B5F4E] text-white' : isActive ? 'bg-[#2B5F4E]/10 text-[#2B5F4E]' : 'bg-[#F3EFE8] text-[#8E8E9F]'
+                        }`}>
+                          {isDone ? <Check className="w-3 h-3" /> : <Icon className="w-3 h-3" />}
+                        </div>
+                        <span className="hidden sm:inline">{isRTL ? s.iconAr : s.iconEn}</span>
+                      </button>
+                    );
+                  })}
                 </div>
-              </ScrollReveal>
+              </div>
 
-              {/* STEP 4: Promotion Details */}
-              <ScrollReveal>
-                <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-8 lg:p-10 mb-8">
-                  <div className="flex items-center gap-3 mb-7">
-                    <div className="w-10 h-10 rounded-xl bg-[#2B5F4E]/10 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-[#2B5F4E]" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-[#1E1E2A]" style={{ fontFamily: 'var(--font-heading)' }}>
-                        {isRTL ? 'تفاصيل الترويج' : 'Promotion Details'}
-                      </h3>
-                      <p className="text-xs text-[#8E8E9F]">{isRTL ? 'المخرجات والترويج' : 'Deliverables and promotion'}</p>
-                    </div>
-                  </div>
-                  <div className="space-y-5">
-                    <div>
-                      <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">
-                        {isRTL ? 'ما هي المخرجات من هذه الفرصة؟ *' : 'What are the deliverables from this opportunity? *'}
-                      </label>
-                      <textarea
-                        name="deliverables"
-                        value={formData.deliverables}
-                        onChange={handleChange}
-                        required
-                        rows={3}
-                        className="w-full bg-[#FAF7F2] border border-[#F3EFE8] rounded-xl px-4 py-3 text-sm text-[#1E1E2A] focus:outline-none focus:border-[#2B5F4E] focus:ring-2 focus:ring-[#2B5F4E]/10 transition-all resize-none"
-                        placeholder={isRTL ? 'صف المخرجات المتوقعة...' : 'Describe the expected deliverables...'}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-[#4A4A5C] mb-3">
-                        {isRTL
-                          ? 'هل أنت مستعد لذكر د. هالة علي | مجموعة ماما هالة الاستشارية في ترويجك؟'
-                          : 'Are you willing to mention Dr. Hala Ali | Mama Hala Consulting Group in your promotion?'
-                        }
-                      </label>
-                      <div className="flex gap-3">
-                        {['Yes', 'No'].map(opt => (
-                          <label
-                            key={opt}
-                            className={`flex items-center gap-2 px-5 py-3 rounded-xl border cursor-pointer transition-all duration-200 ${
-                              formData.willMention === opt
-                                ? 'bg-[#2B5F4E] text-white border-[#2B5F4E]'
-                                : 'bg-[#FAF7F2] text-[#4A4A5C] border-[#F3EFE8] hover:border-[#2B5F4E]/30'
-                            }`}
-                          >
-                            <input
-                              type="radio"
-                              name="willMention"
-                              value={opt}
-                              checked={formData.willMention === opt}
+              {/* Step Content */}
+              <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={step}
+                    initial={{ opacity: 0, x: isRTL ? -20 : 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-card)] p-8 lg:p-10">
+                      {/* Step header */}
+                      <div className="flex items-center gap-3 mb-8">
+                        <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: STEPS[step].color + '15' }}>
+                          {(() => { const Icon = STEPS[step].Icon; return <Icon className="w-5 h-5" style={{ color: STEPS[step].color }} />; })()}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-[#1E1E2A] text-lg" style={{ fontFamily: 'var(--font-heading)' }}>
+                            {step === 0 ? (isRTL ? 'معلوماتك' : 'Your Information')
+                            : step === 1 ? (isRTL ? 'معلومات البرنامج' : 'Program Information')
+                            : step === 2 ? (isRTL ? 'تفاصيل الطلب' : 'Request Details')
+                            : (isRTL ? 'تفاصيل الترويج' : 'Promotion Details')}
+                          </h3>
+                          <p className="text-xs text-[#8E8E9F]">
+                            {step === 0 ? (isRTL ? 'معلومات الاتصال الخاصة بك' : 'Your contact details')
+                            : step === 1 ? (isRTL ? 'عن المنشور أو البرنامج' : 'About your publication or program')
+                            : step === 2 ? (isRTL ? 'جدولة ومعلومات الموضوع' : 'Scheduling and topic information')
+                            : (isRTL ? 'المخرجات والترويج' : 'Deliverables and promotion')}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Step 1: Contact */}
+                      {step === 0 && (
+                        <div className="grid sm:grid-cols-2 gap-5">
+                          <ValidatedInput name="firstName" label={isRTL ? 'الاسم الأول *' : 'First Name *'} required />
+                          <ValidatedInput name="lastName" label={isRTL ? 'اسم العائلة *' : 'Last Name *'} required />
+                          <ValidatedInput name="email" label={isRTL ? 'البريد الإلكتروني *' : 'Email *'} type="email" required />
+                          <ValidatedInput name="phone" label={isRTL ? 'الهاتف *' : 'Phone *'} type="tel" required />
+                        </div>
+                      )}
+
+                      {/* Step 2: Program */}
+                      {step === 1 && (
+                        <div className="grid sm:grid-cols-2 gap-5">
+                          <ValidatedInput name="publication" label={isRTL ? 'اسم المنشور / البرنامج *' : 'Name of Publication / Program *'} required />
+                          <ValidatedInput name="interviewer" label={isRTL ? 'اسم المحاور(ين) *' : 'Name of Interviewer(s) *'} required />
+                          <StyledSelect name="mediaType" label={isRTL ? 'نوع الوسيلة الإعلامية *' : 'Type of Media *'} options={mediaTypes} required />
+                          <ValidatedInput name="audience" label={isRTL ? 'من هو جمهورك الأساسي؟' : 'Who is your primary audience?'} />
+                          <ValidatedInput name="platforms" label={isRTL ? 'على أي منصات تنشر المحتوى؟' : 'On which platforms do you publish?'} />
+                          <ValidatedInput name="website" label={isRTL ? 'الموقع الإلكتروني' : 'Website'} type="url" />
+                        </div>
+                      )}
+
+                      {/* Step 3: Details */}
+                      {step === 2 && (
+                        <div className="grid sm:grid-cols-2 gap-5">
+                          <ValidatedInput name="proposedDate" label={isRTL ? 'التاريخ المقترح' : 'Proposed Interview Date'} type="date" />
+                          <ValidatedInput name="proposedTime" label={isRTL ? 'الوقت المقترح' : 'Proposed Time'} type="time" />
+                          <ValidatedInput name="topic" label={isRTL ? 'موضوع المقابلة المقترح *' : 'Proposed Interview Topic *'} required fullWidth />
+                          <StyledSelect name="recordingMethod" label={isRTL ? 'طريقة التسجيل المفضلة *' : 'Preferred Method of Recording *'} options={recordingMethods} required />
+                        </div>
+                      )}
+
+                      {/* Step 4: Promotion */}
+                      {step === 3 && (
+                        <div className="space-y-6">
+                          <div>
+                            <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">
+                              {isRTL ? 'ما هي المخرجات من هذه الفرصة؟ *' : 'What are the deliverables from this opportunity? *'}
+                            </label>
+                            <textarea
+                              name="deliverables"
+                              value={formData.deliverables}
                               onChange={handleChange}
-                              className="sr-only"
+                              onBlur={() => handleBlur('deliverables')}
+                              required
+                              rows={4}
+                              className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm text-[#1E1E2A] focus:outline-none focus:ring-2 transition-all resize-none ${
+                                touched.deliverables && errors.deliverables
+                                  ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                                  : 'border-[#F3EFE8] focus:border-[#2B5F4E] focus:ring-[#2B5F4E]/10'
+                              }`}
+                              placeholder={isRTL ? 'صف المخرجات المتوقعة...' : 'Describe the expected deliverables...'}
                             />
-                            <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                              formData.willMention === opt ? 'border-white' : 'border-[#8E8E9F]'
-                            }`}>
-                              {formData.willMention === opt && <div className="w-2 h-2 rounded-full bg-white" />}
+                            <div className="flex justify-between mt-1.5">
+                              {touched.deliverables && errors.deliverables ? (
+                                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-xs text-red-500 flex items-center gap-1">
+                                  <span className="w-1 h-1 rounded-full bg-red-400" /> {errors.deliverables}
+                                </motion.p>
+                              ) : <span />}
+                              <span className="text-[10px] text-[#8E8E9F]">{formData.deliverables.length}/500</span>
                             </div>
-                            <span className="text-sm font-medium">
-                              {isRTL ? (opt === 'Yes' ? 'نعم' : 'لا') : opt}
-                            </span>
-                          </label>
-                        ))}
-                      </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-[#4A4A5C] mb-3">
+                              {isRTL
+                                ? 'هل أنت مستعد لذكر د. هالة علي | مجموعة ماما هالة الاستشارية في ترويجك؟'
+                                : 'Are you willing to mention Dr. Hala Ali | Mama Hala Consulting Group in your promotion?'
+                              }
+                            </label>
+                            <div className="flex gap-3">
+                              {['Yes', 'No'].map(opt => (
+                                <label
+                                  key={opt}
+                                  className={`flex items-center gap-2.5 px-6 py-3.5 rounded-xl border cursor-pointer transition-all duration-200 ${
+                                    formData.willMention === opt
+                                      ? 'bg-[#2B5F4E] text-white border-[#2B5F4E] shadow-md shadow-[#2B5F4E]/15'
+                                      : 'bg-[#FAF7F2] text-[#4A4A5C] border-[#F3EFE8] hover:border-[#2B5F4E]/30 hover:bg-white'
+                                  }`}
+                                >
+                                  <input type="radio" name="willMention" value={opt} checked={formData.willMention === opt} onChange={handleChange} className="sr-only" />
+                                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.willMention === opt ? 'border-white' : 'border-[#C8A97D]'}`}>
+                                    {formData.willMention === opt && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
+                                  </div>
+                                  <span className="text-sm font-medium">{isRTL ? (opt === 'Yes' ? 'نعم' : 'لا') : opt}</span>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
-              </ScrollReveal>
+                  </motion.div>
+                </AnimatePresence>
 
-              {/* Submit Button */}
-              <ScrollReveal className="text-center">
-                <Button
-                  type="submit"
-                  size="lg"
-                  icon={sending ? undefined : <Send className="w-5 h-5" />}
-                  className="min-w-[240px]"
-                  disabled={sending}
-                >
-                  {sending
-                    ? (isRTL ? 'جارٍ الإرسال...' : 'Sending...')
-                    : (isRTL ? 'أرسل طلبك' : 'Send Your Request')
-                  }
-                </Button>
-                <p className="text-xs text-[#8E8E9F] mt-4">
-                  {isRTL
-                    ? 'سنرد على طلبك خلال 2-3 أيام عمل.'
-                    : 'We typically respond to requests within 2-3 business days.'
-                  }
-                </p>
-              </ScrollReveal>
-            </motion.form>
+                {/* Navigation */}
+                <div className="max-w-4xl mx-auto flex items-center justify-between mt-6">
+                  {step > 0 ? (
+                    <button
+                      type="button"
+                      onClick={goBack}
+                      className="flex items-center gap-2 text-sm font-medium text-[#8E8E9F] hover:text-[#1E1E2A] transition-colors px-4 py-2"
+                    >
+                      <ChevronDown className={`w-4 h-4 ${isRTL ? '-rotate-90' : 'rotate-90'}`} />
+                      {isRTL ? 'السابق' : 'Back'}
+                    </button>
+                  ) : <div />}
+                  {step < 3 ? (
+                    <Button type="button" onClick={goNext} icon={<ChevronDown className={`w-4 h-4 ${isRTL ? 'rotate-90' : '-rotate-90'}`} />}>
+                      {isRTL ? 'التالي' : 'Continue'}
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      size="lg"
+                      icon={sending ? undefined : <Send className="w-5 h-5" />}
+                      disabled={sending}
+                      className="min-w-[200px]"
+                    >
+                      {sending ? (isRTL ? 'جارٍ الإرسال...' : 'Sending...') : (isRTL ? 'أرسل طلبك' : 'Send Your Request')}
+                    </Button>
+                  )}
+                </div>
+              </form>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
