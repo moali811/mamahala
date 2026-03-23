@@ -18,7 +18,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 
 // Calendly scheduling URL - update this when Mama Hala's Calendly is set up
-const CALENDLY_URL = 'https://calendly.com/aiquilax/30min';
+const CALENDLY_URL = 'https://calendly.com/admin-mamahala';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string; size?: number }>> = {
   GraduationCap, Users, User, Heart, Leaf,
