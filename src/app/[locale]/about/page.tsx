@@ -277,9 +277,18 @@ export default function AboutPage() {
                 titleAr: 'مهمتنا',
                 textEn: 'To Nurture Healthier Relationships Through Care, Trust and Understanding.',
                 textAr: 'رعاية علاقات أكثر صحة من خلال الاهتمام والثقة والتفاهم.',
+                detailEn: [
+                  'We recognize the complex emotional challenges families face in today\'s world. Our work begins with compassion and respect\u2014supporting children, youth, couples, and families in building emotional wellbeing, meaningful connection, and long-term relational health.',
+                  'We are committed to inclusive, culturally sensitive, and accessible support, honoring diverse lived experiences while promoting care that is sustainable for both families and those who support them.',
+                ],
+                detailAr: [
+                  'نحن ندرك التحديات العاطفية المعقدة التي تواجهها الأسر في عالم اليوم. يبدأ عملنا بالتعاطف والاحترام — دعم الأطفال والشباب والأزواج والأسر في بناء الرفاهية العاطفية والتواصل الهادف والصحة العلائقية طويلة الأمد.',
+                  'نحن ملتزمون بتقديم دعم شامل وحساس ثقافيًا ومتاح، نحترم التجارب المتنوعة بينما نعزز الرعاية المستدامة للأسر ولمن يدعمونهم.',
+                ],
                 gradientFrom: '#FAE8E0',
                 gradientTo: '#FDF4F0',
-                accentColor: '#C8A97D',
+                hoverFrom: '#2B5F4E',
+                hoverTo: '#1E4A3B',
                 direction: isRTL ? 'right' : 'left',
                 delay: 0.1,
               },
@@ -289,39 +298,84 @@ export default function AboutPage() {
                 titleAr: 'رؤيتنا',
                 textEn: "A world where children, youth & families are emotionally healthy and equipped with the tools and knowledge to face life's challenges.",
                 textAr: 'عالم يكون فيه الأطفال والشباب والأسر أصحاء عاطفيًا ومجهزين بالأدوات والمعرفة لمواجهة تحديات الحياة.',
+                detailEn: [
+                  'We envision a future where seeking support is seen as a strength\u2014where individuals and families feel understood, empowered, and supported in building relationships rooted in trust, emotional wellbeing, and mutual respect.',
+                  'A world where care, connection, and guidance are accessible, human, and meaningful.',
+                ],
+                detailAr: [
+                  'نتصور مستقبلًا يُنظر فيه إلى طلب الدعم على أنه قوة — حيث يشعر الأفراد والأسر بالفهم والتمكين والدعم في بناء علاقات متجذرة في الثقة والرفاهية العاطفية والاحترام المتبادل.',
+                  'عالم تكون فيه الرعاية والتواصل والتوجيه متاحة وإنسانية وذات معنى.',
+                ],
                 gradientFrom: '#FDE8E0',
                 gradientTo: '#FEF2EE',
-                accentColor: '#C8A97D',
+                hoverFrom: '#7A3B5E',
+                hoverTo: '#5E2D48',
                 direction: isRTL ? 'left' : 'right',
                 delay: 0.2,
               },
-            ].map((card, i) => (
-              <ScrollReveal key={i} direction={card.direction as 'left' | 'right'} delay={card.delay}>
-                <motion.div
-                  className="group relative h-full rounded-3xl p-10 lg:p-12 overflow-hidden cursor-default border border-transparent hover:border-[#C8A97D]/20 transition-all duration-500"
-                  style={{ background: `linear-gradient(135deg, ${card.gradientFrom}, ${card.gradientTo})` }}
-                  whileHover={{ y: -6, boxShadow: '0 20px 60px rgba(200,169,125,0.15)' }}
-                >
-                  {/* Decorative circle */}
-                  <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#C8A97D]/[0.06] group-hover:bg-[#C8A97D]/[0.12] transition-colors duration-500" />
-                  <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-[#C8A97D]/[0.04] group-hover:bg-[#C8A97D]/[0.08] transition-colors duration-500" />
-                  <div className="relative z-10 flex flex-col items-center text-center">
-                    <div className="w-14 h-14 rounded-2xl bg-[#C8A97D]/15 flex items-center justify-center mb-6 group-hover:bg-[#C8A97D]/25 transition-colors duration-300">
-                      <card.Icon className="w-7 h-7 text-[#C8A97D]" />
-                    </div>
-                    <h3
-                      className="text-2xl font-bold text-[#1E1E2A] mb-5"
-                      style={{ fontFamily: 'var(--font-heading)' }}
+            ].map((card, i) => {
+              const CardIcon = card.Icon;
+              return (
+                <ScrollReveal key={i} direction={card.direction as 'left' | 'right'} delay={card.delay}>
+                  <div
+                    className="group relative h-full rounded-3xl overflow-hidden cursor-default"
+                    style={{ perspective: '1200px' }}
+                  >
+                    {/* === FRONT FACE (peach — default) === */}
+                    <div
+                      className="relative p-10 lg:p-12 rounded-3xl border border-transparent group-hover:border-[#C8A97D]/20 transition-all duration-500 group-hover:opacity-0 group-hover:scale-95 group-hover:pointer-events-none"
+                      style={{ background: `linear-gradient(135deg, ${card.gradientFrom}, ${card.gradientTo})` }}
                     >
-                      {isRTL ? card.titleAr : card.titleEn}
-                    </h3>
-                    <p className="text-[#4A4A5C] leading-relaxed text-[15px] max-w-sm">
-                      {isRTL ? card.textAr : card.textEn}
-                    </p>
+                      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-[#C8A97D]/[0.06]" />
+                      <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-[#C8A97D]/[0.04]" />
+                      <div className="relative z-10 flex flex-col items-center text-center min-h-[260px] justify-center">
+                        <div className="w-14 h-14 rounded-2xl bg-[#C8A97D]/15 flex items-center justify-center mb-6">
+                          <CardIcon className="w-7 h-7 text-[#C8A97D]" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-[#1E1E2A] mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
+                          {isRTL ? card.titleAr : card.titleEn}
+                        </h3>
+                        <p className="text-[#4A4A5C] leading-relaxed text-[15px] max-w-sm">
+                          {isRTL ? card.textAr : card.textEn}
+                        </p>
+                        {/* Hover hint */}
+                        <div className="mt-6 flex items-center gap-1.5 text-[11px] font-medium text-[#C8A97D]/60 uppercase tracking-wider">
+                          <span>{isRTL ? 'مرر للمزيد' : 'Hover to read more'}</span>
+                          <ChevronDown className="w-3 h-3 animate-bounce" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* === BACK FACE (rich gradient — on hover) === */}
+                    <div
+                      className="absolute inset-0 p-10 lg:p-12 rounded-3xl opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100 transition-all duration-500 pointer-events-none group-hover:pointer-events-auto"
+                      style={{ background: `linear-gradient(135deg, ${card.hoverFrom}, ${card.hoverTo})` }}
+                    >
+                      <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/[0.05]" />
+                      <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/[0.03]" />
+                      <div className="relative z-10 flex flex-col h-full">
+                        <div className="flex items-center gap-3 mb-5">
+                          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                            <CardIcon className="w-5 h-5 text-[#C8A97D]" />
+                          </div>
+                          <h3 className="text-xl font-bold text-white" style={{ fontFamily: 'var(--font-heading)' }}>
+                            {isRTL ? card.titleAr : card.titleEn}
+                          </h3>
+                        </div>
+                        <div className="w-10 h-0.5 bg-[#C8A97D]/40 rounded-full mb-5" />
+                        <div className="space-y-4 flex-1">
+                          {(isRTL ? card.detailAr : card.detailEn).map((para, pi) => (
+                            <p key={pi} className="text-white/80 leading-relaxed text-[14px]">
+                              {para}
+                            </p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </motion.div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              );
+            })}
           </div>
         </div>
       </section>
