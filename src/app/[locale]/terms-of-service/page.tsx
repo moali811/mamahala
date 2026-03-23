@@ -143,16 +143,15 @@ export default function TermsPage() {
   return (
     <div className="bg-[#FAF7F2]" dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#C4878A]/8 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
         </div>
         <div className="container-main relative py-24 md:py-28">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Breadcrumb
               locale={locale}
-              light
               items={[
                 { label: messages.nav.home, href: `/${locale}` },
                 { label: isRTL ? '\u0627\u0644\u0634\u0631\u0648\u0637 \u0648\u0627\u0644\u0623\u062D\u0643\u0627\u0645' : messages.footer.terms },
@@ -166,7 +165,7 @@ export default function TermsPage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeUp} custom={0} className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-[#C4878A]/10 flex items-center justify-center">
                 <Scale className="w-6 h-6 text-[#C8A97D]" />
               </div>
               <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D]">
@@ -176,7 +175,7 @@ export default function TermsPage() {
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-white"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D2A33]"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? '\u0627\u0644\u0634\u0631\u0648\u0637 \u0648\u0627\u0644\u0623\u062D\u0643\u0627\u0645' : 'Terms & Conditions'}
@@ -184,7 +183,7 @@ export default function TermsPage() {
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="text-lg text-white/70 mt-4 max-w-2xl"
+              className="text-lg text-[#6B6580] mt-4 max-w-2xl"
             >
               {isRTL
                 ? '\u064A\u0631\u062C\u0649 \u0642\u0631\u0627\u0621\u0629 \u0647\u0630\u0647 \u0627\u0644\u0634\u0631\u0648\u0637 \u0628\u0639\u0646\u0627\u064A\u0629 \u0642\u0628\u0644 \u0627\u0633\u062A\u062E\u062F\u0627\u0645 \u0645\u0648\u0642\u0639\u0646\u0627 \u0648\u062E\u062F\u0645\u0627\u062A\u0646\u0627. \u0628\u0627\u0644\u0648\u0635\u0648\u0644 \u0625\u0644\u0649 mamahala.ca\u060C \u0641\u0625\u0646\u0643 \u062A\u0648\u0627\u0641\u0642 \u0639\u0644\u0649 \u0627\u0644\u0627\u0644\u062A\u0632\u0627\u0645 \u0628\u0647\u0630\u0647 \u0627\u0644\u0627\u062A\u0641\u0627\u0642\u064A\u0629.'
@@ -193,13 +192,13 @@ export default function TermsPage() {
             <motion.div
               variants={fadeUp}
               custom={3}
-              className="flex items-center gap-4 mt-6 text-sm text-white/50 flex-wrap"
+              className="flex items-center gap-4 mt-6 text-sm text-[#6B6580] flex-wrap"
             >
-              <span className="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
+              <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
                 <RefreshCw className="w-3.5 h-3.5" />
                 {isRTL ? '\u0622\u062E\u0631 \u062A\u062D\u062F\u064A\u062B: 29 \u0646\u0648\u0641\u0645\u0628\u0631 2022' : 'Last updated: November 29, 2022'}
               </span>
-              <span className="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
+              <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
                 <Gavel className="w-3.5 h-3.5" />
                 {isRTL ? '\u0623\u0648\u0646\u062A\u0627\u0631\u064A\u0648\u060C \u0643\u0646\u062F\u0627' : 'Ontario, Canada'}
               </span>
@@ -219,8 +218,8 @@ export default function TermsPage() {
         <ScrollReveal>
           <div className="bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 md:p-8">
             <div className="flex items-center gap-3 mb-5">
-              <div className="w-9 h-9 rounded-lg bg-[#B5696B]/10 flex items-center justify-center">
-                <List className="w-4.5 h-4.5 text-[#B5696B]" />
+              <div className="w-9 h-9 rounded-lg bg-[#C4878A]/10 flex items-center justify-center">
+                <List className="w-4.5 h-4.5 text-[#C4878A]" />
               </div>
               <h2 className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D]">
                 {isRTL ? '\u062C\u062F\u0648\u0644 \u0627\u0644\u0645\u062D\u062A\u0648\u064A\u0627\u062A' : 'Table of Contents'}
@@ -233,12 +232,12 @@ export default function TermsPage() {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#B5696B]/5 hover:text-[#B5696B] transition-all duration-200 group"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#C4878A]/5 hover:text-[#C4878A] transition-all duration-200 group"
                   >
                     <span className="text-xs font-mono text-[#C8A97D] w-5">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#B5696B] transition-colors flex-shrink-0" />
+                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#C4878A] transition-colors flex-shrink-0" />
                     <span className="truncate">{isRTL ? section.titleAr : section.titleEn}</span>
                   </a>
                 );
@@ -273,7 +272,7 @@ export default function TermsPage() {
                         : 'border-[#E8E4DD]'
                   }`}>
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      section.highlight ? 'bg-[#C8A97D]/15 text-[#C8A97D]' : 'bg-[#B5696B]/10 text-[#B5696B]'
+                      section.highlight ? 'bg-[#C8A97D]/15 text-[#C8A97D]' : 'bg-[#C4878A]/10 text-[#C4878A]'
                     }`}>
                       <Icon className="w-5 h-5" />
                     </div>
@@ -337,7 +336,7 @@ export default function TermsPage() {
                       <div className="mt-4 flex flex-wrap gap-3">
                         <Link
                           href={`/${locale}/contact`}
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#B5696B] bg-[#B5696B]/5 px-4 py-2.5 rounded-xl hover:bg-[#B5696B]/10 transition-colors"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-[#C4878A] bg-[#C4878A]/5 px-4 py-2.5 rounded-xl hover:bg-[#C4878A]/10 transition-colors"
                         >
                           <Mail className="w-4 h-4" />
                           {isRTL ? '\u0646\u0645\u0648\u0630\u062C \u0627\u0644\u0627\u062A\u0635\u0627\u0644' : 'Contact Form'}
@@ -355,7 +354,7 @@ export default function TermsPage() {
         <div className="text-center mt-12">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#B5696B] transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#C4878A] transition-colors"
           >
             <ArrowUp className="w-4 h-4" />
             {isRTL ? '\u0627\u0644\u0639\u0648\u062F\u0629 \u0625\u0644\u0649 \u0627\u0644\u0623\u0639\u0644\u0649' : 'Back to top'}

@@ -23,13 +23,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#B5696B] text-white hover:bg-[#9E5558] shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-glow-sage)]',
+    'bg-[#7A3B5E] text-white hover:bg-[#5E2D48] shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-glow-plum)]',
   secondary:
-    'bg-[#F3EFE8] text-[#B5696B] hover:bg-[#e8e2d8] border border-[#B5696B]/10',
+    'bg-[#F3EFE8] text-[#7A3B5E] hover:bg-[#e8e2d8] border border-[#7A3B5E]/10',
   outline:
-    'bg-transparent text-[#B5696B] border-2 border-[#B5696B] hover:bg-[#B5696B] hover:text-white',
+    'bg-transparent text-[#7A3B5E] border-2 border-[#7A3B5E]/30 hover:bg-[#7A3B5E] hover:text-white hover:border-[#7A3B5E]',
   ghost:
-    'bg-transparent text-[#4A4A5C] hover:bg-[#F3EFE8] hover:text-[#B5696B]',
+    'bg-transparent text-[#4A4A5C] hover:bg-[#F3EFE8] hover:text-[#7A3B5E]',
   plum:
     'bg-[#7A3B5E] text-white hover:bg-[#5E2D48] shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-glow-plum)]',
   terracotta:
@@ -66,7 +66,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const baseStyles = `
       inline-flex items-center justify-center font-semibold
       transition-all duration-200 ease-out
-      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B5696B]
+      focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7A3B5E]
       disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none
       ${rounded ? 'rounded-full' : 'rounded-xl'}
       ${fullWidth ? 'w-full' : ''}

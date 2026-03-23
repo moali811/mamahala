@@ -121,14 +121,13 @@ export default function DownloadsPage() {
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden gradient-sage">
         {/* Decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
+          <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] blur-[80px]" />
           <div className="absolute bottom-10 left-[10%] w-[300px] h-[300px] rounded-full bg-[#C8A97D]/[0.06] blur-[60px]" />
         </div>
 
         <div className="container-main relative z-10">
           <Breadcrumb
             locale={locale}
-            light
             items={[
               { label: messages.nav.home, href: `/${locale}` },
               { label: messages.nav.resources, href: `/${locale}/resources` },
@@ -143,12 +142,12 @@ export default function DownloadsPage() {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <h1
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? 'التحميلات' : 'Downloads'}
             </h1>
-            <p className="mt-5 text-lg lg:text-xl text-white/75 max-w-2xl leading-relaxed">
+            <p className="mt-5 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed">
               {isRTL
                 ? 'أدلة وأوراق عمل وأدوات مجانية ومدفوعة لدعم رحلتك'
                 : 'Free and premium guides, worksheets, and tools to support your journey'}
@@ -186,14 +185,14 @@ export default function DownloadsPage() {
               return (
                 <StaggerChild key={resource.id}>
                   <motion.div
-                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#B5696B]/20 transition-all duration-300 h-full flex flex-col"
+                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300 h-full flex flex-col"
                     whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
                     {/* Top accent + icon area */}
                     <div className="relative bg-gradient-to-br from-[#F3EFE8] to-[#FAF7F2] p-8 text-center">
                       <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.06)] mb-4">
-                        <TypeIcon className="w-7 h-7 text-[#B5696B]" />
+                        <TypeIcon className="w-7 h-7 text-[#C4878A]" />
                       </div>
 
                       {/* Price tag */}
@@ -224,7 +223,7 @@ export default function DownloadsPage() {
 
                       {/* Title */}
                       <h3
-                        className="text-lg font-bold text-[#2D2A33] mb-3 group-hover:text-[#B5696B] transition-colors duration-200"
+                        className="text-lg font-bold text-[#2D2A33] mb-3 group-hover:text-[#C4878A] transition-colors duration-200"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {title}
@@ -253,7 +252,7 @@ export default function DownloadsPage() {
                                   value={email}
                                   onChange={(e) => handleEmailChange(resource.id, e.target.value)}
                                   placeholder={isRTL ? 'بريدك الإلكتروني' : 'Your email'}
-                                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] text-[#2D2A33] placeholder-[#8E8E9F] focus:outline-none focus:ring-2 focus:ring-[#B5696B]/20 focus:border-[#B5696B]/40 transition-all"
+                                  className="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] text-[#2D2A33] placeholder-[#8E8E9F] focus:outline-none focus:ring-2 focus:ring-[#C4878A]/20 focus:border-[#C4878A]/40 transition-all"
                                 />
                               </div>
                               <Button
@@ -296,7 +295,7 @@ export default function DownloadsPage() {
       {/* ================================================================ */}
       {/*  CTA                                                             */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-36 gradient-sage relative overflow-hidden">
+      <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
@@ -321,7 +320,7 @@ export default function DownloadsPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

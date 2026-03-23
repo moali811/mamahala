@@ -109,10 +109,10 @@ export default function ContactPage() {
       {/* ================================================================ */}
       {/*  HERO                                                           */}
       {/* ================================================================ */}
-      <section className="relative bg-[#B5696B] overflow-hidden">
+      <section className="relative bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC] overflow-hidden">
         {/* Decorative shapes */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
+          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] blur-[80px]" />
           <div className="absolute bottom-0 left-[10%] w-[300px] h-[300px] rounded-full bg-[#C8A97D]/[0.08] blur-[60px]" />
         </div>
 
@@ -122,11 +122,11 @@ export default function ContactPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Breadcrumb items={breadcrumbItems} locale={locale} light />
+            <Breadcrumb items={breadcrumbItems} locale={locale} />
           </motion.div>
 
           <motion.h1
-            className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight"
+            className="mt-6 text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-tight"
             style={{ fontFamily: 'var(--font-heading)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -136,7 +136,7 @@ export default function ContactPage() {
           </motion.h1>
 
           <motion.p
-            className="mt-4 text-lg text-white/70 max-w-xl leading-relaxed"
+            className="mt-4 text-lg text-[#4A4A5C] max-w-xl leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -184,9 +184,9 @@ export default function ContactPage() {
                           damping: 15,
                           delay: 0.15,
                         }}
-                        className="w-20 h-20 rounded-full bg-[#B5696B]/10 flex items-center justify-center mb-6"
+                        className="w-20 h-20 rounded-full bg-[#C4878A]/10 flex items-center justify-center mb-6"
                       >
-                        <CheckCircle2 className="w-10 h-10 text-[#B5696B]" />
+                        <CheckCircle2 className="w-10 h-10 text-[#C4878A]" />
                       </motion.div>
                       <h3
                         className="text-2xl font-bold text-[#2D2A33] mb-2"
@@ -260,18 +260,18 @@ export default function ContactPage() {
                           className="
                             peer w-full px-4 pt-6 pb-3 rounded-xl border bg-white text-[#2D2A33]
                             transition-all duration-200 outline-none resize-none
-                            border-[#F3EFE8] focus:border-[#B5696B] focus:ring-2 focus:ring-[#B5696B]/10
-                            hover:border-[#B5696B]/30 placeholder-transparent
+                            border-[#F3EFE8] focus:border-[#C4878A] focus:ring-2 focus:ring-[#C4878A]/10
+                            hover:border-[#C4878A]/30 placeholder-transparent
                           "
                         />
                         <label
                           htmlFor="message"
                           className="
-                            absolute left-4 top-2 text-xs font-medium text-[#B5696B]
+                            absolute left-4 top-2 text-xs font-medium text-[#C4878A]
                             transition-all duration-200 pointer-events-none
                             peer-placeholder-shown:top-4 peer-placeholder-shown:text-sm
                             peer-placeholder-shown:text-[#8E8E9F] peer-placeholder-shown:font-normal
-                            peer-focus:top-2 peer-focus:text-xs peer-focus:font-medium peer-focus:text-[#B5696B]
+                            peer-focus:top-2 peer-focus:text-xs peer-focus:font-medium peer-focus:text-[#C4878A]
                           "
                         >
                           {messages.contact.messageField}
@@ -336,9 +336,9 @@ export default function ContactPage() {
                 {contactCards.map((card, i) => {
                   const Icon = card.icon;
                   const inner = (
-                    <div className="flex items-start gap-4 bg-white rounded-2xl p-5 border border-[#F3EFE8] hover:border-[#B5696B]/20 hover:shadow-[var(--shadow-subtle)] transition-all duration-300 h-full">
-                      <div className="w-11 h-11 rounded-xl bg-[#B5696B]/[0.08] flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-[#B5696B]" />
+                    <div className="flex items-start gap-4 bg-white rounded-2xl p-5 border border-[#F3EFE8] hover:border-[#C4878A]/20 hover:shadow-[var(--shadow-subtle)] transition-all duration-300 h-full">
+                      <div className="w-11 h-11 rounded-xl bg-[#C4878A]/[0.08] flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-5 h-5 text-[#C4878A]" />
                       </div>
                       <div className="min-w-0">
                         <p className="text-xs font-semibold uppercase tracking-wider text-[#8E8E9F] mb-0.5">
@@ -377,7 +377,7 @@ export default function ContactPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                         aria-label={s.label}
-                        className="w-11 h-11 rounded-xl bg-[#FAF7F2] flex items-center justify-center text-[#4A4A5C] hover:bg-[#B5696B] hover:text-white transition-all duration-200"
+                        className="w-11 h-11 rounded-xl bg-[#FAF7F2] flex items-center justify-center text-[#4A4A5C] hover:bg-[#C4878A] hover:text-white transition-all duration-200"
                         whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.95 }}
                       >

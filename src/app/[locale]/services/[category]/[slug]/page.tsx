@@ -53,15 +53,14 @@ export default function ServiceDetailPage() {
   return (
     <div className="bg-[#FAF7F2]">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-[#C4878A]/8 blur-3xl" />
         </div>
         <div className="container-main relative py-20 md:py-24">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Breadcrumb
               locale={locale}
-              light
               items={[
                 { label: messages.nav.home, href: `/${locale}` },
                 { label: messages.nav.services, href: `/${locale}/services` },
@@ -71,7 +70,7 @@ export default function ServiceDetailPage() {
             />
           </motion.div>
           <motion.h1
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mt-6"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2D2A33] mt-6"
             style={{ fontFamily: 'var(--font-heading)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -85,11 +84,11 @@ export default function ServiceDetailPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
           >
-            <Badge variant="sand" size="md" className="!bg-[#C8A97D]/20 !text-white">
+            <Badge variant="sand" size="md" className="!bg-[#C8A97D]/20 !text-[#2D2A33]">
               <DollarSign className="w-3.5 h-3.5 mr-1" />
               {messages.services.priceFrom} {service.currency} ${service.priceFrom}
             </Badge>
-            <Badge variant="sage" size="md" className="!bg-white/10 !text-white">
+            <Badge variant="sage" size="md" className="!bg-[#C4878A]/10 !text-[#2D2A33]">
               <Clock className="w-3.5 h-3.5 mr-1" />
               {service.duration}
             </Badge>
@@ -124,8 +123,8 @@ export default function ServiceDetailPage() {
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08 }}
                   >
-                    <div className="w-6 h-6 rounded-full bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="w-3.5 h-3.5 text-[#B5696B]" />
+                    <div className="w-6 h-6 rounded-full bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="w-3.5 h-3.5 text-[#C4878A]" />
                     </div>
                     <span className="text-[#4A4A5C]">{item}</span>
                   </motion.div>
@@ -257,7 +256,7 @@ export default function ServiceDetailPage() {
                       <Link
                         key={rs.slug}
                         href={`/${locale}/services/${category}/${rs.slug}`}
-                        className="block text-sm text-[#4A4A5C] hover:text-[#B5696B] transition-colors py-1"
+                        className="block text-sm text-[#4A4A5C] hover:text-[#C4878A] transition-colors py-1"
                       >
                         {isRTL ? rs.nameAr : rs.name}
                         <span className="text-xs text-[#8E8E9F] block">

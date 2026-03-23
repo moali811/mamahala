@@ -28,7 +28,7 @@ const blogPosts = [
     cat: 'Youth',
     catAr: 'الشباب',
     time: 5,
-    gradient: 'from-[#B5696B] to-[#9E5558]',
+    gradient: 'from-[#C4878A] to-[#B07578]',
   },
   {
     slug: 'communication-techniques',
@@ -95,10 +95,10 @@ export default function BlogListingPage() {
       {/*  HERO                                                            */}
       {/* ================================================================ */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
-          <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />
+          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.08] blur-[80px]" />
+          <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.12] blur-[80px]" />
         </div>
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -122,7 +122,6 @@ export default function BlogListingPage() {
                 { label: messages.resources.blog },
               ]}
               locale={locale}
-              light
             />
           </motion.div>
 
@@ -142,7 +141,7 @@ export default function BlogListingPage() {
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.1] tracking-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.resources.blog}
@@ -150,7 +149,7 @@ export default function BlogListingPage() {
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="mt-6 text-lg lg:text-xl text-white/75 max-w-2xl leading-relaxed"
+              className="mt-6 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed"
             >
               {messages.resources.blogDesc}
             </motion.p>
@@ -189,7 +188,7 @@ export default function BlogListingPage() {
                     px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300
                     ${
                       activeCategory === cat
-                        ? 'bg-[#B5696B] text-white shadow-[0_4px_12px_rgba(43,95,78,0.3)]'
+                        ? 'bg-[#C4878A] text-white shadow-[0_4px_12px_rgba(43,95,78,0.3)]'
                         : 'bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] border border-[#F3EFE8]'
                     }
                   `}
@@ -207,7 +206,7 @@ export default function BlogListingPage() {
               <StaggerChild key={post.slug}>
                 <Link href={`/${locale}/resources/blog/${post.slug}`}>
                   <motion.article
-                    className="group bg-white rounded-3xl overflow-hidden border border-transparent hover:border-[#B5696B]/10 transition-all duration-300"
+                    className="group bg-white rounded-3xl overflow-hidden border border-transparent hover:border-[#C4878A]/10 transition-all duration-300"
                     whileHover={{
                       y: -4,
                       boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
@@ -236,12 +235,12 @@ export default function BlogListingPage() {
                     {/* Content */}
                     <div className="p-6 lg:p-8">
                       <h3
-                        className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#B5696B] transition-colors duration-300"
+                        className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#C4878A] transition-colors duration-300"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {isRTL ? post.titleAr : post.title}
                       </h3>
-                      <div className="flex items-center gap-2 text-[#B5696B] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                      <div className="flex items-center gap-2 text-[#C4878A] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
                         <span>{messages.common.readMore}</span>
                         <Arrow className="w-4 h-4" />
                       </div>
@@ -260,7 +259,7 @@ export default function BlogListingPage() {
       <section className="py-24 lg:py-32 bg-white">
         <div className="container-main">
           <ScrollReveal>
-            <div className="relative bg-gradient-to-br from-[#B5696B] to-[#9E5558] rounded-3xl p-10 lg:p-16 overflow-hidden">
+            <div className="relative bg-gradient-to-br from-[#C4878A] to-[#B07578] rounded-3xl p-10 lg:p-16 overflow-hidden">
               {/* Decorative elements */}
               <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/[0.06]" />
               <div className="absolute -bottom-10 -left-10 w-60 h-60 rounded-full bg-[#C8A97D]/[0.08]" />
@@ -297,7 +296,7 @@ export default function BlogListingPage() {
                   />
                   <Button
                     variant="secondary"
-                    className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
+                    className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
                   >
                     {messages.newsletter.subscribe}
                   </Button>

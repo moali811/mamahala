@@ -10,8 +10,8 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, string> = {
-  sage: 'bg-[#B5696B]/10 text-[#B5696B]',
-  rose: 'bg-[#B5696B]/10 text-[#B5696B]',
+  sage: 'bg-[#C4878A]/10 text-[#C4878A]',
+  rose: 'bg-[#C4878A]/10 text-[#C4878A]',
   plum: 'bg-[#7A3B5E]/10 text-[#7A3B5E]',
   sand: 'bg-[#C8A97D]/15 text-[#B08D5E]',
   terracotta: 'bg-[#D4836A]/10 text-[#B96A52]',

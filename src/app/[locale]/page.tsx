@@ -52,7 +52,7 @@ export default function HomePage() {
       <section className="relative min-h-[90vh] flex items-center bg-[#FAF7F2] overflow-hidden">
         {/* Decorative gradient mesh */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 right-[10%] w-[500px] h-[500px] rounded-full bg-[#B5696B]/5 blur-[100px]" />
+          <div className="absolute top-20 right-[10%] w-[500px] h-[500px] rounded-full bg-[#C4878A]/5 blur-[100px]" />
           <div className="absolute bottom-20 left-[10%] w-[400px] h-[400px] rounded-full bg-[#7A3B5E]/5 blur-[100px]" />
         </div>
 
@@ -125,7 +125,7 @@ export default function HomePage() {
             >
               <div className="relative h-[520px] lg:h-[640px]">
                 {/* Blob mask */}
-                <div className="absolute inset-0 blob bg-[#B5696B]/10" />
+                <div className="absolute inset-0 blob bg-[#C4878A]/10" />
                 <div className="absolute -inset-2 lg:inset-0 blob overflow-hidden">
                   <Image
                     src="/images/hala-confident.png"
@@ -196,7 +196,7 @@ export default function HomePage() {
                 <StaggerChild key={cat.key}>
                   <Link href={`/${locale}/services/${cat.key}`}>
                     <motion.div
-                      className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#B5696B]/20 transition-all duration-300"
+                      className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300"
                       whileHover={{ y: -4, boxShadow: '0 8px 40px rgba(0,0,0,0.08)' }}
                     >
                       <div className="relative h-48 overflow-hidden">
@@ -215,13 +215,13 @@ export default function HomePage() {
                       </div>
                       <div className="p-6">
                         <h3
-                          className="text-lg font-bold text-[#2D2A33] mb-1 group-hover:text-[#B5696B] transition-colors"
+                          className="text-lg font-bold text-[#2D2A33] mb-1 group-hover:text-[#C4878A] transition-colors"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {name}
                         </h3>
                         <p className="text-sm text-[#8E8E9F] leading-relaxed">{subtitle}</p>
-                        <div className="mt-4 flex items-center gap-1.5 text-[#B5696B] text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="mt-4 flex items-center gap-1.5 text-[#C4878A] text-sm font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           {messages.services.learnMore}
                           <ArrowIcon className="w-4 h-4" />
                         </div>
@@ -396,7 +396,7 @@ export default function HomePage() {
             </div>
             <Link
               href={`/${locale}/resources/blog`}
-              className="hidden md:flex items-center gap-1.5 text-[#B5696B] font-semibold text-sm hover:gap-2.5 transition-all"
+              className="hidden md:flex items-center gap-1.5 text-[#C4878A] font-semibold text-sm hover:gap-2.5 transition-all"
             >
               {messages.common.viewAll}
               <ArrowIcon className="w-4 h-4" />
@@ -412,17 +412,17 @@ export default function HomePage() {
               <StaggerChild key={i}>
                 <Link href={`/${locale}/resources/blog`}>
                   <div className="group bg-[#FAF7F2] rounded-2xl overflow-hidden hover:shadow-[var(--shadow-card)] transition-all duration-300">
-                    <div className="h-48 bg-gradient-to-br from-[#B5696B]/10 to-[#7A3B5E]/10 flex items-center justify-center">
-                      <BookOpen className="w-10 h-10 text-[#B5696B]/30" />
+                    <div className="h-48 bg-gradient-to-br from-[#C4878A]/10 to-[#7A3B5E]/10 flex items-center justify-center">
+                      <BookOpen className="w-10 h-10 text-[#C4878A]/30" />
                     </div>
                     <div className="p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-[#B5696B]/10 text-[#B5696B]">
+                        <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-[#C4878A]/10 text-[#C4878A]">
                           {post.cat}
                         </span>
                         <span className="text-xs text-[#8E8E9F]">{post.time} {isRTL ? 'دقيقة' : 'read'}</span>
                       </div>
-                      <h3 className="font-bold text-[#2D2A33] group-hover:text-[#B5696B] transition-colors leading-snug" style={{ fontFamily: 'var(--font-heading)' }}>
+                      <h3 className="font-bold text-[#2D2A33] group-hover:text-[#C4878A] transition-colors leading-snug" style={{ fontFamily: 'var(--font-heading)' }}>
                         {isRTL ? post.titleAr : post.title}
                       </h3>
                     </div>
@@ -433,7 +433,7 @@ export default function HomePage() {
           </StaggerReveal>
 
           <div className="mt-8 text-center md:hidden">
-            <Link href={`/${locale}/resources/blog`} className="text-[#B5696B] font-semibold text-sm">
+            <Link href={`/${locale}/resources/blog`} className="text-[#C4878A] font-semibold text-sm">
               {messages.common.viewAll} →
             </Link>
           </div>
@@ -458,7 +458,7 @@ export default function HomePage() {
               <input
                 type="email"
                 placeholder={messages.newsletter.placeholder}
-                className="flex-1 rounded-full border border-[#B5696B]/20 px-5 py-3 text-sm bg-white outline-none focus:border-[#B5696B] focus:ring-2 focus:ring-[#B5696B]/10 transition-all"
+                className="flex-1 rounded-full border border-[#C4878A]/20 px-5 py-3 text-sm bg-white outline-none focus:border-[#C4878A] focus:ring-2 focus:ring-[#C4878A]/10 transition-all"
               />
               <Button type="submit">{messages.newsletter.subscribe}</Button>
             </form>
@@ -470,7 +470,7 @@ export default function HomePage() {
       {/* ================================================================ */}
       {/*  SECTION 9: FINAL CTA                                            */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-36 gradient-sage relative overflow-hidden">
+      <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
@@ -492,7 +492,7 @@ export default function HomePage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>
@@ -587,7 +587,7 @@ function TestimonialsSection({
                 </p>
 
                 <div>
-                  <p className="font-bold text-[#B5696B] text-lg">{t.name}</p>
+                  <p className="font-bold text-[#C4878A] text-lg">{t.name}</p>
                   <p className="text-sm text-[#8E8E9F] mt-0.5">{isRTL ? t.roleAr : t.role}</p>
                 </div>
               </motion.div>
@@ -599,7 +599,7 @@ function TestimonialsSection({
             <button
               onClick={prev}
               aria-label="Previous testimonial"
-              className="w-11 h-11 rounded-full bg-white shadow-[var(--shadow-subtle)] flex items-center justify-center hover:bg-[#B5696B] hover:text-white text-[#B5696B] transition-all duration-200"
+              className="w-11 h-11 rounded-full bg-white shadow-[var(--shadow-subtle)] flex items-center justify-center hover:bg-[#C4878A] hover:text-white text-[#C4878A] transition-all duration-200"
             >
               {isRTL ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
             </button>
@@ -610,7 +610,7 @@ function TestimonialsSection({
                   onClick={() => setCurrent(i)}
                   aria-label={`Go to testimonial ${i + 1}`}
                   className={`rounded-full transition-all duration-300 ${
-                    i === current ? 'bg-[#B5696B] w-8 h-2.5' : 'bg-[#C8A97D]/25 hover:bg-[#C8A97D]/50 w-2.5 h-2.5'
+                    i === current ? 'bg-[#C4878A] w-8 h-2.5' : 'bg-[#C8A97D]/25 hover:bg-[#C8A97D]/50 w-2.5 h-2.5'
                   }`}
                 />
               ))}
@@ -618,7 +618,7 @@ function TestimonialsSection({
             <button
               onClick={next}
               aria-label="Next testimonial"
-              className="w-11 h-11 rounded-full bg-white shadow-[var(--shadow-subtle)] flex items-center justify-center hover:bg-[#B5696B] hover:text-white text-[#B5696B] transition-all duration-200"
+              className="w-11 h-11 rounded-full bg-white shadow-[var(--shadow-subtle)] flex items-center justify-center hover:bg-[#C4878A] hover:text-white text-[#C4878A] transition-all duration-200"
             >
               {isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
             </button>

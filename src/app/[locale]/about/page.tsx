@@ -74,11 +74,11 @@ export default function AboutPage() {
       {/* ================================================================ */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
         {/* Decorative orbs */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
-          <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />
+          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.08] blur-[80px]" />
+          <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.12] blur-[80px]" />
         </div>
         {/* Subtle pattern overlay */}
         <div
@@ -102,7 +102,6 @@ export default function AboutPage() {
                 { label: messages.nav.about },
               ]}
               locale={locale}
-              light
             />
           </motion.div>
 
@@ -122,7 +121,7 @@ export default function AboutPage() {
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-white leading-[1.1] tracking-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.about.pageTitle}
@@ -130,7 +129,7 @@ export default function AboutPage() {
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="mt-6 text-lg lg:text-xl text-white/75 max-w-2xl leading-relaxed"
+              className="mt-6 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed"
             >
               {messages.about.description}
             </motion.p>
@@ -179,7 +178,7 @@ export default function AboutPage() {
                 </div>
                 {/* Floating accent */}
                 <motion.div
-                  className="absolute -bottom-6 -right-6 bg-[#B5696B] text-white rounded-2xl p-5 shadow-lg"
+                  className="absolute -bottom-6 -right-6 bg-[#C4878A] text-white rounded-2xl p-5 shadow-lg"
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={viewportOnce}
@@ -287,8 +286,8 @@ export default function AboutPage() {
                 ],
                 gradientFrom: '#FAE8E0',
                 gradientTo: '#FDF4F0',
-                hoverFrom: '#B5696B',
-                hoverTo: '#9E5558',
+                hoverFrom: '#C4878A',
+                hoverTo: '#B07578',
                 direction: isRTL ? 'right' : 'left',
                 delay: 0.1,
               },
@@ -524,7 +523,7 @@ export default function AboutPage() {
           {/* Yale — Hero Feature Card */}
           <ScrollReveal className="mb-8">
             <motion.div
-              className="relative bg-gradient-to-br from-[#B5696B] to-[#9E5558] rounded-3xl p-10 lg:p-14 overflow-hidden"
+              className="relative bg-gradient-to-br from-[#C4878A] to-[#B07578] rounded-3xl p-10 lg:p-14 overflow-hidden"
               whileHover={{ boxShadow: '0 20px 60px rgba(43,95,78,0.2)' }}
             >
               <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-white/[0.04]" />
@@ -557,13 +556,13 @@ export default function AboutPage() {
             {[
               { Icon: Brain, titleEn: 'Executive Function Coach', titleAr: 'مدربة وظائف تنفيذية', subtitleEn: 'ADD/ADHD Certified', subtitleAr: 'معتمدة', color: '#7A3B5E' },
               { Icon: Heart, titleEn: 'Art & Science of Parenting', titleAr: 'فن وعلم الأبوة', subtitleEn: 'Specialized', subtitleAr: 'متخصصة', color: '#C8A97D' },
-              { Icon: BookOpen, titleEn: 'Counseling Psychology', titleAr: 'علم النفس الإرشادي', subtitleEn: 'University of Toronto', subtitleAr: 'جامعة تورنتو', color: '#B5696B' },
+              { Icon: BookOpen, titleEn: 'Counseling Psychology', titleAr: 'علم النفس الإرشادي', subtitleEn: 'University of Toronto', subtitleAr: 'جامعة تورنتو', color: '#C4878A' },
               { Icon: Shield, titleEn: 'Psychological First Aid', titleAr: 'الإسعافات النفسية', subtitleEn: 'Certified', subtitleAr: 'معتمدة', color: '#7A3B5E' },
               { Icon: Sparkles, titleEn: 'CBT Specialist', titleAr: 'متخصصة CBT', subtitleEn: 'Evidence-Based', subtitleAr: 'مبنية على الأدلة', color: '#C8A97D' },
             ].map((cred, i) => (
               <motion.div
                 key={i}
-                className="group bg-white rounded-xl p-5 border border-[#F3EFE8] hover:border-[#B5696B]/15 transition-all duration-300 text-center"
+                className="group bg-white rounded-xl p-5 border border-[#F3EFE8] hover:border-[#C4878A]/15 transition-all duration-300 text-center"
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={viewportOnce}
@@ -606,7 +605,7 @@ export default function AboutPage() {
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 relative overflow-hidden">
         {/* Deep sage gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#A55D60] to-[#8E4B4E]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#C4878A] via-[#B8888A] to-[#A06466]" />
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
@@ -651,7 +650,7 @@ export default function AboutPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>
@@ -681,10 +680,10 @@ export default function AboutPage() {
 type FormErrors = Record<string, string>;
 
 const STEPS = [
-  { key: 'info', iconEn: 'Contact', iconAr: 'معلوماتك', Icon: User, color: '#B5696B' },
+  { key: 'info', iconEn: 'Contact', iconAr: 'معلوماتك', Icon: User, color: '#C4878A' },
   { key: 'program', iconEn: 'Program', iconAr: 'البرنامج', Icon: FileText, color: '#7A3B5E' },
   { key: 'details', iconEn: 'Details', iconAr: 'التفاصيل', Icon: Calendar, color: '#C8A97D' },
-  { key: 'promo', iconEn: 'Promotion', iconAr: 'الترويج', Icon: Sparkles, color: '#B5696B' },
+  { key: 'promo', iconEn: 'Promotion', iconAr: 'الترويج', Icon: Sparkles, color: '#C4878A' },
 ] as const;
 
 /* Extracted form field components — defined outside to prevent remount on every keystroke */
@@ -703,8 +702,8 @@ function FormSelect({ name, label, options, value, error, isTouched, isRTL, onCh
           name={name} value={value} onChange={onChange} onBlur={onBlur} required={required}
           className={`w-full appearance-none bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all pr-10 focus:outline-none focus:ring-2 ${
             hasError ? 'border-red-400 focus:border-red-400 focus:ring-red-100 text-red-700'
-            : value ? 'border-[#B5696B]/30 text-[#2D2A33] focus:border-[#B5696B] focus:ring-[#B5696B]/10'
-            : 'border-[#F3EFE8] text-[#8E8E9F] focus:border-[#B5696B] focus:ring-[#B5696B]/10'
+            : value ? 'border-[#C4878A]/30 text-[#2D2A33] focus:border-[#C4878A] focus:ring-[#C4878A]/10'
+            : 'border-[#F3EFE8] text-[#8E8E9F] focus:border-[#C4878A] focus:ring-[#C4878A]/10'
           }`}
         >
           {options.map(o => (<option key={o.value} value={o.value}>{isRTL ? o.labelAr : o.label}</option>))}
@@ -732,13 +731,13 @@ function FormInput({ name, label, value, error, isTouched, type = 'text', onChan
           min={type === 'date' ? new Date().toISOString().split('T')[0] : undefined}
           className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm transition-all focus:outline-none focus:ring-2 ${
             hasError ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
-            : isValid ? 'border-[#B5696B]/30 focus:border-[#B5696B] focus:ring-[#B5696B]/10'
-            : 'border-[#F3EFE8] focus:border-[#B5696B] focus:ring-[#B5696B]/10'
+            : isValid ? 'border-[#C4878A]/30 focus:border-[#C4878A] focus:ring-[#C4878A]/10'
+            : 'border-[#F3EFE8] focus:border-[#C4878A] focus:ring-[#C4878A]/10'
           } text-[#2D2A33] ${isValid ? 'pr-10' : ''}`}
         />
         {isValid && (
           <div className="absolute right-3 top-1/2 -translate-y-1/2">
-            <Check className="w-4 h-4 text-[#B5696B]" />
+            <Check className="w-4 h-4 text-[#C4878A]" />
           </div>
         )}
       </div>
@@ -871,7 +870,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
   return (
     <section className="py-24 lg:py-32 bg-[#FAF7F2] relative overflow-hidden">
       <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full bg-[#7A3B5E]/[0.03] blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-[#B5696B]/[0.03] blur-[80px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-[#C4878A]/[0.03] blur-[80px] pointer-events-none" />
 
       <div className="container-main relative z-10">
         {/* Hero Banner */}
@@ -941,9 +940,9 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.1 }}
-                className="w-20 h-20 mx-auto mb-6 bg-[#B5696B]/10 rounded-full flex items-center justify-center"
+                className="w-20 h-20 mx-auto mb-6 bg-[#C4878A]/10 rounded-full flex items-center justify-center"
               >
-                <CheckCircle2 className="w-10 h-10 text-[#B5696B]" />
+                <CheckCircle2 className="w-10 h-10 text-[#C4878A]" />
               </motion.div>
               <h3 className="text-2xl font-bold text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
                 {isRTL ? 'تم إرسال طلبك بنجاح!' : 'Request Submitted Successfully!'}
@@ -969,11 +968,11 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                   <span className="text-xs font-medium text-[#8E8E9F]">
                     {isRTL ? `الخطوة ${step + 1} من 4` : `Step ${step + 1} of 4`}
                   </span>
-                  <span className="text-xs font-semibold text-[#B5696B]">{pct}%</span>
+                  <span className="text-xs font-semibold text-[#C4878A]">{pct}%</span>
                 </div>
                 <div className="h-1.5 bg-[#F3EFE8] rounded-full overflow-hidden">
                   <motion.div
-                    className="h-full bg-gradient-to-r from-[#B5696B] to-[#C8A97D] rounded-full"
+                    className="h-full bg-gradient-to-r from-[#C4878A] to-[#C8A97D] rounded-full"
                     initial={false}
                     animate={{ width: `${Math.max(((step + 1) / 4) * 100, 5)}%` }}
                     transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
@@ -991,12 +990,12 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                         onClick={() => { if (i < step) setStep(i); else if (i === step + 1 && validateStep(step)) setStep(i); }}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                           isActive ? 'bg-white shadow-sm text-[#2D2A33] border border-[#F3EFE8]'
-                          : isDone ? 'text-[#B5696B] cursor-pointer hover:bg-white/60'
+                          : isDone ? 'text-[#C4878A] cursor-pointer hover:bg-white/60'
                           : 'text-[#8E8E9F] cursor-default'
                         }`}
                       >
                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                          isDone ? 'bg-[#B5696B] text-white' : isActive ? 'bg-[#B5696B]/10 text-[#B5696B]' : 'bg-[#F3EFE8] text-[#8E8E9F]'
+                          isDone ? 'bg-[#C4878A] text-white' : isActive ? 'bg-[#C4878A]/10 text-[#C4878A]' : 'bg-[#F3EFE8] text-[#8E8E9F]'
                         }`}>
                           {isDone ? <Check className="w-3 h-3" /> : <Icon className="w-3 h-3" />}
                         </div>
@@ -1088,7 +1087,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                               className={`w-full bg-[#FAF7F2] border rounded-xl px-4 py-3.5 text-sm text-[#2D2A33] focus:outline-none focus:ring-2 transition-all resize-none ${
                                 touched.deliverables && errors.deliverables
                                   ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
-                                  : 'border-[#F3EFE8] focus:border-[#B5696B] focus:ring-[#B5696B]/10'
+                                  : 'border-[#F3EFE8] focus:border-[#C4878A] focus:ring-[#C4878A]/10'
                               }`}
                               placeholder={isRTL ? 'صف المخرجات المتوقعة...' : 'Describe the expected deliverables...'}
                             />
@@ -1114,8 +1113,8 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                                   key={opt}
                                   className={`flex items-center gap-2.5 px-6 py-3.5 rounded-xl border cursor-pointer transition-all duration-200 ${
                                     formData.willMention === opt
-                                      ? 'bg-[#B5696B] text-white border-[#B5696B] shadow-md shadow-[#B5696B]/15'
-                                      : 'bg-[#FAF7F2] text-[#4A4A5C] border-[#F3EFE8] hover:border-[#B5696B]/30 hover:bg-white'
+                                      ? 'bg-[#C4878A] text-white border-[#C4878A] shadow-md shadow-[#C4878A]/15'
+                                      : 'bg-[#FAF7F2] text-[#4A4A5C] border-[#F3EFE8] hover:border-[#C4878A]/30 hover:bg-white'
                                   }`}
                                 >
                                   <input type="radio" name="willMention" value={opt} checked={formData.willMention === opt} onChange={handleChange} className="sr-only" />

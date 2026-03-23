@@ -24,7 +24,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             placeholder-transparent
             ${error
               ? 'border-[#C45B5B] focus:border-[#C45B5B] focus:ring-2 focus:ring-[#C45B5B]/20'
-              : 'border-[#F3EFE8] focus:border-[#B5696B] focus:ring-2 focus:ring-[#B5696B]/10 hover:border-[#B5696B]/30'
+              : 'border-[#F3EFE8] focus:border-[#C4878A] focus:ring-2 focus:ring-[#C4878A]/10 hover:border-[#C4878A]/30'
             }
           `}
           placeholder={label}
@@ -37,7 +37,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           className={`
             absolute left-4 transition-all duration-200 pointer-events-none
             ${isActive
-              ? 'top-2 text-xs font-medium text-[#B5696B]'
+              ? 'top-2 text-xs font-medium text-[#C4878A]'
               : 'top-1/2 -translate-y-1/2 text-sm text-[#8E8E9F]'
             }
             [dir=rtl]_&:left-auto [dir=rtl]_&:right-4

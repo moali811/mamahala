@@ -125,8 +125,8 @@ export default function Header({ locale, messages }: HeaderProps) {
                     <button
                       className={`group inline-flex items-center gap-1 rounded-lg px-3.5 py-2 text-sm font-medium transition-all duration-200 ${
                         isDropdownActive(item.items)
-                          ? 'text-[#B5696B]'
-                          : 'text-[#2D2A33] hover:text-[#B5696B] hover:bg-[#B5696B]/5'
+                          ? 'text-[#7A3B5E]'
+                          : 'text-[#2D2A33] hover:text-[#7A3B5E] hover:bg-[#7A3B5E]/5'
                       }`}
                     >
                       {item.label}
@@ -139,7 +139,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                     </button>
 
                     {isDropdownActive(item.items) && (
-                      <span className="absolute bottom-0 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-[#B5696B]" />
+                      <span className="absolute bottom-0 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-[#7A3B5E]" />
                     )}
 
                     <AnimatePresence>
@@ -157,8 +157,8 @@ export default function Header({ locale, messages }: HeaderProps) {
                               href={subItem.href}
                               className={`block px-4 py-2.5 text-sm transition-colors duration-150 ${
                                 isActive(subItem.href)
-                                  ? 'bg-[#B5696B]/5 font-medium text-[#B5696B]'
-                                  : 'text-[#4A4A5C] hover:bg-[#B5696B]/5 hover:text-[#B5696B]'
+                                  ? 'bg-[#7A3B5E]/5 font-medium text-[#7A3B5E]'
+                                  : 'text-[#4A4A5C] hover:bg-[#7A3B5E]/5 hover:text-[#7A3B5E]'
                               }`}
                             >
                               {subItem.label}
@@ -174,14 +174,14 @@ export default function Header({ locale, messages }: HeaderProps) {
                       href={item.href!}
                       className={`rounded-lg px-3.5 py-2 text-sm font-medium transition-all duration-200 ${
                         isActive(item.href!)
-                          ? 'text-[#B5696B]'
-                          : 'text-[#2D2A33] hover:text-[#B5696B] hover:bg-[#B5696B]/5'
+                          ? 'text-[#7A3B5E]'
+                          : 'text-[#2D2A33] hover:text-[#7A3B5E] hover:bg-[#7A3B5E]/5'
                       }`}
                     >
                       {item.label}
                     </Link>
                     {isActive(item.href!) && (
-                      <span className="absolute bottom-0 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-[#B5696B]" />
+                      <span className="absolute bottom-0 left-1/2 h-[2px] w-5 -translate-x-1/2 rounded-full bg-[#7A3B5E]" />
                     )}
                   </div>
                 )
@@ -192,7 +192,7 @@ export default function Header({ locale, messages }: HeaderProps) {
             <div className="hidden items-center gap-2.5 lg:flex">
               <Link
                 href={langSwitchHref}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[#F3EFE8] px-3 py-2 text-sm font-medium text-[#4A4A5C] transition-colors hover:border-[#B5696B]/20 hover:text-[#B5696B]"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[#F3EFE8] px-3 py-2 text-sm font-medium text-[#4A4A5C] transition-colors hover:border-[#7A3B5E]/20 hover:text-[#7A3B5E]"
               >
                 <Globe size={15} className="opacity-60" />
                 {locale === 'en' ? 'AR' : 'EN'}
@@ -200,7 +200,7 @@ export default function Header({ locale, messages }: HeaderProps) {
 
               <Link
                 href={`/${locale}/book-a-session`}
-                className="inline-flex items-center gap-2 rounded-full bg-[#B5696B] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#9E5558] hover:shadow-[var(--shadow-glow-rose)] active:scale-[0.98]"
+                className="inline-flex items-center gap-2 rounded-full bg-[#7A3B5E] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#5E2D48] hover:shadow-[var(--shadow-glow-plum)] active:scale-[0.98]"
               >
                 <Calendar size={15} />
                 {nav.bookNow}
@@ -255,7 +255,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                         <button
                           onClick={() => setMobileDropdown(mobileDropdown === item.dropdown ? null : item.dropdown)}
                           className={`flex w-full items-center justify-between py-4 text-lg font-medium ${
-                            isDropdownActive(item.items) ? 'text-[#B5696B]' : 'text-[#2D2A33]'
+                            isDropdownActive(item.items) ? 'text-[#7A3B5E]' : 'text-[#2D2A33]'
                           }`}
                         >
                           {item.label}
@@ -283,8 +283,8 @@ export default function Header({ locale, messages }: HeaderProps) {
                                     onClick={() => setMobileOpen(false)}
                                     className={`block rounded-lg px-4 py-3 text-[15px] transition-colors ${
                                       isActive(subItem.href)
-                                        ? 'bg-[#B5696B]/5 font-medium text-[#B5696B]'
-                                        : 'text-[#4A4A5C] hover:bg-[#B5696B]/5'
+                                        ? 'bg-[#7A3B5E]/5 font-medium text-[#7A3B5E]'
+                                        : 'text-[#4A4A5C] hover:bg-[#7A3B5E]/5'
                                     }`}
                                   >
                                     {subItem.label}
@@ -300,7 +300,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                         href={item.href!}
                         onClick={() => setMobileOpen(false)}
                         className={`block border-b border-[#F3EFE8] py-4 text-lg font-medium ${
-                          isActive(item.href!) ? 'text-[#B5696B]' : 'text-[#2D2A33]'
+                          isActive(item.href!) ? 'text-[#7A3B5E]' : 'text-[#2D2A33]'
                         }`}
                       >
                         {item.label}
@@ -327,7 +327,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                 <Link
                   href={`/${locale}/book-a-session`}
                   onClick={() => setMobileOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#B5696B] py-3.5 text-sm font-semibold text-white"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[#7A3B5E] py-3.5 text-sm font-semibold text-white"
                 >
                   <Calendar size={18} />
                   {nav.bookNow}

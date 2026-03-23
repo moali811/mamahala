@@ -49,7 +49,7 @@ export default function BookingPolicyPage() {
       icon: Clock,
       label: t('24-Hour Notice', 'إشعار قبل 24 ساعة'),
       desc: t('Required for cancellations', 'مطلوب للإلغاء'),
-      color: '#B5696B',
+      color: '#C4878A',
     },
     {
       icon: AlertTriangle,
@@ -196,11 +196,11 @@ export default function BookingPolicyPage() {
       {/* ================================================================ */}
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden">
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
         {/* Decorative orbs */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
-          <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />
+          <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.08] blur-[80px]" />
+          <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.12] blur-[80px]" />
         </div>
         {/* Subtle dot pattern */}
         <div
@@ -226,7 +226,6 @@ export default function BookingPolicyPage() {
                 },
               ]}
               locale={locale}
-              light
             />
           </motion.div>
 
@@ -247,7 +246,7 @@ export default function BookingPolicyPage() {
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="mt-4 text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-[1.1]"
+              className="mt-4 text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1]"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {t('Booking & Cancellation Policy', 'سياسة الحجز والإلغاء')}
@@ -256,7 +255,7 @@ export default function BookingPolicyPage() {
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="mt-5 text-lg md:text-xl text-white/70 max-w-2xl leading-relaxed"
+              className="mt-5 text-lg md:text-xl text-[#6B6580] max-w-2xl leading-relaxed"
             >
               {t(
                 'Our commitment to quality service starts with clear, transparent policies. Everything you need to know before your session.',
@@ -265,7 +264,7 @@ export default function BookingPolicyPage() {
             </motion.p>
 
             <motion.div variants={fadeUp} custom={3} className="mt-6">
-              <span className="inline-flex items-center gap-2 text-xs font-medium text-white/50 bg-white/[0.08] backdrop-blur-sm px-4 py-2 rounded-full border border-white/10">
+              <span className="inline-flex items-center gap-2 text-xs font-medium text-[#6B6580] bg-[#C4878A]/[0.08] backdrop-blur-sm px-4 py-2 rounded-full border border-[#C4878A]/10">
                 <Clock className="w-3.5 h-3.5" />
                 {t('Last updated: 29.11.2022', 'آخر تحديث: 29.11.2022')}
               </span>
@@ -330,7 +329,7 @@ export default function BookingPolicyPage() {
         <div className="container-main max-w-5xl">
           <ScrollReveal>
             <div className="text-center max-w-2xl mx-auto mb-14">
-              <p className="text-sm font-semibold tracking-[0.15em] uppercase text-[#B5696B] mb-3">
+              <p className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C4878A] mb-3">
                 {t('Getting Started', 'البدء')}
               </p>
               <h2
@@ -357,11 +356,11 @@ export default function BookingPolicyPage() {
                     className="relative bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 h-full"
                     whileHover={{ y: -4, transition: { duration: 0.3 } }}
                   >
-                    <span className="text-[40px] font-bold text-[#B5696B]/[0.07] absolute top-4 right-5 leading-none select-none" style={{ fontFamily: 'var(--font-heading)' }}>
+                    <span className="text-[40px] font-bold text-[#C4878A]/[0.07] absolute top-4 right-5 leading-none select-none" style={{ fontFamily: 'var(--font-heading)' }}>
                       {step.step}
                     </span>
-                    <div className="w-12 h-12 rounded-xl bg-[#B5696B]/10 flex items-center justify-center mb-4">
-                      <Icon className="w-5 h-5 text-[#B5696B]" />
+                    <div className="w-12 h-12 rounded-xl bg-[#C4878A]/10 flex items-center justify-center mb-4">
+                      <Icon className="w-5 h-5 text-[#C4878A]" />
                     </div>
                     <h3
                       className="text-base font-bold text-[#2D2A33] mb-2"
@@ -423,8 +422,8 @@ export default function BookingPolicyPage() {
                     viewport={{ once: true, margin: '-40px' }}
                     transition={{ delay: idx * 0.1, duration: 0.5, ease }}
                   >
-                    <div className="w-6 h-6 rounded-full bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle2 className="w-4 h-4 text-[#B5696B]" />
+                    <div className="w-6 h-6 rounded-full bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle2 className="w-4 h-4 text-[#C4878A]" />
                     </div>
                     <p className="text-[15px] text-[#4A4A5C] leading-relaxed">
                       {point}
@@ -502,10 +501,10 @@ export default function BookingPolicyPage() {
           <ScrollReveal>
             <div className="bg-white rounded-3xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] overflow-hidden">
               {/* Header */}
-              <div className="bg-gradient-to-r from-[#B5696B]/5 via-transparent to-transparent border-b border-[#F3EFE8] px-6 md:px-10 py-6">
+              <div className="bg-gradient-to-r from-[#C4878A]/5 via-transparent to-transparent border-b border-[#F3EFE8] px-6 md:px-10 py-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0">
-                    <Video className="w-5 h-5 text-[#B5696B]" />
+                  <div className="w-10 h-10 rounded-xl bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0">
+                    <Video className="w-5 h-5 text-[#C4878A]" />
                   </div>
                   <div>
                     <h2
@@ -537,8 +536,8 @@ export default function BookingPolicyPage() {
                       viewport={{ once: true, margin: '-40px' }}
                       transition={{ delay: idx * 0.1, duration: 0.5, ease }}
                     >
-                      <div className="w-10 h-10 rounded-xl bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0">
-                        <Icon className="w-5 h-5 text-[#B5696B]" />
+                      <div className="w-10 h-10 rounded-xl bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0">
+                        <Icon className="w-5 h-5 text-[#C4878A]" />
                       </div>
                       <p className="text-[15px] text-[#4A4A5C] leading-relaxed pt-2">
                         {guideline.text}
@@ -560,7 +559,7 @@ export default function BookingPolicyPage() {
           <ScrollReveal>
             <div className="relative rounded-3xl overflow-hidden">
               {/* Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]" />
+              <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-0 right-[20%] w-[300px] h-[300px] rounded-full bg-white/[0.04] blur-[80px]" />
                 <div className="absolute bottom-0 left-[10%] w-[250px] h-[250px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />

@@ -42,7 +42,7 @@ export default function Accordion({ items, defaultOpen = null, className = '', a
             key={item.id}
             className={`
               bg-white rounded-2xl border transition-all duration-300 overflow-hidden
-              ${isOpen ? 'border-[#B5696B]/20 shadow-[var(--shadow-card)]' : 'border-[#F3EFE8] shadow-[var(--shadow-subtle)]'}
+              ${isOpen ? 'border-[#C4878A]/20 shadow-[var(--shadow-card)]' : 'border-[#F3EFE8] shadow-[var(--shadow-subtle)]'}
             `}
           >
             <button

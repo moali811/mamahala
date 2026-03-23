@@ -8,9 +8,9 @@
 /* --- Color Palette — Sunset/Warm Inspired --- */
 :root {
   /* Primary — Dusty Rose */
-  --color-rose: #B5696B;
+  --color-rose: #C4878A;
   --color-rose-light: #D08E90;
-  --color-rose-dark: #9E5558;
+  --color-rose-dark: #B07578;
   --color-rose-50: #FDF5F5;
   --color-rose-100: #F9E8E8;
   --color-rose-200: #F0CDCE;
@@ -185,7 +185,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Gradient backgrounds */
 @utility gradient-sage {
-  background: linear-gradient(135deg, var(--color-rose) 0%, var(--color-rose-dark) 100%);
+  background: linear-gradient(135deg, #E8C4C0 0%, #F0D5CA 50%, #FAF0EC 100%);
+}
+
+@utility gradient-cta-dark {
+  background: linear-gradient(135deg, #2D2A33 0%, #3D2A33 50%, #2D2A33 100%);
 }
 
 @utility gradient-plum {

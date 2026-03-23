@@ -59,16 +59,15 @@ export default function ServiceCategoryPage() {
   return (
     <div className="bg-[#FAF7F2]">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#9E5558]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#C4878A]/8 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
         </div>
         <div className="container-main relative py-24 md:py-28">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
             <Breadcrumb
               locale={locale}
-              light
               items={[
                 { label: messages.nav.home, href: `/${locale}` },
                 { label: messages.nav.services, href: `/${locale}/services` },
@@ -82,21 +81,21 @@ export default function ServiceCategoryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-2xl bg-[#C4878A]/10 flex items-center justify-center">
               <IconComponent className="w-7 h-7 text-[#C8A97D]" />
             </div>
             <div>
               <h1
-                className="text-3xl md:text-4xl lg:text-5xl font-bold text-white"
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2D2A33]"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {name}
               </h1>
-              <p className="text-white/70 mt-1">{subtitle}</p>
+              <p className="text-[#6B6580] mt-1">{subtitle}</p>
             </div>
           </motion.div>
           <motion.p
-            className="text-white/80 max-w-2xl mt-6 text-lg leading-relaxed"
+            className="text-[#4A4A5C] max-w-2xl mt-6 text-lg leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -128,10 +127,10 @@ export default function ServiceCategoryPage() {
 
               return (
                 <StaggerChild key={service.slug}>
-                  <div className="group bg-white rounded-2xl border border-[#F3EFE8] p-6 hover:border-[#B5696B]/20 hover:shadow-[var(--shadow-card)] transition-all duration-300">
+                  <div className="group bg-white rounded-2xl border border-[#F3EFE8] p-6 hover:border-[#C4878A]/20 hover:shadow-[var(--shadow-card)] transition-all duration-300">
                     <div className="flex items-start justify-between mb-3">
                       <h3
-                        className="text-lg font-bold text-[#2D2A33] group-hover:text-[#B5696B] transition-colors flex-1"
+                        className="text-lg font-bold text-[#2D2A33] group-hover:text-[#C4878A] transition-colors flex-1"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         <Link href={`/${locale}/services/${category}/${service.slug}`} className="hover:underline">
@@ -150,7 +149,7 @@ export default function ServiceCategoryPage() {
                     <div className="flex items-center gap-3">
                       <Link
                         href={`/${locale}/book-a-session`}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#B5696B] hover:text-[#9E5558] transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#C4878A] hover:text-[#B07578] transition-colors"
                       >
                         <Calendar className="w-4 h-4" />
                         {messages.services.bookOnline}
@@ -160,7 +159,7 @@ export default function ServiceCategoryPage() {
                         href={getWhatsAppLink(service.name)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8E8E9F] hover:text-[#B5696B] transition-colors"
+                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8E8E9F] hover:text-[#C4878A] transition-colors"
                       >
                         <MessageCircle className="w-4 h-4" />
                         {messages.services.chatWhatsApp}
@@ -204,7 +203,7 @@ export default function ServiceCategoryPage() {
                       &ldquo;{isRTL ? t.textAr : t.text}&rdquo;
                     </p>
                     <div>
-                      <p className="font-semibold text-[#B5696B]">{t.name}</p>
+                      <p className="font-semibold text-[#C4878A]">{t.name}</p>
                       <p className="text-xs text-[#8E8E9F]">{isRTL ? t.roleAr : t.role}</p>
                     </div>
                   </div>
@@ -230,7 +229,7 @@ export default function ServiceCategoryPage() {
                 <Link
                   key={c.key}
                   href={`/${locale}/services/${c.key}`}
-                  className="px-5 py-2.5 rounded-full bg-white text-sm font-medium text-[#4A4A5C] hover:text-[#B5696B] hover:shadow-[var(--shadow-subtle)] transition-all"
+                  className="px-5 py-2.5 rounded-full bg-white text-sm font-medium text-[#4A4A5C] hover:text-[#C4878A] hover:shadow-[var(--shadow-subtle)] transition-all"
                 >
                   {isRTL ? c.nameAr : c.name}
                 </Link>
@@ -240,7 +239,7 @@ export default function ServiceCategoryPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-24 gradient-sage relative overflow-hidden">
+      <section className="py-24 gradient-cta-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="container-main relative z-10">
           <ScrollReveal className="text-center max-w-2xl mx-auto">
@@ -258,7 +257,7 @@ export default function ServiceCategoryPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

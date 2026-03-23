@@ -20,7 +20,7 @@ export default function Breadcrumb({ items, locale, light = false }: BreadcrumbP
 
   const baseColor = light ? 'text-white/60' : 'text-[#8E8E9F]';
   const activeColor = light ? 'text-white' : 'text-[#2D2A33]';
-  const hoverColor = light ? 'hover:text-white' : 'hover:text-[#B5696B]';
+  const hoverColor = light ? 'hover:text-white' : 'hover:text-[#C4878A]';
 
   return (
     <nav

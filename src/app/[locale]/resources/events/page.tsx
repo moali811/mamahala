@@ -94,14 +94,13 @@ export default function EventsPage() {
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden gradient-sage">
         {/* Decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
+          <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] blur-[80px]" />
           <div className="absolute bottom-10 left-[10%] w-[300px] h-[300px] rounded-full bg-[#C8A97D]/[0.06] blur-[60px]" />
         </div>
 
         <div className="container-main relative z-10">
           <Breadcrumb
             locale={locale}
-            light
             items={[
               { label: messages.nav.home, href: `/${locale}` },
               { label: messages.nav.resources, href: `/${locale}/resources` },
@@ -116,12 +115,12 @@ export default function EventsPage() {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <h1
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL ? 'الفعاليات' : 'Events'}
             </h1>
-            <p className="mt-5 text-lg lg:text-xl text-white/75 max-w-2xl leading-relaxed">
+            <p className="mt-5 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed">
               {isRTL
                 ? 'ورش عمل وندوات وفعاليات مجتمعية لدعم رحلتك نحو النمو'
                 : 'Workshops, webinars, and community events to support your growth journey'}
@@ -160,13 +159,13 @@ export default function EventsPage() {
               return (
                 <StaggerChild key={event.id}>
                   <motion.div
-                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#B5696B]/20 transition-all duration-300"
+                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300"
                     whileHover={{ y: -4, boxShadow: '0 12px 48px rgba(0,0,0,0.08)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
                     <div className="flex flex-col md:flex-row">
                       {/* Date badge - prominent left column */}
-                      <div className="flex-shrink-0 w-full md:w-40 bg-gradient-to-br from-[#B5696B] to-[#9E5558] p-6 md:p-8 flex flex-row md:flex-col items-center justify-center gap-3 md:gap-1 text-white">
+                      <div className="flex-shrink-0 w-full md:w-40 bg-gradient-to-br from-[#C4878A] to-[#B07578] p-6 md:p-8 flex flex-row md:flex-col items-center justify-center gap-3 md:gap-1 text-white">
                         <span className="text-sm font-semibold uppercase tracking-wider opacity-80">
                           {month}
                         </span>
@@ -194,7 +193,7 @@ export default function EventsPage() {
 
                         {/* Title */}
                         <h3
-                          className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#B5696B] transition-colors duration-200"
+                          className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#C4878A] transition-colors duration-200"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {title}
@@ -285,7 +284,7 @@ export default function EventsPage() {
       {/* ================================================================ */}
       {/*  CTA                                                             */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-36 gradient-sage relative overflow-hidden">
+      <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
@@ -310,7 +309,7 @@ export default function EventsPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

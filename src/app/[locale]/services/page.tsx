@@ -47,14 +47,13 @@ export default function ServicesPage() {
       <section className="relative pt-32 pb-20 lg:pt-40 lg:pb-28 overflow-hidden gradient-sage">
         {/* Decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-white/[0.04] blur-[80px]" />
+          <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] blur-[80px]" />
           <div className="absolute bottom-10 left-[10%] w-[300px] h-[300px] rounded-full bg-[#C8A97D]/[0.06] blur-[60px]" />
         </div>
 
         <div className="container-main relative z-10">
           <Breadcrumb
             locale={locale}
-            light
             items={[
               { label: messages.nav.home, href: `/${locale}` },
               { label: messages.nav.services },
@@ -68,12 +67,12 @@ export default function ServicesPage() {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <h1
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {messages.services.pageTitle}
             </h1>
-            <p className="mt-5 text-lg lg:text-xl text-white/75 max-w-2xl leading-relaxed">
+            <p className="mt-5 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed">
               {messages.services.pageSubtitle}
             </p>
           </motion.div>
@@ -92,13 +91,13 @@ export default function ServicesPage() {
               transition={{ duration: 0.3 }}
             >
               {/* Gradient accent border top */}
-              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#B5696B] via-[#C8A97D] to-[#7A3B5E]" />
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#C4878A] via-[#C8A97D] to-[#7A3B5E]" />
 
               <div className="p-8 sm:p-10 lg:p-14">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
                   <div className={`flex items-start gap-5 ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
                     {/* Icon */}
-                    <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#B5696B] to-[#9E5558] flex items-center justify-center shadow-lg shadow-[#B5696B]/20">
+                    <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-[#C4878A] to-[#B07578] flex items-center justify-center shadow-lg shadow-[#C4878A]/20">
                       <Phone className="w-7 h-7 text-white" />
                     </div>
 
@@ -165,7 +164,7 @@ export default function ServicesPage() {
                 <StaggerChild key={cat.key}>
                   <Link href={`/${locale}/services/${cat.key}`} className="block h-full">
                     <motion.div
-                      className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#B5696B]/20 transition-all duration-300 h-full flex flex-col"
+                      className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300 h-full flex flex-col"
                       whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
                       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                     >
@@ -198,7 +197,7 @@ export default function ServicesPage() {
                       {/* Content */}
                       <div className="p-6 flex-1 flex flex-col">
                         <h3
-                          className="text-lg font-bold text-[#2D2A33] mb-2 group-hover:text-[#B5696B] transition-colors duration-200"
+                          className="text-lg font-bold text-[#2D2A33] mb-2 group-hover:text-[#C4878A] transition-colors duration-200"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {name}
@@ -208,7 +207,7 @@ export default function ServicesPage() {
                         </p>
 
                         {/* Learn More link */}
-                        <div className={`mt-5 flex items-center gap-1.5 text-[#B5696B] text-sm font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
+                        <div className={`mt-5 flex items-center gap-1.5 text-[#C4878A] text-sm font-semibold ${isRTL ? 'flex-row-reverse' : ''}`}>
                           <span>{messages.services.learnMore}</span>
                           <ArrowIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
                         </div>
@@ -258,7 +257,7 @@ export default function ServicesPage() {
       {/* ================================================================ */}
       {/*  SECTION 5: FINAL CTA                                           */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-36 gradient-sage relative overflow-hidden">
+      <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
         <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
         <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
 
@@ -280,7 +279,7 @@ export default function ServicesPage() {
                 variant="secondary"
                 size="lg"
                 icon={<Calendar className="w-5 h-5" />}
-                className="!bg-white !text-[#B5696B] hover:!bg-[#F3EFE8]"
+                className="!bg-white !text-[#C4878A] hover:!bg-[#F3EFE8]"
               >
                 {messages.cta.bookNow}
               </Button>

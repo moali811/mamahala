@@ -157,16 +157,15 @@ export default function PrivacyPolicyPage() {
   return (
     <div className="bg-[#FAF7F2]">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#B5696B] via-[#B5696B] to-[#1E4A3A]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#C4878A]/8 blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
         </div>
         <div className="container-main relative py-24 md:py-28">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Breadcrumb
               locale={locale}
-              light
               items={[
                 { label: messages.nav.home, href: `/${locale}` },
                 { label: 'Privacy Policy' },
@@ -180,7 +179,7 @@ export default function PrivacyPolicyPage() {
             variants={staggerContainer}
           >
             <motion.div variants={fadeUp} custom={0} className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-[#C4878A]/10 flex items-center justify-center">
                 <Shield className="w-6 h-6 text-[#C8A97D]" />
               </div>
               <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D]">
@@ -190,7 +189,7 @@ export default function PrivacyPolicyPage() {
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-white"
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D2A33]"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               Privacy Policy
@@ -198,20 +197,20 @@ export default function PrivacyPolicyPage() {
             <motion.p
               variants={fadeUp}
               custom={2}
-              className="text-lg text-white/70 mt-4 max-w-2xl"
+              className="text-lg text-[#6B6580] mt-4 max-w-2xl"
             >
               Your privacy matters to us. This policy explains how we collect, use, and protect your personal information in compliance with PIPEDA.
             </motion.p>
             <motion.div
               variants={fadeUp}
               custom={3}
-              className="flex items-center gap-4 mt-6 text-sm text-white/50"
+              className="flex items-center gap-4 mt-6 text-sm text-[#6B6580]"
             >
-              <span className="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
+              <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
                 <Clock className="w-3.5 h-3.5" />
                 Last updated: 29.11.2022
               </span>
-              <span className="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-full">
+              <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
                 <Shield className="w-3.5 h-3.5" />
                 PIPEDA Compliant
               </span>
@@ -240,12 +239,12 @@ export default function PrivacyPolicyPage() {
                   <a
                     key={section.id}
                     href={`#${section.id}`}
-                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#B5696B]/5 hover:text-[#B5696B] transition-all duration-200 group"
+                    className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm text-[#4A4A5C] hover:bg-[#C4878A]/5 hover:text-[#C4878A] transition-all duration-200 group"
                   >
                     <span className="text-xs font-mono text-[#C8A97D] w-5">
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#B5696B] transition-colors flex-shrink-0" />
+                    <Icon className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#C4878A] transition-colors flex-shrink-0" />
                     <span className="truncate">{section.title}</span>
                   </a>
                 );
@@ -267,7 +266,7 @@ export default function PrivacyPolicyPage() {
                   id={section.id}
                   className={`rounded-2xl border shadow-[var(--shadow-subtle)] scroll-mt-24 overflow-hidden ${
                     section.highlight
-                      ? 'border-[#B5696B]/20 ring-1 ring-[#B5696B]/10 bg-white'
+                      ? 'border-[#C4878A]/20 ring-1 ring-[#C4878A]/10 bg-white'
                       : isAlternate
                         ? 'border-[#F3EFE8] bg-[#FAF7F2]'
                         : 'border-[#F3EFE8] bg-white'
@@ -275,10 +274,10 @@ export default function PrivacyPolicyPage() {
                 >
                   {/* Section Header */}
                   <div className={`flex items-center gap-4 px-6 md:px-8 py-5 border-b ${
-                    section.highlight ? 'border-[#B5696B]/15 bg-[#B5696B]/5' : 'border-[#F3EFE8]'
+                    section.highlight ? 'border-[#C4878A]/15 bg-[#C4878A]/5' : 'border-[#F3EFE8]'
                   }`}>
                     <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                      section.highlight ? 'bg-[#B5696B]/15 text-[#B5696B]' : 'bg-[#B5696B]/10 text-[#B5696B]'
+                      section.highlight ? 'bg-[#C4878A]/15 text-[#C4878A]' : 'bg-[#C4878A]/10 text-[#C4878A]'
                     }`}>
                       <Icon className="w-5 h-5" />
                     </div>
@@ -294,7 +293,7 @@ export default function PrivacyPolicyPage() {
                       </h2>
                     </div>
                     {section.highlight && (
-                      <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-[#B5696B] bg-[#B5696B]/10 px-3 py-1 rounded-full flex-shrink-0">
+                      <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-[#C4878A] bg-[#C4878A]/10 px-3 py-1 rounded-full flex-shrink-0">
                         <Shield className="w-3.5 h-3.5" />
                         Key Section
                       </span>
@@ -319,8 +318,8 @@ export default function PrivacyPolicyPage() {
                             key={li}
                             className="flex items-start gap-3 bg-[#FAF7F2] rounded-xl px-4 py-3"
                           >
-                            <div className="w-5 h-5 rounded-full bg-[#B5696B]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-[#B5696B]" />
+                            <div className="w-5 h-5 rounded-full bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <div className="w-1.5 h-1.5 rounded-full bg-[#C4878A]" />
                             </div>
                             <span className="text-sm text-[#4A4A5C] leading-relaxed">{item}</span>
                           </div>
@@ -338,7 +337,7 @@ export default function PrivacyPolicyPage() {
                       <div className="mt-6">
                         <Link
                           href={`/${locale}/contact`}
-                          className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-[#B5696B] px-5 py-3 rounded-xl hover:bg-[#244F41] transition-colors shadow-sm"
+                          className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-[#C4878A] px-5 py-3 rounded-xl hover:bg-[#244F41] transition-colors shadow-sm"
                         >
                           <Phone className="w-4 h-4" />
                           Contact Us
@@ -356,7 +355,7 @@ export default function PrivacyPolicyPage() {
         <div className="text-center mt-12">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#B5696B] transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#C4878A] transition-colors"
           >
             <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
