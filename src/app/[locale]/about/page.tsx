@@ -14,6 +14,7 @@ import {
   Sparkles,
   Calendar,
   MessageCircle,
+  Quote,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer, ease, viewportOnce } from '@/lib/animations';
@@ -170,9 +171,22 @@ export default function AboutPage() {
               >
                 {messages.about.sectionTitle}
               </h2>
-              <div className="space-y-5">
-                <p className="text-[#4A4A5C] leading-relaxed text-lg">
-                  {messages.about.story}
+              <div className="space-y-6">
+                {/* Personal quote with accent border */}
+                <div className={`relative ${isRTL ? 'pr-6 border-r-4' : 'pl-6 border-l-4'} border-[#C8A97D]`}>
+                  <Quote className="absolute top-0 left-0 w-8 h-8 text-[#C8A97D]/20 -translate-x-2 -translate-y-2" />
+                  <p className="text-[#1E1E2A] leading-relaxed text-lg italic" style={{ fontFamily: 'var(--font-heading)' }}>
+                    {isRTL
+                      ? 'بصفتي أمًا مخلصة لمراهقَين، وزوجة وفية، ومستشارة عطوفة، كرّست حياتي لتعزيز رفاهية الأسر، مستلهمة من التحوّل العميق داخل عائلتي.'
+                      : 'As a dedicated mother of two teenagers, a devoted wife, and a compassionate counselor, I\'ve committed my life to enhancing the well-being of families, drawing from the profound transformation within my own family.'
+                    }
+                  </p>
+                </div>
+                <p className="text-[#4A4A5C] leading-relaxed">
+                  {isRTL
+                    ? 'كوني ابنة لوالدَين رائعَين وواحدة من 12 أخًا وأختًا، منحني نسيجًا غنيًا من التجارب، ورؤى عميقة في ديناميكيات الأسرة وتفاصيل العلاقات.'
+                    : 'Being the daughter of incredible parents and one of 12 siblings, has provided me with a rich tapestry of experiences, offering deep insights into family dynamics and relationship nuances.'
+                  }
                 </p>
                 <p className="text-[#4A4A5C] leading-relaxed">
                   {messages.about.approachText}
