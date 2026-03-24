@@ -165,37 +165,67 @@ export default function EventsPage() {
                     whileHover={{ y: -4, boxShadow: '0 12px 48px rgba(0,0,0,0.08)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <div className="flex flex-col md:flex-row">
-                      {/* Date badge - prominent left column */}
-                      <div className="flex-shrink-0 w-full md:w-40 bg-gradient-to-br from-[#C4878A] to-[#B07578] p-6 md:p-8 flex flex-row md:flex-col items-center justify-center gap-3 md:gap-1 text-white">
-                        <span className="text-sm font-semibold uppercase tracking-wider opacity-80">
-                          {month}
-                        </span>
-                        <span
-                          className="text-4xl md:text-5xl font-bold"
-                          style={{ fontFamily: 'var(--font-heading)' }}
-                        >
-                          {event.day}
-                        </span>
-                        <span className="text-sm opacity-60">{event.year}</span>
+                    {/* Event card with gradient image area */}
+                    <div className="flex flex-col lg:flex-row">
+                      {/* Left: Visual area */}
+                      <div className={`relative flex-shrink-0 w-full lg:w-[340px] overflow-hidden bg-gradient-to-br ${event.isFree ? 'from-[#E8D5E0]/60 via-[#F0DFE8]/40 to-[#F8EEF3]' : 'from-[#E8E0D0]/60 via-[#F0E8DC]/40 to-[#FAF5ED]'}`}>
+                        {/* Decorative pattern */}
+                        <div
+                          className="absolute inset-0 opacity-[0.03]"
+                          style={{
+                            backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 0.5px, transparent 0)',
+                            backgroundSize: '24px 24px',
+                            color: event.isFree ? '#7A3B5E' : '#C8A97D',
+                          }}
+                        />
+                        <div className="relative flex flex-col items-center justify-center p-8 lg:p-10 h-full min-h-[200px]">
+                          {/* Large date display */}
+                          <span
+                            className="text-7xl lg:text-8xl font-bold text-[#2D2A33]/10"
+                            style={{ fontFamily: 'var(--font-heading)' }}
+                          >
+                            {event.day}
+                          </span>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#C8A97D] mb-1">
+                              {month}
+                            </span>
+                            <span
+                              className="text-4xl lg:text-5xl font-bold text-[#2D2A33]"
+                              style={{ fontFamily: 'var(--font-heading)' }}
+                            >
+                              {event.day}
+                            </span>
+                            <span className="text-sm text-[#8E8E9F] mt-1">{event.year}</span>
+                          </div>
+                          {/* Category icon */}
+                          <div className="absolute bottom-4 right-4 w-10 h-10 rounded-xl bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm">
+                            <Video className="w-5 h-5 text-[#7A3B5E]" />
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Content */}
-                      <div className="flex-1 p-6 sm:p-8 flex flex-col">
-                        {/* Top row: badges */}
-                        <div className="flex items-center flex-wrap gap-3 mb-4">
+                      {/* Right: Content */}
+                      <div className="flex-1 p-6 sm:p-8 lg:p-10 flex flex-col">
+                        {/* Badges */}
+                        <div className="flex items-center flex-wrap gap-2 mb-4">
                           <Badge variant={event.isFree ? 'success' : 'sand'} size="md">
                             {price}
                           </Badge>
                           <Badge variant="neutral" size="sm">
-                            <Video className="w-3 h-3 mr-1" />
                             {isRTL ? 'عبر الإنترنت' : 'Online'}
                           </Badge>
+                          {!event.isFree && (
+                            <Badge variant="neutral" size="sm">
+                              <Users className="w-3 h-3 mr-1" />
+                              {isRTL ? 'للأزواج' : 'Per couple'}
+                            </Badge>
+                          )}
                         </div>
 
                         {/* Title */}
                         <h3
-                          className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#7A3B5E] transition-colors duration-200"
+                          className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#7A3B5E] transition-colors"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {title}
@@ -206,37 +236,34 @@ export default function EventsPage() {
                           {description}
                         </p>
 
-                        {/* Meta info row */}
-                        <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-[#8E8E9F] mb-6">
-                          <div className="flex items-center gap-2">
-                            <CalendarDays className="w-4 h-4" />
-                            <span>{date}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
-                            <span>{time}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
-                            <span>{location}</span>
-                          </div>
-                          {!event.isFree && (
-                            <div className="flex items-center gap-2">
-                              <Users className="w-4 h-4" />
-                              <span>{isRTL ? 'للأزواج' : 'Per couple'}</span>
-                            </div>
-                          )}
+                        {/* Meta row */}
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#8E8E9F] mb-6">
+                          <span className="inline-flex items-center gap-1.5"><CalendarDays className="w-4 h-4" /> {date}</span>
+                          <span className="inline-flex items-center gap-1.5"><Clock className="w-4 h-4" /> {time}</span>
+                          <span className="inline-flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {location}</span>
                         </div>
 
-                        {/* CTA */}
-                        <div>
+                        {/* CTAs — functional */}
+                        <div className="flex flex-wrap gap-3">
                           <Button
+                            as="a"
+                            href={`/${locale}/book-a-session`}
                             variant="primary"
                             size="md"
-                            icon={<ArrowIcon className="w-4 h-4" />}
-                            iconPosition="right"
+                            icon={<CalendarDays className="w-4 h-4" />}
                           >
                             {messages.common.register}
+                          </Button>
+                          <Button
+                            as="a"
+                            href="https://wa.me/16132222104"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            variant="outline"
+                            size="md"
+                            icon={<MessageCircle className="w-4 h-4" />}
+                          >
+                            {isRTL ? 'استفسار' : 'Inquire'}
                           </Button>
                         </div>
                       </div>
