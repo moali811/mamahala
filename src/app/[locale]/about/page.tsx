@@ -292,13 +292,17 @@ export default function AboutPage() {
         <div className="container-main">
           <ScrollReveal className="text-center mb-16">
             <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-3">
-              {isRTL ? 'ما نؤمن به' : 'What We Stand For'}
+              {isRTL ? 'بوصلتنا' : 'Our Compass'}
             </span>
             <h2
               className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] text-balance"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {messages.about.mission} {isRTL ? "و" : "&"} {messages.about.vision}
+              {isRTL ? (
+                <>{messages.about.mission} <span className="text-[#7A3B5E] italic">{isRTL ? 'و' : '&'}</span> {messages.about.vision}</>
+              ) : (
+                <>{messages.about.mission} <span className="text-[#7A3B5E] italic">&</span> {messages.about.vision}</>
+              )}
             </h2>
           </ScrollReveal>
 
