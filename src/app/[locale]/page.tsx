@@ -302,8 +302,8 @@ export default function HomePage() {
                           transition={{ duration: 0.3 }}
                         >
                           {/* Decorative elements */}
-                          <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-white/20 blur-3xl -translate-y-1/2 translate-x-1/4" />
-                          <div className={`absolute bottom-0 left-0 w-32 h-32 rounded-full ${card.decorCircle} blur-2xl translate-y-1/3 -translate-x-1/4`} />
+                          <div className={`absolute top-0 ${isRTL ? 'left-0 -translate-x-1/4' : 'right-0 translate-x-1/4'} w-40 h-40 rounded-full bg-white/20 blur-3xl -translate-y-1/2`} />
+                          <div className={`absolute bottom-0 ${isRTL ? 'right-0 translate-x-1/4' : 'left-0 -translate-x-1/4'} w-32 h-32 rounded-full ${card.decorCircle} blur-2xl translate-y-1/3`} />
                           <div
                             className="absolute inset-0 pointer-events-none"
                             style={{
@@ -315,7 +315,7 @@ export default function HomePage() {
                           />
 
                           {/* Large background icon */}
-                          <div className="absolute top-6 right-6 opacity-[0.06] group-hover:opacity-[0.1] transition-opacity duration-500">
+                          <div className={`absolute top-6 ${isRTL ? 'left-6' : 'right-6'} opacity-[0.06] group-hover:opacity-[0.1] transition-opacity duration-500`}>
                             <Icon className="w-32 h-32" style={{ color: card.accentColor }} />
                           </div>
 
