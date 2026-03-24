@@ -35,10 +35,17 @@ const badgeVariants: Record<string, 'sage' | 'plum' | 'sand' | 'neutral'> = {
 };
 
 const gradientMap: Record<string, string> = {
-  youth: 'from-[#C4878A] to-[#B07578]',
-  couples: 'from-[#7A3B5E] to-[#5E2D48]',
-  families: 'from-[#C8A97D] to-[#B08D5E]',
-  adults: 'from-[#4A4A5C] to-[#2D2A33]',
+  youth: 'from-[#F0D5CA] to-[#FAF0EC]',
+  couples: 'from-[#E8C4C0] to-[#FAF0EC]',
+  families: 'from-[#E8D5E0] to-[#F8EEF3]',
+  adults: 'from-[#E8E0D0] to-[#FAF5ED]',
+};
+
+const ctaThemes: Record<string, { bg: string; accent: string; accentLight: string; icon: string }> = {
+  youth: { bg: 'from-[#F0D5CA]/60 via-[#FAF0EC]/40 to-[#FAF7F2]', accent: '#C4878A', accentLight: '#C4878A15', icon: '#C4878A' },
+  families: { bg: 'from-[#E8D5E0]/60 via-[#F8EEF3]/40 to-[#FAF7F2]', accent: '#7A3B5E', accentLight: '#7A3B5E15', icon: '#7A3B5E' },
+  adults: { bg: 'from-[#E8E0D0]/60 via-[#FAF5ED]/40 to-[#FAF7F2]', accent: '#C8A97D', accentLight: '#C8A97D15', icon: '#C8A97D' },
+  couples: { bg: 'from-[#E8C4C0]/60 via-[#FAF0EC]/40 to-[#FAF7F2]', accent: '#C4878A', accentLight: '#C4878A15', icon: '#C4878A' },
 };
 
 export default function BlogPostPage() {
@@ -214,6 +221,81 @@ export default function BlogPostPage() {
           </div>
         </div>
       </section>
+
+      {/* ================================================================ */}
+      {/*  CATEGORY-THEMED NEWSLETTER CTA                                  */}
+      {/* ================================================================ */}
+      {(() => {
+        const theme = ctaThemes[post.category] || ctaThemes.adults;
+        return (
+          <section className="py-16 lg:py-20 bg-white">
+            <div className="container-main">
+              <ScrollReveal>
+                <div className={`relative bg-gradient-to-br ${theme.bg} rounded-3xl p-10 lg:p-14 overflow-hidden border border-[#F3EFE8]`}>
+                  {/* Decorative elements */}
+                  <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: `${theme.accent}08` }} />
+                  <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: `${theme.accent}06` }} />
+                  <div
+                    className="absolute inset-0 opacity-[0.02] pointer-events-none"
+                    style={{
+                      backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 0.5px, transparent 0)',
+                      backgroundSize: '32px 32px',
+                      color: theme.accent,
+                    }}
+                  />
+
+                  <div className="relative z-10 max-w-xl mx-auto text-center">
+                    {/* Icon */}
+                    <motion.div
+                      className="w-14 h-14 rounded-2xl mx-auto mb-6 flex items-center justify-center"
+                      style={{ backgroundColor: theme.accentLight }}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={viewportOnce}
+                      transition={{ delay: 0.1, duration: 0.5, ease }}
+                    >
+                      <Mail className="w-6 h-6" style={{ color: theme.accent }} />
+                    </motion.div>
+
+                    <h2
+                      className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-3"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      {isRTL ? 'أعجبك المقال؟' : 'Enjoyed This Article?'}
+                    </h2>
+                    <p className="text-[#4A4A5C] mb-8 leading-relaxed">
+                      {isRTL
+                        ? 'اشترك واحصل على نصائح ومقالات حصرية في بريدك مباشرة'
+                        : 'Subscribe to get exclusive tips and articles delivered straight to your inbox'
+                      }
+                    </p>
+
+                    <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
+                      <input
+                        type="email"
+                        placeholder={messages.newsletter.placeholder}
+                        className="flex-1 px-5 py-3.5 rounded-full border bg-white/80 backdrop-blur-sm text-sm text-[#2D2A33] placeholder:text-[#8E8E9F] outline-none focus:ring-2 transition-all"
+                        style={{ borderColor: `${theme.accent}20`, }}
+                      />
+                      <button
+                        type="submit"
+                        className="px-7 py-3.5 rounded-full text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
+                        style={{ backgroundColor: theme.accent }}
+                      >
+                        {messages.newsletter.subscribe}
+                      </button>
+                    </form>
+
+                    <p className="text-xs text-[#8E8E9F] mt-4">
+                      {messages.newsletter.privacy}
+                    </p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ================================================================ */}
       {/*  RELATED POSTS                                                   */}
