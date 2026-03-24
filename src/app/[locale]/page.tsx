@@ -26,6 +26,7 @@ import {
 import { getMessages, type Locale } from '@/lib/i18n';
 import { serviceCategories } from '@/data/services';
 import { testimonials } from '@/data/testimonials';
+import { getLatestPosts, getCategoryLabel } from '@/data/blog-posts';
 import { fadeUp, staggerContainer, ease, viewportOnce } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import TextReveal from '@/components/motion/TextReveal';
@@ -524,13 +525,9 @@ export default function HomePage() {
           </ScrollReveal>
 
           <StaggerReveal className="grid md:grid-cols-3 gap-6">
-            {[
-              { title: '5 Signs Your Child Needs Emotional Support', titleAr: '5 علامات أن طفلك يحتاج إلى دعم عاطفي', cat: 'Youth', time: '5 min' },
-              { title: 'Communication Techniques That Transform Relationships', titleAr: 'تقنيات التواصل التي تحول العلاقات', cat: 'Couples', time: '7 min' },
-              { title: 'Managing Parental Burnout: A Practical Guide', titleAr: 'إدارة إرهاق الوالدين: دليل عملي', cat: 'Families', time: '6 min' },
-            ].map((post, i) => (
-              <StaggerChild key={i}>
-                <Link href={`/${locale}/resources/blog`}>
+            {getLatestPosts(3).map((post) => (
+              <StaggerChild key={post.slug}>
+                <Link href={`/${locale}/resources/blog/${post.slug}`}>
                   <div className="group bg-[#FAF7F2] rounded-2xl overflow-hidden hover:shadow-[var(--shadow-card)] transition-all duration-300">
                     <div className="h-48 bg-gradient-to-br from-[#C4878A]/10 to-[#7A3B5E]/10 flex items-center justify-center">
                       <BookOpen className="w-10 h-10 text-[#7A3B5E]/30" />
@@ -538,12 +535,12 @@ export default function HomePage() {
                     <div className="p-6">
                       <div className="flex items-center gap-3 mb-3">
                         <span className="text-xs font-medium px-2.5 py-0.5 rounded-full bg-[#C4878A]/10 text-[#7A3B5E]">
-                          {post.cat}
+                          {getCategoryLabel(post.category, isRTL)}
                         </span>
-                        <span className="text-xs text-[#8E8E9F]">{post.time} {isRTL ? 'دقيقة' : 'read'}</span>
+                        <span className="text-xs text-[#8E8E9F]">{post.readTime} {isRTL ? 'دقيقة' : 'min read'}</span>
                       </div>
                       <h3 className="font-bold text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors leading-snug" style={{ fontFamily: 'var(--font-heading)' }}>
-                        {isRTL ? post.titleAr : post.title}
+                        {isRTL ? post.titleAr : post.titleEn}
                       </h3>
                     </div>
                   </div>

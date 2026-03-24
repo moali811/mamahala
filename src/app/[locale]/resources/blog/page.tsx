@@ -20,60 +20,25 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
-
-const blogPosts = [
-  {
-    slug: 'child-emotional-support',
-    title: '5 Signs Your Child Needs Emotional Support',
-    titleAr: '5 علامات أن طفلك يحتاج إلى دعم عاطفي',
-    cat: 'Youth',
-    catAr: 'الشباب',
-    time: 5,
-    gradient: 'from-[#C4878A] to-[#B07578]',
-  },
-  {
-    slug: 'communication-techniques',
-    title: 'Communication Techniques That Transform Relationships',
-    titleAr: 'تقنيات التواصل التي تحول العلاقات',
-    cat: 'Couples',
-    catAr: 'الأزواج',
-    time: 7,
-    gradient: 'from-[#7A3B5E] to-[#5E2D48]',
-  },
-  {
-    slug: 'parental-burnout',
-    title: 'Managing Parental Burnout: A Practical Guide',
-    titleAr: 'إدارة إرهاق الوالدين: دليل عملي',
-    cat: 'Families',
-    catAr: 'العائلات',
-    time: 6,
-    gradient: 'from-[#C8A97D] to-[#B08D5E]',
-  },
-  {
-    slug: 'understanding-anxiety',
-    title: 'Understanding Anxiety: When to Seek Professional Help',
-    titleAr: 'فهم القلق: متى تطلب المساعدة المهنية',
-    cat: 'Adults',
-    catAr: 'البالغين',
-    time: 8,
-    gradient: 'from-[#4A4A5C] to-[#2D2A33]',
-  },
-];
-
-const categories = ['All', 'Youth', 'Families', 'Adults', 'Couples'];
-const categoriesAr: Record<string, string> = {
-  All: 'الكل',
-  Youth: 'الشباب',
-  Families: 'العائلات',
-  Adults: 'البالغين',
-  Couples: 'الأزواج',
-};
+import {
+  getPublishedPosts,
+  getPostsByCategory,
+  getAllCategories,
+  getCategoryLabel,
+} from '@/data/blog-posts';
 
 const badgeVariants: Record<string, 'sage' | 'plum' | 'sand' | 'neutral'> = {
-  Youth: 'sage',
-  Couples: 'plum',
-  Families: 'sand',
-  Adults: 'neutral',
+  youth: 'sage',
+  couples: 'plum',
+  families: 'sand',
+  adults: 'neutral',
+};
+
+const gradientMap: Record<string, string> = {
+  youth: 'from-[#C4878A] to-[#B07578]',
+  couples: 'from-[#7A3B5E] to-[#5E2D48]',
+  families: 'from-[#C8A97D] to-[#B08D5E]',
+  adults: 'from-[#4A4A5C] to-[#2D2A33]',
 };
 
 export default function BlogListingPage() {
@@ -87,8 +52,10 @@ export default function BlogListingPage() {
 
   const filteredPosts =
     activeCategory === 'All'
-      ? blogPosts
-      : blogPosts.filter((post) => post.cat === activeCategory);
+      ? getPublishedPosts()
+      : getPostsByCategory(activeCategory);
+
+  const categories = getAllCategories();
 
   return (
     <div className="overflow-hidden">
@@ -168,23 +135,26 @@ export default function BlogListingPage() {
           {/* Category Filter Tabs */}
           <ScrollReveal className="mb-12">
             <div className="flex flex-wrap gap-3">
-              {categories.map((cat) => (
-                <motion.button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`
-                    px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300
-                    ${
-                      activeCategory === cat
-                        ? 'bg-[#7A3B5E] text-white shadow-[0_4px_12px_rgba(43,95,78,0.3)]'
-                        : 'bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] border border-[#F3EFE8]'
-                    }
-                  `}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  {isRTL ? categoriesAr[cat] : cat}
-                </motion.button>
-              ))}
+              {['All', ...categories].map((cat) => {
+                const label = cat === 'All' ? (isRTL ? 'الكل' : 'All') : getCategoryLabel(cat, isRTL);
+                return (
+                  <motion.button
+                    key={cat}
+                    onClick={() => setActiveCategory(cat)}
+                    className={`
+                      px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300
+                      ${
+                        activeCategory === cat
+                          ? 'bg-[#7A3B5E] text-white shadow-[0_4px_12px_rgba(43,95,78,0.3)]'
+                          : 'bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] border border-[#F3EFE8]'
+                      }
+                    `}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    {label}
+                  </motion.button>
+                );
+              })}
             </div>
           </ScrollReveal>
 
@@ -202,20 +172,20 @@ export default function BlogListingPage() {
                   >
                     {/* Image placeholder */}
                     <div
-                      className={`relative h-52 bg-gradient-to-br ${post.gradient} flex items-center justify-center`}
+                      className={`relative h-52 bg-gradient-to-br ${gradientMap[post.category] || 'from-[#C4878A] to-[#B07578]'} flex items-center justify-center`}
                     >
                       <BookOpen className="w-12 h-12 text-white/20" />
                       {/* Category badge */}
                       <div className="absolute top-4 left-4">
-                        <Badge variant={badgeVariants[post.cat] || 'sage'} size="sm">
-                          {isRTL ? post.catAr : post.cat}
+                        <Badge variant={badgeVariants[post.category] || 'sage'} size="sm">
+                          {getCategoryLabel(post.category, isRTL)}
                         </Badge>
                       </div>
                       {/* Reading time */}
                       <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-xs">
                         <Clock className="w-3 h-3" />
                         <span>
-                          {post.time} {messages.common.minutes}
+                          {post.readTime} {messages.common.minutes}
                         </span>
                       </div>
                     </div>
@@ -226,8 +196,11 @@ export default function BlogListingPage() {
                         className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#7A3B5E] transition-colors duration-300"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
-                        {isRTL ? post.titleAr : post.title}
+                        {isRTL ? post.titleAr : post.titleEn}
                       </h3>
+                      <p className="text-sm text-[#6B6580] leading-relaxed mb-4 line-clamp-2">
+                        {isRTL ? post.excerptAr : post.excerptEn}
+                      </p>
                       <div className="flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
                         <span>{messages.common.readMore}</span>
                         <Arrow className="w-4 h-4" />

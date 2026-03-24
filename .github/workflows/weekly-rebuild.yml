@@ -1,0 +1,16 @@
+name: Weekly Blog Publish
+
+# Triggers every Monday at 9 AM UTC (1 PM Dubai / 4 AM Ottawa)
+on:
+  schedule:
+    - cron: '0 9 * * 1'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel Deploy
+        run: |
+          curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK }}"
+          echo "Triggered Vercel rebuild to publish scheduled blog posts"

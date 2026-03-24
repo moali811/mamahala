@@ -21,104 +21,25 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import {
+  getPostBySlug,
+  getRelatedPosts,
+  getCategoryLabel,
+} from '@/data/blog-posts';
 
 const badgeVariants: Record<string, 'sage' | 'plum' | 'sand' | 'neutral'> = {
-  Youth: 'sage',
-  Couples: 'plum',
-  Families: 'sand',
-  Adults: 'neutral',
+  youth: 'sage',
+  couples: 'plum',
+  families: 'sand',
+  adults: 'neutral',
 };
 
-const blogPosts = [
-  {
-    slug: 'child-emotional-support',
-    title: '5 Signs Your Child Needs Emotional Support',
-    titleAr: '5 علامات أن طفلك يحتاج إلى دعم عاطفي',
-    cat: 'Youth',
-    catAr: 'الشباب',
-    time: 5,
-    date: '2025-03-15',
-    gradient: 'from-[#C4878A] to-[#B07578]',
-    content: [
-      'Children often express their emotional needs in subtle ways that can be easy to overlook. As parents and caregivers, recognizing these signs early can make a significant difference in your child\'s emotional development and overall well-being. Understanding your child\'s emotional landscape is the first step toward providing the support they need.',
-      'One of the most common signs is a sudden change in behavior. If your normally outgoing child becomes withdrawn, or if a calm child starts acting out more frequently, these shifts often signal underlying emotional distress. Pay attention to changes in sleep patterns, appetite, and social interactions as well — these physical manifestations often accompany emotional struggles.',
-      'Another important indicator is when children begin expressing persistent worry or fear about everyday situations. While some anxiety is a normal part of development, excessive worry that interferes with daily activities may require professional attention. Look for patterns such as reluctance to attend school, difficulty separating from parents, or frequent physical complaints like stomachaches.',
-      'If you notice any of these signs persisting for more than a few weeks, consider reaching out to a professional counselor who specializes in child development. Early intervention can provide your child with the emotional tools they need to navigate challenges and build resilience for the future.',
-    ],
-    contentAr: [
-      'غالبًا ما يعبر الأطفال عن احتياجاتهم العاطفية بطرق دقيقة يمكن التغاضي عنها بسهولة. كآباء ومقدمي رعاية، يمكن أن يحدث التعرف على هذه العلامات مبكرًا فرقًا كبيرًا في التطور العاطفي لطفلك ورفاهيته العامة. فهم المشهد العاطفي لطفلك هو الخطوة الأولى نحو تقديم الدعم الذي يحتاجه.',
-      'واحدة من أكثر العلامات شيوعًا هي التغيير المفاجئ في السلوك. إذا أصبح طفلك المنفتح عادةً منعزلاً، أو إذا بدأ طفل هادئ في التصرف بشكل متكرر أكثر، فإن هذه التحولات غالبًا ما تشير إلى ضائقة عاطفية كامنة. انتبه للتغيرات في أنماط النوم والشهية والتفاعلات الاجتماعية أيضًا.',
-      'مؤشر مهم آخر هو عندما يبدأ الأطفال في التعبير عن قلق أو خوف مستمر بشأن المواقف اليومية. بينما بعض القلق جزء طبيعي من التطور، قد يتطلب القلق المفرط الذي يتداخل مع الأنشطة اليومية اهتمامًا مهنيًا. ابحث عن أنماط مثل عدم الرغبة في الذهاب إلى المدرسة أو صعوبة الانفصال عن الوالدين.',
-      'إذا لاحظت أيًا من هذه العلامات تستمر لأكثر من بضعة أسابيع، فكر في التواصل مع مستشار مهني متخصص في تطور الأطفال. يمكن أن يوفر التدخل المبكر لطفلك الأدوات العاطفية التي يحتاجها للتغلب على التحديات وبناء المرونة للمستقبل.',
-    ],
-  },
-  {
-    slug: 'communication-techniques',
-    title: 'Communication Techniques That Transform Relationships',
-    titleAr: 'تقنيات التواصل التي تحول العلاقات',
-    cat: 'Couples',
-    catAr: 'الأزواج',
-    time: 7,
-    date: '2025-03-08',
-    gradient: 'from-[#7A3B5E] to-[#5E2D48]',
-    content: [
-      'Effective communication is the foundation of every healthy relationship. Whether you are navigating a disagreement, expressing your needs, or simply connecting with your partner, the way you communicate can either strengthen or weaken your bond. Learning to communicate with intention and empathy is a skill that can be developed with practice.',
-      'One of the most powerful communication techniques is active listening. This means giving your full attention to your partner without planning your response while they are speaking. Put down your phone, make eye contact, and reflect back what you have heard before sharing your own perspective. This simple shift can dramatically reduce misunderstandings and make your partner feel truly heard.',
-      'Another transformative technique is using "I" statements instead of "you" statements. Rather than saying "You never listen to me," try "I feel unheard when my concerns are dismissed." This approach reduces defensiveness and opens the door to productive dialogue. It focuses on your experience rather than assigning blame, creating a safer space for honest conversation.',
-      'Remember that communication is not just about words — it also includes tone, body language, and timing. Choosing the right moment for important conversations, speaking with a calm tone, and being mindful of your non-verbal cues can make all the difference in how your message is received and understood.',
-    ],
-    contentAr: [
-      'التواصل الفعال هو أساس كل علاقة صحية. سواء كنت تتعامل مع خلاف أو تعبر عن احتياجاتك أو ببساطة تتواصل مع شريكك، فإن طريقة تواصلك يمكن أن تقوي أو تضعف رابطتكما. تعلم التواصل بنية وتعاطف هو مهارة يمكن تطويرها بالممارسة.',
-      'واحدة من أقوى تقنيات التواصل هي الاستماع النشط. هذا يعني إعطاء انتباهك الكامل لشريكك دون التخطيط لردك أثناء حديثه. ضع هاتفك جانبًا وتواصل بالعين وعكس ما سمعته قبل مشاركة وجهة نظرك. هذا التحول البسيط يمكن أن يقلل بشكل كبير من سوء الفهم.',
-      'تقنية تحويلية أخرى هي استخدام عبارات "أنا" بدلاً من عبارات "أنت". بدلاً من قول "أنت لا تستمع لي أبدًا"، جرب "أشعر بأنني غير مسموع عندما يتم تجاهل مخاوفي." هذا النهج يقلل من الدفاعية ويفتح الباب للحوار المثمر.',
-      'تذكر أن التواصل لا يتعلق فقط بالكلمات — بل يشمل أيضًا النبرة ولغة الجسد والتوقيت. اختيار اللحظة المناسبة للمحادثات المهمة والتحدث بنبرة هادئة والانتباه لإشاراتك غير اللفظية يمكن أن يحدث فرقًا كبيرًا في كيفية استقبال رسالتك وفهمها.',
-    ],
-  },
-  {
-    slug: 'parental-burnout',
-    title: 'Managing Parental Burnout: A Practical Guide',
-    titleAr: 'إدارة إرهاق الوالدين: دليل عملي',
-    cat: 'Families',
-    catAr: 'العائلات',
-    time: 6,
-    date: '2025-02-28',
-    gradient: 'from-[#C8A97D] to-[#B08D5E]',
-    content: [
-      'Parental burnout is a state of physical, emotional, and mental exhaustion that occurs when the demands of parenting overwhelm your resources. Unlike regular tiredness, burnout leaves you feeling detached, ineffective, and emotionally drained. Recognizing burnout early and taking proactive steps to address it is crucial for both your well-being and your family\'s health.',
-      'The first step in managing burnout is acknowledging that it exists and that it is not a sign of failure. Many parents feel guilty about experiencing burnout, but it is a natural response to the relentless demands of modern parenting. Give yourself permission to feel overwhelmed and recognize that seeking help is a sign of strength, not weakness.',
-      'Practical strategies for managing burnout include establishing firm boundaries around your time and energy. This might mean saying no to non-essential commitments, delegating household tasks, or scheduling regular time for self-care. Even small moments of respite — a quiet cup of tea, a short walk, or ten minutes of deep breathing — can help recharge your emotional reserves.',
-      'If burnout persists despite your best efforts, consider seeking professional support. A counselor can help you identify the root causes of your burnout, develop personalized coping strategies, and create a sustainable approach to parenting that honors both your needs and your family\'s needs. Remember: taking care of yourself is not selfish — it is essential.',
-    ],
-    contentAr: [
-      'إرهاق الوالدين هو حالة من الإرهاق الجسدي والعاطفي والعقلي التي تحدث عندما تتجاوز متطلبات الأبوة مواردك. على عكس التعب العادي، يتركك الإرهاق تشعر بالانفصال وعدم الفعالية والاستنزاف العاطفي. إدراك الإرهاق مبكرًا واتخاذ خطوات استباقية لمعالجته أمر بالغ الأهمية.',
-      'الخطوة الأولى في إدارة الإرهاق هي الاعتراف بوجوده وأنه ليس علامة على الفشل. يشعر العديد من الآباء بالذنب بشأن تجربة الإرهاق، لكنها استجابة طبيعية للمتطلبات المتواصلة للأبوة الحديثة. امنح نفسك الإذن للشعور بالإرهاق واعلم أن طلب المساعدة علامة قوة.',
-      'تشمل الاستراتيجيات العملية لإدارة الإرهاق وضع حدود ثابتة حول وقتك وطاقتك. قد يعني هذا رفض الالتزامات غير الضرورية أو تفويض المهام المنزلية أو جدولة وقت منتظم للعناية بالنفس. حتى لحظات الراحة الصغيرة يمكن أن تساعد في إعادة شحن احتياطياتك العاطفية.',
-      'إذا استمر الإرهاق رغم جهودك، ففكر في طلب الدعم المهني. يمكن للمستشار مساعدتك في تحديد الأسباب الجذرية لإرهاقك وتطوير استراتيجيات تكيف مخصصة وإنشاء نهج مستدام للأبوة يحترم احتياجاتك واحتياجات عائلتك.',
-    ],
-  },
-  {
-    slug: 'understanding-anxiety',
-    title: 'Understanding Anxiety: When to Seek Professional Help',
-    titleAr: 'فهم القلق: متى تطلب المساعدة المهنية',
-    cat: 'Adults',
-    catAr: 'البالغين',
-    time: 8,
-    date: '2025-02-20',
-    gradient: 'from-[#4A4A5C] to-[#2D2A33]',
-    content: [
-      'Anxiety is one of the most common mental health experiences, affecting millions of people worldwide. While some level of anxiety is a normal and even helpful response to stress, chronic or excessive anxiety can significantly impact your quality of life, relationships, and ability to function. Understanding the difference between normal worry and an anxiety disorder is the first step toward getting the help you need.',
-      'Normal anxiety tends to be proportional to the situation, temporary, and manageable. An anxiety disorder, on the other hand, involves persistent, excessive worry that is difficult to control and interferes with daily activities. Physical symptoms like rapid heartbeat, difficulty breathing, muscle tension, and sleep disturbances are also common indicators that anxiety has moved beyond the normal range.',
-      'Several evidence-based approaches have proven highly effective for managing anxiety. Cognitive Behavioral Therapy (CBT) helps identify and challenge the thought patterns that fuel anxiety. Mindfulness and relaxation techniques can reduce the physical symptoms of anxiety. And in some cases, a combination of therapy and lifestyle changes — such as regular exercise, adequate sleep, and reduced caffeine intake — can make a profound difference.',
-      'You should consider seeking professional help if your anxiety persists for more than a few weeks, interferes with your work or relationships, causes you to avoid situations you would normally engage in, or if you experience panic attacks. A qualified mental health professional can provide an accurate assessment and develop a treatment plan tailored to your specific needs and circumstances.',
-    ],
-    contentAr: [
-      'القلق هو واحد من أكثر تجارب الصحة النفسية شيوعًا، ويؤثر على ملايين الأشخاص حول العالم. بينما مستوى معين من القلق هو استجابة طبيعية ومفيدة للتوتر، يمكن أن يؤثر القلق المزمن أو المفرط بشكل كبير على جودة حياتك وعلاقاتك وقدرتك على العمل.',
-      'يميل القلق الطبيعي إلى أن يكون متناسبًا مع الموقف ومؤقتًا وقابلاً للإدارة. اضطراب القلق، من ناحية أخرى، يتضمن قلقًا مستمرًا ومفرطًا يصعب السيطرة عليه ويتداخل مع الأنشطة اليومية. الأعراض الجسدية مثل تسارع ضربات القلب وصعوبة التنفس وتوتر العضلات واضطرابات النوم هي أيضًا مؤشرات شائعة.',
-      'أثبتت عدة مناهج قائمة على الأدلة فعالية عالية في إدارة القلق. يساعد العلاج السلوكي المعرفي في تحديد وتحدي أنماط التفكير التي تغذي القلق. يمكن لتقنيات اليقظة والاسترخاء تقليل الأعراض الجسدية للقلق. وفي بعض الحالات، يمكن لمزيج من العلاج وتغييرات نمط الحياة أن يحدث فرقًا عميقًا.',
-      'يجب أن تفكر في طلب المساعدة المهنية إذا استمر قلقك لأكثر من بضعة أسابيع أو تداخل مع عملك أو علاقاتك أو جعلك تتجنب المواقف التي عادة ما تشارك فيها أو إذا كنت تعاني من نوبات هلع. يمكن لأخصائي صحة نفسية مؤهل تقديم تقييم دقيق وتطوير خطة علاج مصممة خصيصًا لاحتياجاتك.',
-    ],
-  },
-];
+const gradientMap: Record<string, string> = {
+  youth: 'from-[#C4878A] to-[#B07578]',
+  couples: 'from-[#7A3B5E] to-[#5E2D48]',
+  families: 'from-[#C8A97D] to-[#B08D5E]',
+  adults: 'from-[#4A4A5C] to-[#2D2A33]',
+};
 
 export default function BlogPostPage() {
   const params = useParams();
@@ -129,8 +50,8 @@ export default function BlogPostPage() {
 
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
-  const post = blogPosts.find((p) => p.slug === slug);
-  const relatedPosts = blogPosts.filter((p) => p.slug !== slug).slice(0, 2);
+  const post = getPostBySlug(slug);
+  const relatedPosts = getRelatedPosts(slug, 2);
 
   if (!post) {
     return (
@@ -150,9 +71,10 @@ export default function BlogPostPage() {
     );
   }
 
-  const title = isRTL ? post.titleAr : post.title;
-  const content = isRTL ? post.contentAr : post.content;
-  const category = isRTL ? post.catAr : post.cat;
+  const title = isRTL ? post.titleAr : post.titleEn;
+  const content = isRTL ? post.contentAr : post.contentEn;
+  const category = getCategoryLabel(post.category, isRTL);
+  const authorName = isRTL ? 'د. هالة علي' : 'Dr. Hala Ali';
 
   return (
     <div className="overflow-hidden">
@@ -201,7 +123,7 @@ export default function BlogPostPage() {
             {/* Category Badge */}
             <motion.div variants={fadeUp} custom={0} className="mb-4">
               <Badge
-                variant={badgeVariants[post.cat] || 'sage'}
+                variant={badgeVariants[post.category] || 'sage'}
                 size="md"
                 className="!bg-[#C4878A]/15 !text-[#7A3B5E]"
               >
@@ -226,16 +148,16 @@ export default function BlogPostPage() {
             >
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4" />
-                <span>Dr. Hala Ali</span>
+                <span>{authorName}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" />
-                <span>{post.date}</span>
+                <span>{post.publishDate}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span>
-                  {post.time} {messages.common.minutes} {isRTL ? 'قراءة' : 'read'}
+                  {post.readTime} {messages.common.minutes} {isRTL ? 'قراءة' : 'read'}
                 </span>
               </div>
             </motion.div>
@@ -274,7 +196,7 @@ export default function BlogPostPage() {
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-[#2D2A33]">
-                          Dr. Hala Ali
+                          {authorName}
                         </p>
                         <p className="text-xs text-[#8E8E9F]">
                           {isRTL ? 'مستشارة عائلية معتمدة' : 'Certified Family Counselor'}
@@ -352,70 +274,72 @@ export default function BlogPostPage() {
       {/* ================================================================ */}
       {/*  RELATED POSTS                                                   */}
       {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
-        <div className="container-main">
-          <ScrollReveal className="text-center mb-12">
-            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-3">
-              {isRTL ? 'اقرأ أيضًا' : 'Keep Reading'}
-            </span>
-            <h2
-              className="text-3xl sm:text-4xl font-bold text-[#2D2A33]"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {isRTL ? 'مقالات ذات صلة' : 'Related Articles'}
-            </h2>
-          </ScrollReveal>
+      {relatedPosts.length > 0 && (
+        <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+          <div className="container-main">
+            <ScrollReveal className="text-center mb-12">
+              <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-3">
+                {isRTL ? 'اقرأ أيضًا' : 'Keep Reading'}
+              </span>
+              <h2
+                className="text-3xl sm:text-4xl font-bold text-[#2D2A33]"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {isRTL ? 'مقالات ذات صلة' : 'Related Articles'}
+              </h2>
+            </ScrollReveal>
 
-          <StaggerReveal className="grid sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {relatedPosts.map((related) => (
-              <StaggerChild key={related.slug}>
-                <Link href={`/${locale}/resources/blog/${related.slug}`}>
-                  <motion.article
-                    className="group bg-white rounded-3xl overflow-hidden border border-transparent hover:border-[#C4878A]/10 transition-all duration-300"
-                    whileHover={{
-                      y: -4,
-                      boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
-                    }}
-                  >
-                    <div
-                      className={`relative h-44 bg-gradient-to-br ${related.gradient} flex items-center justify-center`}
+            <StaggerReveal className="grid sm:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              {relatedPosts.map((related) => (
+                <StaggerChild key={related.slug}>
+                  <Link href={`/${locale}/resources/blog/${related.slug}`}>
+                    <motion.article
+                      className="group bg-white rounded-3xl overflow-hidden border border-transparent hover:border-[#C4878A]/10 transition-all duration-300"
+                      whileHover={{
+                        y: -4,
+                        boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
+                      }}
                     >
-                      <BookOpen className="w-10 h-10 text-white/20" />
-                      <div className="absolute top-4 left-4">
-                        <Badge
-                          variant={badgeVariants[related.cat] || 'sage'}
-                          size="sm"
-                        >
-                          {isRTL ? related.catAr : related.cat}
-                        </Badge>
-                      </div>
-                      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-xs">
-                        <Clock className="w-3 h-3" />
-                        <span>
-                          {related.time} {messages.common.minutes}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="p-6">
-                      <h3
-                        className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#7A3B5E] transition-colors duration-300"
-                        style={{ fontFamily: 'var(--font-heading)' }}
+                      <div
+                        className={`relative h-44 bg-gradient-to-br ${gradientMap[related.category] || 'from-[#C4878A] to-[#B07578]'} flex items-center justify-center`}
                       >
-                        {isRTL ? related.titleAr : related.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
-                        <span>{messages.common.readMore}</span>
-                        <Arrow className="w-4 h-4" />
+                        <BookOpen className="w-10 h-10 text-white/20" />
+                        <div className="absolute top-4 left-4">
+                          <Badge
+                            variant={badgeVariants[related.category] || 'sage'}
+                            size="sm"
+                          >
+                            {getCategoryLabel(related.category, isRTL)}
+                          </Badge>
+                        </div>
+                        <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-xs">
+                          <Clock className="w-3 h-3" />
+                          <span>
+                            {related.readTime} {messages.common.minutes}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </motion.article>
-                </Link>
-              </StaggerChild>
-            ))}
-          </StaggerReveal>
-        </div>
-      </section>
+
+                      <div className="p-6">
+                        <h3
+                          className="text-lg font-bold text-[#2D2A33] leading-snug mb-3 group-hover:text-[#7A3B5E] transition-colors duration-300"
+                          style={{ fontFamily: 'var(--font-heading)' }}
+                        >
+                          {isRTL ? related.titleAr : related.titleEn}
+                        </h3>
+                        <div className="flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                          <span>{messages.common.readMore}</span>
+                          <Arrow className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </motion.article>
+                  </Link>
+                </StaggerChild>
+              ))}
+            </StaggerReveal>
+          </div>
+        </section>
+      )}
     </div>
   );
 }
