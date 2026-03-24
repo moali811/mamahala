@@ -216,62 +216,6 @@ export default function BlogPostPage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  NEWSLETTER CTA                                                  */}
-      {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-white">
-        <div className="container-main">
-          <ScrollReveal>
-            <div className="relative bg-gradient-to-br from-[#7A3B5E] to-[#5E2D48] rounded-3xl p-10 lg:p-16 overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/[0.06]" />
-              <div className="absolute -bottom-10 -left-10 w-60 h-60 rounded-full bg-[#C8A97D]/[0.08]" />
-
-              <div className="relative z-10 max-w-2xl mx-auto text-center">
-                <motion.div
-                  className="inline-flex items-center gap-2 bg-white/10 rounded-full px-5 py-2 mb-6"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={viewportOnce}
-                  transition={{ delay: 0.1, duration: 0.5, ease }}
-                >
-                  <Mail className="w-4 h-4 text-[#C8A97D]" />
-                  <span className="text-sm text-[#4A4A5C] font-medium">
-                    {messages.newsletter.title}
-                  </span>
-                </motion.div>
-
-                <h2
-                  className="text-3xl sm:text-4xl font-bold text-white mb-4"
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
-                  {messages.newsletter.title}
-                </h2>
-                <p className="text-white/75 leading-relaxed mb-8">
-                  {messages.newsletter.leadMagnet}
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                  <input
-                    type="email"
-                    placeholder={messages.newsletter.placeholder}
-                    className="flex-1 px-5 py-3 rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:border-white/40 transition-colors"
-                  />
-                  <Button
-                    variant="secondary"
-                    className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
-                  >
-                    {messages.newsletter.subscribe}
-                  </Button>
-                </div>
-                <p className="text-xs text-white/50 mt-4">
-                  {messages.newsletter.privacy}
-                </p>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ================================================================ */}
       {/*  RELATED POSTS                                                   */}
       {/* ================================================================ */}
       {relatedPosts.length > 0 && (
