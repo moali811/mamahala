@@ -589,28 +589,78 @@ export default function HomePage() {
             </p>
           </ScrollReveal>
 
-          {/* Elfsight Instagram Feed Widget */}
-          <div className="max-w-5xl mx-auto">
-            <div
-              className="elfsight-app-instagram-feed rounded-2xl overflow-hidden"
-              data-elfsight-app-lazy
-              id="instagram-feed-widget"
-            >
-              {/* Placeholder while widget loads */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <motion.div
-                    key={i}
-                    className="aspect-square rounded-xl bg-gradient-to-br from-[#F0D5CA]/40 to-[#E8C4C0]/20 flex items-center justify-center"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={viewportOnce}
-                    transition={{ delay: i * 0.05, duration: 0.4 }}
-                  >
-                    <Instagram className="w-6 h-6 text-[#C4878A]/30" />
-                  </motion.div>
+          {/* Instagram Feed — 3 latest posts */}
+          <div className="max-w-4xl mx-auto">
+            {/* Elfsight widget container — will be replaced when widget loads */}
+            <div className="elfsight-app-lazy" data-elfsight-app-lazy id="ig-feed">
+              {/* Beautiful placeholder shown until Elfsight loads */}
+              <StaggerReveal className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                {[
+                  {
+                    gradientFrom: '#F0D5CA', gradientTo: '#E8C4C0',
+                    labelEn: 'Tips & Advice', labelAr: 'نصائح وإرشادات',
+                    descEn: 'Practical guidance for families', descAr: 'إرشادات عملية للأسر',
+                  },
+                  {
+                    gradientFrom: '#E8D5E0', gradientTo: '#D4B8C8',
+                    labelEn: 'Inspiration', labelAr: 'إلهام',
+                    descEn: 'Stories of growth & healing', descAr: 'قصص نمو وشفاء',
+                  },
+                  {
+                    gradientFrom: '#E8E0D0', gradientTo: '#D4C8B0',
+                    labelEn: 'Behind the Scenes', labelAr: 'خلف الكواليس',
+                    descEn: 'Life at Mama Hala Consulting', descAr: 'الحياة في ماما هالة',
+                  },
+                ].map((tile, i) => (
+                  <StaggerChild key={i}>
+                    <a
+                      href="https://www.instagram.com/mamahala.ca/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group block"
+                    >
+                      <motion.div
+                        className="relative aspect-square rounded-2xl overflow-hidden cursor-pointer"
+                        whileHover={{ y: -4, scale: 1.02 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {/* Gradient background */}
+                        <div
+                          className="absolute inset-0 transition-all duration-500"
+                          style={{
+                            background: `linear-gradient(135deg, ${tile.gradientFrom}60 0%, ${tile.gradientTo}40 100%)`,
+                          }}
+                        />
+                        {/* Subtle pattern */}
+                        <div
+                          className="absolute inset-0 opacity-[0.03]"
+                          style={{
+                            backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 0.5px, transparent 0)',
+                            backgroundSize: '24px 24px',
+                            color: '#7A3B5E',
+                          }}
+                        />
+                        {/* Content overlay */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                          <motion.div
+                            className="w-14 h-14 rounded-2xl bg-white/80 backdrop-blur-sm flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300"
+                          >
+                            <Instagram className="w-7 h-7 text-[#7A3B5E]" />
+                          </motion.div>
+                          <p className="text-sm font-bold text-[#2D2A33] mb-1">
+                            {isRTL ? tile.labelAr : tile.labelEn}
+                          </p>
+                          <p className="text-xs text-[#6B6580]">
+                            {isRTL ? tile.descAr : tile.descEn}
+                          </p>
+                        </div>
+                        {/* Hover overlay */}
+                        <div className="absolute inset-0 bg-[#7A3B5E]/0 group-hover:bg-[#7A3B5E]/5 transition-colors duration-300" />
+                      </motion.div>
+                    </a>
+                  </StaggerChild>
                 ))}
-              </div>
+              </StaggerReveal>
             </div>
           </div>
 

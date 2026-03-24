@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
 import { DM_Serif_Display, Plus_Jakarta_Sans, Tajawal } from 'next/font/google';
 import '@/app/globals.css';
 
@@ -52,6 +53,11 @@ export default function RootLayout({
     <html lang="en" className={`${dmSerif.variable} ${plusJakarta.variable} ${tajawal.variable}`}>
       <body className="min-h-screen flex flex-col">
         {children}
+        {/* Elfsight Platform — powers Instagram feed widget */}
+        <Script
+          src="https://static.elfsight.com/platform/platform.js"
+          strategy="lazyOnload"
+        />
       </body>
     </html>
   );
