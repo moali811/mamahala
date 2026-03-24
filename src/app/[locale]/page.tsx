@@ -560,36 +560,7 @@ export default function HomePage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  SECTION 8: NEWSLETTER                                           */}
-      {/* ================================================================ */}
-      <section className="relative py-20 bg-[#F3EFE8]">
-        <WaveDivider position="top" fillColor="#FFFFFF" variant="gentle" />
-        <WaveDivider position="bottom" fillColor="#FAF7F2" variant="soft" flip />
-        <div className="container-main">
-          <ScrollReveal className="max-w-2xl mx-auto text-center">
-            <h2
-              className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-3"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {messages.newsletter.title}
-            </h2>
-            <p className="text-[#4A4A5C] mb-2">{messages.newsletter.subtitle}</p>
-            <p className="text-sm text-[#C8A97D] font-medium mb-8">{messages.newsletter.leadMagnet}</p>
-            <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                placeholder={messages.newsletter.placeholder}
-                className="flex-1 rounded-full border border-[#C4878A]/20 px-5 py-3 text-sm bg-white outline-none focus:border-[#7A3B5E] focus:ring-2 focus:ring-[#7A3B5E]/10 transition-all"
-              />
-              <Button type="submit">{messages.newsletter.subscribe}</Button>
-            </form>
-            <p className="text-xs text-[#8E8E9F] mt-4">{messages.newsletter.privacy}</p>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ================================================================ */}
-      {/*  SECTION 9: FINAL CTA                                            */}
+      {/*  SECTION 8: FINAL CTA                                            */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
         <WaveDivider position="top" fillColor="#FAF7F2" variant="organic" />
