@@ -55,7 +55,7 @@ export default function RootLayout({
         {children}
         {/* Elfsight Platform — powers Instagram feed widget */}
         <Script
-          src="https://static.elfsight.com/platform/platform.js"
+          src="https://elfsightcdn.com/platform.js"
           strategy="lazyOnload"
         />
       </body>
