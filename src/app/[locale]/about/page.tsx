@@ -126,7 +126,7 @@ export default function AboutPage() {
               custom={0}
               className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-4"
             >
-              {messages.about.sectionLabel}
+              {isRTL ? 'من نحن' : 'Who We Are'}
             </motion.span>
             <motion.h1
               variants={fadeUp}
@@ -134,14 +134,21 @@ export default function AboutPage() {
               className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {messages.about.pageTitle}
+              {isRTL ? (
+                <>الرعاية تبدأ <span className="text-[#7A3B5E] italic">بالفهم</span></>
+              ) : (
+                <>Care Begins with <span className="text-[#7A3B5E] italic">Understanding</span></>
+              )}
             </motion.h1>
             <motion.p
               variants={fadeUp}
               custom={2}
               className="mt-6 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed"
             >
-              {messages.about.description}
+              {isRTL
+                ? 'نحن مؤسسة استشارية تركز على الأسرة، مكرسة لتقوية الحياة والعلاقات من خلال الدعم القائم على الأدلة والرحمة.'
+                : 'A family-focused consulting organization dedicated to strengthening lives and relationships through evidence-based, compassionate support.'
+              }
             </motion.p>
           </motion.div>
         </div>
@@ -171,10 +178,10 @@ export default function AboutPage() {
                   style={{ y: portraitY, scale: portraitScale }}
                 >
                   <Image
-                    src="/images/hala-confident.png"
+                    src="/images/hala-hero.png"
                     alt="Dr. Hala Ali - Mama Hala"
                     width={600}
-                    height={700}
+                    height={800}
                     className="w-full h-auto object-cover"
                   />
                 </motion.div>
@@ -207,7 +214,11 @@ export default function AboutPage() {
                 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] leading-tight mb-8"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
-                {messages.about.sectionTitle}
+                {isRTL ? (
+                  <>رحلة <span className="text-[#7A3B5E] italic">ماما هالة</span></>
+                ) : (
+                  <>The Journey of <span className="text-[#7A3B5E] italic">Mama Hala</span></>
+                )}
               </h2>
               <div className="space-y-6">
                 {/* Personal quote with accent border */}
@@ -252,6 +263,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <div className="h-16 bg-gradient-to-b from-[#FAF7F2] to-white" />
 
       {/* ================================================================ */}
       {/*  SECTION 3: MISSION & VISION                                    */}
@@ -380,6 +393,8 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <div className="h-16 bg-gradient-to-b from-white to-[#F3EFE8]" />
+
       {/* ================================================================ */}
       {/*  SECTION 3.5: WHAT WE STAND FOR — CORE VALUES                   */}
       {/* ================================================================ */}
@@ -493,6 +508,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <div className="h-16 bg-gradient-to-b from-white to-[#FAF7F2]" />
 
       {/* ================================================================ */}
       {/*  SECTION 5: FOUNDATION OF EXPERTISE                              */}
@@ -884,13 +901,13 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
                   </span>
                 </div>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
-                  <span className="text-white">{isRTL ? 'تعرّف على ' : 'Meet '}</span>
-                  <span className="text-[#C8A97D]">{isRTL ? 'ماما هالة' : 'Mama Hala'}</span>
+                  <span className="text-white">{isRTL ? 'لن' : "Let's "}</span>
+                  <span className="text-[#C8A97D]">{isRTL ? 'تعاون معاً' : 'Collaborate'}</span>
                 </h2>
                 <p className="text-white/75 leading-relaxed max-w-lg text-[15px]">
                   {isRTL
-                    ? 'دعونا نتواصل ونستكشف كيف يمكننا التعاون ومشاركة الأفكار أو بدء محادثة هادفة.'
-                    : "Let's connect and explore how we can collaborate, share insights, or start a meaningful conversation."
+                    ? 'هل ترغب في استضافة د. هالة علي؟ قدم طلبك للمقابلات أو التغطية الإعلامية أو النقاشات المهنية.'
+                    : 'Interested in featuring Dr. Hala Ali? Submit your request for interviews, media features, or professional discussions.'
                   }
                 </p>
                 <div className="flex flex-wrap gap-3 mt-6">
