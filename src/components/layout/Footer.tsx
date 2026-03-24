@@ -148,7 +148,6 @@ export default function Footer({ locale, messages }: FooterProps) {
                 { label: nav.couples, href: `/${locale}/services/couples` },
                 { label: nav.youth, href: `/${locale}/services/youth` },
                 { label: nav.adults, href: `/${locale}/services/adults` },
-                { label: nav.experiential, href: `/${locale}/services/experiential` },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
