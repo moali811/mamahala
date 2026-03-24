@@ -526,27 +526,34 @@ export default function AboutPage() {
       {/* ================================================================ */}
       {/*  SECTION 4: IMPACT STATS BAR                                     */}
       {/* ================================================================ */}
-      <section className="py-6 bg-white border-y border-[#F3EFE8]">
+      <section className="py-10 bg-white border-y border-[#F3EFE8]">
         <div className="container-main">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-3">
             {[
-              { value: '500+', labelEn: 'Families Supported', labelAr: 'عائلة تم دعمها', icon: Heart },
-              { value: '10+', labelEn: 'Years Experience', labelAr: 'سنوات خبرة', icon: Clock },
-              { value: '2', labelEn: 'Countries (UAE & CA)', labelAr: 'دولتان (الإمارات وكندا)', icon: Globe },
-              { value: '6', labelEn: 'Professional Certifications', labelAr: 'شهادات مهنية', icon: GraduationCap },
+              { value: '500+', labelEn: 'Families Transformed', labelAr: 'عائلة تم تحويل حياتها', descEn: 'Across the globe', descAr: 'حول العالم', icon: Heart, color: '#C4878A' },
+              { value: '23+', labelEn: 'Specialized Services', labelAr: 'خدمة متخصصة', descEn: 'Youth to couples', descAr: 'من الشباب إلى الأزواج', icon: Sparkles, color: '#C8A97D' },
+              { value: '10+', labelEn: 'Years of Impact', labelAr: 'سنوات من التأثير', descEn: 'Evidence-based care', descAr: 'رعاية قائمة على الأدلة', icon: Clock, color: '#7A3B5E' },
+              { value: '6', labelEn: 'Elite Certifications', labelAr: 'شهادات عالمية', descEn: 'Yale · UofT · CBT', descAr: 'ييل · تورنتو · CBT', icon: GraduationCap, color: '#C8A97D' },
+              { value: '24/7', labelEn: 'Global Availability', labelAr: 'متاح عالمياً', descEn: 'Online & in-person', descAr: 'عبر الإنترنت وحضورياً', icon: Globe, color: '#C4878A' },
             ].map((stat, i) => (
               <motion.div
                 key={i}
-                className="flex items-center gap-4 justify-center py-6"
+                className="group flex items-start gap-3 lg:flex-col lg:items-center lg:text-center py-4"
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={viewportOnce}
-                transition={{ delay: i * 0.1, duration: 0.5, ease }}
+                transition={{ delay: i * 0.08, duration: 0.5, ease }}
               >
-                <stat.icon className="w-5 h-5 text-[#C8A97D] flex-shrink-0" />
+                <div
+                  className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                  style={{ backgroundColor: `${stat.color}12` }}
+                >
+                  <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
+                </div>
                 <div>
                   <p className="text-2xl lg:text-3xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>{stat.value}</p>
-                  <p className="text-xs text-[#8E8E9F] font-medium">{isRTL ? stat.labelAr : stat.labelEn}</p>
+                  <p className="text-sm font-medium text-[#4A4A5C]">{isRTL ? stat.labelAr : stat.labelEn}</p>
+                  <p className="text-xs text-[#8E8E9F] mt-0.5 hidden lg:block">{isRTL ? stat.descAr : stat.descEn}</p>
                 </div>
               </motion.div>
             ))}
