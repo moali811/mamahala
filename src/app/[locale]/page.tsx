@@ -168,15 +168,8 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6, ease }}
           >
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 lg:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4">
               {[
-                {
-                  icon: Heart,
-                  value: '500+',
-                  label: isRTL ? 'عائلة تم دعمها' : 'Families Supported',
-                  desc: isRTL ? 'عبر دبي وكندا' : 'Across Dubai & Canada',
-                  color: '#C4878A',
-                },
                 {
                   icon: GraduationCap,
                   value: isRTL ? 'ييل' : 'Yale',
@@ -185,18 +178,18 @@ export default function HomePage() {
                   color: '#7A3B5E',
                 },
                 {
-                  icon: Users,
-                  value: '23+',
-                  label: isRTL ? 'خدمة متخصصة' : 'Specialized Services',
-                  desc: isRTL ? 'للأفراد والأسر والأزواج' : 'Individuals, families & couples',
-                  color: '#C8A97D',
+                  icon: Heart,
+                  value: isRTL ? 'معتمدة' : 'Certified',
+                  label: isRTL ? 'مستشارة أسرية' : 'Family Counselor',
+                  desc: isRTL ? 'علاج سلوكي معرفي وتدريب تنفيذي' : 'CBT specialist & executive coach',
+                  color: '#C4878A',
                 },
                 {
                   icon: MessageCircle,
-                  value: isRTL ? 'ثنائي' : 'Bilingual',
+                  value: isRTL ? 'ثنائي اللغة' : 'Bilingual',
                   label: isRTL ? 'عربي / English' : 'English / عربي',
-                  desc: isRTL ? 'دعم بلغتين' : 'Culturally sensitive support',
-                  color: '#C4878A',
+                  desc: isRTL ? 'دعم حساس ثقافياً' : 'Culturally sensitive support',
+                  color: '#C8A97D',
                 },
                 {
                   icon: Calendar,
