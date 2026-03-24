@@ -157,109 +157,128 @@ export default function AboutPage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  SECTION 2: PERSONAL STORY                                      */}
+      {/*  SECTION 2: PERSONAL STORY — Immersive Split                    */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-32 bg-[#FAF7F2]">
-        <div className="container-main">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Image */}
+      <section className="relative bg-[#FAF7F2] overflow-hidden">
+        <div className="container-main py-24 lg:py-0">
+          <div className="grid lg:grid-cols-5 items-stretch min-h-[85vh]">
+
+            {/* Image Column — sticky with parallax */}
             <div
               ref={portraitRef}
-              className={isRTL ? 'lg:order-2' : 'lg:order-1'}
+              className={`lg:col-span-2 relative ${isRTL ? 'lg:order-2' : 'lg:order-1'}`}
             >
-              <div className="relative">
-                {/* Decorative frame — floats gently */}
-                <motion.div
-                  className={`absolute -top-4 ${isRTL ? '-right-4' : '-left-4'} w-full h-full rounded-2xl border-2 border-[#C8A97D]/20`}
-                  style={{ y: useTransform(portraitProgress, [0, 1], [-10, 10]) }}
-                />
-                <motion.div
-                  className="relative rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.1)]"
-                  style={{ y: portraitY, scale: portraitScale }}
-                >
-                  <Image
-                    src="/images/hala-hero.png"
-                    alt="Dr. Hala Ali - Mama Hala"
-                    width={600}
-                    height={800}
-                    className="w-full h-auto object-cover"
-                  />
-                </motion.div>
-                {/* Floating accent */}
-                <motion.div
-                  className={`absolute -bottom-6 ${isRTL ? '-left-6' : '-right-6'} bg-[#7A3B5E] text-white rounded-2xl p-5 shadow-lg`}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={viewportOnce}
-                  transition={{ delay: 0.4, duration: 0.5, ease }}
-                >
-                  <Heart className="w-6 h-6 mb-1" />
-                  <p className="text-sm font-semibold">500+</p>
-                  <p className="text-xs text-white/70">
-                    {isRTL ? 'عائلة' : 'Families'}
-                  </p>
-                </motion.div>
+              <div className="lg:sticky lg:top-24 py-8 lg:py-24">
+                <div className="relative mx-auto max-w-md lg:max-w-none">
+                  {/* Soft glow behind image */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#C8A97D]/10 via-[#F0D5CA]/20 to-transparent rounded-3xl blur-2xl scale-110" />
+
+                  <motion.div
+                    className="relative rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(122,59,94,0.12)]"
+                    style={{ y: portraitY, scale: portraitScale }}
+                  >
+                    <Image
+                      src="/images/hala-hero.png"
+                      alt="Dr. Hala Ali - Mama Hala"
+                      width={600}
+                      height={800}
+                      className="w-full h-auto object-cover"
+                    />
+                    {/* Subtle gradient overlay at bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#2D2A33]/30 to-transparent" />
+                  </motion.div>
+
+                  {/* Floating stats chips */}
+                  <motion.div
+                    className={`absolute -bottom-4 ${isRTL ? 'left-4' : 'right-4'} flex gap-2`}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={viewportOnce}
+                    transition={{ delay: 0.5, duration: 0.6, ease }}
+                  >
+                    <div className="bg-white/95 backdrop-blur-sm rounded-xl px-4 py-3 shadow-lg border border-[#F3EFE8]">
+                      <p className="text-lg font-bold text-[#7A3B5E]">500+</p>
+                      <p className="text-[10px] text-[#8E8E9F] uppercase tracking-wider">{isRTL ? 'عائلة' : 'Families'}</p>
+                    </div>
+                    <div className="bg-white/95 backdrop-blur-sm rounded-xl px-4 py-3 shadow-lg border border-[#F3EFE8]">
+                      <p className="text-lg font-bold text-[#C8A97D]">10+</p>
+                      <p className="text-[10px] text-[#8E8E9F] uppercase tracking-wider">{isRTL ? 'سنوات' : 'Years'}</p>
+                    </div>
+                  </motion.div>
+                </div>
               </div>
             </div>
 
-            {/* Text content */}
-            <ScrollReveal
-              direction={isRTL ? 'left' : 'right'}
-              className={isRTL ? 'lg:order-1' : 'lg:order-2'}
-            >
-              <span className="text-xs font-semibold tracking-[0.25em] uppercase text-[#8E8E9F] block mb-3">
-                {isRTL ? 'قصتنا' : 'Our Story'}
-              </span>
-              <h2
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] leading-tight mb-8"
-                style={{ fontFamily: 'var(--font-heading)' }}
-              >
-                {isRTL ? (
-                  <>رحلة <span className="text-[#7A3B5E] italic">ماما هالة</span></>
-                ) : (
-                  <>The Journey of <span className="text-[#7A3B5E] italic">Mama Hala</span></>
-                )}
-              </h2>
-              <div className="space-y-6">
-                {/* Personal quote with accent border */}
-                <div className={`relative ${isRTL ? 'pr-6 border-r-4' : 'pl-6 border-l-4'} border-[#C8A97D]`}>
-                  <Quote className="absolute top-0 left-0 w-8 h-8 text-[#C8A97D]/20 -translate-x-2 -translate-y-2" />
-                  <p className="text-[#2D2A33] leading-relaxed text-lg italic" style={{ fontFamily: 'var(--font-heading)' }}>
+            {/* Content Column */}
+            <div className={`lg:col-span-3 ${isRTL ? 'lg:order-1 lg:pl-0 lg:pr-16' : 'lg:order-2 lg:pr-0 lg:pl-16'} flex items-center`}>
+              <ScrollReveal direction={isRTL ? 'left' : 'right'} className="py-8 lg:py-28">
+                {/* Label + Title */}
+                <div className="mb-10">
+                  <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-[#C8A97D] mb-4">
+                    <span className="w-8 h-[2px] bg-[#C8A97D] rounded-full" />
+                    {isRTL ? 'قصتنا' : 'Our Story'}
+                  </span>
+                  <h2
+                    className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] leading-tight"
+                    style={{ fontFamily: 'var(--font-heading)' }}
+                  >
+                    {isRTL ? (
+                      <>رحلة <span className="text-[#7A3B5E] italic">ماما هالة</span></>
+                    ) : (
+                      <>The Journey of <span className="text-[#7A3B5E] italic">Mama Hala</span></>
+                    )}
+                  </h2>
+                </div>
+
+                {/* Quote — large and impactful */}
+                <motion.div
+                  className={`relative mb-8 ${isRTL ? 'pr-8 border-r-[3px]' : 'pl-8 border-l-[3px]'} border-gradient-to-b border-[#C8A97D]`}
+                  initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={viewportOnce}
+                  transition={{ duration: 0.6, ease }}
+                >
+                  <p className="text-xl lg:text-2xl text-[#2D2A33] leading-relaxed font-medium italic" style={{ fontFamily: 'var(--font-heading)' }}>
                     {isRTL
                       ? 'بصفتي أمًا مخلصة لمراهقَين، وزوجة وفية، ومستشارة عطوفة، كرّست حياتي لتعزيز رفاهية الأسر، مستلهمة من التحوّل العميق داخل عائلتي.'
                       : 'As a dedicated mother of two teenagers, a devoted wife, and a compassionate counselor, I\'ve committed my life to enhancing the well-being of families, drawing from the profound transformation within my own family.'
                     }
                   </p>
-                </div>
-                <p className="text-[#4A4A5C] leading-relaxed">
-                  {isRTL
-                    ? 'كوني ابنة لوالدَين رائعَين وواحدة من 12 أخًا وأختًا، منحني نسيجًا غنيًا من التجارب، ورؤى عميقة في ديناميكيات الأسرة وتفاصيل العلاقات.'
-                    : 'Being the daughter of incredible parents and one of 12 siblings, has provided me with a rich tapestry of experiences, offering deep insights into family dynamics and relationship nuances.'
-                  }
-                </p>
-                <p className="text-[#4A4A5C] leading-relaxed">
-                  {messages.about.approachText}
-                </p>
-              </div>
+                </motion.div>
 
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button
-                  as="a"
-                  href={`/${locale}/book-a-session`}
-                  icon={<Calendar className="w-5 h-5" />}
-                >
-                  {messages.cta.bookNow}
-                </Button>
-                <Button
-                  as="a"
-                  href={`/${locale}/contact`}
-                  variant="outline"
-                  icon={<MessageCircle className="w-5 h-5" />}
-                >
-                  {messages.cta.whatsapp}
-                </Button>
-              </div>
-            </ScrollReveal>
+                {/* Body text with highlight */}
+                <div className="space-y-5 mb-10">
+                  <p className="text-[#4A4A5C] leading-relaxed text-[17px]">
+                    {isRTL
+                      ? 'كوني ابنة لوالدَين رائعَين وواحدة من 12 أخًا وأختًا، منحني نسيجًا غنيًا من التجارب، ورؤى عميقة في ديناميكيات الأسرة وتفاصيل العلاقات.'
+                      : 'Being the daughter of incredible parents and one of 12 siblings, has provided me with a rich tapestry of experiences, offering deep insights into family dynamics and relationship nuances.'
+                    }
+                  </p>
+                  <p className="text-[#4A4A5C] leading-relaxed text-[17px]">
+                    {messages.about.approachText}
+                  </p>
+                </div>
+
+                {/* CTAs */}
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    as="a"
+                    href={`/${locale}/book-a-session`}
+                    icon={<Calendar className="w-5 h-5" />}
+                  >
+                    {messages.cta.bookNow}
+                  </Button>
+                  <Button
+                    as="a"
+                    href={`/${locale}/contact`}
+                    variant="outline"
+                    icon={<MessageCircle className="w-5 h-5" />}
+                  >
+                    {messages.cta.whatsapp}
+                  </Button>
+                </div>
+              </ScrollReveal>
+            </div>
           </div>
         </div>
       </section>
