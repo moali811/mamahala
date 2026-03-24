@@ -52,8 +52,8 @@ export const generalFaqs: FAQ[] = [
   {
     question: 'How much do sessions cost?',
     questionAr: 'كم تكلفة الجلسات؟',
-    answer: 'Prices start from CAD $100 for initial consultations and CAD $120-180 for regular sessions. Pricing varies by region, age, case complexity, and service type.',
-    answerAr: 'تبدأ الأسعار من 100 دولار كندي للاستشارات الأولية و 120-180 دولار كندي للجلسات العادية. تختلف الأسعار حسب المنطقة والعمر وتعقيد الحالة ونوع الخدمة.',
+    answer: 'Initial consultations start from CAD $100, and regular sessions range from CAD $120–180. Each journey is unique — pricing is personalized based on your location, needs, and the type of support you choose.',
+    answerAr: 'تبدأ الاستشارات الأولية من 100 دولار كندي، وتتراوح الجلسات العادية بين 120–180 دولار كندي. كل رحلة فريدة — يتم تحديد التكلفة بشكل شخصي بناءً على موقعك واحتياجاتك ونوع الدعم الذي تختاره.',
   },
   {
     question: 'Where are you located?',
