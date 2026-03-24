@@ -393,29 +393,49 @@ export default function HomePage() {
             </h2>
           </ScrollReveal>
 
-          <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
             {messages.method.steps.map(
-              (step: { title: string; description: string }, index: number) => (
-                <StaggerChild key={index}>
-                  <div className="bg-white rounded-2xl p-8 text-center shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-card)] transition-shadow duration-300 h-full">
-                    <span
-                      className="block text-4xl font-bold mb-4 text-[#C8A97D]"
-                      style={{ fontFamily: 'var(--font-heading)' }}
+              (step: { title: string; description: string }, index: number) => {
+                const icons = ['♡', '◎', '◆', '✦'];
+                return (
+                  <StaggerChild key={index}>
+                    <motion.div
+                      className="group relative overflow-hidden rounded-2xl h-full cursor-default"
+                      whileHover={{ y: -6, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
                     >
-                      {String(index + 1).padStart(2, '0')}
-                    </span>
-                    <h3
-                      className="text-xl font-bold text-[#2D2A33] mb-3"
-                      style={{ fontFamily: 'var(--font-heading)' }}
-                    >
-                      {step.title}
-                    </h3>
-                    <p className="text-sm text-[#8E8E9F] leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
-                </StaggerChild>
-              )
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#C8A97D]/30 via-[#D4B88C]/20 to-[#C8A97D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="relative bg-white border border-[#C8A97D]/15 group-hover:border-[#C8A97D]/40 rounded-2xl p-8 lg:p-9 h-full transition-all duration-500 group-hover:shadow-[0_20px_60px_rgba(200,169,125,0.15)]">
+
+                        <span
+                          className="absolute top-4 right-5 text-[72px] font-bold leading-none text-[#C8A97D]/[0.06] group-hover:text-[#C8A97D]/[0.12] transition-all duration-700 select-none"
+                          style={{ fontFamily: 'var(--font-heading)' }}
+                        >
+                          {String(index + 1).padStart(2, '0')}
+                        </span>
+
+                        <motion.div
+                          className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#C8A97D]/15 to-[#D4B88C]/10 flex items-center justify-center mb-5 group-hover:from-[#C8A97D]/25 group-hover:to-[#D4B88C]/20 transition-all duration-500"
+                          whileHover={{ rotate: 5, scale: 1.05 }}
+                        >
+                          <span className="text-xl text-[#C8A97D]">{icons[index]}</span>
+                        </motion.div>
+
+                        <div className="w-8 h-[2px] bg-gradient-to-r from-[#C8A97D] to-[#C8A97D]/30 mb-4 group-hover:w-12 transition-all duration-500 rounded-full" />
+
+                        <h3
+                          className="text-xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#7A3B5E] transition-colors duration-500"
+                          style={{ fontFamily: 'var(--font-heading)' }}
+                        >
+                          {step.title}
+                        </h3>
+                        <p className="text-sm text-[#6B6580] leading-relaxed group-hover:text-[#4A4A5C] transition-colors duration-500">
+                          {step.description}
+                        </p>
+                      </div>
+                    </motion.div>
+                  </StaggerChild>
+                );
+              }
             )}
           </StaggerReveal>
         </div>
