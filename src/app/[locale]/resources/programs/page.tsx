@@ -164,12 +164,22 @@ export default function ProgramsPage() {
                     whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    {/* Gradient accent top */}
-                    <div className="h-1.5 bg-gradient-to-r from-[#C4878A] via-[#C8A97D] to-[#7A3B5E]" />
+                    {/* Visual header area */}
+                    <div className={`relative p-8 pb-6 overflow-hidden ${program.type === 'course' ? 'bg-gradient-to-br from-[#F0D5CA]/50 via-[#FAF0EC]/30 to-transparent' : 'bg-gradient-to-br from-[#E8D5E0]/50 via-[#F8EEF3]/30 to-transparent'}`}>
+                      <div
+                        className="absolute inset-0 opacity-[0.02]"
+                        style={{
+                          backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 0.5px, transparent 0)',
+                          backgroundSize: '24px 24px',
+                          color: program.type === 'course' ? '#C4878A' : '#7A3B5E',
+                        }}
+                      />
+                      {/* Large watermark icon */}
+                      <div className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-4 opacity-[0.06]`}>
+                        <TypeIcon className="w-24 h-24" style={{ color: program.type === 'course' ? '#C4878A' : '#7A3B5E' }} />
+                      </div>
 
-                    <div className="p-8 flex-1 flex flex-col">
-                      {/* Header: type badge + status badge */}
-                      <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
+                      <div className="relative flex items-center justify-between flex-wrap gap-3">
                         <Badge variant={program.type === 'course' ? 'sage' : 'plum'} size="md">
                           <TypeIcon className="w-3.5 h-3.5 mr-1.5" />
                           {program.type === 'course'
@@ -185,6 +195,9 @@ export default function ProgramsPage() {
                           {isEnrolling ? messages.common.enrollNow : messages.common.comingSoon}
                         </Badge>
                       </div>
+                    </div>
+
+                    <div className="p-8 pt-5 flex-1 flex flex-col">
 
                       {/* Title */}
                       <h3
@@ -233,15 +246,20 @@ export default function ProgramsPage() {
                           </span>
                         )}
 
-                        <Button
-                          variant={isEnrolling ? 'primary' : 'outline'}
-                          size="md"
-                          icon={<ArrowIcon className="w-4 h-4" />}
-                          iconPosition="right"
-                          className={!program.price ? 'ml-auto' : ''}
-                        >
-                          {isEnrolling ? messages.common.enrollNow : messages.common.joinWaitlist}
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button
+                            as="a"
+                            href={isEnrolling ? `/${locale}/book-a-session` : `https://wa.me/16132222104?text=${encodeURIComponent(isRTL ? `مرحباً، أود الانضمام لقائمة انتظار: ${isRTL ? program.title.ar : program.title.en}` : `Hi, I'd like to join the waitlist for: ${program.title.en}`)}`}
+                            target={isEnrolling ? undefined : '_blank'}
+                            rel={isEnrolling ? undefined : 'noopener noreferrer'}
+                            variant={isEnrolling ? 'primary' : 'outline'}
+                            size="md"
+                            icon={isEnrolling ? <ArrowIcon className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
+                            iconPosition="right"
+                          >
+                            {isEnrolling ? messages.common.enrollNow : messages.common.joinWaitlist}
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
