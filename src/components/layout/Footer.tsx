@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Phone, Mail, MapPin, Clock, Instagram, Facebook, Youtube } from 'lucide-react';
 import { SnapchatIcon, TelegramIcon, TiktokIcon } from '@/components/icons/SocialIcons';
 import type { Locale } from '@/types';
@@ -13,6 +14,12 @@ interface FooterProps {
 
 export default function Footer({ locale, messages }: FooterProps) {
   const isRTL = locale === 'ar';
+  const pathname = usePathname();
+
+  const isActive = (href: string) => {
+    if (href === `/${locale}`) return pathname === `/${locale}` || pathname === `/${locale}/`;
+    return pathname.startsWith(href);
+  };
   const nav = messages?.nav ?? {};
   const footer = messages?.footer ?? {};
   const contact = messages?.contact ?? {};
@@ -117,7 +124,11 @@ export default function Footer({ locale, messages }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors duration-200"
+                    className={`text-sm transition-colors duration-200 ${
+                      isActive(link.href)
+                        ? 'text-[#7A3B5E] font-medium'
+                        : 'text-[#6B6580] hover:text-[#7A3B5E]'
+                    }`}
                   >
                     {link.label}
                   </Link>
@@ -142,7 +153,11 @@ export default function Footer({ locale, messages }: FooterProps) {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors duration-200"
+                    className={`text-sm transition-colors duration-200 ${
+                      isActive(link.href)
+                        ? 'text-[#7A3B5E] font-medium'
+                        : 'text-[#6B6580] hover:text-[#7A3B5E]'
+                    }`}
                   >
                     {link.label}
                   </Link>
