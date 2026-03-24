@@ -529,8 +529,17 @@ export default function HomePage() {
               <StaggerChild key={post.slug}>
                 <Link href={`/${locale}/resources/blog/${post.slug}`}>
                   <div className="group bg-[#FAF7F2] rounded-2xl overflow-hidden hover:shadow-[var(--shadow-card)] transition-all duration-300">
-                    <div className="h-48 bg-gradient-to-br from-[#C4878A]/10 to-[#7A3B5E]/10 flex items-center justify-center">
-                      <BookOpen className="w-10 h-10 text-[#7A3B5E]/30" />
+                    <div className="relative h-48 bg-gradient-to-br from-[#C4878A]/10 to-[#7A3B5E]/10 flex items-center justify-center overflow-hidden">
+                      {post.coverImage ? (
+                        <Image
+                          src={post.coverImage}
+                          alt={isRTL ? post.titleAr : post.titleEn}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <BookOpen className="w-10 h-10 text-[#7A3B5E]/30" />
+                      )}
                     </div>
                     <div className="p-6">
                       <div className="flex items-center gap-3 mb-3">

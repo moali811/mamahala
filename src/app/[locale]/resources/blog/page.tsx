@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
   BookOpen,
@@ -170,11 +171,20 @@ export default function BlogListingPage() {
                       boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
                     }}
                   >
-                    {/* Image placeholder */}
+                    {/* Cover image or gradient placeholder */}
                     <div
-                      className={`relative h-52 bg-gradient-to-br ${gradientMap[post.category] || 'from-[#C4878A] to-[#B07578]'} flex items-center justify-center`}
+                      className={`relative h-52 ${post.coverImage ? '' : `bg-gradient-to-br ${gradientMap[post.category] || 'from-[#C4878A] to-[#B07578]'}`} flex items-center justify-center overflow-hidden`}
                     >
-                      <BookOpen className="w-12 h-12 text-white/20" />
+                      {post.coverImage ? (
+                        <Image
+                          src={post.coverImage}
+                          alt={isRTL ? post.titleAr : post.titleEn}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <BookOpen className="w-12 h-12 text-white/20" />
+                      )}
                       {/* Category badge */}
                       <div className="absolute top-4 left-4">
                         <Badge variant={badgeVariants[post.category] || 'sage'} size="sm">

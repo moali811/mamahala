@@ -13,6 +13,7 @@ export interface BlogPost {
   category: 'youth' | 'families' | 'adults' | 'couples';
   publishDate: string; // YYYY-MM-DD
   readTime: number; // minutes
+  coverImage?: string; // Optional: path to image in /public/images/blog/ e.g. '/images/blog/my-post.jpg'
   titleEn: string;
   titleAr: string;
   excerptEn: string;
