@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { DM_Serif_Display, Plus_Jakarta_Sans, IBM_Plex_Sans_Arabic } from 'next/font/google';
+import { DM_Serif_Display, Plus_Jakarta_Sans, Tajawal } from 'next/font/google';
 import '@/app/globals.css';
 
 const dmSerif = DM_Serif_Display({
@@ -15,10 +15,10 @@ const plusJakarta = Plus_Jakarta_Sans({
   display: 'swap',
 });
 
-const ibmPlexArabic = IBM_Plex_Sans_Arabic({
-  subsets: ['arabic'],
-  weight: ['300', '400', '500', '600', '700'],
-  variable: '--font-ibm-plex-arabic',
+const tajawal = Tajawal({
+  subsets: ['arabic', 'latin'],
+  weight: ['200', '300', '400', '500', '700', '800', '900'],
+  variable: '--font-tajawal',
   display: 'swap',
 });
 
@@ -49,7 +49,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${dmSerif.variable} ${plusJakarta.variable} ${ibmPlexArabic.variable}`}>
+    <html lang="en" className={`${dmSerif.variable} ${plusJakarta.variable} ${tajawal.variable}`}>
       <body className="min-h-screen flex flex-col">
         {children}
       </body>

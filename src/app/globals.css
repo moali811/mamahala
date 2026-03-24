@@ -60,7 +60,7 @@
   /* Typography */
   --font-heading: var(--font-dm-serif), 'Georgia', serif;
   --font-body: var(--font-plus-jakarta), 'system-ui', sans-serif;
-  --font-arabic: var(--font-ibm-plex-arabic), 'Noto Sans Arabic', sans-serif;
+  --font-arabic: var(--font-tajawal), 'Tajawal', 'Noto Sans Arabic', sans-serif;
 
   /* Animation */
   --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
