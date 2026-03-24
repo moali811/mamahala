@@ -170,7 +170,7 @@ export default function AboutPage() {
               <div className="relative">
                 {/* Decorative frame — floats gently */}
                 <motion.div
-                  className="absolute -top-4 -left-4 w-full h-full rounded-2xl border-2 border-[#C8A97D]/20"
+                  className={`absolute -top-4 ${isRTL ? '-right-4' : '-left-4'} w-full h-full rounded-2xl border-2 border-[#C8A97D]/20`}
                   style={{ y: useTransform(portraitProgress, [0, 1], [-10, 10]) }}
                 />
                 <motion.div
@@ -187,7 +187,7 @@ export default function AboutPage() {
                 </motion.div>
                 {/* Floating accent */}
                 <motion.div
-                  className="absolute -bottom-6 -right-6 bg-[#7A3B5E] text-white rounded-2xl p-5 shadow-lg"
+                  className={`absolute -bottom-6 ${isRTL ? '-left-6' : '-right-6'} bg-[#7A3B5E] text-white rounded-2xl p-5 shadow-lg`}
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={viewportOnce}
@@ -463,7 +463,7 @@ export default function AboutPage() {
 
                     {/* Number watermark */}
                     <span
-                      className="absolute top-4 right-5 text-[72px] font-bold leading-none text-[#C8A97D]/[0.06] group-hover:text-[#C8A97D]/[0.12] transition-all duration-700 select-none"
+                      className={`absolute top-4 ${isRTL ? 'left-5' : 'right-5'} text-[72px] font-bold leading-none text-[#C8A97D]/[0.06] group-hover:text-[#C8A97D]/[0.12] transition-all duration-700 select-none`}
                       style={{ fontFamily: 'var(--font-heading)' }}
                     >
                       {val.num}
@@ -478,7 +478,7 @@ export default function AboutPage() {
                     </motion.div>
 
                     {/* Gold accent line */}
-                    <div className="w-8 h-[2px] bg-gradient-to-r from-[#C8A97D] to-[#C8A97D]/30 mb-4 group-hover:w-12 transition-all duration-500 rounded-full" />
+                    <div className={`w-8 h-[2px] ${isRTL ? 'bg-gradient-to-l mr-auto' : 'bg-gradient-to-r'} from-[#C8A97D] to-[#C8A97D]/30 mb-4 group-hover:w-12 transition-all duration-500 rounded-full`} />
 
                     {/* Title */}
                     <h3

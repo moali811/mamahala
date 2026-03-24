@@ -407,7 +407,7 @@ export default function HomePage() {
                       <div className="relative bg-white border border-[#C8A97D]/15 group-hover:border-[#C8A97D]/40 rounded-2xl p-8 lg:p-9 h-full transition-all duration-500 group-hover:shadow-[0_20px_60px_rgba(200,169,125,0.15)]">
 
                         <span
-                          className="absolute top-4 right-5 text-[72px] font-bold leading-none text-[#C8A97D]/[0.06] group-hover:text-[#C8A97D]/[0.12] transition-all duration-700 select-none"
+                          className={`absolute top-4 ${isRTL ? 'left-5' : 'right-5'} text-[72px] font-bold leading-none text-[#C8A97D]/[0.06] group-hover:text-[#C8A97D]/[0.12] transition-all duration-700 select-none`}
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
                           {String(index + 1).padStart(2, '0')}
@@ -420,7 +420,7 @@ export default function HomePage() {
                           <span className="text-xl text-[#C8A97D]">{icons[index]}</span>
                         </motion.div>
 
-                        <div className="w-8 h-[2px] bg-gradient-to-r from-[#C8A97D] to-[#C8A97D]/30 mb-4 group-hover:w-12 transition-all duration-500 rounded-full" />
+                        <div className={`w-8 h-[2px] ${isRTL ? 'bg-gradient-to-l' : 'bg-gradient-to-r'} from-[#C8A97D] to-[#C8A97D]/30 mb-4 group-hover:w-12 transition-all duration-500 rounded-full`} />
 
                         <h3
                           className="text-xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#7A3B5E] transition-colors duration-500"

@@ -147,11 +147,11 @@ export default function ServiceCategoryPage() {
                       >
                         {/* Accent strip */}
                         <div
-                          className="absolute top-0 left-0 w-1.5 h-full rounded-l-2xl"
+                          className={`absolute top-0 ${isRTL ? 'right-0 rounded-r-2xl' : 'left-0 rounded-l-2xl'} w-1.5 h-full`}
                           style={{ background: `linear-gradient(180deg, ${colors.accent}40, ${colors.accent}15)` }}
                         />
 
-                        <div className="flex flex-col md:flex-row items-start gap-5 p-6 md:p-7 pl-8 md:pl-9">
+                        <div className={`flex flex-col md:flex-row items-start gap-5 p-6 md:p-7 ${isRTL ? 'pr-8 md:pr-9' : 'pl-8 md:pl-9'}`}>
                           {/* Number badge */}
                           <div
                             className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg"
