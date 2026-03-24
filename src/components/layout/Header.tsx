@@ -40,27 +40,26 @@ export default function Header({ locale, messages }: HeaderProps) {
   }, [mobileOpen]);
 
   const servicesItems = [
-    { label: nav.families, href: `/${locale}/services/families` },
-    { label: nav.couples, href: `/${locale}/services/couples` },
-    { label: nav.youth, href: `/${locale}/services/youth` },
-    { label: nav.adults, href: `/${locale}/services/adults` },
-    { label: nav.experiential, href: `/${locale}/services/experiential` },
+    { label: isRTL ? 'جميع الخدمات' : 'All Services', href: `/${locale}/services`, desc: isRTL ? 'تصفح جميع خدماتنا' : 'Browse all our services' },
+    { label: nav.youth, href: `/${locale}/services/youth`, desc: isRTL ? 'أطفال ومراهقون' : 'Children & teens' },
+    { label: nav.families, href: `/${locale}/services/families`, desc: isRTL ? 'بناء روابط أقوى' : 'Building stronger bonds' },
+    { label: nav.adults, href: `/${locale}/services/adults`, desc: isRTL ? 'نمو شخصي ورفاهية' : 'Personal growth & wellbeing' },
+    { label: nav.couples, href: `/${locale}/services/couples`, desc: isRTL ? 'تعزيز الحب والشراكة' : 'Strengthening love & partnership' },
   ];
 
   const resourcesItems = [
-    { label: nav.blog, href: `/${locale}/resources/blog` },
-    { label: nav.programs, href: `/${locale}/resources/programs` },
-    { label: nav.events, href: `/${locale}/resources/events` },
-    { label: nav.downloads, href: `/${locale}/resources/downloads` },
-    { label: nav.faqs, href: `/${locale}/resources/faqs` },
+    { label: nav.blog, href: `/${locale}/resources/blog`, desc: isRTL ? 'مقالات ونصائح' : 'Articles & insights' },
+    { label: nav.programs, href: `/${locale}/resources/programs`, desc: isRTL ? 'دورات وبرامج جماعية' : 'Courses & group programs' },
+    { label: nav.events, href: `/${locale}/resources/events`, desc: isRTL ? 'ورش عمل وفعاليات' : 'Workshops & events' },
+    { label: nav.downloads, href: `/${locale}/resources/downloads`, desc: isRTL ? 'أدوات ومراجع مجانية' : 'Free tools & guides' },
+    { label: nav.faqs, href: `/${locale}/resources/faqs`, desc: isRTL ? 'أسئلة شائعة' : 'Common questions' },
   ];
 
   type NavItem =
     | { label: string; href: string; dropdown?: undefined; items?: undefined }
-    | { label: string; href?: undefined; dropdown: string; items: { label: string; href: string }[] };
+    | { label: string; href?: undefined; dropdown: string; items: { label: string; href: string; desc?: string }[] };
 
   const navItems: NavItem[] = [
-    { label: nav.home, href: `/${locale}` },
     { label: nav.about, href: `/${locale}/about` },
     { label: nav.services, dropdown: 'services', items: servicesItems },
     { label: nav.resources, dropdown: 'resources', items: resourcesItems },
@@ -149,19 +148,26 @@ export default function Header({ locale, messages }: HeaderProps) {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 6, scale: 0.97 }}
                           transition={{ duration: 0.18, ease: 'easeOut' }}
-                          className={`absolute top-full ${isRTL ? 'right-0' : 'left-0'} mt-2 min-w-[220px] overflow-hidden rounded-xl border border-[#F3EFE8] bg-white py-1.5 shadow-[var(--shadow-elevated)]`}
+                          className={`absolute top-full ${isRTL ? 'right-0' : 'left-0'} mt-2 min-w-[260px] overflow-hidden rounded-xl border border-[#F3EFE8] bg-white py-2 shadow-[var(--shadow-elevated)]`}
                         >
-                          {item.items.map((subItem) => (
+                          {item.items.map((subItem, idx) => (
                             <Link
                               key={subItem.href}
                               href={subItem.href}
-                              className={`block px-4 py-2.5 text-sm transition-colors duration-150 ${
+                              className={`block px-4 py-2.5 transition-colors duration-150 ${
+                                idx === 0 ? 'border-b border-[#F3EFE8] mb-1' : ''
+                              } ${
                                 isActive(subItem.href)
-                                  ? 'bg-[#7A3B5E]/5 font-medium text-[#7A3B5E]'
+                                  ? 'bg-[#7A3B5E]/5 text-[#7A3B5E]'
                                   : 'text-[#4A4A5C] hover:bg-[#7A3B5E]/5 hover:text-[#7A3B5E]'
                               }`}
                             >
-                              {subItem.label}
+                              <span className={`block text-sm font-medium ${isActive(subItem.href) ? 'text-[#7A3B5E]' : ''}`}>
+                                {subItem.label}
+                              </span>
+                              {subItem.desc && (
+                                <span className="block text-xs text-[#8E8E9F] mt-0.5">{subItem.desc}</span>
+                              )}
                             </Link>
                           ))}
                         </motion.div>
@@ -281,13 +287,18 @@ export default function Header({ locale, messages }: HeaderProps) {
                                     key={subItem.href}
                                     href={subItem.href}
                                     onClick={() => setMobileOpen(false)}
-                                    className={`block rounded-lg px-4 py-3 text-[15px] transition-colors ${
+                                    className={`block rounded-lg px-4 py-3 transition-colors ${
                                       isActive(subItem.href)
-                                        ? 'bg-[#7A3B5E]/5 font-medium text-[#7A3B5E]'
+                                        ? 'bg-[#7A3B5E]/5 text-[#7A3B5E]'
                                         : 'text-[#4A4A5C] hover:bg-[#7A3B5E]/5'
                                     }`}
                                   >
-                                    {subItem.label}
+                                    <span className={`block text-[15px] font-medium ${isActive(subItem.href) ? 'text-[#7A3B5E]' : ''}`}>
+                                      {subItem.label}
+                                    </span>
+                                    {subItem.desc && (
+                                      <span className="block text-xs text-[#8E8E9F] mt-0.5">{subItem.desc}</span>
+                                    )}
                                   </Link>
                                 ))}
                               </div>
