@@ -21,6 +21,7 @@ import {
   BookOpen,
   Star,
   Quote,
+  Instagram,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { serviceCategories } from '@/data/services';
@@ -560,7 +561,76 @@ export default function HomePage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  SECTION 8: FINAL CTA                                            */}
+      {/*  SECTION 8: INSTAGRAM FEED                                       */}
+      {/* ================================================================ */}
+      <section className="py-20 lg:py-28 bg-[#FAF7F2]">
+        <div className="container-main">
+          <ScrollReveal className="text-center mb-12">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-[#C8A97D] mb-3">
+              <span className="w-8 h-[2px] bg-[#C8A97D] rounded-full" />
+              {isRTL ? 'تابعونا' : 'Follow Along'}
+              <span className="w-8 h-[2px] bg-[#C8A97D] rounded-full" />
+            </span>
+            <h2
+              className="text-3xl sm:text-4xl font-bold text-[#2D2A33]"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {isRTL ? (
+                <>على <span className="text-[#7A3B5E] italic">إنستغرام</span></>
+              ) : (
+                <>On <span className="text-[#7A3B5E] italic">Instagram</span></>
+              )}
+            </h2>
+            <p className="text-[#6B6580] mt-3 max-w-lg mx-auto">
+              {isRTL
+                ? 'نصائح يومية، قصص ملهمة، ولحظات من وراء الكواليس'
+                : 'Daily tips, inspiring stories, and behind-the-scenes moments'
+              }
+            </p>
+          </ScrollReveal>
+
+          {/* Elfsight Instagram Feed Widget */}
+          <div className="max-w-5xl mx-auto">
+            <div
+              className="elfsight-app-instagram-feed rounded-2xl overflow-hidden"
+              data-elfsight-app-lazy
+              id="instagram-feed-widget"
+            >
+              {/* Placeholder while widget loads */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <motion.div
+                    key={i}
+                    className="aspect-square rounded-xl bg-gradient-to-br from-[#F0D5CA]/40 to-[#E8C4C0]/20 flex items-center justify-center"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={viewportOnce}
+                    transition={{ delay: i * 0.05, duration: 0.4 }}
+                  >
+                    <Instagram className="w-6 h-6 text-[#C4878A]/30" />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Follow CTA */}
+          <ScrollReveal className="text-center mt-10">
+            <a
+              href="https://www.instagram.com/mamahala.ca/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-[#E8C4C0] to-[#F0D5CA] text-[#7A3B5E] font-semibold hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+            >
+              <Instagram className="w-5 h-5" />
+              {isRTL ? 'تابعي @mamahala.ca' : 'Follow @mamahala.ca'}
+            </a>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ================================================================ */}
+      {/*  SECTION 9: FINAL CTA                                            */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
         <WaveDivider position="top" fillColor="#FAF7F2" variant="organic" />
