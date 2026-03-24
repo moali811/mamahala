@@ -424,53 +424,75 @@ export default function AboutPage() {
                 titleAr: 'التعاطف',
                 textEn: 'We lead with empathy, respect, and openness, honoring every experience without judgment.',
                 textAr: 'نقود بالتعاطف والاحترام والانفتاح، نحترم كل تجربة دون إصدار أحكام.',
-                color: '#C8A97D',
+                icon: '♡',
+                num: '01',
               },
               {
                 titleEn: 'Humancentric',
                 titleAr: 'التركيز الإنساني',
                 textEn: 'Every story is unique. Our support is thoughtful, personalized, and grounded in real-life needs.',
                 textAr: 'كل قصة فريدة. دعمنا مدروس وشخصي ومرتكز على احتياجات الحياة الواقعية.',
-                color: '#D4956B',
+                icon: '◎',
+                num: '02',
               },
               {
                 titleEn: 'Integrity',
                 titleAr: 'النزاهة',
                 textEn: 'We uphold honesty, confidentiality, and ethical practice, creating safe spaces for meaningful growth.',
                 textAr: 'نحافظ على الصدق والسرية والممارسة الأخلاقية، ونخلق مساحات آمنة للنمو الهادف.',
-                color: '#B87D5E',
+                icon: '◆',
+                num: '03',
               },
               {
                 titleEn: 'Growth',
                 titleAr: 'النمو',
                 textEn: 'We commit to continuous learning and reflective, evidence-informed practice that strengthens outcomes.',
                 textAr: 'نلتزم بالتعلم المستمر والممارسة التأملية المبنية على الأدلة التي تعزز النتائج.',
-                color: '#C8A97D',
+                icon: '✦',
+                num: '04',
               },
             ].map((val, i) => (
               <StaggerChild key={i}>
                 <motion.div
-                  className="group relative bg-white border border-[#D4ADA8]/15 rounded-2xl p-8 lg:p-9 h-full hover:bg-white hover:border-[#D4ADA8]/30 transition-all duration-500"
-                  whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                  className="group relative overflow-hidden rounded-2xl h-full cursor-default"
+                  whileHover={{ y: -6, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
                 >
-                  {/* Top gradient accent line */}
-                  <div
-                    className="absolute top-0 left-6 right-6 h-[2px] rounded-full opacity-40 group-hover:opacity-80 transition-opacity duration-500"
-                    style={{ background: `linear-gradient(90deg, transparent, ${val.color}, transparent)` }}
-                  />
-                  {/* Value title — stylized */}
-                  <h3
-                    className="text-[22px] lg:text-[24px] font-bold mb-5 tracking-wide uppercase text-[#7A3B5E]"
-                    style={{
-                      fontFamily: 'var(--font-heading)',
-                    }}
-                  >
-                    {isRTL ? val.titleAr : val.titleEn}
-                  </h3>
-                  {/* Description */}
-                  <p className="text-[#4A4A5C] leading-relaxed text-[14px] group-hover:text-[#2D2A33] transition-colors duration-500">
-                    {isRTL ? val.textAr : val.textEn}
-                  </p>
+                  {/* Card background with gold gradient border effect */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#C8A97D]/30 via-[#D4B88C]/20 to-[#C8A97D]/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative bg-white border border-[#C8A97D]/15 group-hover:border-[#C8A97D]/40 rounded-2xl p-8 lg:p-9 h-full transition-all duration-500 group-hover:shadow-[0_20px_60px_rgba(200,169,125,0.15)]">
+
+                    {/* Number watermark */}
+                    <span
+                      className="absolute top-4 right-5 text-[72px] font-bold leading-none text-[#C8A97D]/[0.06] group-hover:text-[#C8A97D]/[0.12] transition-all duration-700 select-none"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      {val.num}
+                    </span>
+
+                    {/* Gold icon */}
+                    <motion.div
+                      className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#C8A97D]/15 to-[#D4B88C]/10 flex items-center justify-center mb-5 group-hover:from-[#C8A97D]/25 group-hover:to-[#D4B88C]/20 transition-all duration-500"
+                      whileHover={{ rotate: 5, scale: 1.05 }}
+                    >
+                      <span className="text-xl text-[#C8A97D]">{val.icon}</span>
+                    </motion.div>
+
+                    {/* Gold accent line */}
+                    <div className="w-8 h-[2px] bg-gradient-to-r from-[#C8A97D] to-[#C8A97D]/30 mb-4 group-hover:w-12 transition-all duration-500 rounded-full" />
+
+                    {/* Title */}
+                    <h3
+                      className="text-xl lg:text-[22px] font-bold mb-4 text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors duration-500 tracking-wide uppercase"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      {isRTL ? val.titleAr : val.titleEn}
+                    </h3>
+
+                    {/* Description */}
+                    <p className="text-[#6B6580] leading-relaxed text-[14px] group-hover:text-[#4A4A5C] transition-colors duration-500">
+                      {isRTL ? val.textAr : val.textEn}
+                    </p>
+                  </div>
                 </motion.div>
               </StaggerChild>
             ))}
