@@ -105,7 +105,7 @@ export const events: SmartEvent[] = [
     registrationStatus: 'open',
     registrationUrl: 'online-consultation',
     registrationType: 'cal',
-    calEventSlug: 'couples-communication-workshop',
+    calEventSlug: 'online-consultation',
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',
@@ -213,7 +213,7 @@ export const events: SmartEvent[] = [
     registrationStatus: 'open',
     registrationUrl: 'online-consultation',
     registrationType: 'cal',
-    calEventSlug: 'empowering-parents-workshop',
+    calEventSlug: 'online-consultation',
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',
@@ -265,7 +265,7 @@ export const events: SmartEvent[] = [
     registrationStatus: 'open',
     registrationUrl: 'initial-consultation',
     registrationType: 'cal',
-    calEventSlug: 'quiet-strength-retreat',
+    calEventSlug: 'initial-consultation',
     whatToBringEn: [
       'Comfortable outdoor clothing and shoes',
       'Water bottle',
