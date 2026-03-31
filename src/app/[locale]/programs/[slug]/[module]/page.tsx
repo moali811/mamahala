@@ -12,6 +12,7 @@ import type { AcademyProgram, AcademyModule } from '@/types';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Accordion from '@/components/ui/Accordion';
+import { t, tArray } from '@/lib/academy-helpers';
 
 // Dynamic program loader
 async function loadProgram(slug: string): Promise<AcademyProgram | null> {
@@ -130,13 +131,13 @@ export default function ModuleLessonPage() {
     );
   }
 
-  const modTitle = isRTL ? currentModule.titleAr : currentModule.titleEn;
-  const lessonContent = isRTL ? currentModule.lesson.contentAr : currentModule.lesson.contentEn;
-  const drNote = currentModule.drHalaNote ? (isRTL ? currentModule.drHalaNote.ar : currentModule.drHalaNote.en) : null;
-  const takeaways = isRTL ? currentModule.keyTakeaways.ar : currentModule.keyTakeaways.en;
-  const reflectionPrompt = isRTL ? currentModule.reflection.promptAr : currentModule.reflection.promptEn;
-  const activityTitle = isRTL ? currentModule.activity.titleAr : currentModule.activity.titleEn;
-  const activityDesc = isRTL ? currentModule.activity.descriptionAr : currentModule.activity.descriptionEn;
+  const modTitle = t(currentModule.titleEn, currentModule.titleAr, isRTL);
+  const lessonContent = t(currentModule.lesson.contentEn, currentModule.lesson.contentAr, isRTL);
+  const drNote = currentModule.drHalaNote ? t(currentModule.drHalaNote.en, currentModule.drHalaNote.ar, isRTL) : null;
+  const takeaways = tArray(currentModule.keyTakeaways.en, currentModule.keyTakeaways.ar, isRTL);
+  const reflectionPrompt = t(currentModule.reflection.promptEn, currentModule.reflection.promptAr, isRTL);
+  const activityTitle = t(currentModule.activity.titleEn, currentModule.activity.titleAr, isRTL);
+  const activityDesc = t(currentModule.activity.descriptionEn, currentModule.activity.descriptionAr, isRTL);
   const prevModule = moduleIndex > 0 ? allModules[moduleIndex - 1] : null;
   const nextModule = moduleIndex < allModules.length - 1 ? allModules[moduleIndex + 1] : null;
 
@@ -147,7 +148,7 @@ export default function ModuleLessonPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <a href={`/${locale}/programs/${programSlug}`} className="text-sm text-[#8E8E9F] hover:text-[#7A3B5E] flex items-center gap-1.5 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            {isRTL ? program.titleAr : program.titleEn}
+            {t(program.titleEn, program.titleAr, isRTL)}
           </a>
           <div className="flex items-center gap-2">
             <span className="text-xs text-[#8E8E9F]">{moduleIndex + 1} / {allModules.length}</span>
@@ -249,13 +250,13 @@ export default function ModuleLessonPage() {
           {showQuiz && (
             <div className="mt-6 space-y-6">
               {currentModule.quiz.questions.map((q, qi) => {
-                const qText = isRTL ? q.textAr : q.textEn;
+                const qText = t(q.textEn, q.textAr, isRTL);
                 return (
                   <div key={qi}>
                     <p className="font-medium text-[#2D2A33] mb-3">{qi + 1}. {qText}</p>
                     <div className="space-y-2">
                       {q.options.map((opt, oi) => {
-                        const optLabel = isRTL ? opt.labelAr : opt.labelEn;
+                        const optLabel = t(opt.labelEn, opt.labelAr, isRTL);
                         const isSelected = quizAnswers[qi] === oi;
                         const showResult = quizSubmitted;
                         const isCorrect = opt.correct;
@@ -322,8 +323,8 @@ export default function ModuleLessonPage() {
                 <Accordion
                   items={currentModule.aiFaq.map((faq, i) => ({
                     id: `faq-${i}`,
-                    title: isRTL ? faq.questionAr : faq.questionEn,
-                    content: isRTL ? faq.answerAr : faq.answerEn,
+                    title: t(faq.questionEn, faq.questionAr, isRTL),
+                    content: t(faq.answerEn, faq.answerAr, isRTL),
                   }))}
                 />
               </div>

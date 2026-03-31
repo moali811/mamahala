@@ -1,7 +1,7 @@
 import type { AcademyProgram } from '@/types';
 
 export const culturalRootsProgram: AcademyProgram = {
-  slug: 'cultural-roots-modern-wings',
+  slug: 'cultural-roots',
   titleEn: 'Cultural Roots, Modern Wings',
   titleAr: 'جذور ثقافية، أجنحة عصرية',
   descriptionEn: `A nurturing program for multicultural and immigrant families who want to honor their heritage while helping their children thrive in a new cultural landscape.`,

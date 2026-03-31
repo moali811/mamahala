@@ -17,6 +17,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
+import { t, tArray } from '@/lib/academy-helpers';
 
 const iconMap: Record<string, React.ReactNode> = {
   Heart: <Heart className="w-8 h-8" />,
@@ -119,8 +120,8 @@ export default function ProgramOverviewPage() {
     );
   }
 
-  const title = isRTL ? program.titleAr : program.titleEn;
-  const longDesc = isRTL ? program.longDescriptionAr : program.longDescriptionEn;
+  const title = t(program.titleEn, program.titleAr, isRTL);
+  const longDesc = t(program.longDescriptionEn, program.longDescriptionAr, isRTL);
   const icon = iconMap[program.icon] || <BookOpen className="w-8 h-8" />;
 
   // Flatten all modules for numbering
@@ -172,7 +173,7 @@ export default function ProgramOverviewPage() {
                 {isRTL ? 'ماذا ستتعلم' : 'What You Will Learn'}
               </h2>
               <div className="space-y-3">
-                {(isRTL ? program.whatYouWillLearn.ar : program.whatYouWillLearn.en).map((item, i) => (
+                {tArray(program.whatYouWillLearn.en, program.whatYouWillLearn.ar, isRTL).map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <CheckCircle className="w-5 h-5 text-[#3B8A6E] mt-0.5 flex-shrink-0" />
                     <span className="text-[#4A4A5C]">{item}</span>
@@ -185,7 +186,7 @@ export default function ProgramOverviewPage() {
                 {isRTL ? 'لمن هذا البرنامج' : 'Who Is This For'}
               </h2>
               <div className="space-y-3">
-                {(isRTL ? program.whoIsThisFor.ar : program.whoIsThisFor.en).map((item, i) => (
+                {tArray(program.whoIsThisFor.en, program.whoIsThisFor.ar, isRTL).map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <Users className="w-5 h-5 text-[#C8A97D] mt-0.5 flex-shrink-0" />
                     <span className="text-[#4A4A5C]">{item}</span>
@@ -212,8 +213,8 @@ export default function ProgramOverviewPage() {
           <div className="max-w-3xl mx-auto space-y-4">
             {program.levels.map((level) => {
               const isExpanded = expandedLevel === level.level;
-              const levelName = isRTL ? (level.titleAr || levelNamesAR[level.level]) : (level.titleEn || levelNamesEN[level.level]);
-              const levelSubtitle = isRTL ? level.subtitleAr : level.subtitleEn;
+              const levelName = t(level.titleEn || levelNamesEN[level.level], level.titleAr || levelNamesAR[level.level], isRTL);
+              const levelSubtitle = t(level.subtitleEn, level.subtitleAr, isRTL);
 
               return (
                 <ScrollReveal key={level.level}>
@@ -252,7 +253,7 @@ export default function ProgramOverviewPage() {
                           <div className="px-6 pb-5 pt-2 border-t border-[#F3EFE8] space-y-1">
                             {level.modules.map((mod, i) => {
                               moduleNumber++;
-                              const modTitle = isRTL ? mod.titleAr : mod.titleEn;
+                              const modTitle = t(mod.titleEn, mod.titleAr, isRTL);
                               const canAccess = enrolled && (level.isFree || program.isFree);
 
                               return (

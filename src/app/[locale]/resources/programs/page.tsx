@@ -15,6 +15,7 @@ import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
 import { programCatalog } from '@/data/programs';
+import { t, tArray } from '@/lib/academy-helpers';
 
 const iconMap: Record<string, React.ReactNode> = {
   Heart: <Heart className="w-6 h-6" />,
@@ -176,9 +177,9 @@ export default function ProgramsPage() {
 
           <StaggerReveal className="space-y-8">
             {programCatalog.map((program, index) => {
-              const title = isRTL ? program.titleAr : program.titleEn;
-              const desc = isRTL ? program.descriptionAr : program.descriptionEn;
-              const longDesc = isRTL ? program.longDescriptionAr : program.longDescriptionEn;
+              const title = t(program.titleEn, program.titleAr, isRTL);
+              const desc = t(program.descriptionEn, program.descriptionAr, isRTL);
+              const longDesc = t(program.longDescriptionEn, program.longDescriptionAr, isRTL);
               const catLabel = isRTL ? categoryLabels[program.category]?.ar : categoryLabels[program.category]?.en;
               const icon = iconMap[program.icon] || <BookOpen className="w-6 h-6" />;
 
@@ -247,7 +248,7 @@ export default function ProgramsPage() {
 
                         {/* What you'll learn */}
                         <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-6 text-sm text-[#8E8E9F]">
-                          {(isRTL ? program.whatYouWillLearn.ar : program.whatYouWillLearn.en).slice(0, 3).map((item, i) => (
+                          {tArray(program.whatYouWillLearn.en, program.whatYouWillLearn.ar, isRTL).slice(0, 3).map((item, i) => (
                             <span key={i} className="inline-flex items-center gap-1.5">
                               <CheckCircle className="w-3.5 h-3.5 text-[#3B8A6E]" /> {item}
                             </span>

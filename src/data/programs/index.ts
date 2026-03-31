@@ -45,7 +45,7 @@ export const programCatalog: Omit<AcademyProgram, 'levels'>[] = [
     color: '#7A3B5E',
     icon: 'Heart',
     isFree: false,
-    priceCAD: 129,
+    priceCAD: 149,
     totalModules: 15,
     totalDurationHours: 12,
     certificate: { titleEn: 'Intentional Parenting', titleAr: 'التربية الواعية', signedBy: 'Dr. Hala Ali' },
