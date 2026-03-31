@@ -17,16 +17,16 @@ function authorize(req: NextRequest): boolean {
 
 // ─── BRAND VOICE VOCABULARY ───
 const HOOKS = [
-  'If you've ever felt overwhelmed by',
-  'Many families struggle with',
-  'As parents, we often wonder about',
-  'One of the most common challenges families face is',
-  'It's completely normal to feel uncertain about',
-  'In today's world, navigating',
-  'Whether you're a new parent or have years of experience,',
-  'Every family goes through seasons of',
-  'Behind every challenging behavior is',
-  'The journey of parenting through',
+  `If you've ever felt overwhelmed by`,
+  `Many families struggle with`,
+  `As parents, we often wonder about`,
+  `One of the most common challenges families face is`,
+  `It's completely normal to feel uncertain about`,
+  `In today's world, navigating`,
+  `Whether you're a new parent or have years of experience,`,
+  `Every family goes through seasons of`,
+  `Behind every challenging behavior is`,
+  `The journey of parenting through`,
 ];
 
 const EVIDENCE_PHRASES = [
@@ -47,22 +47,22 @@ const CULTURAL_BRIDGES = [
 ];
 
 const CLOSINGS = [
-  'Remember, seeking support is a sign of strength, not weakness. Every family deserves guidance that honors their unique story.',
-  'Change doesn't happen overnight, but with consistent, small steps, transformation is always possible. You don't have to figure this out alone.',
-  'The fact that you're reading this shows how much you care. That care is the foundation everything else builds on.',
-  'Every family's journey is different, and there's no single right answer. What matters is showing up with intention and love.',
+  `Remember, seeking support is a sign of strength, not weakness. Every family deserves guidance that honors their unique story.`,
+  `Change doesn't happen overnight, but with consistent, small steps, transformation is always possible. You don't have to figure this out alone.`,
+  `The fact that you're reading this shows how much you care. That care is the foundation everything else builds on.`,
+  `Every family's journey is different, and there's no single right answer. What matters is showing up with intention and love.`,
 ];
 
 const STRATEGY_TEMPLATES = [
   { title: 'Start with Connection', body: 'Before addressing any challenge, strengthen your emotional bond. Children (and partners) are more receptive when they feel seen and heard. Try spending 10-15 minutes of uninterrupted quality time daily — no phones, no agenda, just presence.' },
-  { title: 'Create a Safe Space for Feelings', body: 'Emotional literacy begins when we normalize all emotions. Instead of saying "Don\'t cry" or "Calm down," try "I can see you\'re feeling frustrated. That makes sense." This co-regulation approach builds your child\'s emotional vocabulary and self-awareness.' },
-  { title: 'Set Boundaries with Warmth', body: 'Boundaries aren\'t about control — they\'re about safety and respect. The key is firm and kind: "I understand you want to stay up late. The rule is bedtime at 8:30 because your body needs rest to grow strong." Acknowledge the feeling, hold the boundary.' },
-  { title: 'Model What You Want to See', body: 'Children learn more from what we do than what we say. If we want calm responses, we need to practice calming ourselves first. Share your own emotional process: "I\'m feeling stressed right now, so I\'m going to take three deep breaths."' },
-  { title: 'Practice Active Listening', body: 'Put down your phone, make eye contact, and reflect back what you hear. "So what you\'re telling me is..." This simple technique can transform communication and make family members feel truly valued.' },
+  { title: 'Create a Safe Space for Feelings', body: `Emotional literacy begins when we normalize all emotions. Instead of saying "Don't cry" or "Calm down," try "I can see you're feeling frustrated. That makes sense." This co-regulation approach builds your child's emotional vocabulary and self-awareness.` },
+  { title: 'Set Boundaries with Warmth', body: `Boundaries aren't about control — they're about safety and respect. The key is firm and kind: "I understand you want to stay up late. The rule is bedtime at 8:30 because your body needs rest to grow strong." Acknowledge the feeling, hold the boundary.` },
+  { title: 'Model What You Want to See', body: `Children learn more from what we do than what we say. If we want calm responses, we need to practice calming ourselves first. Share your own emotional process: "I'm feeling stressed right now, so I'm going to take three deep breaths."` },
+  { title: 'Practice Active Listening', body: `Put down your phone, make eye contact, and reflect back what you hear. "So what you're telling me is..." This simple technique can transform communication and make family members feel truly valued.` },
   { title: 'Build Daily Rituals', body: 'Predictable routines create emotional safety. Family dinner conversations, bedtime check-ins, weekend walks — these small rituals become the anchors that hold families together through challenging times.' },
-  { title: 'Embrace Imperfection', body: 'Perfectionism is the enemy of connection. When you make a mistake (and you will), model accountability: "I shouldn\'t have raised my voice. I\'m sorry. Let me try again." This teaches children that repair is always possible.' },
-  { title: 'Know When to Seek Support', body: 'Professional guidance isn\'t a last resort — it\'s a wise investment. A counselor can offer fresh perspectives, evidence-based tools, and a safe space to explore patterns that are hard to see from inside the family system.' },
-  { title: 'Use the Pause', body: 'When emotions run high, the most powerful thing you can do is pause. Count to five. Take a breath. Ask yourself: "What does my child need right now?" Often, the answer is simpler than we think — they need to know we\'re not going anywhere.' },
+  { title: 'Embrace Imperfection', body: `Perfectionism is the enemy of connection. When you make a mistake (and you will), model accountability: "I shouldn't have raised my voice. I'm sorry. Let me try again." This teaches children that repair is always possible.` },
+  { title: 'Know When to Seek Support', body: `Professional guidance isn't a last resort — it's a wise investment. A counselor can offer fresh perspectives, evidence-based tools, and a safe space to explore patterns that are hard to see from inside the family system.` },
+  { title: 'Use the Pause', body: `When emotions run high, the most powerful thing you can do is pause. Count to five. Take a breath. Ask yourself: "What does my child need right now?" Often, the answer is simpler than we think — they need to know we're not going anywhere.` },
   { title: 'Celebrate Small Wins', body: 'Progress is rarely linear. Notice and name the moments that go well: "I loved how we talked through that disagreement calmly." Positive reinforcement works for the whole family — including parents.' },
 ];
 
