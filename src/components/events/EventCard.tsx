@@ -24,6 +24,7 @@ import Button from '@/components/ui/Button';
 import AddToCalendar from './AddToCalendar';
 import ShareEvent from './ShareEvent';
 import EventRegistrationModal from './EventRegistrationModal';
+import CalEmbedModal from './CalEmbedModal';
 import { getWhatsAppLink, getCalUrl } from '@/config/business';
 import {
   getFormattedDate,
@@ -65,6 +66,7 @@ const locationTypeLabels = {
 
 export default function EventCard({ event, locale, isExpanded, onToggleExpand }: Props) {
   const [showModal, setShowModal] = useState(false);
+  const [showCalModal, setShowCalModal] = useState(false);
   const isRTL = locale === 'ar';
   const title = isRTL ? event.titleAr : event.titleEn;
   const description = isRTL ? event.descriptionAr : event.descriptionEn;
@@ -200,13 +202,10 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
                 )}
                 {event.registrationType === 'cal' && (
                   <Button
-                    as="a"
-                    href={getCalUrl(event.calEventSlug)}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     variant="primary"
                     size="md"
                     icon={<CalendarDays className="w-4 h-4" />}
+                    onClick={() => setShowCalModal(true)}
                   >
                     {isRTL ? 'احجز مكانك' : 'Book Your Spot'}
                   </Button>
@@ -258,6 +257,16 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
               locale={locale}
               isOpen={showModal}
               onClose={() => setShowModal(false)}
+            />
+          )}
+
+          {/* Cal.com Embed Modal */}
+          {event.registrationType === 'cal' && event.calEventSlug && (
+            <CalEmbedModal
+              calSlug={event.calEventSlug}
+              isOpen={showCalModal}
+              onClose={() => setShowCalModal(false)}
+              eventTitle={isRTL ? event.titleAr : event.titleEn}
             />
           )}
 

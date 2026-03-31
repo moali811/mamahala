@@ -10,6 +10,7 @@ import EventCountdown from './EventCountdown';
 import AddToCalendar from './AddToCalendar';
 import ShareEvent from './ShareEvent';
 import EventRegistrationModal from './EventRegistrationModal';
+import CalEmbedModal from './CalEmbedModal';
 import { getWhatsAppLink, getCalUrl } from '@/config/business';
 import {
   getFormattedDate,
@@ -26,6 +27,7 @@ interface Props {
 
 export default function FeaturedEvent({ event, locale }: Props) {
   const [showModal, setShowModal] = useState(false);
+  const [showCalModal, setShowCalModal] = useState(false);
   const isRTL = locale === 'ar';
   const title = isRTL ? event.titleAr : event.titleEn;
   const description = isRTL ? event.descriptionAr : event.descriptionEn;
@@ -127,13 +129,10 @@ export default function FeaturedEvent({ event, locale }: Props) {
               )}
               {event.registrationType === 'cal' && (
                 <Button
-                  as="a"
-                  href={getCalUrl(event.calEventSlug)}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   variant="primary"
                   size="lg"
                   icon={<CalendarDays className="w-5 h-5" />}
+                  onClick={() => setShowCalModal(true)}
                 >
                   {isRTL ? 'احجز مكانك' : 'Book Your Spot'}
                 </Button>
@@ -185,6 +184,16 @@ export default function FeaturedEvent({ event, locale }: Props) {
             locale={locale}
             isOpen={showModal}
             onClose={() => setShowModal(false)}
+          />
+        )}
+
+        {/* Cal.com Embed Modal */}
+        {event.registrationType === 'cal' && event.calEventSlug && (
+          <CalEmbedModal
+            calSlug={event.calEventSlug}
+            isOpen={showCalModal}
+            onClose={() => setShowCalModal(false)}
+            eventTitle={isRTL ? event.titleAr : event.titleEn}
           />
         )}
       </div>
