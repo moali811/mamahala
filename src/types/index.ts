@@ -109,6 +109,7 @@ export type EventType = 'workshop' | 'webinar' | 'community-gathering' | 'retrea
 export type EventAudience = 'youth' | 'families' | 'adults' | 'couples' | 'community';
 export type EventLocationType = 'online' | 'in-person' | 'hybrid';
 export type RegistrationStatus = 'open' | 'almost-full' | 'waitlist' | 'closed';
+export type RegistrationType = 'rsvp' | 'cal' | 'external' | 'none';
 
 export interface EventSession {
   date: string;       // ISO date '2026-04-22'
@@ -170,6 +171,12 @@ export interface SmartEvent {
   spotsRemaining?: number;
   registrationStatus: RegistrationStatus;
   registrationUrl?: string;
+  registrationType: RegistrationType;
+  calEventSlug?: string;
+  externalRegistrationUrl?: string;
+  registrationFields?: { phone?: boolean; notes?: boolean };
+  confirmationMessageEn?: string;
+  confirmationMessageAr?: string;
 
   // Display
   image?: string;

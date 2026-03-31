@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { CalendarDays, Clock, MapPin, MessageCircle, Sparkles } from 'lucide-react';
+import { CalendarDays, Clock, MapPin, MessageCircle, Sparkles, UserPlus, ExternalLink } from 'lucide-react';
 import type { SmartEvent } from '@/types';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import EventCountdown from './EventCountdown';
 import AddToCalendar from './AddToCalendar';
 import ShareEvent from './ShareEvent';
+import EventRegistrationModal from './EventRegistrationModal';
+import { getWhatsAppLink, getCalUrl } from '@/config/business';
 import {
   getFormattedDate,
   getFormattedTime,
@@ -22,6 +25,7 @@ interface Props {
 }
 
 export default function FeaturedEvent({ event, locale }: Props) {
+  const [showModal, setShowModal] = useState(false);
   const isRTL = locale === 'ar';
   const title = isRTL ? event.titleAr : event.titleEn;
   const description = isRTL ? event.descriptionAr : event.descriptionEn;
@@ -107,36 +111,82 @@ export default function FeaturedEvent({ event, locale }: Props) {
           />
         </div>
 
-        {/* CTAs */}
+        {/* Smart CTAs */}
         <div className="flex flex-wrap items-center gap-3">
-          {event.registrationStatus !== 'closed' && (
+          {event.registrationStatus !== 'closed' && event.registrationType !== 'none' && (
+            <>
+              {event.registrationType === 'rsvp' && (
+                <Button
+                  variant="primary"
+                  size="lg"
+                  icon={<UserPlus className="w-5 h-5" />}
+                  onClick={() => setShowModal(true)}
+                >
+                  {isRTL ? (event.isFree ? 'سجّل مجاناً' : 'سجّل الآن') : (event.isFree ? 'Register Now — Free' : 'Register Now')}
+                </Button>
+              )}
+              {event.registrationType === 'cal' && (
+                <Button
+                  as="a"
+                  href={getCalUrl(event.calEventSlug)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="primary"
+                  size="lg"
+                  icon={<CalendarDays className="w-5 h-5" />}
+                >
+                  {isRTL ? 'احجز مكانك' : 'Book Your Spot'}
+                </Button>
+              )}
+              {event.registrationType === 'external' && event.externalRegistrationUrl && (
+                <Button
+                  as="a"
+                  href={event.externalRegistrationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="primary"
+                  size="lg"
+                  icon={<ExternalLink className="w-5 h-5" />}
+                >
+                  {isRTL ? 'سجّل الآن' : 'Register Now'}
+                </Button>
+              )}
+            </>
+          )}
+
+          {event.registrationType !== 'none' && (
             <Button
               as="a"
-              href={`/${locale}/book-a-session`}
-              variant="primary"
+              href={getWhatsAppLink(
+                isRTL
+                  ? `مرحباً! أنا مهتم/ة بفعالية "${event.titleAr}" في ${formattedDate}. هل يمكنك مشاركة المزيد من التفاصيل؟`
+                  : `Hi! I'm interested in "${event.titleEn}" on ${formattedDate}. Could you share more details?`
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outline"
               size="lg"
-              icon={<CalendarDays className="w-5 h-5" />}
+              icon={<MessageCircle className="w-5 h-5" />}
             >
-              {isRTL ? 'سجّل الآن' : 'Register Now'}
+              {isRTL ? 'استفسار' : 'Inquire'}
             </Button>
           )}
-          <Button
-            as="a"
-            href="https://wa.me/16132222104"
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="outline"
-            size="lg"
-            icon={<MessageCircle className="w-5 h-5" />}
-          >
-            {isRTL ? 'استفسار' : 'Inquire'}
-          </Button>
 
           <div className="flex items-center gap-1 sm:ml-auto">
             <AddToCalendar event={event} locale={locale} />
             <ShareEvent event={event} locale={locale} />
           </div>
         </div>
+
+        {/* Registration Modal */}
+        {event.registrationType === 'rsvp' && (
+          <EventRegistrationModal
+            event={event}
+            locale={locale}
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+          />
+        )}
       </div>
     </motion.div>
   );

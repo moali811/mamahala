@@ -36,6 +36,10 @@ export const events: SmartEvent[] = [
     spotsRemaining: 72,
     registrationStatus: 'open',
     registrationUrl: 'initial-consultation',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: false },
+    confirmationMessageEn: 'You\'re all set! Check your email for the Zoom link before the webinar.',
+    confirmationMessageAr: 'أنت مسجل! تحقق من بريدك الإلكتروني للحصول على رابط Zoom قبل الندوة.',
     featured: true,
     facilitator: {
       nameEn: 'Dr. Hala Ali',
@@ -100,6 +104,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 14,
     registrationStatus: 'open',
     registrationUrl: 'online-consultation',
+    registrationType: 'cal',
+    calEventSlug: 'couples-communication-workshop',
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',
@@ -146,6 +152,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 28,
     registrationStatus: 'open',
     registrationUrl: 'initial-consultation',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: false },
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',
@@ -204,6 +212,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 25,
     registrationStatus: 'open',
     registrationUrl: 'online-consultation',
+    registrationType: 'cal',
+    calEventSlug: 'empowering-parents-workshop',
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',
@@ -254,6 +264,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 15,
     registrationStatus: 'open',
     registrationUrl: 'initial-consultation',
+    registrationType: 'cal',
+    calEventSlug: 'quiet-strength-retreat',
     whatToBringEn: [
       'Comfortable outdoor clothing and shoes',
       'Water bottle',
@@ -291,6 +303,7 @@ export const events: SmartEvent[] = [
     isFree: false,
     priceCAD: 25,
     registrationStatus: 'closed',
+    registrationType: 'none',
     highlightEn: 'Over 30 families attended this powerful community workshop on cultural resilience.',
     highlightAr: 'حضر أكثر من 30 عائلة هذه الورشة المجتمعية القوية حول المرونة الثقافية.',
     tags: ['resilience', 'arab-families', 'community'],
