@@ -103,6 +103,67 @@ export interface Program {
   image: string;
 }
 
+/* ── Mama Hala Academy ───────────────────────────────────────── */
+
+export interface ModuleQuizQuestion {
+  textEn: string;
+  textAr: string;
+  options: { labelEn: string; labelAr: string; correct: boolean }[];
+}
+
+export interface ModuleQuiz {
+  questions: ModuleQuizQuestion[];
+  passingScore: number; // percentage 0-100
+}
+
+export interface AcademyModule {
+  slug: string;
+  titleEn: string;
+  titleAr: string;
+  durationMinutes: number;
+  lesson: { contentEn: string; contentAr: string };
+  drHalaNote?: { en: string; ar: string };
+  keyTakeaways: { en: string[]; ar: string[] };
+  reflection: { promptEn: string; promptAr: string };
+  activity: { titleEn: string; titleAr: string; descriptionEn: string; descriptionAr: string };
+  quiz: ModuleQuiz;
+  aiFaq: { questionEn: string; questionAr: string; answerEn: string; answerAr: string }[];
+}
+
+export interface AcademyLevel {
+  level: 1 | 2 | 3;
+  titleEn: string;
+  titleAr: string;
+  subtitleEn: string;
+  subtitleAr: string;
+  descriptionEn: string;
+  descriptionAr: string;
+  isFree: boolean;
+  modules: AcademyModule[];
+}
+
+export interface AcademyProgram {
+  slug: string;
+  titleEn: string;
+  titleAr: string;
+  descriptionEn: string;
+  descriptionAr: string;
+  longDescriptionEn: string;
+  longDescriptionAr: string;
+  category: ServiceCategory;
+  image: string;
+  color: string;
+  icon: string;
+  isFree: boolean;
+  priceCAD?: number;
+  totalModules: number;
+  totalDurationHours: number;
+  levels: AcademyLevel[];
+  certificate: { titleEn: string; titleAr: string; signedBy: string };
+  whoIsThisFor: { en: string[]; ar: string[] };
+  whatYouWillLearn: { en: string[]; ar: string[] };
+}
+
 /* ── Smart Events System ─────────────────────────────────────── */
 
 export type EventType = 'workshop' | 'webinar' | 'community-gathering' | 'retreat' | 'support-group';

@@ -3,84 +3,33 @@
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
-  BookOpen,
-  Users,
-  Clock,
-  CheckCircle2,
-  ArrowRight,
-  ArrowLeft,
-  Sparkles,
-  GraduationCap,
-  Calendar,
-  MessageCircle,
+  BookOpen, Users, Clock, ArrowRight, ArrowLeft, Sparkles,
+  GraduationCap, Heart, Sprout, HeartHandshake, Compass, TreePine,
+  Star, CheckCircle, Award, Layers,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
-import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
+import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
+import { programCatalog } from '@/data/programs';
 
-interface ProgramModule {
-  en: string;
-  ar: string;
-}
+const iconMap: Record<string, React.ReactNode> = {
+  Heart: <Heart className="w-6 h-6" />,
+  Sprout: <Sprout className="w-6 h-6" />,
+  HeartHandshake: <HeartHandshake className="w-6 h-6" />,
+  Compass: <Compass className="w-6 h-6" />,
+  TreePine: <TreePine className="w-6 h-6" />,
+};
 
-interface Program {
-  id: string;
-  title: { en: string; ar: string };
-  description: { en: string; ar: string };
-  type: 'course' | 'group';
-  duration: { en: string; ar: string };
-  status: 'coming-soon' | 'enrolling';
-  price?: string;
-  modules: ProgramModule[];
-}
-
-const programs: Program[] = [
-  {
-    id: 'confident-parenting',
-    title: {
-      en: 'Confident Parenting Masterclass',
-      ar: 'ماستركلاس الأبوة الواثقة',
-    },
-    description: {
-      en: 'A comprehensive program designed to help parents build confidence, improve communication with their children, and create a harmonious home environment.',
-      ar: 'برنامج شامل مصمم لمساعدة الآباء على بناء الثقة وتحسين التواصل مع أطفالهم وخلق بيئة منزلية متناغمة.',
-    },
-    type: 'course',
-    duration: { en: '6 weeks', ar: '٦ أسابيع' },
-    status: 'coming-soon',
-    modules: [
-      { en: 'Understanding Your Parenting Style', ar: 'فهم أسلوبك في التربية' },
-      { en: 'Communication That Connects', ar: 'التواصل الذي يربط' },
-      { en: 'Setting Boundaries With Love', ar: 'وضع الحدود بمحبة' },
-      { en: 'Building Lasting Family Habits', ar: 'بناء عادات أسرية دائمة' },
-    ],
-  },
-  {
-    id: 'pre-marriage',
-    title: {
-      en: 'Pre-Marriage Readiness Program',
-      ar: 'برنامج الاستعداد للزواج',
-    },
-    description: {
-      en: 'Prepare for a strong marriage foundation with communication skills, conflict resolution, and shared vision building.',
-      ar: 'استعد لأساس زواج قوي مع مهارات التواصل وحل النزاعات وبناء رؤية مشتركة.',
-    },
-    type: 'group',
-    duration: { en: '4 weeks', ar: '٤ أسابيع' },
-    status: 'enrolling',
-    price: 'CAD $299',
-    modules: [
-      { en: 'Communication Foundations', ar: 'أسس التواصل' },
-      { en: 'Conflict Resolution Skills', ar: 'مهارات حل النزاعات' },
-      { en: 'Financial Planning Together', ar: 'التخطيط المالي معًا' },
-      { en: 'Building Your Shared Vision', ar: 'بناء رؤيتكم المشتركة' },
-    ],
-  },
-];
+const categoryLabels: Record<string, { en: string; ar: string }> = {
+  families: { en: 'Families', ar: 'العائلات' },
+  youth: { en: 'Youth', ar: 'الشباب' },
+  couples: { en: 'Couples', ar: 'الأزواج' },
+  adults: { en: 'Adults', ar: 'البالغين' },
+};
 
 export default function ProgramsPage() {
   const params = useParams();
@@ -91,13 +40,10 @@ export default function ProgramsPage() {
 
   return (
     <div className="overflow-hidden">
-      {/* ================================================================ */}
-      {/*  HERO                                                            */}
-      {/* ================================================================ */}
+      {/* ─── HERO ─── */}
       <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden gradient-sage">
-        {/* Decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] blur-[80px]" />
+          <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#7A3B5E]/[0.04] blur-[80px]" />
           <div className="absolute bottom-10 left-[10%] w-[300px] h-[300px] rounded-full bg-[#C8A97D]/[0.06] blur-[60px]" />
         </div>
 
@@ -117,137 +63,208 @@ export default function ProgramsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
+            {/* Academy badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#7A3B5E]/8 mb-6">
+              <GraduationCap className="w-4 h-4 text-[#7A3B5E]" />
+              <span className="text-sm font-semibold text-[#7A3B5E]">
+                {isRTL ? 'أكاديمية ماما هالة' : 'Mama Hala Academy'}
+              </span>
+            </div>
+
             <h1
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {isRTL ? 'البرامج' : 'Programs'}
+              {isRTL ? (
+                <>تعلّم. انمُ. <span className="text-[#7A3B5E] italic">تحوّل.</span></>
+              ) : (
+                <>Learn. Grow. <span className="text-[#7A3B5E] italic">Transform.</span></>
+              )}
             </h1>
             <p className="mt-5 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed">
               {isRTL
-                ? 'دورات منظمة ومصممة لتحقيق النمو المستدام والتطور الشخصي والأسري'
-                : 'Structured courses designed for sustained growth and personal and family development'}
+                ? 'برامج تعليمية متعددة المستويات مصممة من قبل الدكتورة هالة علي — مبنية على الأدلة، عملية، ومصممة لتحولات حقيقية.'
+                : 'Multi-level educational programs designed by Dr. Hala Ali — evidence-based, practical, and built for real transformation.'}
             </p>
+
+            {/* Quick stats */}
+            <div className="flex flex-wrap items-center gap-6 mt-8">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#7A3B5E]/10 flex items-center justify-center">
+                  <BookOpen className="w-4 h-4 text-[#7A3B5E]" />
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-[#2D2A33]">5</p>
+                  <p className="text-xs text-[#8E8E9F]">{isRTL ? 'برامج' : 'Programs'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#C8A97D]/10 flex items-center justify-center">
+                  <Layers className="w-4 h-4 text-[#C8A97D]" />
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-[#2D2A33]">59</p>
+                  <p className="text-xs text-[#8E8E9F]">{isRTL ? 'وحدة تعليمية' : 'Modules'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-[#3B8A6E]/10 flex items-center justify-center">
+                  <Award className="w-4 h-4 text-[#3B8A6E]" />
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-[#2D2A33]">{isRTL ? 'معتمدة' : 'Certified'}</p>
+                  <p className="text-xs text-[#8E8E9F]">{isRTL ? 'شهادات إتمام' : 'Completion Certificates'}</p>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
         <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
-      {/* ================================================================ */}
-      {/*  PROGRAMS GRID                                                   */}
-      {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+      {/* ─── HOW IT WORKS ─── */}
+      <section className="py-16 lg:py-20 bg-[#FAF7F2]">
         <div className="container-main">
+          <ScrollReveal className="text-center mb-12">
+            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
+              {isRTL ? 'كيف يعمل' : 'How It Works'}
+            </span>
+            <h2
+              className="text-3xl sm:text-4xl text-[#2D2A33] leading-tight"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {isRTL ? 'رحلة تعلّم مصممة لتحولك' : 'A Learning Journey Designed for Your Growth'}
+            </h2>
+          </ScrollReveal>
 
-          <StaggerReveal className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {programs.map((program) => {
-              const title = isRTL ? program.title.ar : program.title.en;
-              const description = isRTL ? program.description.ar : program.description.en;
-              const duration = isRTL ? program.duration.ar : program.duration.en;
-              const isEnrolling = program.status === 'enrolling';
-              const TypeIcon = program.type === 'course' ? GraduationCap : Users;
+          <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { icon: <BookOpen className="w-5 h-5" />, title: isRTL ? 'تعلّم' : 'Learn', desc: isRTL ? 'دروس غنية بالمحتوى مع رؤى الدكتورة هالة' : 'Rich lessons with Dr. Hala\'s insights', color: '#7A3B5E' },
+              { icon: <Star className="w-5 h-5" />, title: isRTL ? 'تأمّل' : 'Reflect', desc: isRTL ? 'تمارين تأمل وأنشطة عملية' : 'Guided reflections & practical activities', color: '#C8A97D' },
+              { icon: <CheckCircle className="w-5 h-5" />, title: isRTL ? 'اختبر' : 'Assess', desc: isRTL ? 'اختبارات لتعزيز فهمك' : 'Module quizzes to reinforce learning', color: '#C4878A' },
+              { icon: <Award className="w-5 h-5" />, title: isRTL ? 'احتفل' : 'Graduate', desc: isRTL ? 'شهادة إتمام موقعة من الدكتورة هالة' : 'Certificate signed by Dr. Hala Ali', color: '#3B8A6E' },
+            ].map((step, i) => (
+              <StaggerChild key={i}>
+                <div className="bg-white rounded-xl border border-[#F3EFE8] p-6 text-center">
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: `${step.color}12` }}>
+                    <div style={{ color: step.color }}>{step.icon}</div>
+                  </div>
+                  <div className="text-xs font-bold text-[#C8A97D] mb-1">{isRTL ? `الخطوة ${i + 1}` : `Step ${i + 1}`}</div>
+                  <h3 className="text-lg font-bold text-[#2D2A33] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>{step.title}</h3>
+                  <p className="text-sm text-[#8E8E9F]">{step.desc}</p>
+                </div>
+              </StaggerChild>
+            ))}
+          </StaggerReveal>
+        </div>
+      </section>
+
+      {/* ─── PROGRAMS ─── */}
+      <section className="py-16 lg:py-24 bg-white">
+        <div className="container-main">
+          <ScrollReveal className="mb-12">
+            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
+              {isRTL ? 'البرامج' : 'Programs'}
+            </span>
+            <h2
+              className="text-3xl sm:text-4xl text-[#2D2A33] leading-tight"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {isRTL ? 'اختر رحلتك' : 'Choose Your Journey'}
+            </h2>
+          </ScrollReveal>
+
+          <StaggerReveal className="space-y-8">
+            {programCatalog.map((program, index) => {
+              const title = isRTL ? program.titleAr : program.titleEn;
+              const desc = isRTL ? program.descriptionAr : program.descriptionEn;
+              const longDesc = isRTL ? program.longDescriptionAr : program.longDescriptionEn;
+              const catLabel = isRTL ? categoryLabels[program.category]?.ar : categoryLabels[program.category]?.en;
+              const icon = iconMap[program.icon] || <BookOpen className="w-6 h-6" />;
 
               return (
-                <StaggerChild key={program.id}>
+                <StaggerChild key={program.slug}>
                   <motion.div
-                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300 h-full flex flex-col"
-                    whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
+                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300"
+                    whileHover={{ y: -4, boxShadow: '0 12px 48px rgba(0,0,0,0.08)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    {/* Visual header area */}
-                    <div className={`relative p-8 pb-6 overflow-hidden ${program.type === 'course' ? 'bg-gradient-to-br from-[#F0D5CA]/50 via-[#FAF0EC]/30 to-transparent' : 'bg-gradient-to-br from-[#E8D5E0]/50 via-[#F8EEF3]/30 to-transparent'}`}>
+                    <div className="flex flex-col lg:flex-row">
+                      {/* Left: Visual */}
                       <div
-                        className="absolute inset-0 opacity-[0.02]"
-                        style={{
-                          backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 0.5px, transparent 0)',
-                          backgroundSize: '24px 24px',
-                          color: program.type === 'course' ? '#C4878A' : '#7A3B5E',
-                        }}
-                      />
-                      {/* Large watermark icon */}
-                      <div className={`absolute ${isRTL ? 'left-4' : 'right-4'} top-4 opacity-[0.06]`}>
-                        <TypeIcon className="w-24 h-24" style={{ color: program.type === 'course' ? '#C4878A' : '#7A3B5E' }} />
-                      </div>
-
-                      <div className="relative flex items-center justify-between flex-wrap gap-3">
-                        <Badge variant={program.type === 'course' ? 'sage' : 'plum'} size="md">
-                          <TypeIcon className="w-3.5 h-3.5 mr-1.5" />
-                          {program.type === 'course'
-                            ? isRTL ? 'دورة' : 'Course'
-                            : isRTL ? 'مجموعة' : 'Group'}
-                        </Badge>
-
-                        <Badge
-                          variant={isEnrolling ? 'success' : 'sand'}
-                          size="md"
-                        >
-                          <span className={`w-2 h-2 rounded-full ${isEnrolling ? 'bg-[#3B8A6E]' : 'bg-[#C8A97D]'} mr-1.5`} />
-                          {isEnrolling ? messages.common.enrollNow : messages.common.comingSoon}
-                        </Badge>
-                      </div>
-                    </div>
-
-                    <div className="p-8 pt-5 flex-1 flex flex-col">
-
-                      {/* Title */}
-                      <h3
-                        className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#7A3B5E] transition-colors duration-200"
-                        style={{ fontFamily: 'var(--font-heading)' }}
+                        className="relative flex-shrink-0 w-full lg:w-[340px] overflow-hidden"
+                        style={{ background: `linear-gradient(135deg, ${program.color}15, ${program.color}08)` }}
                       >
-                        {title}
-                      </h3>
-
-                      {/* Description */}
-                      <p className="text-[#4A4A5C] leading-relaxed mb-6">
-                        {description}
-                      </p>
-
-                      {/* Duration */}
-                      <div className="flex items-center gap-2 text-sm text-[#8E8E9F] mb-6">
-                        <Clock className="w-4 h-4" />
-                        <span>{duration}</span>
-                      </div>
-
-                      {/* Modules */}
-                      <div className="mb-8 flex-1">
-                        <p className="text-xs font-semibold tracking-[0.15em] uppercase text-[#8E8E9F] mb-3">
-                          {isRTL ? 'المحاور' : 'Modules'}
-                        </p>
-                        <div className="space-y-2.5">
-                          {program.modules.map((mod, idx) => (
-                            <div
-                              key={idx}
-                              className="flex items-center gap-3 text-sm text-[#4A4A5C]"
-                            >
-                              <div className="w-6 h-6 rounded-full bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0">
-                                <CheckCircle2 className="w-3.5 h-3.5 text-[#7A3B5E]" />
-                              </div>
-                              <span>{isRTL ? mod.ar : mod.en}</span>
-                            </div>
-                          ))}
+                        <div
+                          className="absolute inset-0 opacity-[0.03]"
+                          style={{
+                            backgroundImage: 'radial-gradient(circle at 2px 2px, currentColor 0.5px, transparent 0)',
+                            backgroundSize: '24px 24px',
+                            color: program.color,
+                          }}
+                        />
+                        <div className="relative flex flex-col items-center justify-center p-8 lg:p-10 h-full min-h-[240px]">
+                          <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ backgroundColor: `${program.color}15` }}>
+                            <div style={{ color: program.color }}>{icon}</div>
+                          </div>
+                          <div className="flex items-center gap-2 mb-2">
+                            {program.isFree ? (
+                              <Badge variant="success" size="md">{isRTL ? 'مجاني' : 'Free'}</Badge>
+                            ) : (
+                              <Badge variant="sand" size="md">CAD ${program.priceCAD}</Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3 text-xs text-[#8E8E9F]">
+                            <span className="inline-flex items-center gap-1"><Layers className="w-3 h-3" /> {program.totalModules} {isRTL ? 'وحدة' : 'modules'}</span>
+                            <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" /> {program.totalDurationHours}h</span>
+                          </div>
                         </div>
                       </div>
 
-                      {/* Footer: price + CTA */}
-                      <div className="flex items-center justify-between flex-wrap gap-4 pt-6 border-t border-[#F3EFE8]">
-                        {program.price && (
-                          <span className="text-lg font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
-                            {program.price}
-                          </span>
-                        )}
+                      {/* Right: Content */}
+                      <div className="flex-1 p-6 sm:p-8 lg:p-10 flex flex-col">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Badge variant="plum" size="sm">{catLabel}</Badge>
+                          <Badge variant="neutral" size="sm">
+                            <Award className="w-3 h-3 mr-1" />
+                            {isRTL ? 'شهادة' : 'Certificate'}
+                          </Badge>
+                          {!program.isFree && programCatalog.indexOf(program) < 4 && (
+                            <Badge variant="success" size="sm">
+                              {isRTL ? 'المستوى الأول مجاني' : 'Level 1 Free'}
+                            </Badge>
+                          )}
+                        </div>
 
-                        <div className="flex gap-2">
+                        <h3
+                          className="text-xl sm:text-2xl font-bold text-[#2D2A33] mb-3 group-hover:text-[#7A3B5E] transition-colors"
+                          style={{ fontFamily: 'var(--font-heading)' }}
+                        >
+                          {title}
+                        </h3>
+
+                        <p className="text-[#4A4A5C] leading-relaxed mb-4">{longDesc}</p>
+
+                        {/* What you'll learn */}
+                        <div className="flex flex-wrap gap-x-4 gap-y-1.5 mb-6 text-sm text-[#8E8E9F]">
+                          {(isRTL ? program.whatYouWillLearn.ar : program.whatYouWillLearn.en).slice(0, 3).map((item, i) => (
+                            <span key={i} className="inline-flex items-center gap-1.5">
+                              <CheckCircle className="w-3.5 h-3.5 text-[#3B8A6E]" /> {item}
+                            </span>
+                          ))}
+                        </div>
+
+                        {/* CTAs */}
+                        <div className="flex flex-wrap gap-3 mt-auto">
                           <Button
                             as="a"
-                            href={isEnrolling ? `/${locale}/book-a-session` : `https://wa.me/16132222104?text=${encodeURIComponent(isRTL ? `مرحباً، أود الانضمام لقائمة انتظار: ${isRTL ? program.title.ar : program.title.en}` : `Hi, I'd like to join the waitlist for: ${program.title.en}`)}`}
-                            target={isEnrolling ? undefined : '_blank'}
-                            rel={isEnrolling ? undefined : 'noopener noreferrer'}
-                            variant={isEnrolling ? 'primary' : 'outline'}
+                            href={`/${locale}/programs/${program.slug}`}
+                            variant="primary"
                             size="md"
-                            icon={isEnrolling ? <ArrowIcon className="w-4 h-4" /> : <MessageCircle className="w-4 h-4" />}
+                            icon={<ArrowIcon className="w-4 h-4" />}
                             iconPosition="right"
                           >
-                            {isEnrolling ? messages.common.enrollNow : messages.common.joinWaitlist}
+                            {isRTL ? 'ابدأ الرحلة' : 'Start Your Journey'}
                           </Button>
                         </div>
                       </div>
@@ -260,13 +277,56 @@ export default function ProgramsPage() {
         </div>
       </section>
 
+      {/* ─── CERTIFICATE PREVIEW ─── */}
+      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+        <div className="container-main">
+          <ScrollReveal>
+            <div className="max-w-2xl mx-auto text-center">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#C8A97D]/10 mb-5">
+                <GraduationCap className="w-8 h-8 text-[#C8A97D]" />
+              </div>
+              <h2
+                className="text-3xl sm:text-4xl text-[#2D2A33] leading-tight mb-4"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {isRTL ? 'احصل على شهادتك' : 'Earn Your Certificate'}
+              </h2>
+              <p className="text-[#4A4A5C] leading-relaxed mb-8 max-w-lg mx-auto">
+                {isRTL
+                  ? 'أكمل جميع الوحدات واحصل على شهادة إتمام رسمية موقعة من الدكتورة هالة علي — خبيرة مستشارة أسرية معتمدة.'
+                  : 'Complete all modules and receive an official Certificate of Completion signed by Dr. Hala Ali — a certified family counselor with years of clinical experience.'}
+              </p>
+
+              {/* Certificate preview card */}
+              <div className="bg-white rounded-2xl border-2 border-[#C8A97D]/20 p-8 sm:p-12 relative overflow-hidden max-w-md mx-auto">
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#7A3B5E] via-[#C8A97D] to-[#C4878A]" />
+                <p className="text-xs text-[#C8A97D] uppercase tracking-[0.3em] mb-4">Mama Hala Academy</p>
+                <h3
+                  className="text-2xl text-[#2D2A33] mb-2"
+                  style={{ fontFamily: 'var(--font-heading)' }}
+                >
+                  Certificate of Completion
+                </h3>
+                <p className="text-sm text-[#8E8E9F] mb-6">{isRTL ? 'هذا يشهد بأن' : 'This certifies that'}</p>
+                <div className="border-b-2 border-[#C8A97D]/30 w-48 mx-auto mb-2" />
+                <p className="text-xs text-[#8E8E9F] italic mb-6">{isRTL ? 'اسمك هنا' : 'Your Name Here'}</p>
+                <p className="text-xs text-[#4A4A5C]">{isRTL ? 'أتم بنجاح برنامج' : 'has successfully completed'}</p>
+                <p className="text-sm font-bold text-[#7A3B5E] mt-1">{isRTL ? 'الوالد الواعي' : 'The Intentional Parent'}</p>
+                <div className="mt-6 pt-4 border-t border-[#F3EFE8]">
+                  <p className="text-xs text-[#8E8E9F]" style={{ fontFamily: 'var(--font-heading)' }}>Dr. Hala Ali</p>
+                  <p className="text-[10px] text-[#B0B0C0]">Certified Family Counselor</p>
+                </div>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
       <FinalCTA
         locale={locale}
         fillColorAbove="#FAF7F2"
-        headingEn={<>Invest in Your Family's <span className="text-[#7A3B5E] italic">Future</span></>}
-        headingAr={<>استثمِرْ في مستقبلِ <span className="text-[#7A3B5E] italic">عائلتِك</span></>}
-        primaryTextEn="Try 1-on-1 Support"
-        primaryTextAr="جرِّبْ الدعمَ الفرديّ"
+        headingEn={<>Your Growth Journey <span className="text-[#7A3B5E] italic">Starts Here</span></>}
+        headingAr={<>رحلة نموّك <span className="text-[#7A3B5E] italic">تبدأ هنا</span></>}
       />
     </div>
   );
