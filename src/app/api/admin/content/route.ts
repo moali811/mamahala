@@ -65,8 +65,9 @@ async function getMergedItems(type: string): Promise<any[]> {
         source: 'static',
       }));
     } else if (type === 'faq') {
-      const { faqs } = await import('@/data/faqs');
-      staticItems = faqs.map((f: any, i: number) => ({
+      const { generalFaqs, bookingFaqs, contactFaqs, giftFaqs } = await import('@/data/faqs');
+      const allFaqs = [...generalFaqs, ...bookingFaqs, ...contactFaqs, ...giftFaqs];
+      staticItems = allFaqs.map((f: any, i: number) => ({
         id: `static_faq_${i}`,
         question: f.question,
         questionAr: f.questionAr || '',
