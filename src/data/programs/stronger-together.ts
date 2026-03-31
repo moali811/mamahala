@@ -167,7 +167,7 @@ The art of listening is ultimately an act of love. When you truly listen to your
           keyTakeaways: {
             en: [
               'True listening involves hearing the emotions and needs beneath the words, not just the words themselves',
-              'Validating your partner's feelings before offering solutions builds trust and connection',
+              'Validating your partner\'s feelings before offering solutions builds trust and connection',
               'Mirroring — repeating back what you heard — is a simple but powerful way to show understanding',
               'Cultural backgrounds shape how emotions are expressed, making it essential to listen for what is not said',
             ],
@@ -195,7 +195,7 @@ The art of listening is ultimately an act of love. When you truly listen to your
                 textEn: `What is "listening to respond" and why is it harmful?`,
                 textAr: `[Arabic translation needed]`,
                 options: [
-                  { labelEn: 'Repeating your partner's words back — it is helpful', labelAr: `[Arabic translation needed]`, correct: false },
+                  { labelEn: 'Repeating your partner\'s words back — it is helpful', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'Preparing your rebuttal while your partner is still speaking — it prevents true understanding', labelAr: `[Arabic translation needed]`, correct: true },
                   { labelEn: 'Responding quickly to show you are engaged', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'Taking notes during a conversation for later reference', labelAr: `[Arabic translation needed]`, correct: false },
@@ -206,7 +206,7 @@ The art of listening is ultimately an act of love. When you truly listen to your
                 textAr: `[Arabic translation needed]`,
                 options: [
                   { labelEn: 'Physically facing your partner during a conversation', labelAr: `[Arabic translation needed]`, correct: false },
-                  { labelEn: 'Acknowledging and engaging with your partner's emotional bids for connection', labelAr: `[Arabic translation needed]`, correct: true },
+                  { labelEn: 'Acknowledging and engaging with your partner\'s emotional bids for connection', labelAr: `[Arabic translation needed]`, correct: true },
                   { labelEn: 'Turning the conversation toward a positive topic', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'Agreeing with everything your partner says to avoid conflict', labelAr: `[Arabic translation needed]`, correct: false },
                 ],
@@ -565,7 +565,7 @@ Acceptance is the cornerstone of navigating differences. This does not mean resi
                 textAr: `[Arabic translation needed]`,
                 options: [
                   { labelEn: 'Things you dislike about your partner', labelAr: `[Arabic translation needed]`, correct: false },
-                  { labelEn: 'Each partner's non-negotiable needs', labelAr: `[Arabic translation needed]`, correct: true },
+                  { labelEn: 'Each partner\'s non-negotiable needs', labelAr: `[Arabic translation needed]`, correct: true },
                   { labelEn: 'Shared goals for the future', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'Areas where you agree completely', labelAr: `[Arabic translation needed]`, correct: false },
                 ],
@@ -611,7 +611,7 @@ The first step toward financial harmony is understanding your money story. Every
 
 Sharing your money stories with your partner is a powerful intimacy exercise. When your partner understands that your need to save comes from growing up with financial instability, their frustration softens into compassion. When you understand that your partner's spending reflects a deep need to create joy and connection — perhaps because their family showed love through generosity — you can appreciate what drives them rather than judging it.
 
-Creating financial harmony involves three practical foundations. First, establish transparency. Both partners should have full visibility into the household finances, including income, debts, savings, and spending. Financial secrecy erodes trust. Second, create a shared financial plan that reflects both partners' values. This is not about one person creating a budget the other must follow — it is a collaborative process where both voices carry equal weight. Third, maintain individual financial autonomy within the shared framework. Each partner having some personal spending money — no questions asked — preserves dignity and reduces resentment.
+Creating financial harmony involves three practical foundations. First, establish transparency. Both partners should have full visibility into the household finances, including income, debts, savings, and spending. Financial secrecy erodes trust. Second, create a shared financial plan that reflects both partners\' values. This is not about one person creating a budget the other must follow — it is a collaborative process where both voices carry equal weight. Third, maintain individual financial autonomy within the shared framework. Each partner having some personal spending money — no questions asked — preserves dignity and reduces resentment.
 
 For immigrant and bicultural families, finances often carry the additional weight of remittances to family abroad, expectations around supporting extended family, and the stress of building a new life in an unfamiliar economic system. These pressures are real and valid, and they deserve dedicated conversation rather than being swept under the rug.
 
@@ -958,7 +958,7 @@ The Attachment phase represents a renewed commitment — a conscious choice to b
 
 It is important to acknowledge that trust can be rebuilt — but the relationship will not return to what it was before. It becomes something different. Many couples report that their rebuilt relationship is actually deeper and more honest than the original, precisely because they have been forced to confront difficult truths and choose each other consciously.
 
-Cultural and religious contexts significantly shape how betrayal and forgiveness are processed. Some traditions emphasize forgiveness as a spiritual duty; others prioritize family preservation above individual grievances. Honor these frameworks while also ensuring that both partners' emotional needs are genuinely addressed — not just suppressed in service of cultural expectation.
+Cultural and religious contexts significantly shape how betrayal and forgiveness are processed. Some traditions emphasize forgiveness as a spiritual duty; others prioritize family preservation above individual grievances. Honor these frameworks while also ensuring that both partners\' emotional needs are genuinely addressed — not just suppressed in service of cultural expectation.
 
 Rebuilding trust is not a linear process. There will be setbacks, triggers, and days when the pain feels fresh again. This is normal. What matters is the overall trajectory — a gradual, imperfect movement toward safety, honesty, and renewed connection.`,
             contentAr: `[Arabic translation needed]`,
@@ -1107,7 +1107,7 @@ Through all changes, two anchors keep couples grounded. First, returning regular
                 textEn: `What is "co-regulation" in a relationship context?`,
                 textAr: `[Arabic translation needed]`,
                 options: [
-                  { labelEn: 'Both partners controlling each other's behavior', labelAr: `[Arabic translation needed]`, correct: false },
+                  { labelEn: 'Both partners controlling each other\'s behavior', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'Using the relationship as a safe base and providing calming presence for each other during stress', labelAr: `[Arabic translation needed]`, correct: true },
                   { labelEn: 'Following the same daily schedule', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'Regulating finances together', labelAr: `[Arabic translation needed]`, correct: false },
@@ -1251,7 +1251,7 @@ Creating shared meaning is not a one-time conversation. It is an ongoing, evolvi
                   { labelEn: 'It creates conflict between partners from different backgrounds', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'Cultural heritage is irrelevant in modern relationships', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'Integrating cultural traditions creates a rich tapestry that honors both histories while building something new', labelAr: `[Arabic translation needed]`, correct: true },
-                  { labelEn: 'One partner should adopt the other's cultural traditions entirely', labelAr: `[Arabic translation needed]`, correct: false },
+                  { labelEn: 'One partner should adopt the other\'s cultural traditions entirely', labelAr: `[Arabic translation needed]`, correct: false },
                 ],
               },
             ],
@@ -1283,7 +1283,7 @@ Legacy is not about perfection. No relationship is free of struggle, misundersta
 
 Consider the legacy you inherited from your own parents and families. Perhaps you witnessed a marriage of deep devotion that endured hardship. Perhaps you saw a partnership that struggled with communication but expressed love through sacrifice. Perhaps the relationship modeled for you was one you want to do differently. Understanding your inherited relationship legacy is the first step in consciously creating the one you want to leave behind.
 
-Children are exquisitely sensitive observers of their parents' relationship. Research on attachment and family systems shows that children develop their understanding of love, conflict, and emotional safety primarily through watching their parents interact. A child who sees their parents repair after arguments learns that conflict is not the end of the world. A child who witnesses respect and affection learns that love is safe. These lessons shape their future relationships more powerfully than any words.
+Children are exquisitely sensitive observers of their parents\' relationship. Research on attachment and family systems shows that children develop their understanding of love, conflict, and emotional safety primarily through watching their parents interact. A child who sees their parents repair after arguments learns that conflict is not the end of the world. A child who witnesses respect and affection learns that love is safe. These lessons shape their future relationships more powerfully than any words.
 
 Your relationship legacy also extends to your community. In many cultures, couples serve as models and mentors for younger families. Your commitment to growth, your willingness to seek help when needed, and your honest engagement with the challenges of partnership give others permission to do the same. When you invest in your relationship, you are investing in your community's relational health.
 
@@ -1331,7 +1331,7 @@ Congratulations on completing Stronger Together. Dr. Hala and the entire Mama Ha
                 options: [
                   { labelEn: 'The financial assets a couple passes to their children', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'The lasting imprint a relationship leaves on children, family, and community', labelAr: `[Arabic translation needed]`, correct: true },
-                  { labelEn: 'A couple's social media presence', labelAr: `[Arabic translation needed]`, correct: false },
+                  { labelEn: 'A couple\'s social media presence', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'The length of a marriage', labelAr: `[Arabic translation needed]`, correct: false },
                 ],
               },
@@ -1351,7 +1351,7 @@ Congratulations on completing Stronger Together. Dr. Hala and the entire Mama Ha
                 options: [
                   { labelEn: 'So you can blame your parents for your problems', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'Because it helps you consciously choose what to continue and what to change', labelAr: `[Arabic translation needed]`, correct: true },
-                  { labelEn: 'Because you must replicate your parents' relationship', labelAr: `[Arabic translation needed]`, correct: false },
+                  { labelEn: 'Because you must replicate your parents\' relationship', labelAr: `[Arabic translation needed]`, correct: false },
                   { labelEn: 'It is not important — only the present matters', labelAr: `[Arabic translation needed]`, correct: false },
                 ],
               },
