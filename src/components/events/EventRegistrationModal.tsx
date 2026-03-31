@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, CalendarDays, Clock, MapPin, Loader2, AlertCircle, UserPlus } from 'lucide-react';
 import type { SmartEvent } from '@/types';
@@ -90,11 +91,13 @@ export default function EventRegistrationModal({ event, locale, isOpen, onClose 
     }, 300);
   };
 
-  return (
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -356,6 +359,7 @@ export default function EventRegistrationModal({ event, locale, isOpen, onClose 
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body,
   );
 }
