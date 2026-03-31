@@ -90,6 +90,20 @@ export function generateEventConfirmationEmail(params: EventConfirmationParams):
     </table>
   </td></tr>` : ''}
 
+  ${!event.isFree && !waitlisted ? `
+  <!-- Payment Info -->
+  <tr><td style="padding:0 0 24px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#FDF5F0;border-radius:12px;border:1px solid #D4836A30;">
+      <tr><td style="padding:20px;text-align:center;">
+        <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#D4836A;">💳 ${isAr ? 'الدفع مطلوب' : 'Payment Required'}</p>
+        <p style="margin:0 0 12px;font-size:13px;color:#4A4A5C;">${isAr ? 'لإتمام تسجيلك، يرجى إرسال الدفع عبر واتساب أو التحويل الإلكتروني.' : 'To complete your registration, please send payment via WhatsApp or e-transfer.'}</p>
+        <a href="https://wa.me/16132222104?text=${encodeURIComponent(isAr ? 'مرحباً، أريد إتمام الدفع لـ ' + (isAr ? event.titleAr : event.titleEn) : 'Hi, I want to complete payment for ' + event.titleEn)}" target="_blank" style="display:inline-block;padding:12px 28px;background:#25D366;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600;">
+          💬 ${isAr ? 'أكمل الدفع عبر واتساب' : 'Complete Payment via WhatsApp'}
+        </a>
+      </td></tr>
+    </table>
+  </td></tr>` : ''}
+
   <!-- Add to Calendar CTA -->
   ${!waitlisted ? `
   <tr><td style="padding:0 0 24px;text-align:center;">

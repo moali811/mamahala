@@ -104,8 +104,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 14,
     registrationStatus: 'open',
     registrationUrl: 'online-consultation',
-    registrationType: 'cal',
-    calEventSlug: 'online-consultation',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: false },
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',
@@ -212,8 +212,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 25,
     registrationStatus: 'open',
     registrationUrl: 'online-consultation',
-    registrationType: 'cal',
-    calEventSlug: 'online-consultation',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: false },
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',
@@ -264,8 +264,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 15,
     registrationStatus: 'open',
     registrationUrl: 'initial-consultation',
-    registrationType: 'cal',
-    calEventSlug: 'initial-consultation',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: false },
     whatToBringEn: [
       'Comfortable outdoor clothing and shoes',
       'Water bottle',

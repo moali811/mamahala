@@ -197,7 +197,9 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
                     icon={<UserPlus className="w-4 h-4" />}
                     onClick={() => setShowModal(true)}
                   >
-                    {isRTL ? (event.isFree ? 'سجّل مجاناً' : 'سجّل الآن') : (event.isFree ? 'Register — Free' : 'Register')}
+                    {event.isFree
+                      ? (isRTL ? 'سجّل مجاناً' : 'Register — Free')
+                      : (isRTL ? 'سجّل الآن' : 'Register Now')}
                   </Button>
                 )}
                 {event.registrationType === 'cal' && (

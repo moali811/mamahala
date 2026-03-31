@@ -230,15 +230,17 @@ export default function EventRegistrationModal({ event, locale, isOpen, onClose 
                     ) : (
                       <>
                         <UserPlus className="w-4 h-4" />
-                        {isRTL ? 'سجّل الآن — مجاناً' : "Register — It's Free"}
+                        {event.isFree
+                          ? (isRTL ? 'سجّل الآن — مجاناً' : "Register — It's Free")
+                          : (isRTL ? `سجّل الآن — ${price}` : `Register — ${price}`)}
                       </>
                     )}
                   </button>
 
                   <p className="text-xs text-center text-[#8E8E9F]">
-                    {isRTL
-                      ? 'ستتلقى تأكيداً بالبريد الإلكتروني مع جميع التفاصيل.'
-                      : "You'll receive a confirmation email with all the details."}
+                    {event.isFree
+                      ? (isRTL ? 'ستتلقى تأكيداً بالبريد الإلكتروني مع جميع التفاصيل.' : "You'll receive a confirmation email with all the details.")
+                      : (isRTL ? 'سجّل الآن وستتلقى رابط الدفع بالبريد الإلكتروني.' : "Register now and you'll receive a payment link by email.")}
                   </p>
                 </form>
               )}
