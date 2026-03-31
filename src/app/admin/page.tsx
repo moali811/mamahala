@@ -313,8 +313,8 @@ export default function AdminCommandCenter() {
           {activeModule === 'leads' && <LeadsModule leads={leads} password={password} searchQuery={searchQuery} onSearchChange={setSearchQuery} />}
           {activeModule === 'blog' && <BlogModule password={password} />}
           {activeModule === 'services' && <ServicesModule />}
-          {activeModule === 'testimonials' && <TestimonialsModule />}
-          {activeModule === 'faqs' && <FAQsModule />}
+          {activeModule === 'testimonials' && <TestimonialsModule password={password} />}
+          {activeModule === 'faqs' && <FAQsModule password={password} />}
           {activeModule === 'resources' && <ResourcesModule stats={stats} />}
           {activeModule === 'quiz-results' && <QuizResultsModule quizResults={quizResults} />}
           {activeModule === 'settings' && <SettingsModule />}
