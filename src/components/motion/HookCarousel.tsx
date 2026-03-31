@@ -111,20 +111,21 @@ export default function HookCarousel({ locale, isRTL }: Props) {
     setProgress(0);
   }, []);
 
-  // Progress bar + auto-advance
+  // Auto-advance with simple timer (no continuous progress animation)
   useEffect(() => {
     if (isPaused) return;
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          next();
-          return 0;
-        }
-        return prev + (100 / (DURATION / 50));
-      });
-    }, 50);
-    return () => clearInterval(interval);
-  }, [isPaused, next]);
+    setProgress(0);
+    // Use a single timeout for auto-advance instead of rapid interval
+    const timer = setTimeout(() => {
+      next();
+    }, DURATION);
+    // Animate progress with CSS transition instead of JS interval
+    const raf = requestAnimationFrame(() => setProgress(100));
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(raf);
+    };
+  }, [isPaused, next, current]);
 
   const slide = slides[current];
   const isLast = current === slides.length - 1;
@@ -135,31 +136,23 @@ export default function HookCarousel({ locale, isRTL }: Props) {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Decorative floating shapes */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
+      {/* Decorative shapes — static for performance */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden hidden lg:block">
+        <div
           className="absolute top-12 right-[15%] w-32 h-32 rounded-full"
           style={{ backgroundColor: `${slide.accentColor}08` }}
-          animate={{ y: [0, -15, 0], scale: [1, 1.05, 1] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div
+        <div
           className="absolute bottom-16 left-[10%] w-24 h-24 rounded-full"
           style={{ backgroundColor: `${slide.accentColor}06` }}
-          animate={{ y: [0, 12, 0], scale: [1, 1.08, 1] }}
-          transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div
+        <div
           className="absolute top-1/2 left-[5%] w-16 h-16 rounded-full"
           style={{ backgroundColor: `${slide.accentColor}05` }}
-          animate={{ y: [0, -8, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div
+        <div
           className="absolute top-[20%] right-[8%] w-20 h-20 rounded-2xl rotate-12"
           style={{ backgroundColor: `${slide.accentColor}04` }}
-          animate={{ rotate: [12, 20, 12], y: [0, -10, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
 
@@ -169,9 +162,9 @@ export default function HookCarousel({ locale, isRTL }: Props) {
           <AnimatePresence mode="wait">
             <motion.div
               key={current}
-              initial={{ opacity: 0, y: 25, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-              exit={{ opacity: 0, y: -20, filter: 'blur(6px)' }}
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
               {/* Icon */}
@@ -236,13 +229,14 @@ export default function HookCarousel({ locale, isRTL }: Props) {
                   backgroundColor: i === current ? `${slides[current].accentColor}25` : '#2D2A3315',
                 }}
               />
-              {/* Progress fill */}
+              {/* Progress fill — CSS transition instead of JS-driven */}
               {i === current && (
-                <motion.div
+                <div
                   className="absolute top-0 left-0 h-full rounded-full"
                   style={{
                     width: `${progress}%`,
                     backgroundColor: slides[current].accentColor,
+                    transition: progress === 0 ? 'none' : `width ${DURATION}ms linear`,
                   }}
                 />
               )}

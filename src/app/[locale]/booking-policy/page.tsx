@@ -79,10 +79,10 @@ export default function BookingPolicyPage() {
     {
       icon: MessageCircle,
       step: '02',
-      title: t('Book via Calendly or WhatsApp', 'تواصل معنا'),
+      title: t('Book Online or via WhatsApp', 'تواصل معنا'),
       desc: t(
         'Schedule through our online calendar or message us directly on WhatsApp.',
-        'احجز عبر الإنترنت من خلال Calendly أو تواصل معنا عبر WhatsApp'
+        'احجز عبر الإنترنت من خلال التقويم أو تواصل معنا عبر واتساب'
       ),
     },
     {
@@ -265,7 +265,7 @@ export default function BookingPolicyPage() {
             </motion.p>
 
             <motion.div variants={fadeUp} custom={3} className="mt-6">
-              <span className="inline-flex items-center gap-2 text-xs font-medium text-[#6B6580] bg-[#C4878A]/[0.08] backdrop-blur-sm px-4 py-2 rounded-full border border-[#C4878A]/10">
+              <span className="inline-flex items-center gap-2 text-xs font-medium text-[#6B6580] bg-[#C4878A]/[0.08] px-4 py-2 rounded-full border border-[#C4878A]/10">
                 <Clock className="w-3.5 h-3.5" />
                 {t('Last updated: 29.11.2022', 'آخر تحديث: 29.11.2022')}
               </span>
@@ -550,8 +550,8 @@ export default function BookingPolicyPage() {
         <div className="container-main max-w-5xl">
           <ScrollReveal>
             <div className="relative rounded-3xl overflow-hidden">
-              {/* Background */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
+              {/* Background — dark for proper contrast */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#7A3B5E] via-[#6B3354] to-[#5E2D48]" />
               <div className="absolute inset-0 pointer-events-none">
                 <div className="absolute top-0 right-[20%] w-[300px] h-[300px] rounded-full bg-white/[0.04] blur-[80px]" />
                 <div className="absolute bottom-0 left-[10%] w-[250px] h-[250px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />
@@ -567,7 +567,7 @@ export default function BookingPolicyPage() {
 
               {/* Content */}
               <div className="relative z-10 px-8 md:px-14 py-14 md:py-20 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-white/10 backdrop-blur-sm flex items-center justify-center mx-auto mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center mx-auto mb-6">
                   <Phone className="w-6 h-6 text-white" />
                 </div>
                 <h2

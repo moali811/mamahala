@@ -1,21 +1,25 @@
 'use client';
 
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   HelpCircle,
   MessageCircle,
   Calendar,
   Sparkles,
+  ChevronDown,
+  ArrowRight,
+  ArrowLeft,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer, ease, viewportOnce } from '@/lib/animations';
-import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
+import ScrollReveal from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
-import Badge from '@/components/ui/Badge';
-import Accordion from '@/components/ui/Accordion';
 import WaveDivider from '@/components/ui/WaveDivider';
+import FinalCTA from '@/components/shared/FinalCTA';
 import { generalFaqs } from '@/data/faqs';
 
 export default function FAQsPage() {
@@ -23,24 +27,25 @@ export default function FAQsPage() {
   const locale = (params?.locale as string) || 'en';
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
-  const accordionItems = generalFaqs.map((faq, index) => ({
-    id: String(index),
-    title: isRTL ? faq.questionAr : faq.question,
-    content: <p>{isRTL ? faq.answerAr : faq.answer}</p>,
-    icon: (
-      <div className="w-9 h-9 rounded-full bg-[#C4878A]/10 flex items-center justify-center flex-shrink-0">
-        <HelpCircle className="w-4 h-4 text-[#7A3B5E]" />
-      </div>
-    ),
-  }));
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<number | null>(0);
+
+  // Get unique tags
+  const tags = Array.from(new Set(generalFaqs.map((f) => f.tag).filter(Boolean))) as string[];
+  const tagsAr = Array.from(new Set(generalFaqs.map((f) => f.tagAr).filter(Boolean))) as string[];
+
+  const filteredFaqs = activeTag
+    ? generalFaqs.filter((f) => f.tag === activeTag)
+    : generalFaqs;
 
   return (
     <div className="overflow-hidden">
       {/* ================================================================ */}
       {/*  HERO                                                            */}
       {/* ================================================================ */}
-      <section className="relative pt-32 pb-28 lg:pt-40 lg:pb-36 overflow-hidden">
+      <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
         {/* Decorative orbs */}
@@ -112,86 +117,115 @@ export default function FAQsPage() {
       {/*  FAQ ACCORDION                                                   */}
       {/* ================================================================ */}
       <section className="py-24 lg:py-32 bg-[#FAF7F2]">
-        <div className="container-main">
-          <div className="max-w-3xl mx-auto">
-            <ScrollReveal>
-              <Accordion
-                items={accordionItems}
-                defaultOpen="0"
-                allowMultiple
-              />
-            </ScrollReveal>
+        <div className="container-main max-w-3xl">
+          {/* Tag filters */}
+          <ScrollReveal className="mb-10">
+            <div className="flex flex-wrap gap-2 justify-center">
+              <motion.button
+                onClick={() => { setActiveTag(null); setOpenId(null); }}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                  !activeTag ? 'bg-[#7A3B5E] text-white' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C8A97D]/30'
+                }`}
+                whileTap={{ scale: 0.97 }}
+              >
+                {isRTL ? 'الكلّ' : 'All'}
+              </motion.button>
+              {tags.map((tag, i) => (
+                <motion.button
+                  key={tag}
+                  onClick={() => { setActiveTag(tag); setOpenId(null); }}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                    activeTag === tag ? 'bg-[#7A3B5E] text-white' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C8A97D]/30'
+                  }`}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  {isRTL ? tagsAr[i] : tag}
+                </motion.button>
+              ))}
+            </div>
+          </ScrollReveal>
+
+          {/* FAQ list */}
+          <div className="space-y-3">
+            <AnimatePresence mode="popLayout">
+              {filteredFaqs.map((faq, i) => {
+                const isOpen = openId === i;
+                const question = isRTL ? faq.questionAr : faq.question;
+                const answer = isRTL ? faq.answerAr : faq.answer;
+                const tag = isRTL ? faq.tagAr : faq.tag;
+
+                return (
+                  <motion.div
+                    key={faq.question}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.25 }}
+                    className={`bg-white rounded-xl border transition-all duration-300 overflow-hidden ${
+                      isOpen ? 'border-[#C8A97D]/20 shadow-sm' : 'border-[#F3EFE8]'
+                    }`}
+                  >
+                    <button
+                      onClick={() => setOpenId(isOpen ? null : i)}
+                      className="w-full flex items-center gap-4 p-5 lg:p-6 text-start"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-[#C4878A]/8 flex items-center justify-center flex-shrink-0">
+                        <HelpCircle className="w-5 h-5 text-[#7A3B5E]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-[#2D2A33] leading-snug">{question}</h3>
+                        {tag && !isOpen && (
+                          <span className="text-[11px] text-[#C8A97D] font-medium uppercase tracking-wider mt-1 block">{tag}</span>
+                        )}
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-[#8E8E9F] flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.25 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-5 pb-6 pl-[4.5rem] lg:pl-[4.75rem]">
+                            <p className="text-[15px] text-[#6B6580] leading-relaxed">{answer}</p>
+                            {faq.link && (
+                              <Link
+                                href={`/${locale}${faq.link.href}`}
+                                target="_blank"
+                                className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-[#7A3B5E] hover:text-[#5E2D48] transition-colors"
+                              >
+                                {isRTL ? faq.link.labelAr : faq.link.labelEn}
+                                <ArrowIcon className="w-3 h-3" />
+                              </Link>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/*  STILL HAVE QUESTIONS CTA                                        */}
-      {/* ================================================================ */}
-      <section className="py-24 lg:py-36 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#C4878A] via-[#B8888A] to-[#A06466]" />
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
-        <div
-          className="absolute inset-0 opacity-[0.02] pointer-events-none"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-            backgroundSize: '48px 48px',
-          }}
-        />
-
-        <div className="container-main relative z-10">
-          <ScrollReveal className="text-center max-w-3xl mx-auto">
-            <motion.div
-              className="inline-flex items-center gap-2 bg-white/10 rounded-full px-5 py-2 mb-8"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={viewportOnce}
-              transition={{ delay: 0.1, duration: 0.5, ease }}
-            >
-              <Sparkles className="w-4 h-4 text-[#C8A97D]" />
-              <span className="text-sm text-white/80 font-medium">
-                {isRTL ? 'نحن هنا للمساعدة' : "We're Here to Help"}
-              </span>
-            </motion.div>
-
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {isRTL ? 'لا تزال لديك أسئلة؟' : 'Still Have Questions?'}
-            </h2>
-            <p className="mt-6 text-lg lg:text-xl text-white/80 leading-relaxed max-w-xl mx-auto">
-              {isRTL
-                ? 'لا تتردد في التواصل معنا. نحن هنا لمساعدتك في كل خطوة.'
-                : "Don't hesitate to reach out. We're here to support you every step of the way."}
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mt-10">
-              <Button
-                as="a"
-                href={`/${locale}/contact`}
-                variant="secondary"
-                size="lg"
-                icon={<MessageCircle className="w-5 h-5" />}
-                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
-              >
-                {messages.contact.pageTitle}
-              </Button>
-              <Button
-                as="a"
-                href={`/${locale}/book-a-session`}
-                variant="outline"
-                size="lg"
-                icon={<Calendar className="w-5 h-5" />}
-                className="!border-white/30 !text-white hover:!bg-white/10"
-              >
-                {messages.cta.bookNow}
-              </Button>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+      <FinalCTA
+        locale={locale}
+        fillColorAbove="#FAF7F2"
+        headingEn={<>Still Have <span className="text-[#7A3B5E] italic">Questions?</span></>}
+        headingAr={<>لا تزالُ لديكَ <span className="text-[#7A3B5E] italic">أسئلة؟</span></>}
+        descEn="Don't hesitate to reach out. We're here to support you every step of the way."
+        descAr="لا تتردّدْ في التواصل. نحنُ هنا لدعمِك في كلِّ خطوة."
+        primaryTextEn="I'm Ready"
+        primaryTextAr="أنا مستعدّ"
+        secondaryTextEn="Ask Us Directly"
+        secondaryTextAr="اسألنا مباشرةً"
+      />
     </div>
   );
 }

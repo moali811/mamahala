@@ -10,17 +10,15 @@ import {
   Clock,
   ArrowRight,
   ArrowLeft,
-  Sparkles,
-  Mail,
-  Search,
+  Heart,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
-import { fadeUp, staggerContainer, ease, viewportOnce } from '@/lib/animations';
+import { fadeUp, staggerContainer, ease } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
-import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import FinalCTA from '@/components/shared/FinalCTA';
 import {
   getPublishedPosts,
   getPostsByCategory,
@@ -48,13 +46,21 @@ export default function BlogListingPage() {
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [currentPage, setCurrentPage] = useState(1);
+  const POSTS_PER_PAGE = 9;
 
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
-  const filteredPosts =
+  const allFilteredPosts =
     activeCategory === 'All'
       ? getPublishedPosts()
       : getPostsByCategory(activeCategory);
+
+  const totalPages = Math.ceil(allFilteredPosts.length / POSTS_PER_PAGE);
+  const filteredPosts = allFilteredPosts.slice(
+    (currentPage - 1) * POSTS_PER_PAGE,
+    currentPage * POSTS_PER_PAGE
+  );
 
   const categories = getAllCategories();
 
@@ -63,7 +69,7 @@ export default function BlogListingPage() {
       {/* ================================================================ */}
       {/*  HERO                                                            */}
       {/* ================================================================ */}
-      <section className="relative pt-32 pb-28 lg:pt-40 lg:pb-36 overflow-hidden">
+      <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.08] blur-[80px]" />
@@ -95,7 +101,7 @@ export default function BlogListingPage() {
           </motion.div>
 
           <motion.div
-            className="mt-10 max-w-3xl"
+            className={`mt-10 max-w-3xl ${isRTL ? 'text-right' : ''}`}
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
@@ -105,7 +111,7 @@ export default function BlogListingPage() {
               custom={0}
               className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-4"
             >
-              {isRTL ? 'مدونتنا' : 'Our Blog'}
+              {isRTL ? 'رؤىً ومقالات' : 'Insights & Articles'}
             </motion.span>
             <motion.h1
               variants={fadeUp}
@@ -113,7 +119,7 @@ export default function BlogListingPage() {
               className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {messages.resources.blog}
+              {isRTL ? 'قراءاتٌ تصنعُ فَرْقًا' : 'Reads That Make a Difference'}
             </motion.h1>
             <motion.p
               variants={fadeUp}
@@ -131,7 +137,7 @@ export default function BlogListingPage() {
       {/* ================================================================ */}
       {/*  CATEGORY FILTER & BLOG GRID                                     */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-32 bg-[#FAF7F2]">
+      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
         <div className="container-main">
           {/* Category Filter Tabs */}
           <ScrollReveal className="mb-12">
@@ -141,7 +147,7 @@ export default function BlogListingPage() {
                 return (
                   <motion.button
                     key={cat}
-                    onClick={() => setActiveCategory(cat)}
+                    onClick={() => { setActiveCategory(cat); setCurrentPage(1); }}
                     className={`
                       px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300
                       ${
@@ -160,7 +166,7 @@ export default function BlogListingPage() {
           </ScrollReveal>
 
           {/* Blog Post Grid */}
-          <StaggerReveal className="grid sm:grid-cols-2 gap-8">
+          <StaggerReveal key={`${activeCategory}-${currentPage}`} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post) => (
               <StaggerChild key={post.slug}>
                 <Link href={`/${locale}/resources/blog/${post.slug}`}>
@@ -192,7 +198,7 @@ export default function BlogListingPage() {
                         </Badge>
                       </div>
                       {/* Reading time */}
-                      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-xs">
+                      <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/40 rounded-full px-3 py-1 text-white text-xs">
                         <Clock className="w-3 h-3" />
                         <span>
                           {post.readTime} {messages.common.minutes}
@@ -211,7 +217,7 @@ export default function BlogListingPage() {
                       <p className="text-sm text-[#6B6580] leading-relaxed mb-4 line-clamp-2">
                         {isRTL ? post.excerptAr : post.excerptEn}
                       </p>
-                      <div className="flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                      <div className={`flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300`}>
                         <span>{messages.common.readMore}</span>
                         <Arrow className="w-4 h-4" />
                       </div>
@@ -221,65 +227,53 @@ export default function BlogListingPage() {
               </StaggerChild>
             ))}
           </StaggerReveal>
-        </div>
-      </section>
 
-      {/* ================================================================ */}
-      {/*  NEWSLETTER CTA                                                  */}
-      {/* ================================================================ */}
-      <section className="py-24 lg:py-32 bg-white">
-        <div className="container-main">
-          <ScrollReveal>
-            <div className="relative bg-gradient-to-br from-[#C4878A] to-[#B07578] rounded-3xl p-10 lg:p-16 overflow-hidden">
-              {/* Decorative elements */}
-              <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/[0.06]" />
-              <div className="absolute -bottom-10 -left-10 w-60 h-60 rounded-full bg-[#C8A97D]/[0.08]" />
-
-              <div className="relative z-10 max-w-2xl mx-auto text-center">
-                <motion.div
-                  className="inline-flex items-center gap-2 bg-white/10 rounded-full px-5 py-2 mb-6"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={viewportOnce}
-                  transition={{ delay: 0.1, duration: 0.5, ease }}
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-14">
+              <button
+                onClick={() => { setCurrentPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                disabled={currentPage === 1}
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-[#F3EFE8] bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ArrowLeft className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
+              </button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => { setCurrentPage(page); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                  className={`w-10 h-10 rounded-full text-sm font-semibold transition-all duration-200 ${
+                    currentPage === page
+                      ? 'bg-[#7A3B5E] text-white shadow-md'
+                      : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:bg-[#F3EFE8]'
+                  }`}
                 >
-                  <Mail className="w-4 h-4 text-[#C8A97D]" />
-                  <span className="text-sm text-white/80 font-medium">
-                    {messages.newsletter.title}
-                  </span>
-                </motion.div>
-
-                <h2
-                  className="text-3xl sm:text-4xl font-bold text-white mb-4"
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
-                  {messages.newsletter.title}
-                </h2>
-                <p className="text-white/75 leading-relaxed mb-8">
-                  {messages.newsletter.leadMagnet}
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                  <input
-                    type="email"
-                    placeholder={messages.newsletter.placeholder}
-                    className="flex-1 px-5 py-3 rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/50 focus:outline-none focus:border-white/40 transition-colors"
-                  />
-                  <Button
-                    variant="secondary"
-                    className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
-                  >
-                    {messages.newsletter.subscribe}
-                  </Button>
-                </div>
-                <p className="text-xs text-white/50 mt-4">
-                  {messages.newsletter.privacy}
-                </p>
-              </div>
+                  {page}
+                </button>
+              ))}
+              <button
+                onClick={() => { setCurrentPage((p) => Math.min(totalPages, p + 1)); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                disabled={currentPage === totalPages}
+                className="w-10 h-10 rounded-full flex items-center justify-center border border-[#F3EFE8] bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ArrowRight className={`w-4 h-4 ${isRTL ? 'rotate-180' : ''}`} />
+              </button>
             </div>
-          </ScrollReveal>
+          )}
         </div>
       </section>
+
+      <FinalCTA
+        locale={locale}
+        fillColorAbove="#FAF7F2"
+        headingEn={<>Knowledge Is the First Step to <span className="text-[#7A3B5E] italic">Change</span></>}
+        headingAr={<>المعرفةُ أولُ خطوةٍ نحو <span className="text-[#7A3B5E] italic">التغيير</span></>}
+        primaryTextEn="I'm Ready to Start"
+        primaryTextAr="أنا مستعدّ للبدء"
+        secondaryTextEn="Explore Services"
+        secondaryTextAr="استكشِفْ الخدمات"
+        secondaryHref={`/${locale}/services`}
+      />
     </div>
   );
 }

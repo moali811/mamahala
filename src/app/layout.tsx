@@ -50,14 +50,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${dmSerif.variable} ${plusJakarta.variable} ${tajawal.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${dmSerif.variable} ${plusJakarta.variable} ${tajawal.variable}`}>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){var p=window.location.pathname;var isAr=p.startsWith('/ar');document.documentElement.lang=isAr?'ar':'en';document.documentElement.dir=isAr?'rtl':'ltr';var y=sessionStorage.getItem('mh_scroll_y');if(y){sessionStorage.removeItem('mh_scroll_y');if('scrollRestoration' in history)history.scrollRestoration='manual';window.addEventListener('load',function(){setTimeout(function(){window.scrollTo(0,parseInt(y,10))},100)});}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-screen flex flex-col">
         {children}
-        {/* Elfsight Platform — powers Instagram feed widget */}
-        <Script
-          src="https://elfsightcdn.com/platform.js"
-          strategy="lazyOnload"
-        />
       </body>
     </html>
   );

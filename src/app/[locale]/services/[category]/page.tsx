@@ -6,30 +6,91 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   ArrowRight, ArrowLeft, Calendar, MessageCircle, Sparkles,
-  GraduationCap, Users, User, Heart, Leaf, Star,
+  GraduationCap, Users, User, Heart, Leaf, Clock, HelpCircle, Sprout, Smile, TreePine,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { serviceCategories, getServicesByCategory, getCategoryInfo } from '@/data/services';
 import { getTestimonialsByCategory } from '@/data/testimonials';
-import { staggerContainer, fadeUp, ease } from '@/lib/animations';
 import type { ServiceCategory } from '@/types';
-import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
+import ScrollReveal from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import FinalCTA from '@/components/shared/FinalCTA';
+import ContextualFAQ from '@/components/ui/ContextualFAQ';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  GraduationCap, Users, User, Heart, Leaf, Sparkles,
+  GraduationCap, Users, User, Heart, Leaf, Sparkles, Sprout, Smile, TreePine,
 };
 
-// Category accent colors for service cards
-const categoryAccents: Record<string, { gradient: string; accent: string; light: string }> = {
-  youth: { gradient: 'from-[#F0D5CA] to-[#FAF0EC]', accent: '#C4878A', light: 'bg-[#C4878A]/5' },
-  families: { gradient: 'from-[#E8D5E0] to-[#F8EEF3]', accent: '#7A3B5E', light: 'bg-[#7A3B5E]/5' },
-  adults: { gradient: 'from-[#E8E0D0] to-[#FAF5ED]', accent: '#C8A97D', light: 'bg-[#C8A97D]/5' },
-  couples: { gradient: 'from-[#E8C4C0] to-[#FAF0EC]', accent: '#C4878A', light: 'bg-[#C4878A]/5' },
-  experiential: { gradient: 'from-[#D5E8DE] to-[#EAF5EE]', accent: '#5A8A6E', light: 'bg-[#5A8A6E]/5' },
+// Stock photos mapped to service slugs for visual storytelling
+const serviceImages: Record<string, string> = {
+  'teen-behavioral-coaching': '/images/services/teen-behavioral.jpg',
+  'social-confidence-friendship': '/images/services/social-confidence.jpg',
+  'under-18-counseling': '/images/services/under18-counseling.jpg',
+  'supporting-children-through-change': '/images/services/child-big-change.jpg',
+  'cbt-youth': '/images/services/teen-emotional.jpg',
+  'bullying-support': '/images/services/bullying-support.jpg',
+  'managing-big-emotions': '/images/services/managing-emotions.jpg',
+  'family-relationship-strengthening': '/images/services/family-strengthening.jpg',
+  'parenting-coaching': '/images/services/parenting-coaching.jpg',
+  'tackling-child-tantrums': '/images/services/child-tantrums.jpg',
+  'parental-stress-wellbeing': '/images/services/parental-wellbeing.jpg',
+  'anxiety-counseling': '/images/services/anxiety-counseling.jpg',
+  'anger-management': '/images/services/anger-management.jpg',
+  'university-student-session': '/images/service-students.jpg',
+  'adhd-executive-function-coaching': '/images/services/adhd-coaching.jpg',
+  'lifestyle-coaching': '/images/services/lifestyle-coaching.jpg',
+  'life-coaching': '/images/services/life-coaching.jpg',
+  'self-development-coaching': '/images/services/self-development.jpg',
+  'pre-marital-education': '/images/services/premarital.jpg',
+  'couples-counseling': '/images/services/couple-counseling.jpg',
+  'horticultural-plant-therapy': '/images/services/plant-therapy.jpg',
+  'walk-and-talk': '/images/services/walk-talk-therapy.jpg',
+};
+
+// Category accent colors
+const categoryAccents: Record<string, string> = {
+  youth: '#C4878A',
+  families: '#7A3B5E',
+  adults: '#C8A97D',
+  couples: '#D4836A',
+  experiential: '#5A8A6E',
+};
+
+// Scenario-based "Help Me Choose" per category
+const categoryScenarios: Record<string, { en: string; ar: string; slug: string }[]> = {
+  youth: [
+    { en: 'My teen is acting out or rebellious', ar: 'ابني المراهق يتصرف بتمرد', slug: 'teen-behavioral-coaching' },
+    { en: 'My child is being bullied', ar: 'طفلي يتعرض للتنمر', slug: 'bullying-support' },
+    { en: 'My child struggles with big emotions', ar: 'طفلي يعاني من مشاعر قوية', slug: 'managing-big-emotions' },
+    { en: 'We\'re going through a family change', ar: 'نمر بتغيير عائلي', slug: 'supporting-children-through-change' },
+    { en: 'My teen lacks confidence socially', ar: 'ابني يفتقر للثقة الاجتماعية', slug: 'social-confidence-friendship' },
+    { en: 'I need general support for my child', ar: 'أحتاج دعمًا عامًا لطفلي', slug: 'under-18-counseling' },
+  ],
+  families: [
+    { en: 'We\'re struggling to communicate', ar: 'نعاني من صعوبة في التواصل', slug: 'family-relationship-strengthening' },
+    { en: 'I need parenting guidance', ar: 'أحتاج توجيهًا في التربية', slug: 'parenting-coaching' },
+    { en: 'My child has frequent tantrums', ar: 'طفلي يعاني من نوبات غضب متكررة', slug: 'tackling-child-tantrums' },
+    { en: 'I\'m overwhelmed as a parent', ar: 'أشعر بالإرهاق كأم/أب', slug: 'parental-stress-wellbeing' },
+  ],
+  adults: [
+    { en: 'I\'m dealing with anxiety or worry', ar: 'أعاني من القلق والتوتر', slug: 'anxiety-counseling' },
+    { en: 'I struggle with anger', ar: 'أعاني من مشاكل الغضب', slug: 'anger-management' },
+    { en: 'I have trouble focusing (ADHD)', ar: 'أعاني من صعوبة التركيز', slug: 'adhd-executive-function-coaching' },
+    { en: 'I want to improve my lifestyle', ar: 'أريد تحسين نمط حياتي', slug: 'lifestyle-coaching' },
+    { en: 'I\'m at a crossroads in life', ar: 'أنا في مفترق طرق', slug: 'self-development-coaching' },
+    { en: 'I\'m a university student needing support', ar: 'أنا طالب جامعي أحتاج دعمًا', slug: 'university-student-session' },
+  ],
+  couples: [
+    { en: 'We\'re getting married soon', ar: 'نحن مقبلون على الزواج', slug: 'pre-marital-education' },
+    { en: 'Our relationship needs help', ar: 'علاقتنا تحتاج مساعدة', slug: 'couples-counseling' },
+  ],
+  experiential: [
+    { en: 'I prefer therapy outdoors', ar: 'أفضل العلاج في الهواء الطلق', slug: 'walk-and-talk' },
+    { en: 'I find peace in nature & plants', ar: 'أجد السلام في الطبيعة والنباتات', slug: 'horticultural-plant-therapy' },
+  ],
 };
 
 export default function ServiceCategoryPage() {
@@ -56,6 +117,7 @@ export default function ServiceCategoryPage() {
   const subtitle = isRTL ? catInfo.subtitleAr : catInfo.subtitle;
   const description = isRTL ? catInfo.descriptionAr : catInfo.description;
   const IconComponent = iconMap[catInfo.icon] || Users;
+  const accent = categoryAccents[category] || '#C8A97D';
 
   const getWhatsAppLink = (serviceName: string) => {
     const msg = encodeURIComponent(
@@ -68,14 +130,14 @@ export default function ServiceCategoryPage() {
 
   return (
     <div className="bg-[#FAF7F2]">
-      {/* Hero */}
+      {/* ─── HERO ─── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#C4878A]/8 blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 blur-3xl" />
+          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#C4878A]/8 hidden lg:block blur-3xl" />
+          <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 hidden lg:block blur-3xl" />
         </div>
-        <div className="container-main relative pt-24 pb-32 md:pt-28 md:pb-36">
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+        <div className="container-main relative pt-24 pb-16 md:pt-28 md:pb-20">
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Breadcrumb
               locale={locale}
               items={[
@@ -86,12 +148,15 @@ export default function ServiceCategoryPage() {
             />
           </motion.div>
           <motion.div
-            className="mt-6 flex items-center gap-4"
+            className={`mt-6 flex items-center gap-4 ${isRTL ? 'text-right' : ''}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <div className="w-14 h-14 rounded-2xl bg-[#C4878A]/10 flex items-center justify-center">
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center"
+              style={{ backgroundColor: `${accent}15` }}
+            >
               <IconComponent className="w-7 h-7 text-[#C8A97D]" />
             </div>
             <div>
@@ -105,7 +170,7 @@ export default function ServiceCategoryPage() {
             </div>
           </motion.div>
           <motion.p
-            className="text-[#4A4A5C] max-w-2xl mt-6 text-lg leading-relaxed"
+            className={`text-[#4A4A5C] max-w-2xl mt-6 text-lg leading-relaxed ${isRTL ? 'text-right' : ''}`}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -116,117 +181,130 @@ export default function ServiceCategoryPage() {
         <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
-      {/* Services Grid */}
-      <section className="py-20 lg:py-28">
+
+      {/* ─── HELP ME CHOOSE ─── */}
+      {(categoryScenarios[category]?.length ?? 0) > 2 && (
+        <section className="pt-10 pb-0 bg-[#FAF7F2]">
+          <div className="container-main">
+            <ScrollReveal>
+              <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 lg:p-8">
+                <div className="flex items-center gap-2 mb-5">
+                  <HelpCircle className="w-5 h-5" style={{ color: accent }} />
+                  <h3 className="text-lg font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
+                    {isRTL ? 'ساعِدْني في الاختيار' : 'Help Me Choose'}
+                  </h3>
+                </div>
+                <p className={`text-sm text-[#6B6580] mb-5 ${isRTL ? 'text-right' : ''}`}>
+                  {isRTL ? 'اختَرْ ما يصفُ وضعَك وسنوجّهُك للخدمة المناسبة:' : 'Select what best describes your situation:'}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {categoryScenarios[category]?.map((scenario) => (
+                    <button
+                      key={scenario.slug}
+                      onClick={() => {
+                        const el = document.getElementById(`service-${scenario.slug}`);
+                        if (el) {
+                          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          el.classList.add('ring-2', 'ring-offset-2');
+                          el.style.setProperty('--tw-ring-color', accent);
+                          setTimeout(() => el.classList.remove('ring-2', 'ring-offset-2'), 2000);
+                        }
+                      }}
+                      className="px-4 py-2.5 rounded-full text-sm font-medium border border-[#F3EFE8] text-[#4A4A5C] hover:text-white transition-all duration-200"
+                      style={{ ['--hover-bg' as string]: accent }}
+                      onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = accent; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = accent; }}
+                      onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = ''; e.currentTarget.style.color = '#4A4A5C'; e.currentTarget.style.borderColor = ''; }}
+                    >
+                      {isRTL ? scenario.ar : scenario.en}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+        </section>
+      )}
+
+      {/* ─── SERVICES: Alternating visual sections ─── */}
+      <section className="py-16 lg:py-24">
         <div className="container-main">
-          <ScrollReveal className="mb-12">
-            <h2
-              className="text-2xl md:text-3xl font-bold text-[#2D2A33]"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {isRTL ? `خدمات ${name}` : `${name} Services`}
-            </h2>
-            <p className="text-[#8E8E9F] mt-2">
-              {services.length} {messages.services.serviceCount}
-            </p>
-          </ScrollReveal>
+          {services.map((service, i) => {
+            const sName = isRTL ? service.nameAr : service.name;
+            const sDesc = isRTL ? service.descriptionAr : service.description;
+            const sShort = isRTL ? service.shortDescAr : service.shortDesc;
+            const imgSrc = serviceImages[service.slug] || '/images/hala-consultation.png';
+            const isEven = i % 2 === 0;
 
-          {(() => {
-            const colors = categoryAccents[category] || categoryAccents.adults;
             return (
-              <StaggerReveal className="space-y-5">
-                {services.map((service, i) => {
-                  const sName = isRTL ? service.nameAr : service.name;
-                  const sDesc = isRTL ? service.shortDescAr : service.shortDesc;
+              <ScrollReveal key={service.slug}>
+                <div id={`service-${service.slug}`} className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-0 lg:gap-0 mb-12 lg:mb-20 bg-white rounded-3xl overflow-hidden border border-[#F3EFE8] hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)] transition-all duration-500`}>
+                  {/* Image */}
+                  <div className="relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-auto lg:min-h-[400px]">
+                    <Image
+                      src={imgSrc}
+                      alt={sName}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                    {/* Gradient overlay for text readability on mobile */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent lg:hidden" />
+                  </div>
 
-                  return (
-                    <StaggerChild key={service.slug}>
-                      <motion.div
-                        className="group relative bg-white rounded-2xl border border-[#F3EFE8] overflow-hidden hover:shadow-[var(--shadow-card)] transition-all duration-300"
-                        whileHover={{ y: -3 }}
+                  {/* Content */}
+                  <div className={`w-full lg:w-1/2 p-8 sm:p-10 lg:p-12 flex flex-col justify-center ${isRTL ? 'text-right' : ''}`}>
+                    <div className={`flex items-center gap-3 mb-4`}>
+                      <span
+                        className="text-xs font-bold tracking-wider uppercase px-3 py-1 rounded-full"
+                        style={{ backgroundColor: `${accent}12`, color: accent }}
                       >
-                        {/* Accent strip */}
-                        <div
-                          className={`absolute top-0 ${isRTL ? 'right-0 rounded-r-2xl' : 'left-0 rounded-l-2xl'} w-1.5 h-full`}
-                          style={{ background: `linear-gradient(180deg, ${colors.accent}40, ${colors.accent}15)` }}
-                        />
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <div className="flex items-center gap-2 text-xs text-[#8E8E9F]">
+                        <Clock className="w-3 h-3" />
+                        {service.duration}
+                        <span className="mx-1">·</span>
+                        {service.priceFrom === 0 ? (
+                          <span className="text-[#5A8B6F] font-medium">{isRTL ? 'مجّانيّة' : 'Free'}</span>
+                        ) : (
+                          <span>{isRTL ? `من ${service.priceFrom}$ كندي` : `From $${service.priceFrom}`}</span>
+                        )}
+                      </div>
+                    </div>
 
-                        <div className={`flex flex-col md:flex-row items-start gap-5 p-6 md:p-7 ${isRTL ? 'pr-8 md:pr-9' : 'pl-8 md:pl-9'}`}>
-                          {/* Number badge */}
-                          <div
-                            className="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg"
-                            style={{ backgroundColor: `${colors.accent}10`, color: colors.accent }}
-                          >
-                            {String(i + 1).padStart(2, '0')}
-                          </div>
+                    <h3
+                      className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-3 leading-snug"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      {sName}
+                    </h3>
 
-                          {/* Content */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
-                              <Link href={`/${locale}/services/${category}/${service.slug}`}>
-                                <h3
-                                  className="text-lg font-bold text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors"
-                                  style={{ fontFamily: 'var(--font-heading)' }}
-                                >
-                                  {sName}
-                                </h3>
-                              </Link>
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                <Badge variant="sand" size="sm">
-                                  {messages.services.priceFrom} ${service.priceFrom}
-                                </Badge>
-                                <Badge variant="neutral" size="sm">{service.duration}</Badge>
-                              </div>
-                            </div>
+                    <p className="text-[#6B6580] leading-relaxed mb-8 line-clamp-3">
+                      {sShort || sDesc}
+                    </p>
 
-                            <p className="text-sm text-[#8E8E9F] leading-relaxed mb-4">
-                              {sDesc}
-                            </p>
-
-                            <div className="flex flex-wrap items-center gap-3">
-                              <Link
-                                href={`/${locale}/services/${category}/${service.slug}`}
-                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#7A3B5E] hover:text-[#5E2D48] transition-colors"
-                              >
-                                {messages.services.learnMore}
-                                <ArrowIcon className="w-3.5 h-3.5" />
-                              </Link>
-                              <span className="text-[#F3EFE8]">|</span>
-                              <Link
-                                href={`/${locale}/book-a-session`}
-                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#4A4A5C] hover:text-[#7A3B5E] transition-colors"
-                              >
-                                <Calendar className="w-3.5 h-3.5" />
-                                {messages.services.bookOnline}
-                              </Link>
-                              <span className="text-[#F3EFE8]">|</span>
-                              <a
-                                href={getWhatsAppLink(service.name)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#8E8E9F] hover:text-[#25D366] transition-colors"
-                              >
-                                <MessageCircle className="w-3.5 h-3.5" />
-                                WhatsApp
-                              </a>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    </StaggerChild>
-                  );
-                })}
-              </StaggerReveal>
+                    <div>
+                      <Link
+                        href={`/${locale}/services/${category}/${service.slug}`}
+                        className={`inline-flex items-center gap-2 text-sm font-semibold text-[#7A3B5E] hover:text-[#5A2D47] transition-colors group`}
+                      >
+                        {messages.services.learnMore}
+                        <ArrowIcon className={`w-4 h-4 transition-transform ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </ScrollReveal>
             );
-          })()}
+          })}
 
-          <ScrollReveal className="mt-6 text-center">
+          <ScrollReveal className="text-center">
             <p className="text-xs text-[#8E8E9F] italic">{messages.services.priceDisclaimer}</p>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Testimonials (if any) */}
+      {/* ─── TESTIMONIALS ─── */}
       {categoryTestimonials.length > 0 && (
         <section className="py-20 bg-white">
           <div className="container-main">
@@ -239,15 +317,10 @@ export default function ServiceCategoryPage() {
               </h2>
             </ScrollReveal>
 
-            <StaggerReveal className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {categoryTestimonials.slice(0, 4).map((t) => (
-                <StaggerChild key={t.id}>
+                <ScrollReveal key={t.id}>
                   <div className="glass-card rounded-2xl p-8">
-                    <div className="flex gap-0.5 mb-4">
-                      {Array.from({ length: t.rating }).map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-[#C8A97D] text-[#C8A97D]" />
-                      ))}
-                    </div>
                     <p className="text-[#4A4A5C] italic leading-relaxed mb-4">
                       &ldquo;{isRTL ? t.textAr : t.text}&rdquo;
                     </p>
@@ -256,19 +329,27 @@ export default function ServiceCategoryPage() {
                       <p className="text-xs text-[#8E8E9F]">{isRTL ? t.roleAr : t.role}</p>
                     </div>
                   </div>
-                </StaggerChild>
+                </ScrollReveal>
               ))}
-            </StaggerReveal>
+            </div>
           </div>
         </section>
       )}
 
-      {/* Related Categories */}
+      {/* ─── CONTEXTUAL FAQs ─── */}
+      {(() => {
+        const categoryFaqs = services.flatMap((s) => s.faqs).slice(0, 4);
+        return categoryFaqs.length > 0 ? (
+          <ContextualFAQ faqs={categoryFaqs} locale={locale} />
+        ) : null;
+      })()}
+
+      {/* ─── RELATED CATEGORIES ─── */}
       <section className="py-16 bg-[#F3EFE8]">
         <div className="container-main">
           <ScrollReveal className="mb-8">
-            <h3 className="text-xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
-              {isRTL ? 'استكشف خدمات أخرى' : 'Explore Other Services'}
+            <h3 className={`text-xl font-bold text-[#2D2A33] ${isRTL ? 'text-right' : ''}`} style={{ fontFamily: 'var(--font-heading)' }}>
+              {isRTL ? 'استكشِفْ خدماتٍ أخرى' : 'Explore Other Services'}
             </h3>
           </ScrollReveal>
           <div className="flex flex-wrap gap-3">
@@ -287,44 +368,25 @@ export default function ServiceCategoryPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-24 gradient-cta-dark relative overflow-hidden">
-        <WaveDivider position="top" fillColor="#F3EFE8" variant="organic" />
-        <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-[#7A3B5E]/[0.06] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-        <div className="container-main relative z-10">
-          <ScrollReveal className="text-center max-w-2xl mx-auto">
-            <h2
-              className="text-3xl sm:text-4xl font-bold text-[#2D2A33] text-balance"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {messages.cta.ready}
-            </h2>
-            <p className="mt-4 text-[#4A4A5C] leading-relaxed">{messages.cta.readyDesc}</p>
-            <div className="flex flex-wrap justify-center gap-4 mt-8">
-              <Button
-                as="a"
-                href={`/${locale}/book-a-session`}
-                variant="secondary"
-                size="lg"
-                icon={<Calendar className="w-5 h-5" />}
-                className=""
-              >
-                {messages.cta.bookNow}
-              </Button>
-              <Button
-                as="a"
-                href={`/${locale}/quiz`}
-                variant="outline"
-                size="lg"
-                icon={<Sparkles className="w-5 h-5" />}
-                className="!border-[#7A3B5E]/20 !text-[#7A3B5E] hover:!bg-[#7A3B5E]/5"
-              >
-                {messages.cta.takeQuiz}
-              </Button>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+      {/* ─── FINAL CTA ─── */}
+      <FinalCTA
+        locale={locale}
+        fillColorAbove="#FAF7F2"
+        headingEn={
+          category === 'youth' ? <>Every Child Deserves to <span className="text-[#7A3B5E] italic">Thrive</span></> :
+          category === 'families' ? <>Stronger Families Start <span className="text-[#7A3B5E] italic">Here</span></> :
+          category === 'adults' ? <>Your Well-being <span className="text-[#7A3B5E] italic">Matters</span></> :
+          category === 'couples' ? <>Love Deserves <span className="text-[#7A3B5E] italic">Effort</span></> :
+          <>Experience Something <span className="text-[#7A3B5E] italic">Different</span></>
+        }
+        headingAr={
+          category === 'youth' ? <>كلُّ طفلٍ يستحقُّ أن <span className="text-[#7A3B5E] italic">يزدهِر</span></> :
+          category === 'families' ? <>الأُسَرُ الأقوى تبدأُ من <span className="text-[#7A3B5E] italic">هنا</span></> :
+          category === 'adults' ? <>عافيتُك <span className="text-[#7A3B5E] italic">تهمّ</span></> :
+          category === 'couples' ? <>الحبُّ يستحقُّ <span className="text-[#7A3B5E] italic">الجهد</span></> :
+          <>جرِّبْ شيئًا <span className="text-[#7A3B5E] italic">مختلفًا</span></>
+        }
+      />
     </div>
   );
 }

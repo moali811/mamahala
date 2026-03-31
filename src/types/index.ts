@@ -6,6 +6,11 @@ export type Locale = 'en' | 'ar';
 
 export type ServiceCategory = 'youth' | 'families' | 'adults' | 'couples' | 'experiential';
 
+export interface RegionalPrice {
+  online: [number, number];   // [standard-min, standard-max]
+  inPerson: [number, number]; // [standard-min, standard-max]
+}
+
 export interface Service {
   slug: string;
   name: string;
@@ -19,6 +24,9 @@ export interface Service {
   currency: string;
   duration: string;
   icon: string; // Lucide icon name
+  image?: string; // Hero image path
+  pricingCAD?: { online: [number, number]; inPerson?: [number, number] };
+  pricingAED?: { online: [number, number]; inPerson?: [number, number] };
   whoIsThisFor: string[];
   whoIsThisForAr: string[];
   whatToExpect: string[];
@@ -46,6 +54,9 @@ export interface FAQ {
   questionAr: string;
   answer: string;
   answerAr: string;
+  link?: { href: string; labelEn: string; labelAr: string };
+  tag?: string;
+  tagAr?: string;
 }
 
 export interface Testimonial {
@@ -92,22 +103,93 @@ export interface Program {
   image: string;
 }
 
-export interface Event {
-  slug: string;
-  title: string;
+/* ── Smart Events System ─────────────────────────────────────── */
+
+export type EventType = 'workshop' | 'webinar' | 'community-gathering' | 'retreat' | 'support-group';
+export type EventAudience = 'youth' | 'families' | 'adults' | 'couples' | 'community';
+export type EventLocationType = 'online' | 'in-person' | 'hybrid';
+export type RegistrationStatus = 'open' | 'almost-full' | 'waitlist' | 'closed';
+
+export interface EventSession {
+  date: string;       // ISO date '2026-04-22'
+  startTime: string;  // 24h '19:00'
+  endTime: string;    // 24h '20:30'
+}
+
+export interface EventFacilitator {
+  nameEn: string;
+  nameAr: string;
+  titleEn: string;
   titleAr: string;
-  description: string;
+  image?: string;
+}
+
+export interface EventFAQ {
+  questionEn: string;
+  questionAr: string;
+  answerEn: string;
+  answerAr: string;
+}
+
+export interface SmartEvent {
+  slug: string;
+  titleEn: string;
+  titleAr: string;
+  descriptionEn: string;
   descriptionAr: string;
-  date: string;
-  time: string;
-  timezone: string;
-  location: 'online' | 'in-person' | string;
-  price: number;
-  currency: string;
-  capacity: number;
-  registrationUrl: string;
-  status: 'upcoming' | 'past' | 'cancelled';
-  image: string;
+  longDescriptionEn?: string;
+  longDescriptionAr?: string;
+
+  type: EventType;
+  audiences: EventAudience[];
+  relatedServiceSlug?: string;
+
+  // Scheduling
+  date: string;         // ISO date '2026-04-15'
+  startTime: string;    // 24h '19:00'
+  endTime: string;      // 24h '20:30'
+  timezone: string;     // IANA 'America/Toronto'
+  sessions?: EventSession[]; // Multi-session events
+
+  // Location
+  locationType: EventLocationType;
+  locationNameEn: string;
+  locationNameAr: string;
+  locationAddress?: string;
+
+  // Pricing
+  isFree: boolean;
+  priceCAD?: number;
+  earlyBirdPriceCAD?: number;
+  earlyBirdDeadline?: string; // ISO date
+  priceNoteEn?: string;
+  priceNoteAr?: string;
+
+  // Registration
+  capacity?: number;
+  spotsRemaining?: number;
+  registrationStatus: RegistrationStatus;
+  registrationUrl?: string;
+
+  // Display
+  image?: string;
+  gradient?: string;
+  featured?: boolean;
+
+  // Detail content
+  facilitator?: EventFacilitator;
+  whatToBringEn?: string[];
+  whatToBringAr?: string[];
+  faqs?: EventFAQ[];
+
+  // Past events
+  galleryImages?: string[];
+  highlightEn?: string;
+  highlightAr?: string;
+
+  // Series grouping
+  seriesId?: string;
+  tags?: string[];
 }
 
 export interface Download {
@@ -130,7 +212,7 @@ export interface VisitorProfile {
   lastCategory?: ServiceCategory;
   lastVisit?: string;
   visitCount: number;
-  preferredContact?: 'calendly' | 'whatsapp';
+  preferredContact?: 'cal' | 'whatsapp';
   quizResults?: string[];
   viewedServices: string[];
 }

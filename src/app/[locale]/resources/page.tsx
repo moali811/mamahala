@@ -12,6 +12,8 @@ import {
   ArrowRight,
   ArrowLeft,
   Sparkles,
+  Calendar,
+  MessageCircle,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer, ease, viewportOnce } from '@/lib/animations';
@@ -20,13 +22,15 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import FinalCTA from '@/components/shared/FinalCTA';
 
 const resourceTypes = [
-  { key: 'blog', icon: BookOpen, color: '#C4878A', bgColor: '#C4878A' },
-  { key: 'programs', icon: GraduationCap, color: '#7A3B5E', bgColor: '#7A3B5E' },
-  { key: 'events', icon: CalendarDays, color: '#C8A97D', bgColor: '#C8A97D' },
-  { key: 'downloads', icon: Download, color: '#4A4A5C', bgColor: '#4A4A5C' },
-  { key: 'faqs', icon: HelpCircle, color: '#C4878A', bgColor: '#C4878A' },
+  { key: 'blog', icon: BookOpen, color: '#C4878A', bgColor: '#C4878A', tag: { en: 'Read', ar: 'اقرأ' } },
+  { key: 'programs', icon: GraduationCap, color: '#7A3B5E', bgColor: '#7A3B5E', tag: { en: 'Learn', ar: 'تعلَّمْ' } },
+  { key: 'events', icon: CalendarDays, color: '#C8A97D', bgColor: '#C8A97D', tag: { en: 'Attend', ar: 'شارِكْ' } },
+  { key: 'downloads', icon: Download, color: '#5A8B6E', bgColor: '#5A8B6E', tag: { en: 'Free', ar: 'مجّانيّ' } },
+  { key: 'quiz', icon: Sparkles, color: '#8B5CF6', bgColor: '#8B5CF6', tag: { en: 'Assess', ar: 'قيِّمْ' } },
+  { key: 'faqs', icon: HelpCircle, color: '#D4836A', bgColor: '#D4836A', tag: { en: 'Ask', ar: 'اسأل' } },
 ] as const;
 
 export default function ResourcesPage() {
@@ -43,6 +47,7 @@ export default function ResourcesPage() {
     events: messages.resources.eventsDesc,
     downloads: messages.resources.downloadsDesc,
     faqs: messages.resources.faqsDesc,
+    quiz: isRTL ? 'تقييماتٌ ذاتيّةٌ سريعة لفهمِ نفسِك وعائلتِك بشكلٍ أعمق.' : 'Quick self-assessments to understand yourself and your family better.',
   };
 
   const titleKeys: Record<string, string> = {
@@ -51,6 +56,7 @@ export default function ResourcesPage() {
     events: messages.resources.events,
     downloads: messages.resources.downloads,
     faqs: messages.resources.faqs,
+    quiz: isRTL ? 'تقييماتٌ ذاتيّة' : 'Self-Assessments',
   };
 
   return (
@@ -58,7 +64,7 @@ export default function ResourcesPage() {
       {/* ================================================================ */}
       {/*  HERO                                                            */}
       {/* ================================================================ */}
-      <section className="relative pt-32 pb-28 lg:pt-40 lg:pb-36 overflow-hidden">
+      <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
         {/* Gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
         {/* Decorative orbs */}
@@ -92,7 +98,7 @@ export default function ResourcesPage() {
           </motion.div>
 
           <motion.div
-            className="mt-10 max-w-3xl"
+            className={`mt-10 max-w-3xl ${isRTL ? 'text-right' : ''}`}
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
@@ -128,54 +134,56 @@ export default function ResourcesPage() {
       {/* ================================================================ */}
       {/*  RESOURCE TYPE CARDS                                             */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-32 bg-[#FAF7F2]">
+      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
         <div className="container-main">
-          <StaggerReveal className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <StaggerReveal className="flex flex-wrap justify-center gap-6">
             {resourceTypes.map((resource, index) => {
               const IconComponent = resource.icon;
               return (
-                <StaggerChild key={resource.key}>
-                  <Link href={`/${locale}/resources/${resource.key}`}>
+                <StaggerChild key={resource.key} className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                  <Link href={resource.key === 'quiz' ? `/${locale}/resources/assessments` : `/${locale}/resources/${resource.key}`}>
                     <motion.div
-                      className="group relative bg-white rounded-3xl p-8 lg:p-10 h-full border border-transparent hover:border-[#C4878A]/10 transition-all duration-300 cursor-pointer"
-                      whileHover={{
-                        y: -4,
-                        boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
-                      }}
+                      className="group relative bg-white rounded-2xl h-full border border-[#F3EFE8] overflow-hidden transition-all duration-300 cursor-pointer"
+                      whileHover={{ y: -4, boxShadow: '0 16px 44px rgba(0,0,0,0.07)' }}
                     >
-                      {/* Number accent */}
-                      <span
-                        className="absolute top-6 right-6 text-5xl font-bold text-[#7A3B5E]/[0.04]"
-                        style={{ fontFamily: 'var(--font-heading)' }}
-                      >
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
+                      {/* Accent top bar */}
+                      <div className="h-1 rounded-t-2xl" style={{ backgroundColor: resource.color }} />
 
-                      {/* Icon */}
-                      <div
-                        className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-colors duration-300"
-                        style={{ backgroundColor: `${resource.bgColor}15` }}
-                      >
-                        <IconComponent
-                          className="w-6 h-6 transition-colors duration-300"
-                          style={{ color: resource.color }}
-                        />
-                      </div>
+                      <div className="p-7 flex flex-col h-full">
+                        {/* Tag + Icon Row */}
+                        <div className="flex items-center justify-between mb-5">
+                          <div
+                            className="w-12 h-12 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                            style={{ backgroundColor: `${resource.color}12` }}
+                          >
+                            <IconComponent
+                              className="w-6 h-6"
+                              style={{ color: resource.color }}
+                            />
+                          </div>
+                          <span
+                            className="text-[10px] font-bold uppercase tracking-[0.15em] px-3 py-1 rounded-full"
+                            style={{ backgroundColor: `${resource.color}10`, color: resource.color }}
+                          >
+                            {isRTL ? resource.tag.ar : resource.tag.en}
+                          </span>
+                        </div>
 
-                      <h3
-                        className="text-xl font-bold text-[#2D2A33] mb-3"
-                        style={{ fontFamily: 'var(--font-heading)' }}
-                      >
-                        {titleKeys[resource.key]}
-                      </h3>
-                      <p className="text-sm text-[#8E8E9F] leading-relaxed mb-6">
-                        {descKeys[resource.key]}
-                      </p>
+                        <h3
+                          className="text-xl font-bold text-[#2D2A33] mb-2 group-hover:text-[#7A3B5E] transition-colors"
+                          style={{ fontFamily: 'var(--font-heading)' }}
+                        >
+                          {titleKeys[resource.key]}
+                        </h3>
+                        <p className="text-sm text-[#8E8E9F] leading-relaxed flex-1 mb-5">
+                          {descKeys[resource.key]}
+                        </p>
 
-                      {/* Arrow link */}
-                      <div className="flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
-                        <span>{isRTL ? 'استكشف' : 'Explore'}</span>
-                        <Arrow className="w-4 h-4" />
+                        {/* CTA */}
+                        <div className="flex items-center gap-1.5 text-sm font-semibold" style={{ color: resource.color }}>
+                          <span>{isRTL ? 'استكشِفْ' : 'Explore'}</span>
+                          <Arrow className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" />
+                        </div>
                       </div>
                     </motion.div>
                   </Link>
@@ -186,69 +194,12 @@ export default function ResourcesPage() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/*  CTA                                                             */}
-      {/* ================================================================ */}
-      <section className="py-24 lg:py-36 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#C4878A] via-[#B8888A] to-[#A06466]" />
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/[0.04] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#C8A97D]/[0.08] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
-        <div
-          className="absolute inset-0 opacity-[0.02] pointer-events-none"
-          style={{
-            backgroundImage:
-              'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
-            backgroundSize: '48px 48px',
-          }}
-        />
-
-        <div className="container-main relative z-10">
-          <ScrollReveal className="text-center max-w-3xl mx-auto">
-            <motion.div
-              className="inline-flex items-center gap-2 bg-white/10 rounded-full px-5 py-2 mb-8"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={viewportOnce}
-              transition={{ delay: 0.1, duration: 0.5, ease }}
-            >
-              <Sparkles className="w-4 h-4 text-[#C8A97D]" />
-              <span className="text-sm text-white/80 font-medium">
-                {isRTL ? 'هل لديك سؤال؟' : 'Have a Question?'}
-              </span>
-            </motion.div>
-
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight text-balance"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {messages.cta.ready}
-            </h2>
-            <p className="mt-6 text-lg lg:text-xl text-white/80 leading-relaxed max-w-xl mx-auto">
-              {messages.cta.readyDesc}
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mt-10">
-              <Button
-                as="a"
-                href={`/${locale}/contact`}
-                variant="secondary"
-                size="lg"
-                className="!bg-white !text-[#7A3B5E] hover:!bg-[#F3EFE8]"
-              >
-                {messages.contact.pageTitle}
-              </Button>
-              <Button
-                as="a"
-                href={`/${locale}/book-a-session`}
-                variant="outline"
-                size="lg"
-                className="!border-white/30 !text-white hover:!bg-white/10"
-              >
-                {messages.cta.bookNow}
-              </Button>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+      <FinalCTA
+        locale={locale}
+        fillColorAbove="#FAF7F2"
+        headingEn={<>Every Heart Deserves to Be <span className="text-[#7A3B5E] italic">Heard</span></>}
+        headingAr={<>كلُّ قلبٍ يستحقُّ أن <span className="text-[#7A3B5E] italic">يُسمَع</span></>}
+      />
     </div>
   );
 }

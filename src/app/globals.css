@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 /* ================================================================
    MAMA HALA CONSULTING - Design System
    Premium wellness/psychology brand tokens
@@ -86,8 +87,16 @@
 /* --- Base Styles --- */
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent iOS auto-zoom on input focus — minimum 16px font size */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
 }
 
 body {
@@ -158,10 +167,17 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Glass morphism card */
 @utility glass-card {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Only apply backdrop-blur on desktop where GPU can handle it */
+@media (min-width: 1024px) {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
 }
 
 /* Gradient text */
@@ -194,7 +210,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @utility gradient-cta-dark {
-  background: linear-gradient(135deg, #F0D5CA 0%, #E8C4C0 40%, #D4ADA8 100%);
+  background: linear-gradient(135deg, #EDD5CD 0%, #DFC0B8 40%, #C9A49C 100%);
 }
 
 @utility gradient-suit {
@@ -209,10 +225,21 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(135deg, var(--color-linen) 0%, var(--color-cloud) 50%, rgba(200, 169, 125, 0.1) 100%);
 }
 
+/* Float animation for decorative shapes */
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-12px) scale(1.03); }
+}
+
 /* Shimmer loading animation */
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+@keyframes goldShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }
 
 @utility skeleton-shimmer {
@@ -223,7 +250,7 @@ h1, h2, h3, h4, h5, h6 {
     var(--color-cloud) 75%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.5s ease-in-out infinite;
+  animation: shimmer 1.5s ease-in-out 3;
 }
 
 /* Scroll progress bar */

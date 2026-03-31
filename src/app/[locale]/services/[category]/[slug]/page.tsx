@@ -2,14 +2,15 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
   Calendar, MessageCircle, ArrowRight, ArrowLeft,
-  Check, Clock, DollarSign, ChevronDown,
+  Check, Clock, DollarSign, ChevronDown, Monitor, Building2,
 } from 'lucide-react';
 import { useState } from 'react';
 import { getMessages, type Locale } from '@/lib/i18n';
-import { getServiceBySlug, getServicesByCategory, getCategoryInfo } from '@/data/services';
+import { getServiceBySlug, getServicesByCategory, getCategoryInfo, getServicePricing } from '@/data/services';
 import type { ServiceCategory } from '@/types';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
@@ -48,7 +49,7 @@ export default function ServiceDetailPage() {
   const relatedServices = getServicesByCategory(category).filter((s) => s.slug !== slug).slice(0, 3);
 
   const whatsappLink = `https://wa.me/16132222104?text=${encodeURIComponent(
-    isRTL ? `مرحبا، أود حجز جلسة: ${service.name}` : `Hi, I would like to book: ${service.name}`
+    isRTL ? `مرحبًا، أودُّ حجزَ جلسة: ${service.nameAr}` : `Hi, I would like to book: ${service.name}`
   )}`;
 
   return (
@@ -56,7 +57,7 @@ export default function ServiceDetailPage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-[#C4878A]/8 blur-3xl" />
+          <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-[#C4878A]/8 hidden lg:block blur-3xl" />
         </div>
         <div className="container-main relative pt-20 pb-28 md:pt-24 md:pb-32">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
@@ -71,7 +72,7 @@ export default function ServiceDetailPage() {
             />
           </motion.div>
           <motion.h1
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-[#2D2A33] mt-6"
+            className={`text-3xl md:text-4xl lg:text-5xl font-bold text-[#2D2A33] mt-6 ${isRTL ? 'text-right' : ''}`}
             style={{ fontFamily: 'var(--font-heading)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -86,11 +87,11 @@ export default function ServiceDetailPage() {
             transition={{ delay: 0.2, duration: 0.6 }}
           >
             <Badge variant="sand" size="md" className="!bg-[#C8A97D]/20 !text-[#2D2A33]">
-              <DollarSign className="w-3.5 h-3.5 mr-1" />
+              <DollarSign className={`w-3.5 h-3.5 ${isRTL ? 'ml-1' : 'mr-1'}`} />
               {messages.services.priceFrom} {service.currency} ${service.priceFrom}
             </Badge>
             <Badge variant="sage" size="md" className="!bg-[#C4878A]/10 !text-[#2D2A33]">
-              <Clock className="w-3.5 h-3.5 mr-1" />
+              <Clock className={`w-3.5 h-3.5 ${isRTL ? 'ml-1' : 'mr-1'}`} />
               {service.duration}
             </Badge>
           </motion.div>
@@ -101,7 +102,7 @@ export default function ServiceDetailPage() {
       <div className="container-main py-16 lg:py-24">
         <div className="grid lg:grid-cols-3 gap-12">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-16">
+          <div className={`lg:col-span-2 space-y-16 lg:order-1 ${isRTL ? 'text-right' : ''}`}>
             {/* Description */}
             <ScrollReveal>
               <p className="text-lg text-[#4A4A5C] leading-relaxed">{description}</p>
@@ -119,8 +120,8 @@ export default function ServiceDetailPage() {
                 {whoIsThisFor.map((item, i) => (
                   <motion.div
                     key={i}
-                    className="flex items-start gap-3"
-                    initial={{ opacity: 0, x: -10 }}
+                    className={`flex items-start gap-3 ${isRTL ? 'text-right' : ''}`}
+                    initial={{ opacity: 0, x: isRTL ? 10 : -10 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08 }}
@@ -146,7 +147,7 @@ export default function ServiceDetailPage() {
                 {whatToExpect.map((step, i) => (
                   <motion.div
                     key={i}
-                    className="flex items-start gap-4"
+                    className={`flex items-start gap-4 ${isRTL ? 'text-right' : ''}`}
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -202,10 +203,10 @@ export default function ServiceDetailPage() {
           </div>
 
           {/* Sidebar - Sticky Booking Card */}
-          <div className="lg:col-span-1">
+          <div className={`lg:col-span-1 lg:order-2`}>
             <div className="sticky top-24 space-y-6">
               <motion.div
-                className="bg-white rounded-2xl p-8 border border-[#F3EFE8] shadow-[var(--shadow-card)]"
+                className={`bg-white rounded-2xl p-8 border border-[#F3EFE8] shadow-[var(--shadow-card)] ${isRTL ? 'text-right' : ''}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
@@ -216,14 +217,120 @@ export default function ServiceDetailPage() {
                 >
                   {messages.services.bookSession}
                 </h3>
-                <p className="text-sm text-[#8E8E9F] mb-6">
-                  {messages.services.priceFrom} {service.currency} ${service.priceFrom} · {service.duration}
-                </p>
+                <div className="flex items-center gap-2 text-sm text-[#8E8E9F] mb-5">
+                  <Clock className="w-4 h-4" />
+                  <span>{service.duration}</span>
+                </div>
+
+                {/* Multi-region pricing — compact layout */}
+                {(() => {
+                  const pricing = getServicePricing(service);
+                  const hasMultipleTiers = pricing.some((r) => r.tiers.length > 1);
+                  const hasInPerson = pricing.some((r) => r.tiers.some((t) => t.inPerson && t.inPerson !== '—'));
+                  const hasOnline = pricing.some((r) => r.tiers.some((t) => t.online && t.online !== '—'));
+                  const showBothColumns = hasOnline && hasInPerson;
+
+                  return (
+                    <div className="space-y-2.5 mb-6">
+                      {/* Legend row */}
+                      <div>
+                        <span className="text-[9px] uppercase tracking-widest text-[#8E8E9F] font-medium">
+                          {messages.services.perSession}
+                        </span>
+                      </div>
+
+                      {pricing.map((region) => (
+                        <div key={region.currency} className="bg-[#FAF7F2] rounded-xl overflow-hidden">
+                          {/* Region header */}
+                          <div className="flex items-center gap-1.5 px-3 py-2 bg-[#EDE8DF]">
+                            <span className="text-xs">{region.flag}</span>
+                            <span className="text-[11px] font-semibold text-[#2D2A33]">
+                              {isRTL ? region.regionAr : region.region}
+                            </span>
+                            <span className={`text-[9px] text-[#8E8E9F] ${isRTL ? 'mr-auto' : 'ml-auto'}`}>{region.currency}</span>
+                          </div>
+
+                          {/* Pricing table */}
+                          <div className="px-3 py-2 space-y-1.5">
+                            {/* Column headers when both online & in-person */}
+                            {showBothColumns && (
+                              <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 items-center text-[9px] text-[#8E8E9F] pb-1.5 border-b border-[#EDE8DF]">
+                                <span />
+                                <span className="flex items-center gap-1 justify-end text-[#7A3B5E]">
+                                  <Monitor className="w-3 h-3" />
+                                  <span className="font-medium">{messages.services.online}</span>
+                                </span>
+                                <span className="flex items-center gap-1 justify-end text-[#C8A97D]">
+                                  <Building2 className="w-3 h-3" />
+                                  <span className="font-medium">{messages.services.inPerson}</span>
+                                </span>
+                              </div>
+                            )}
+
+                            {region.tiers.map((tier) => (
+                              <div key={tier.label} className="grid grid-cols-[1fr_auto_auto] gap-x-3 items-center py-1">
+                                {/* Tier name */}
+                                <div className="flex items-center gap-1 min-w-0">
+                                  {hasMultipleTiers && (
+                                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${tier.label === 'Standard' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                                  )}
+                                  <span className="text-[11px] font-medium text-[#4A4A5C] truncate">
+                                    {isRTL ? tier.labelAr : tier.label}
+                                  </span>
+                                </div>
+
+                                {/* Online price */}
+                                {showBothColumns && (
+                                  <span className="text-[11px] font-bold text-[#2D2A33] tabular-nums text-right whitespace-nowrap">
+                                    {tier.online !== '—' ? `${region.symbol} ${tier.online}` : '—'}
+                                  </span>
+                                )}
+                                {!showBothColumns && hasOnline && tier.online !== '—' && (
+                                  <span className="text-[11px] font-bold text-[#2D2A33] tabular-nums text-right whitespace-nowrap col-span-2">
+                                    {region.symbol} {tier.online}
+                                  </span>
+                                )}
+
+                                {/* In-person price */}
+                                {showBothColumns && (
+                                  <span className="text-[11px] font-bold text-[#2D2A33] tabular-nums text-right whitespace-nowrap">
+                                    {tier.inPerson && tier.inPerson !== '—' ? `${region.symbol} ${tier.inPerson}` : '—'}
+                                  </span>
+                                )}
+                                {!showBothColumns && hasInPerson && !hasOnline && tier.inPerson && tier.inPerson !== '—' && (
+                                  <span className="text-[11px] font-bold text-[#2D2A33] tabular-nums text-right whitespace-nowrap col-span-2">
+                                    {region.symbol} {tier.inPerson}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+
+                            {/* Tier descriptions */}
+                            {hasMultipleTiers && (
+                              <div className="pt-1 border-t border-[#EDE8DF] space-y-0.5">
+                                {region.tiers.map((tier) => (
+                                  <div key={`desc-${tier.label}`} className={`flex items-start gap-1 ${isRTL ? 'text-right' : ''}`}>
+                                    <span className={`w-1 h-1 rounded-full shrink-0 mt-[5px] ${tier.label === 'Standard' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+                                    <span className="text-[9px] text-[#8E8E9F] leading-tight">
+                                      {tier.label === 'Standard'
+                                        ? messages.services.standardTooltip
+                                        : messages.services.complexTooltip}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
 
                 <div className="space-y-3">
                   <Button
                     as="a"
-                    href={`/${locale}/book-a-session`}
+                    href={`/${locale}/book-a-session?service=${service.slug}`}
                     fullWidth
                     icon={<Calendar className="w-4 h-4" />}
                   >
@@ -249,7 +356,7 @@ export default function ServiceDetailPage() {
 
               {/* Related Services */}
               {relatedServices.length > 0 && (
-                <div className="bg-white rounded-2xl p-6 border border-[#F3EFE8]">
+                <div className={`bg-white rounded-2xl p-6 border border-[#F3EFE8] ${isRTL ? 'text-right' : ''}`}>
                   <h4 className="text-sm font-semibold text-[#2D2A33] uppercase tracking-wider mb-4">
                     {messages.services.relatedServices}
                   </h4>
@@ -278,18 +385,21 @@ export default function ServiceDetailPage() {
 }
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
+  const params = useParams();
+  const locale = (params?.locale as string) || 'en';
+  const isRTL = locale === 'ar';
   const [open, setOpen] = useState(false);
   return (
     <div className="bg-white rounded-xl border border-[#F3EFE8] overflow-hidden">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between p-5 text-start"
+        className={`w-full flex items-center justify-between p-5 text-start ${isRTL ? 'text-right' : ''}`}
       >
         <span className="font-medium text-[#2D2A33] text-sm">{question}</span>
         <ChevronDown className={`w-4 h-4 text-[#8E8E9F] transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
-        <div className="px-5 pb-5 -mt-1">
+        <div className={`px-5 pb-5 -mt-1 ${isRTL ? 'text-right' : ''}`}>
           <p className="text-sm text-[#4A4A5C] leading-relaxed">{answer}</p>
         </div>
       )}

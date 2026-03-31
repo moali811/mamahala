@@ -1,10 +1,15 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import { Phone, Mail, MapPin, Clock, Instagram, Facebook, Youtube } from 'lucide-react';
+import {
+  Mail, Instagram, Facebook, Youtube,
+  MessageCircle, MapPin, ArrowUp, Clock,
+  BookOpen, GraduationCap, CalendarDays, Download, HelpCircle, Sparkles, PenLine,
+} from 'lucide-react';
 import { SnapchatIcon, TelegramIcon, TiktokIcon } from '@/components/icons/SocialIcons';
+import { BUSINESS } from '@/config/business';
 import type { Locale } from '@/types';
 
 interface FooterProps {
@@ -14,204 +19,184 @@ interface FooterProps {
 
 export default function Footer({ locale, messages }: FooterProps) {
   const isRTL = locale === 'ar';
-  const pathname = usePathname();
 
-  const isActive = (href: string) => {
-    if (href === `/${locale}`) return pathname === `/${locale}` || pathname === `/${locale}/`;
-    return pathname.startsWith(href);
-  };
-  const nav = messages?.nav ?? {};
   const footer = messages?.footer ?? {};
   const contact = messages?.contact ?? {};
-  const newsletter = messages?.newsletter ?? {};
-
   const currentYear = new Date().getFullYear();
 
+
+  const socials = [
+    { icon: Instagram, href: 'https://www.instagram.com/mamahala.ca/', label: 'Instagram' },
+    { icon: Facebook, href: 'https://www.facebook.com/mamahala.ca', label: 'Facebook' },
+    { icon: TelegramIcon, href: 'https://t.me/+Ut1Xms3zRX5jMmNh', label: 'Telegram' },
+  ];
+
+  const serviceLinks = [
+    { label: isRTL ? 'الناشئة' : 'Youth', href: `/${locale}/services/youth` },
+    { label: isRTL ? 'الأُسَر' : 'Families', href: `/${locale}/services/families` },
+    { label: isRTL ? 'البالغون' : 'Adults', href: `/${locale}/services/adults` },
+    { label: isRTL ? 'الأزواج' : 'Couples', href: `/${locale}/services/couples` },
+    { label: isRTL ? 'العلاج التجريبيّ' : 'Experiential', href: `/${locale}/services/experiential` },
+  ];
+
+  const resourceLinks = [
+    { icon: BookOpen, label: isRTL ? 'المدوّنة' : 'Blog', href: `/${locale}/resources/blog` },
+    { icon: GraduationCap, label: isRTL ? 'البرامج' : 'Programs', href: `/${locale}/resources/programs` },
+    { icon: CalendarDays, label: isRTL ? 'الفعاليّات' : 'Events', href: `/${locale}/resources/events` },
+    { icon: Download, label: isRTL ? 'أدوات مجّانيّة' : 'Free Toolkit', href: `/${locale}/resources/downloads` },
+    { icon: Sparkles, label: isRTL ? 'تقييماتٌ ذاتيّة' : 'Self-Assessments', href: `/${locale}/resources/assessments` },
+    { icon: HelpCircle, label: isRTL ? 'الأسئلة الشائعة' : 'FAQs', href: `/${locale}/resources/faqs` },
+  ];
+
+  const quickLinks = [
+    { label: isRTL ? 'من نحن' : 'About', href: `/${locale}/about` },
+    { label: isRTL ? 'تواصل معنا' : 'Contact', href: `/${locale}/contact` },
+    { label: isRTL ? 'احجز جلسة' : 'Book a Session', href: `/${locale}/book-a-session` },
+    { label: isRTL ? 'أهدِ جلسة' : 'Gift a Session', href: `/${locale}/gift` },
+    { label: isRTL ? 'الاختبار السريع' : 'Take the Quiz', href: `/${locale}/quiz` },
+  ];
+
+
   return (
-    <footer
-      dir={isRTL ? 'rtl' : 'ltr'}
-      className="bg-gradient-to-b from-[#F3EFE8] to-[#EDE6DC]"
-    >
-      {/* Newsletter Bar */}
-      <div className="border-b border-[#D4ADA8]/20">
-        <div className="container-main py-10">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h3
-                className="text-xl font-bold text-[#2D2A33] mb-1"
-                style={{ fontFamily: 'var(--font-heading)' }}
-              >
-                {newsletter.title}
-              </h3>
-              <p className="text-sm text-[#6B6580]">{newsletter.subtitle}</p>
+    <footer dir={isRTL ? 'rtl' : 'ltr'}>
+
+      {/* ═══ MAIN FOOTER ═══ */}
+      <div className="bg-[#F5F0EA] pt-12 pb-10">
+        <div className="container-main">
+          <div className="grid grid-cols-2 md:grid-cols-12 gap-10 lg:gap-6">
+
+            {/* Col 1: Brand */}
+            <div className="col-span-2 md:col-span-3">
+              <Link href={`/${locale}`} className="flex items-center gap-3 mb-4">
+                <Image src="/images/logo-512.png" alt="Mama Hala Consulting" width={128} height={128} className="h-10 w-10 rounded-full object-cover" />
+                <span className="text-sm font-semibold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
+                  {isRTL ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting'}
+                </span>
+              </Link>
+              <p className="text-sm text-[#6B6580] leading-relaxed mb-6 max-w-[260px]">
+                {isRTL
+                  ? 'لحياةٍ مُفعَمةٍ بالحبِّ والسّكينةِ والسّلام.'
+                  : 'For a life full of love, tranquility & peace.'}
+              </p>
+              <div className="flex items-center gap-2">
+                {socials.map(({ icon: Icon, href, label }) => (
+                  <a key={label} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
+                    className="w-8 h-8 rounded-full bg-[#D4ADA8]/12 flex items-center justify-center hover:bg-[#7A3B5E] text-[#7A3B5E] hover:text-white transition-all duration-200">
+                    <Icon size={14} />
+                  </a>
+                ))}
+              </div>
             </div>
-            <form className="flex w-full max-w-md gap-2" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                placeholder={newsletter.placeholder}
-                className="flex-1 rounded-full bg-white border border-[#D4ADA8]/20 px-5 py-3 text-sm text-[#2D2A33] placeholder-[#8E8E9F] outline-none focus:border-[#7A3B5E]/40 focus:ring-1 focus:ring-[#7A3B5E]/20 transition-all"
-              />
-              <button
-                type="submit"
-                className="rounded-full bg-[#7A3B5E] px-6 py-3 text-sm font-semibold text-white hover:bg-[#5E2D48] transition-colors whitespace-nowrap"
-              >
-                {newsletter.subscribe}
-              </button>
-            </form>
+
+            {/* Col 2: Services */}
+            <div className="col-span-1 md:col-span-2">
+              <h4 className="text-xs font-semibold text-[#C8A97D] uppercase tracking-[0.2em] mb-5">
+                {isRTL ? 'الخدمات' : 'Services'}
+              </h4>
+              <div className="space-y-2.5">
+                {serviceLinks.map((link) => (
+                  <Link key={link.href} href={link.href}
+                    className="block text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 3: Resources */}
+            <div className="col-span-1 md:col-span-2">
+              <h4 className="text-xs font-semibold text-[#C8A97D] uppercase tracking-[0.2em] mb-5">
+                {isRTL ? 'الموارد' : 'Resources'}
+              </h4>
+              <div className="space-y-2.5">
+                {resourceLinks.map((link) => (
+                  <Link key={link.href} href={link.href}
+                    className="flex items-center gap-2 text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
+                    <link.icon size={13} className="opacity-60" />
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 4: Quick Links */}
+            <div className="col-span-1 md:col-span-2">
+              <h4 className="text-xs font-semibold text-[#C8A97D] uppercase tracking-[0.2em] mb-5">
+                {isRTL ? 'روابط سريعة' : 'Quick Links'}
+              </h4>
+              <div className="space-y-2.5">
+                {quickLinks.map((link) => (
+                  <Link key={link.href} href={link.href}
+                    className="block text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
+                    {link.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            {/* Col 5: Reach Us */}
+            <div className="col-span-1 md:col-span-3">
+              <h4 className="text-xs font-semibold text-[#C8A97D] uppercase tracking-[0.2em] mb-5">
+                {isRTL ? 'تواصَلْ' : 'Reach Us'}
+              </h4>
+              <div className="space-y-3">
+                <a href="https://wa.me/16132222104" target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2.5 group">
+                  <MessageCircle size={14} className="text-[#25D366] shrink-0" />
+                  <span dir="ltr" className="text-sm text-[#6B6580] group-hover:text-[#7A3B5E] transition-colors">{contact.phone}</span>
+                </a>
+                <a href={`mailto:${BUSINESS.email}`} className="flex items-center gap-2.5 group">
+                  <Mail size={14} className="text-[#7A3B5E] shrink-0" />
+                  <span className="text-sm text-[#6B6580] group-hover:text-[#7A3B5E] transition-colors">{contact.email}</span>
+                </a>
+                <a href="https://maps.google.com/?q=430+Hazeldean+Rd+Kanata+ON+K2L+1E8+Canada" target="_blank" rel="noopener noreferrer"
+                  className="flex items-start gap-2.5 group">
+                  <MapPin size={14} className="text-[#C8A97D] shrink-0 mt-0.5" />
+                  <span className="text-xs text-[#6B6580] group-hover:text-[#7A3B5E] transition-colors leading-relaxed">
+                    {isRTL ? '430 Hazeldean Rd, Ontario' : '430 Hazeldean Rd, Ontario'}
+                    <br />
+                    {isRTL ? 'K2L 1E8 — كندا' : 'K2L 1E8 — Canada'}
+                  </span>
+                </a>
+                <div className="flex items-center gap-2.5">
+                  <Clock size={14} className="text-[#8E8E9F] shrink-0" />
+                  <span className="text-xs text-[#8E8E9F]">
+                    {isRTL ? 'الاثنين – السبت: 9 ص – 8 م' : 'Mon – Sat: 9 AM – 8 PM'}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Footer */}
-      <div className="container-main py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 lg:gap-8">
-          {/* Brand */}
-          <div className="lg:col-span-1">
-            <Link href={`/${locale}`} className="flex items-center gap-3 mb-5">
-              <Image
-                src="/images/logo.png"
-                alt="Mama Hala Consulting"
-                width={40}
-                height={40}
-                className="h-9 w-9 rounded-full object-contain"
-              />
-              <span
-                className="text-sm font-semibold text-[#2D2A33]"
-                style={{ fontFamily: 'var(--font-heading)' }}
-              >
-                {isRTL ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting'}
-              </span>
-            </Link>
-            <p className="text-sm text-[#6B6580] leading-relaxed mb-6 max-w-xs">
-              {footer.description}
-            </p>
-            <div className="flex items-center gap-3">
-              {[
-                { icon: Instagram, href: 'https://www.instagram.com/mamahala.ca/', label: 'Instagram' },
-                { icon: Facebook, href: 'https://www.facebook.com/mamahala.ca', label: 'Facebook' },
-                { icon: Youtube, href: 'https://youtube.com/@MamaHala-ca?si=pwg5_hhRIfXt-usP', label: 'YouTube' },
-                { icon: TiktokIcon, href: 'https://www.tiktok.com/@mamahala.ca?_t=8jv2H8Tkli2&_r=1', label: 'TikTok' },
-                { icon: SnapchatIcon, href: 'https://www.snapchat.com/add/mamahala.ca', label: 'Snapchat' },
-                { icon: TelegramIcon, href: 'https://t.me/+Ut1Xms3zRX5jMmNh', label: 'Telegram' },
-              ].map(({ icon: Icon, href, label }) => (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="w-9 h-9 rounded-full bg-[#D4ADA8]/15 flex items-center justify-center hover:bg-[#7A3B5E] text-[#7A3B5E] hover:text-white transition-all duration-200"
-                >
-                  <Icon size={16} />
-                </a>
-              ))}
-            </div>
-          </div>
-
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-sm font-semibold text-[#2D2A33] uppercase tracking-wider mb-5">
-              {footer.quickLinks}
-            </h4>
-            <ul className="space-y-3">
-              {[
-                { label: nav.home, href: `/${locale}` },
-                { label: nav.about, href: `/${locale}/about` },
-                { label: nav.services, href: `/${locale}/services` },
-                { label: nav.resources, href: `/${locale}/resources` },
-                { label: nav.contact, href: `/${locale}/contact` },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className={`text-sm transition-colors duration-200 ${
-                      isActive(link.href)
-                        ? 'text-[#7A3B5E] font-medium'
-                        : 'text-[#6B6580] hover:text-[#7A3B5E]'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h4 className="text-sm font-semibold text-[#2D2A33] uppercase tracking-wider mb-5">
-              {footer.ourServices}
-            </h4>
-            <ul className="space-y-3">
-              {[
-                { label: nav.families, href: `/${locale}/services/families` },
-                { label: nav.couples, href: `/${locale}/services/couples` },
-                { label: nav.youth, href: `/${locale}/services/youth` },
-                { label: nav.adults, href: `/${locale}/services/adults` },
-              ].map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className={`text-sm transition-colors duration-200 ${
-                      isActive(link.href)
-                        ? 'text-[#7A3B5E] font-medium'
-                        : 'text-[#6B6580] hover:text-[#7A3B5E]'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h4 className="text-sm font-semibold text-[#2D2A33] uppercase tracking-wider mb-5">
-              {footer.contactUs}
-            </h4>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <Phone size={16} className="text-[#7A3B5E] mt-0.5 flex-shrink-0" />
-                <a href="tel:+16132222104" className="text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
-                  {contact.phone}
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <Mail size={16} className="text-[#7A3B5E] mt-0.5 flex-shrink-0" />
-                <a href="mailto:admin@mamahala.ca" className="text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
-                  {contact.email}
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <MapPin size={16} className="text-[#7A3B5E] mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-[#6B6580]">{contact.location}</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Clock size={16} className="text-[#7A3B5E] mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-[#6B6580]">{contact.hoursDetail}</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Bar */}
-      <div className="border-t border-[#D4ADA8]/20">
-        <div className="container-main py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-[#8E8E9F]">
+      {/* ═══ BOTTOM BAR ═══ */}
+      <div className="bg-[#F5F0EA] border-t border-[#D4ADA8]/20">
+        <div className="container-main py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-[11px] text-[#8E8E9F]">
             &copy; {currentYear} {isRTL ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting'}. {footer.rights}
           </p>
-          <div className="flex items-center gap-6">
-            <Link href={`/${locale}/privacy-policy`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
-              {footer.privacy}
-            </Link>
-            <Link href={`/${locale}/terms-of-service`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
-              {footer.terms}
-            </Link>
-            <Link href={`/${locale}/booking-policy`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
-              {footer.bookingPolicy}
-            </Link>
+          <div className="flex items-center gap-5">
+            {[
+              { label: footer.privacy, href: `/${locale}/privacy-policy` },
+              { label: footer.terms, href: `/${locale}/terms-of-service` },
+              { label: footer.bookingPolicy, href: `/${locale}/booking-policy` },
+            ].map((link) => (
+              <Link key={link.href} href={link.href} target="_blank" rel="noopener noreferrer"
+                className="text-[11px] text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
+                {link.label}
+              </Link>
+            ))}
+            <span className="hidden sm:block h-3 w-px bg-[#D4ADA8]/30" />
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="flex items-center gap-1.5 text-xs font-medium text-[#7A3B5E]/60 hover:text-[#7A3B5E] transition-colors group"
+            >
+              <span className="w-6 h-6 rounded-full border border-[#7A3B5E]/20 group-hover:border-[#7A3B5E]/40 group-hover:bg-[#7A3B5E]/5 flex items-center justify-center transition-all">
+                <ArrowUp size={12} />
+              </span>
+              {isRTL ? 'العودة للأعلى' : 'Back to Top'}
+            </button>
           </div>
         </div>
       </div>

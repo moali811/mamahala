@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -177,7 +177,7 @@ function getRecommendations(answers: QuizAnswer[]) {
     else if (who === 'family') recommended = services.filter((s) => s.category === 'families');
     else recommended = services.filter((s) => s.category === 'adults');
   }
-  if (recommended.length === 0) recommended = services.filter((s) => s.slug === 'online-consultation');
+  if (recommended.length === 0) recommended = services.filter((s) => s.slug === 'initial-consultation' || s.slug === 'online-consultation');
   return recommended.slice(0, 3);
 }
 
@@ -188,6 +188,11 @@ export default function QuizPage() {
   const messages = getMessages(locale as Locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
   const BackIcon = isRTL ? ChevronRight : ChevronLeft;
+
+  // Scroll to top on mount to ensure hero is fully visible
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, []);
 
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
@@ -223,7 +228,7 @@ export default function QuizPage() {
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#7A3B5E] via-[#7A3B5E] to-[#5E2D48]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white/20 hidden lg:block blur-3xl" />
         </div>
         <div className="container-main relative pt-16 pb-24 md:pt-20 md:pb-28 text-center">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>

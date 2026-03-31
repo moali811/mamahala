@@ -1,7 +1,9 @@
 'use client';
 
 import { useParams } from 'next/navigation';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import {
   BookOpen,
@@ -13,6 +15,7 @@ import {
   Share2,
   Mail,
   Sparkles,
+  CheckCircle2,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer, ease, viewportOnce } from '@/lib/animations';
@@ -48,12 +51,66 @@ const ctaThemes: Record<string, { bg: string; accent: string; accentLight: strin
   couples: { bg: 'from-[#E8C4C0]/60 via-[#FAF0EC]/40 to-[#FAF7F2]', accent: '#C4878A', accentLight: '#C4878A15', icon: '#C4878A' },
 };
 
+function BlogNewsletterForm({ theme, messages, isRTL }: { theme: { accent: string }; messages: Record<string, any>; isRTL: boolean }) {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error' | 'invalid'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || status === 'loading') return;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setStatus('invalid'); return; }
+    setStatus('loading');
+    try {
+      const res = await fetch('/api/newsletter', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+      if (res.ok) { setStatus('success'); setEmail(''); } else setStatus('error');
+    } catch { setStatus('error'); }
+  };
+
+  if (status === 'success') {
+    return (
+      <div className="text-center py-4">
+        <p className="text-sm font-semibold text-green-700">{isRTL ? 'شكرًا لاشتراكك!' : 'Subscribed successfully!'}</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={handleSubmit}>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); if (status !== 'idle') setStatus('idle'); }}
+          placeholder={messages.newsletter?.placeholder || (isRTL ? 'بريدك الإلكتروني' : 'Your email')}
+          className="flex-1 px-5 py-3.5 rounded-full border bg-white/95 text-[16px] text-[#2D2A33] placeholder:text-[#8E8E9F] outline-none focus:ring-2 transition-all"
+          style={{ borderColor: `${theme.accent}20` }}
+          disabled={status === 'loading'}
+        />
+        <button
+          type="submit"
+          disabled={status === 'loading' || !email}
+          className="px-7 py-3.5 rounded-full text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:scale-[1.02] disabled:opacity-60"
+          style={{ backgroundColor: theme.accent }}
+        >
+          {status === 'loading' ? (isRTL ? 'جارٍ...' : 'Sending...') : (messages.newsletter?.subscribe || 'Subscribe')}
+        </button>
+      </form>
+      {status === 'invalid' && <p className="text-xs text-[#C8A97D] mt-3 text-center">{isRTL ? 'يرجى إدخالُ بريدٍ صحيح.' : 'Please enter a valid email.'}</p>}
+      {status === 'error' && <p className="text-xs text-red-500 mt-3 text-center">{isRTL ? 'حدث خطأ. حاول مرةً أخرى.' : 'Something went wrong. Try again.'}</p>}
+      <p className="text-xs text-[#8E8E9F] mt-4">{messages.newsletter?.privacy || (isRTL ? 'نحترم خصوصيّتك.' : 'We respect your privacy. Unsubscribe at any time.')}</p>
+    </>
+  );
+}
+
+/* Giscus comments removed — not configured yet */
+
 export default function BlogPostPage() {
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
   const slug = params?.slug as string;
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
@@ -122,7 +179,7 @@ export default function BlogPostPage() {
           </motion.div>
 
           <motion.div
-            className="mt-10 max-w-3xl"
+            className={`mt-10 max-w-3xl ${isRTL ? 'text-right' : ''}`}
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
@@ -182,22 +239,96 @@ export default function BlogPostPage() {
           <div className="max-w-3xl mx-auto">
             <ScrollReveal>
               <article className="bg-white rounded-3xl p-8 lg:p-12 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#F3EFE8]">
-                <div className="space-y-6">
-                  {content.map((paragraph: string, index: number) => (
-                    <p
-                      key={index}
-                      className="text-[#4A4A5C] leading-[1.8] text-[16px] lg:text-[17px]"
-                      style={index === 0 ? { fontSize: '18px', color: '#2D2A33', fontWeight: 500 } : undefined}
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
+                <div className="space-y-5">
+                  {content.map((block: string, index: number) => {
+                    // H2 headings
+                    if (block.startsWith('## ')) {
+                      return (
+                        <h2 key={index} className="text-2xl lg:text-[26px] font-bold text-[#2D2A33] mt-10 mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+                          {block.slice(3)}
+                        </h2>
+                      );
+                    }
+                    // H3 headings
+                    if (block.startsWith('### ')) {
+                      return (
+                        <h3 key={index} className="text-xl font-bold text-[#2D2A33] mt-8 mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                          {block.slice(4)}
+                        </h3>
+                      );
+                    }
+                    // Bullet list items (collect consecutive bullets)
+                    if (block.startsWith('• ') || block.startsWith('- ')) {
+                      const items = block.split('\n').filter(Boolean);
+                      return (
+                        <ul key={index} className="space-y-2.5 my-4">
+                          {items.map((item, i) => {
+                            const text = item.replace(/^[•\-]\s*/, '');
+                            // Support bold lead-in: **Bold:** rest of text
+                            const boldMatch = text.match(/^\*\*(.+?)\*\*[:\s]*(.*)/);
+                            return (
+                              <li key={i} className={`flex items-start gap-3 text-[#4A4A5C] leading-[1.7] text-[15px] ${isRTL ? 'text-right' : ''}`}>
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#C8A97D] mt-2.5 flex-shrink-0" />
+                                <span>
+                                  {boldMatch
+                                    ? <><strong className="text-[#2D2A33] font-semibold">{boldMatch[1]}:</strong> {boldMatch[2]}</>
+                                    : text
+                                  }
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      );
+                    }
+                    // Numbered items (1. 2. 3.)
+                    if (/^\d+\.\s/.test(block)) {
+                      const items = block.split('\n').filter(Boolean);
+                      return (
+                        <ol key={index} className="space-y-3 my-4">
+                          {items.map((item, i) => {
+                            const text = item.replace(/^\d+\.\s*/, '');
+                            const boldMatch = text.match(/^\*\*(.+?)\*\*[:\s]*(.*)/);
+                            return (
+                              <li key={i} className={`flex items-start gap-3 text-[#4A4A5C] leading-[1.7] text-[15px] ${isRTL ? 'text-right' : ''}`}>
+                                <span className="w-6 h-6 rounded-full bg-[#7A3B5E]/10 text-[#7A3B5E] text-xs font-bold flex items-center justify-center mt-0.5 flex-shrink-0">{i + 1}</span>
+                                <span>
+                                  {boldMatch
+                                    ? <><strong className="text-[#2D2A33] font-semibold">{boldMatch[1]}</strong> {boldMatch[2]}</>
+                                    : text
+                                  }
+                                </span>
+                              </li>
+                            );
+                          })}
+                        </ol>
+                      );
+                    }
+                    // Blockquote
+                    if (block.startsWith('> ')) {
+                      return (
+                        <blockquote key={index} className={`${isRTL ? 'border-r-3 pr-5' : 'border-l-3 pl-5'} border-[#C8A97D] bg-[#FAF7F2] rounded-xl p-5 my-6 italic text-[#6B6580] leading-[1.8] text-[15px]`}>
+                          {block.slice(2)}
+                        </blockquote>
+                      );
+                    }
+                    // Regular paragraph
+                    return (
+                      <p
+                        key={index}
+                        className="text-[#4A4A5C] leading-[1.8] text-[16px] lg:text-[17px]"
+                        style={index === 0 ? { fontSize: '18px', color: '#2D2A33', fontWeight: 500 } : undefined}
+                      >
+                        {block}
+                      </p>
+                    );
+                  })}
                 </div>
 
                 {/* Share section */}
                 <div className="mt-10 pt-8 border-t border-[#F3EFE8]">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                  <div className={`flex items-center justify-between`}>
+                    <div className={`flex items-center gap-3 ${isRTL ? 'text-right' : ''}`}>
                       <div className="w-10 h-10 rounded-full bg-[#C4878A]/10 flex items-center justify-center">
                         <User className="w-5 h-5 text-[#7A3B5E]" />
                       </div>
@@ -210,9 +341,22 @@ export default function BlogPostPage() {
                         </p>
                       </div>
                     </div>
-                    <button className="flex items-center gap-2 text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
-                      <Share2 className="w-4 h-4" />
-                      <span className="text-sm">{messages.common.share}</span>
+                    <button
+                      onClick={async () => {
+                        const url = window.location.href;
+                        const title = isRTL ? post.titleAr : post.titleEn;
+                        if (navigator.share) {
+                          try { await navigator.share({ title, url }); } catch {}
+                        } else {
+                          await navigator.clipboard.writeText(url);
+                          setShareCopied(true);
+                          setTimeout(() => setShareCopied(false), 2000);
+                        }
+                      }}
+                      className="flex items-center gap-2 text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
+                    >
+                      {shareCopied ? <CheckCircle2 className="w-4 h-4 text-[#25D366]" /> : <Share2 className="w-4 h-4" />}
+                      <span className="text-sm">{shareCopied ? (isRTL ? 'تمّ النسخ!' : 'Link copied!') : (messages.common.share)}</span>
                     </button>
                   </div>
                 </div>
@@ -233,8 +377,8 @@ export default function BlogPostPage() {
               <ScrollReveal>
                 <div className={`relative bg-gradient-to-br ${theme.bg} rounded-3xl p-10 lg:p-14 overflow-hidden border border-[#F3EFE8]`}>
                   {/* Decorative elements */}
-                  <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: `${theme.accent}08` }} />
-                  <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full blur-3xl pointer-events-none" style={{ backgroundColor: `${theme.accent}06` }} />
+                  <div className="absolute top-0 right-0 w-64 h-64 rounded-full hidden lg:block blur-3xl pointer-events-none" style={{ backgroundColor: `${theme.accent}08` }} />
+                  <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full hidden lg:block blur-3xl pointer-events-none" style={{ backgroundColor: `${theme.accent}06` }} />
                   <div
                     className="absolute inset-0 opacity-[0.02] pointer-events-none"
                     style={{
@@ -270,25 +414,7 @@ export default function BlogPostPage() {
                       }
                     </p>
 
-                    <form className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
-                      <input
-                        type="email"
-                        placeholder={messages.newsletter.placeholder}
-                        className="flex-1 px-5 py-3.5 rounded-full border bg-white/80 backdrop-blur-sm text-sm text-[#2D2A33] placeholder:text-[#8E8E9F] outline-none focus:ring-2 transition-all"
-                        style={{ borderColor: `${theme.accent}20`, }}
-                      />
-                      <button
-                        type="submit"
-                        className="px-7 py-3.5 rounded-full text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
-                        style={{ backgroundColor: theme.accent }}
-                      >
-                        {messages.newsletter.subscribe}
-                      </button>
-                    </form>
-
-                    <p className="text-xs text-[#8E8E9F] mt-4">
-                      {messages.newsletter.privacy}
-                    </p>
+                    <BlogNewsletterForm theme={theme} messages={messages} isRTL={isRTL} />
                   </div>
                 </div>
               </ScrollReveal>
@@ -327,9 +453,18 @@ export default function BlogPostPage() {
                       }}
                     >
                       <div
-                        className={`relative h-44 bg-gradient-to-br ${gradientMap[related.category] || 'from-[#C4878A] to-[#B07578]'} flex items-center justify-center`}
+                        className={`relative h-44 ${related.coverImage ? '' : `bg-gradient-to-br ${gradientMap[related.category] || 'from-[#C4878A] to-[#B07578]'}`} flex items-center justify-center overflow-hidden`}
                       >
-                        <BookOpen className="w-10 h-10 text-white/20" />
+                        {related.coverImage ? (
+                          <Image
+                            src={related.coverImage}
+                            alt={isRTL ? related.titleAr : related.titleEn}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <BookOpen className="w-10 h-10 text-white/20" />
+                        )}
                         <div className="absolute top-4 left-4">
                           <Badge
                             variant={badgeVariants[related.category] || 'sage'}
@@ -338,7 +473,7 @@ export default function BlogPostPage() {
                             {getCategoryLabel(related.category, isRTL)}
                           </Badge>
                         </div>
-                        <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 text-white text-xs">
+                        <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/40 rounded-full px-3 py-1 text-white text-xs">
                           <Clock className="w-3 h-3" />
                           <span>
                             {related.readTime} {messages.common.minutes}
@@ -353,7 +488,7 @@ export default function BlogPostPage() {
                         >
                           {isRTL ? related.titleAr : related.titleEn}
                         </h3>
-                        <div className="flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300">
+                        <div className={`flex items-center gap-2 text-[#7A3B5E] font-semibold text-sm group-hover:gap-3 transition-all duration-300`}>
                           <span>{messages.common.readMore}</span>
                           <Arrow className="w-4 h-4" />
                         </div>

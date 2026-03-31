@@ -20,6 +20,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import FinalCTA from '@/components/shared/FinalCTA';
 
 interface ProgramModule {
   en: string;
@@ -93,7 +94,7 @@ export default function ProgramsPage() {
       {/* ================================================================ */}
       {/*  HERO                                                            */}
       {/* ================================================================ */}
-      <section className="relative pt-32 pb-28 lg:pt-40 lg:pb-36 overflow-hidden gradient-sage">
+      <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden gradient-sage">
         {/* Decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] blur-[80px]" />
@@ -135,19 +136,8 @@ export default function ProgramsPage() {
       {/* ================================================================ */}
       {/*  PROGRAMS GRID                                                   */}
       {/* ================================================================ */}
-      <section className="py-20 lg:py-28 bg-[#FAF7F2]">
+      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
         <div className="container-main">
-          <ScrollReveal className={`mb-14 ${isRTL ? 'text-right' : 'text-left'}`}>
-            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-3">
-              {isRTL ? 'استكشف' : 'Explore'}
-            </span>
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl text-[#2D2A33] leading-tight text-balance"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {isRTL ? 'برامجنا المتاحة' : 'Our Available Programs'}
-            </h2>
-          </ScrollReveal>
 
           <StaggerReveal className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {programs.map((program) => {
@@ -270,55 +260,14 @@ export default function ProgramsPage() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/*  CTA                                                             */}
-      {/* ================================================================ */}
-      <section className="py-24 lg:py-36 gradient-cta-dark relative overflow-hidden">
-        <WaveDivider position="top" fillColor="#FAF7F2" variant="organic" />
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#7A3B5E]/[0.06] rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#7A3B5E]/[0.04] rounded-full translate-x-1/3 translate-y-1/3 pointer-events-none" />
-
-        <div className="container-main relative z-10">
-          <ScrollReveal className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 mb-6">
-              <Sparkles className="w-7 h-7 text-[#C8A97D]" />
-            </div>
-            <h2
-              className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#2D2A33] leading-tight text-balance"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {messages.cta.ready}
-            </h2>
-            <p className="mt-6 text-lg lg:text-xl text-[#4A4A5C] leading-relaxed max-w-xl mx-auto">
-              {messages.cta.readyDesc}
-            </p>
-            <div className="flex flex-wrap justify-center gap-4 mt-10">
-              <Button
-                as="a"
-                href={`/${locale}/book-a-session`}
-                variant="secondary"
-                size="lg"
-                icon={<Calendar className="w-5 h-5" />}
-                className=""
-              >
-                {messages.cta.bookNow}
-              </Button>
-              <Button
-                as="a"
-                href="https://wa.me/16132222104"
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="outline"
-                size="lg"
-                icon={<MessageCircle className="w-5 h-5" />}
-                className="!border-[#7A3B5E]/20 !text-[#7A3B5E] hover:!bg-[#7A3B5E]/5"
-              >
-                {messages.cta.whatsapp}
-              </Button>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+      <FinalCTA
+        locale={locale}
+        fillColorAbove="#FAF7F2"
+        headingEn={<>Invest in Your Family's <span className="text-[#7A3B5E] italic">Future</span></>}
+        headingAr={<>استثمِرْ في مستقبلِ <span className="text-[#7A3B5E] italic">عائلتِك</span></>}
+        primaryTextEn="Try 1-on-1 Support"
+        primaryTextAr="جرِّبْ الدعمَ الفرديّ"
+      />
     </div>
   );
 }
