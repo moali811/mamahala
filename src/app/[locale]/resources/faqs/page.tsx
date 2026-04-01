@@ -116,15 +116,15 @@ export default function FAQsPage() {
       {/* ================================================================ */}
       {/*  FAQ ACCORDION                                                   */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-32 bg-[#FAF7F2]">
-        <div className="container-main max-w-3xl">
-          {/* Tag filters */}
-          <ScrollReveal className="mb-10">
+      <section className="py-20 lg:py-28 bg-[#FAF7F2]">
+        <div className="container-main">
+          {/* Tag filters — full width row */}
+          <ScrollReveal className="mb-12">
             <div className="flex flex-wrap gap-2 justify-center">
               <motion.button
                 onClick={() => { setActiveTag(null); setOpenId(null); }}
-                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                  !activeTag ? 'bg-[#7A3B5E] text-white' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C8A97D]/30'
+                className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
+                  !activeTag ? 'bg-[#7A3B5E] text-white shadow-sm' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C8A97D]/30'
                 }`}
                 whileTap={{ scale: 0.97 }}
               >
@@ -134,8 +134,8 @@ export default function FAQsPage() {
                 <motion.button
                   key={tag}
                   onClick={() => { setActiveTag(tag); setOpenId(null); }}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                    activeTag === tag ? 'bg-[#7A3B5E] text-white' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C8A97D]/30'
+                  className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all capitalize ${
+                    activeTag === tag ? 'bg-[#7A3B5E] text-white shadow-sm' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C8A97D]/30'
                   }`}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -145,8 +145,8 @@ export default function FAQsPage() {
             </div>
           </ScrollReveal>
 
-          {/* FAQ list */}
-          <div className="space-y-3">
+          {/* FAQ grid — 2 columns on desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 max-w-6xl mx-auto">
             <AnimatePresence mode="popLayout">
               {filteredFaqs.map((faq, i) => {
                 const isOpen = openId === i;
@@ -162,21 +162,21 @@ export default function FAQsPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.25 }}
-                    className={`bg-white rounded-xl border transition-all duration-300 overflow-hidden ${
-                      isOpen ? 'border-[#C8A97D]/20 shadow-sm' : 'border-[#F3EFE8]'
+                    className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
+                      isOpen ? 'border-[#C8A97D]/30 shadow-md lg:col-span-2' : 'border-[#F3EFE8] hover:border-[#C4878A]/20 hover:shadow-sm'
                     }`}
                   >
                     <button
                       onClick={() => setOpenId(isOpen ? null : i)}
                       className="w-full flex items-center gap-4 p-5 lg:p-6 text-start"
                     >
-                      <div className="w-10 h-10 rounded-full bg-[#C4878A]/8 flex items-center justify-center flex-shrink-0">
-                        <HelpCircle className="w-5 h-5 text-[#7A3B5E]" />
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors ${isOpen ? 'bg-[#7A3B5E]/10' : 'bg-[#C4878A]/8'}`}>
+                        <HelpCircle className={`w-5 h-5 ${isOpen ? 'text-[#7A3B5E]' : 'text-[#C4878A]'}`} />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-base font-semibold text-[#2D2A33] leading-snug">{question}</h3>
+                        <h3 className="text-[15px] font-semibold text-[#2D2A33] leading-snug">{question}</h3>
                         {tag && !isOpen && (
-                          <span className="text-[11px] text-[#C8A97D] font-medium uppercase tracking-wider mt-1 block">{tag}</span>
+                          <span className="text-[10px] text-[#C8A97D] font-semibold uppercase tracking-[0.1em] mt-1 block">{tag}</span>
                         )}
                       </div>
                       <ChevronDown className={`w-4 h-4 text-[#8E8E9F] flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
@@ -190,18 +190,20 @@ export default function FAQsPage() {
                           transition={{ duration: 0.25 }}
                           className="overflow-hidden"
                         >
-                          <div className="px-5 pb-6 pl-[4.5rem] lg:pl-[4.75rem]">
-                            <p className="text-[15px] text-[#6B6580] leading-relaxed">{answer}</p>
-                            {faq.link && (
-                              <Link
-                                href={`/${locale}${faq.link.href}`}
-                                target="_blank"
-                                className="inline-flex items-center gap-1.5 mt-3 text-xs font-semibold text-[#7A3B5E] hover:text-[#5E2D48] transition-colors"
-                              >
-                                {isRTL ? faq.link.labelAr : faq.link.labelEn}
-                                <ArrowIcon className="w-3 h-3" />
-                              </Link>
-                            )}
+                          <div className="px-5 pb-6 lg:px-6 lg:pb-8 pt-0">
+                            <div className={`${isRTL ? 'pr-14' : 'pl-14'}`}>
+                              <p className="text-[15px] text-[#4A4A5C] leading-[1.8]">{answer}</p>
+                              {faq.link && (
+                                <Link
+                                  href={`/${locale}${faq.link.href}`}
+                                  target="_blank"
+                                  className="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold text-[#7A3B5E] hover:text-[#5E2D48] transition-colors bg-[#7A3B5E]/5 px-3 py-1.5 rounded-full"
+                                >
+                                  {isRTL ? faq.link.labelAr : faq.link.labelEn}
+                                  <ArrowIcon className="w-3 h-3" />
+                                </Link>
+                              )}
+                            </div>
                           </div>
                         </motion.div>
                       )}
