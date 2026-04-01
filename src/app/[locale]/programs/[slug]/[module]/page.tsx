@@ -124,7 +124,7 @@ export default function ModuleLessonPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2]">
         <div className="text-center">
-          <h1 className="text-xl font-bold text-[#2D2A33]">Module not found</h1>
+          <h1 className="text-xl font-bold text-[#2D2A33]">{isRTL ? 'الوحدة غير موجودة' : 'Module not found'}</h1>
           <Button as="a" href={`/${locale}/programs/${programSlug}`} variant="primary" size="md" className="mt-4">Back to Program</Button>
         </div>
       </div>

@@ -33,7 +33,7 @@ export default function ServiceDetailPage() {
   if (!service || !catInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[#8E8E9F]">Service not found</p>
+        <p className="text-[#8E8E9F]">{isRTL ? 'الخدمة غير موجودة' : 'Service not found'}</p>
       </div>
     );
   }

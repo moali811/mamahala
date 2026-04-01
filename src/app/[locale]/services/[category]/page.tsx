@@ -108,7 +108,7 @@ export default function ServiceCategoryPage() {
   if (!catInfo) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[#8E8E9F]">Category not found</p>
+        <p className="text-[#8E8E9F]">{isRTL ? 'الفئة غير موجودة' : 'Category not found'}</p>
       </div>
     );
   }
