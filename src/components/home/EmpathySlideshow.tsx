@@ -10,6 +10,7 @@ interface Slide {
   textEn: string;
   textAr: string;
   isCTA?: boolean;
+  objectPosition?: string; // CSS object-position for panoramic images
 }
 
 const slides: Slide[] = [
@@ -22,6 +23,7 @@ const slides: Slide[] = [
     image: '/images/slideshow/slide-2.jpg',
     textEn: "Your child's emotions feel\nbigger than their words",
     textAr: 'مشاعرُ طفلِك\nأكبرُ من كلماتِه',
+    objectPosition: 'right center',
   },
   {
     image: '/images/slideshow/slide-3.jpg',
@@ -145,6 +147,7 @@ export default function EmpathySlideshow({
               alt=""
               fill
               className="object-cover"
+              style={s.objectPosition ? { objectPosition: s.objectPosition } : undefined}
               sizes="100vw"
               priority={i < 2}
               quality={80}
