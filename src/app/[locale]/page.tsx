@@ -771,7 +771,7 @@ function TestimonialsSection({
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33]"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
-            {messages.testimonials.subtitle}
+            {messages.testimonials.sectionTitle}
           </h2>
         </ScrollReveal>
 
