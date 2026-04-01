@@ -23,7 +23,7 @@ const slides: Slide[] = [
     image: '/images/slideshow/slide-2.jpg',
     textEn: "Your child's emotions feel\nbigger than their words",
     textAr: 'مشاعرُ طفلِك\nأكبرُ من كلماتِه',
-    objectPosition: 'right center',
+    objectPosition: '70% center',
   },
   {
     image: '/images/slideshow/slide-3.jpg',
