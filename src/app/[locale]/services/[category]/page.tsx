@@ -317,7 +317,25 @@ export default function ServiceCategoryPage() {
               </h2>
             </ScrollReveal>
 
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {/* Mobile: swipeable | Desktop: grid */}
+            <div className="lg:hidden">
+              <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-4 px-4">
+                {categoryTestimonials.slice(0, 4).map((t) => (
+                  <div key={t.id} className="flex-shrink-0 w-[80vw] max-w-[340px] snap-center">
+                    <div className="glass-card rounded-2xl p-6 h-full">
+                      <p className="text-[#4A4A5C] italic leading-relaxed mb-4 text-sm">
+                        &ldquo;{isRTL ? t.textAr : t.text}&rdquo;
+                      </p>
+                      <div>
+                        <p className="font-semibold text-[#7A3B5E] text-sm">{t.name}</p>
+                        <p className="text-xs text-[#8E8E9F]">{isRTL ? t.roleAr : t.role}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="hidden lg:grid lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
               {categoryTestimonials.slice(0, 4).map((t) => (
                 <ScrollReveal key={t.id}>
                   <div className="glass-card rounded-2xl p-8">
@@ -388,25 +406,38 @@ export default function ServiceCategoryPage() {
                 </h3>
               </ScrollReveal>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Mobile: swipeable | Desktop: grid */}
+              <div className="lg:hidden">
+                <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4 -mx-4 px-4">
+                  {faqs.map((faq, i) => (
+                    <div key={i} className="flex-shrink-0 w-[80vw] max-w-[320px] snap-center">
+                      <div className="group bg-white rounded-2xl border border-[#F3EFE8] p-6 h-full">
+                        <div className="flex items-start gap-2 mb-3">
+                          <span className="text-lg leading-none mt-0.5 text-[#C8A97D]">&ldquo;</span>
+                          <p className="text-[14px] font-semibold text-[#2D2A33] leading-snug italic" style={{ fontFamily: 'var(--font-heading)' }}>
+                            {isRTL ? faq.qAr : faq.q}
+                          </p>
+                        </div>
+                        <div className="w-8 h-[2px] bg-gradient-to-r from-[#C8A97D] to-transparent mb-3" />
+                        <p className="text-[13px] text-[#4A4A5C] leading-relaxed">
+                          {isRTL ? faq.aAr : faq.a}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="hidden lg:grid lg:grid-cols-3 gap-4">
                 {faqs.map((faq, i) => (
                   <ScrollReveal key={i} delay={i * 0.08}>
                     <div className="group bg-white rounded-2xl border border-[#F3EFE8] p-6 h-full hover:border-[#C4878A]/20 hover:shadow-md transition-all duration-300">
-                      {/* Question — in the client's voice */}
                       <div className="flex items-start gap-3 mb-4">
-                        <span className="text-xl leading-none mt-0.5">"</span>
-                        <p
-                          className="text-[15px] font-semibold text-[#2D2A33] leading-snug italic"
-                          style={{ fontFamily: 'var(--font-heading)' }}
-                        >
+                        <span className="text-xl leading-none mt-0.5 text-[#C8A97D]">&ldquo;</span>
+                        <p className="text-[15px] font-semibold text-[#2D2A33] leading-snug italic" style={{ fontFamily: 'var(--font-heading)' }}>
                           {isRTL ? faq.qAr : faq.q}
                         </p>
                       </div>
-
-                      {/* Divider */}
                       <div className="w-10 h-[2px] bg-gradient-to-r from-[#C8A97D] to-transparent mb-4 group-hover:w-16 transition-all duration-300" />
-
-                      {/* Answer — Dr. Hala's warm response */}
                       <p className="text-sm text-[#4A4A5C] leading-relaxed">
                         {isRTL ? faq.aAr : faq.a}
                       </p>
