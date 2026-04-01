@@ -174,7 +174,7 @@ export default function Footer({ locale, messages }: FooterProps) {
       <div className="bg-[#F5F0EA] border-t border-[#D4ADA8]/20">
         <div className="container-main py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[11px] text-[#8E8E9F]">
-            &copy; {currentYear} {isRTL ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting'}. {footer.rights}
+            &copy; {currentYear} {isRTL ? 'مجموعة ماما هالة للاستشارات' : 'Mama Hala Consulting Group'}. {footer.rights}
           </p>
           <div className="flex items-center gap-5">
             {[
