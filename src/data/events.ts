@@ -367,7 +367,7 @@ export function getEventTypeLabel(type: EventType, isRTL: boolean): string {
 
 export function getFormattedDate(event: SmartEvent, locale: string): string {
   const d = new Date(event.date + 'T12:00:00');
-  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SA' : 'en-US', {
+  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-ca-gregory' : 'en-US', {
     weekday: 'short',
     month: 'long',
     day: 'numeric',
@@ -379,7 +379,7 @@ export function getFormattedTime(event: SmartEvent, locale: string): string {
   const start = new Date(`${event.date}T${event.startTime}:00`);
   const end = new Date(`${event.date}T${event.endTime}:00`);
   const fmt = (d: Date) =>
-    new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SA' : 'en-US', {
+    new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-ca-gregory' : 'en-US', {
       hour: 'numeric',
       minute: '2-digit',
       hour12: true,
@@ -460,8 +460,8 @@ export function getCapacityInfo(event: SmartEvent): CapacityInfo | null {
 
 export function getDateParts(event: SmartEvent, locale: string) {
   const d = new Date(event.date + 'T12:00:00');
-  const day = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SA' : 'en-US', { day: 'numeric' }).format(d);
-  const month = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SA' : 'en-US', { month: 'short' }).format(d).toUpperCase();
-  const year = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SA' : 'en-US', { year: 'numeric' }).format(d);
+  const day = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-ca-gregory' : 'en-US', { day: 'numeric' }).format(d);
+  const month = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-ca-gregory' : 'en-US', { month: 'short' }).format(d).toUpperCase();
+  const year = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-ca-gregory' : 'en-US', { year: 'numeric' }).format(d);
   return { day, month, year };
 }

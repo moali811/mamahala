@@ -79,17 +79,17 @@ export default function EventDetailExpansion({ event, locale, isOpen }: Props) {
                 <div className="space-y-2">
                   {sessions.map((session, i) => {
                     const d = new Date(session.date + 'T12:00:00');
-                    const dateStr = new Intl.DateTimeFormat(isRTL ? 'ar-SA' : 'en-US', {
+                    const dateStr = new Intl.DateTimeFormat(isRTL ? 'ar-EG-u-ca-gregory' : 'en-US', {
                       weekday: 'short',
                       month: 'long',
                       day: 'numeric',
                     }).format(d);
-                    const startFmt = new Intl.DateTimeFormat(isRTL ? 'ar-SA' : 'en-US', {
+                    const startFmt = new Intl.DateTimeFormat(isRTL ? 'ar-EG-u-ca-gregory' : 'en-US', {
                       hour: 'numeric',
                       minute: '2-digit',
                       hour12: true,
                     }).format(new Date(`${session.date}T${session.startTime}:00`));
-                    const endFmt = new Intl.DateTimeFormat(isRTL ? 'ar-SA' : 'en-US', {
+                    const endFmt = new Intl.DateTimeFormat(isRTL ? 'ar-EG-u-ca-gregory' : 'en-US', {
                       hour: 'numeric',
                       minute: '2-digit',
                       hour12: true,
