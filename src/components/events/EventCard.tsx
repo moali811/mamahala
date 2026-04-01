@@ -89,7 +89,7 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
   return (
     <motion.div
       id={event.slug}
-      className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300"
+      className="group relative bg-white transition-all duration-300"
       whileHover={{ y: -4, boxShadow: '0 12px 48px rgba(0,0,0,0.08)' }}
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
@@ -181,9 +181,20 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
             <span className="inline-flex items-center gap-1.5">
               <Clock className="w-4 h-4" /> {formattedTime}
             </span>
-            <span className="inline-flex items-center gap-1.5">
-              <MapPin className="w-4 h-4" /> {location}
-            </span>
+            {event.locationAddress ? (
+              <a
+                href={`https://maps.google.com/?q=${encodeURIComponent(event.locationAddress)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-[#7A3B5E] hover:underline"
+              >
+                <MapPin className="w-4 h-4" /> {location}
+              </a>
+            ) : (
+              <span className="inline-flex items-center gap-1.5">
+                <MapPin className="w-4 h-4" /> {location}
+              </span>
+            )}
           </div>
 
           {/* Smart CTAs */}

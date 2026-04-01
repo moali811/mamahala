@@ -20,7 +20,7 @@ export default function CalEmbedModal({ calSlug, isOpen, onClose, eventTitle, lo
   if (typeof document === 'undefined') return null;
 
   return createPortal(
-    <AnimatePresence>
+    <AnimatePresence mode="wait">
       {isOpen && (
         <motion.div
           className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
@@ -61,13 +61,13 @@ export default function CalEmbedModal({ calSlug, isOpen, onClose, eventTitle, lo
               </button>
             </div>
 
-            {/* Cal.com Embed */}
+            {/* Cal.com Embed — key forces fresh iframe on each open */}
             <div style={{ height: '560px' }}>
               <iframe
+                key={`cal-${calSlug}-${Date.now()}`}
                 src={embedUrl}
                 className="w-full h-full border-0"
                 allow="payment"
-                loading="lazy"
               />
             </div>
           </motion.div>

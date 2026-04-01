@@ -148,21 +148,23 @@ export default function EventsPage() {
             <StaggerReveal className="space-y-6">
               {filteredUpcoming.map((event) => (
                 <StaggerChild key={event.slug}>
-                  <EventCard
-                    event={event}
-                    locale={locale}
-                    isExpanded={expandedEvent === event.slug}
-                    onToggleExpand={() =>
-                      setExpandedEvent(
-                        expandedEvent === event.slug ? null : event.slug,
-                      )
-                    }
-                  />
-                  <EventDetailExpansion
-                    event={event}
-                    locale={locale}
-                    isOpen={expandedEvent === event.slug}
-                  />
+                  <div className="bg-white rounded-2xl overflow-hidden border border-[#F3EFE8]">
+                    <EventCard
+                      event={event}
+                      locale={locale}
+                      isExpanded={expandedEvent === event.slug}
+                      onToggleExpand={() =>
+                        setExpandedEvent(
+                          expandedEvent === event.slug ? null : event.slug,
+                        )
+                      }
+                    />
+                    <EventDetailExpansion
+                      event={event}
+                      locale={locale}
+                      isOpen={expandedEvent === event.slug}
+                    />
+                  </div>
                 </StaggerChild>
               ))}
             </StaggerReveal>
