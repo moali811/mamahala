@@ -139,57 +139,37 @@ export default function AboutPage() {
       {/* ================================================================ */}
       {/*  STAT BAR — Social Proof & Trust                                */}
       {/* ================================================================ */}
-      <section className="py-12 lg:py-16 bg-white border-b border-[#F3EFE8]">
+      <section className="py-10 lg:py-14 bg-[#FAF7F2]">
         <div className="container-main">
-          <StaggerReveal className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 max-w-4xl mx-auto text-center">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4 max-w-4xl mx-auto">
             {[
-              {
-                value: '500+',
-                labelEn: 'Families Supported',
-                labelAr: 'عائلة تم دعمها',
-                subEn: 'since 2018',
-                subAr: 'منذ ٢٠١٨',
-              },
-              {
-                value: '98%',
-                labelEn: 'Would Recommend',
-                labelAr: 'يوصون بنا',
-                subEn: 'client satisfaction',
-                subAr: 'رضا العملاء',
-              },
-              {
-                value: '8+',
-                labelEn: 'Years of Practice',
-                labelAr: 'سنوات من الممارسة',
-                subEn: 'clinical experience',
-                subAr: 'خبرة سريرية',
-              },
-              {
-                value: '15+',
-                labelEn: 'Specializations',
-                labelAr: 'تخصصاً',
-                subEn: 'across all ages',
-                subAr: 'لجميع الأعمار',
-              },
-            ].map((stat, i) => (
-              <StaggerChild key={i}>
-                <div>
-                  <p
-                    className="text-3xl lg:text-4xl font-bold text-[#7A3B5E] mb-1"
-                    style={{ fontFamily: 'var(--font-heading)' }}
-                  >
-                    {stat.value}
-                  </p>
-                  <p className="text-sm font-semibold text-[#2D2A33]">
-                    {isRTL ? stat.labelAr : stat.labelEn}
-                  </p>
-                  <p className="text-xs text-[#8E8E9F] mt-0.5">
-                    {isRTL ? stat.subAr : stat.subEn}
-                  </p>
-                </div>
-              </StaggerChild>
-            ))}
-          </StaggerReveal>
+              { icon: Heart, value: '500+', labelEn: 'Families Supported', labelAr: 'عائلة تم دعمها', descEn: 'since 2018', descAr: 'منذ ٢٠١٨', color: '#7A3B5E' },
+              { icon: Sparkles, value: '98%', labelEn: 'Would Recommend', labelAr: 'يوصون بنا', descEn: 'client satisfaction', descAr: 'رضا العملاء', color: '#C4878A' },
+              { icon: Calendar, value: '8+', labelEn: 'Years of Practice', labelAr: 'سنوات من الممارسة', descEn: 'clinical experience', descAr: 'خبرة سريرية', color: '#C8A97D' },
+              { icon: Brain, value: '15+', labelEn: 'Specializations', labelAr: 'تخصصاً', descEn: 'across all ages', descAr: 'لجميع الأعمار', color: '#7A3B5E' },
+            ].map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <ScrollReveal key={i} delay={i * 0.08}>
+                  <div className="group flex items-start gap-3 lg:flex-col lg:items-center lg:text-center">
+                    <div
+                      className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                      style={{ backgroundColor: `${stat.color}12` }}
+                    >
+                      <Icon className="w-5 h-5" style={{ color: stat.color }} />
+                    </div>
+                    <div>
+                      <div className="text-xl lg:text-2xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
+                        {stat.value}
+                      </div>
+                      <div className="text-sm font-medium text-[#4A4A5C]">{isRTL ? stat.labelAr : stat.labelEn}</div>
+                      <div className="text-xs text-[#8E8E9F] mt-0.5 hidden lg:block">{isRTL ? stat.descAr : stat.descEn}</div>
+                    </div>
+                  </div>
+                </ScrollReveal>
+              );
+            })}
+          </div>
         </div>
       </section>
 
