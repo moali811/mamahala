@@ -428,12 +428,12 @@ export default function HomePage() {
 
           {/* Trust Bar */}
           <motion.div
-            className="mt-10 py-8"
+            className="mt-6 lg:mt-10 py-4 lg:py-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, duration: 0.6, ease }}
           >
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
               {[
                 {
                   icon: GraduationCap,
@@ -468,25 +468,25 @@ export default function HomePage() {
                 return (
                   <motion.div
                     key={i}
-                    className="group flex items-start gap-3 lg:flex-col lg:items-center lg:text-center"
+                    className="group flex items-center gap-2.5 lg:flex-col lg:items-center lg:text-center"
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9 + i * 0.1, duration: 0.5 }}
                   >
                     <div
-                      className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                      className="hidden lg:flex flex-shrink-0 w-10 h-10 rounded-xl items-center justify-center transition-transform duration-300 group-hover:scale-110"
                       style={{ backgroundColor: `${stat.color}12` }}
                     >
                       <Icon className="w-5 h-5" style={{ color: stat.color }} />
                     </div>
                     <div>
                       <div
-                        className="text-xl lg:text-2xl font-bold text-[#2D2A33]"
+                        className="text-lg lg:text-2xl font-bold text-[#2D2A33]"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {stat.value}
                       </div>
-                      <div className="text-sm font-medium text-[#4A4A5C]">{stat.label}</div>
+                      <div className="text-xs lg:text-sm font-medium text-[#4A4A5C]">{stat.label}</div>
                       <div className="text-xs text-[#8E8E9F] mt-0.5 hidden lg:block">{stat.desc}</div>
                     </div>
                   </motion.div>
