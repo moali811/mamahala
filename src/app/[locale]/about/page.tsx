@@ -114,23 +114,22 @@ export default function AboutPage() {
               </motion.p>
             </motion.div>
 
-            {/* Portrait — cropped tighter with soft fade */}
+            {/* Group workshop image — Mama Hala Consulting at work */}
             <motion.div
-              className="flex-shrink-0 w-full max-w-xs sm:max-w-sm lg:max-w-md"
+              className="flex-shrink-0 w-full max-w-xs sm:max-w-sm lg:max-w-lg"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8, ease }}
             >
-              <div className="relative rounded-t-[2rem] overflow-hidden h-[420px] sm:h-[500px] lg:h-[560px]">
+              <div className="relative rounded-2xl overflow-hidden">
                 <Image
-                  src="/images/hala-hero.png"
-                  alt="Dr. Hala Ali"
-                  fill
-                  className="object-cover object-top scale-105"
+                  src="/images/hala-group.png"
+                  alt={isRTL ? 'فريق ماما هالة للاستشارات' : 'Mama Hala Consulting — group session'}
+                  width={800}
+                  height={500}
+                  className="w-full h-auto object-cover"
                   priority
                 />
-                {/* Soft fade at bottom so image doesn't look cut off */}
-                <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#FAF7F2] to-transparent" />
               </div>
             </motion.div>
           </div>
@@ -152,13 +151,6 @@ export default function AboutPage() {
                 subAr: 'منذ ٢٠١٨',
               },
               {
-                value: '2',
-                labelEn: 'Countries',
-                labelAr: 'دولتان',
-                subEn: 'Canada & UAE',
-                subAr: 'كندا والإمارات',
-              },
-              {
                 value: '98%',
                 labelEn: 'Would Recommend',
                 labelAr: 'يوصون بنا',
@@ -166,11 +158,18 @@ export default function AboutPage() {
                 subAr: 'رضا العملاء',
               },
               {
-                value: 'EN/AR',
-                labelEn: 'Bilingual Support',
-                labelAr: 'دعم ثنائي اللغة',
-                subEn: 'English & Arabic',
-                subAr: 'إنجليزي وعربي',
+                value: '8+',
+                labelEn: 'Years of Practice',
+                labelAr: 'سنوات من الممارسة',
+                subEn: 'clinical experience',
+                subAr: 'خبرة سريرية',
+              },
+              {
+                value: 'Yale',
+                labelEn: 'Doctorate',
+                labelAr: 'دكتوراه',
+                subEn: 'professional training',
+                subAr: 'تأهيل مهني',
               },
             ].map((stat, i) => (
               <StaggerChild key={i}>
@@ -195,38 +194,11 @@ export default function AboutPage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  GROUP IMAGE — Workshop Scene                                    */}
-      {/* ================================================================ */}
-      <section className="py-16 lg:py-20 bg-white">
-        <div className="container-main">
-          <ScrollReveal>
-            <div className="relative rounded-2xl overflow-hidden max-w-4xl mx-auto">
-              <Image
-                src="/images/hala-group.png"
-                alt={isRTL ? 'الدكتورة هالة في جلسة استشارية جماعية' : 'Dr. Hala leading a group counseling session'}
-                width={1200}
-                height={600}
-                className="w-full h-auto object-cover"
-              />
-              {/* Caption overlay */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#2D2A33]/70 to-transparent p-6 lg:p-8">
-                <p className="text-white text-sm lg:text-base font-medium">
-                  {isRTL
-                    ? 'الدكتورة هالة تقود ورشة عمل جماعية — حيث يلتقي العلم بالقلب.'
-                    : 'Dr. Hala leading a group workshop — where science meets heart.'}
-                </p>
-              </div>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
-
-      {/* ================================================================ */}
-      {/*  THE STORY — Editorial Long-Form                                */}
+      {/*  THE STORY — with Dr. Hala Portrait                              */}
       {/* ================================================================ */}
       <section className="py-20 lg:py-28 bg-white">
         <div className="container-main">
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <ScrollReveal>
               <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-[#C8A97D] mb-6">
                 <span className="w-8 h-[2px] bg-[#C8A97D] rounded-full" />
@@ -245,30 +217,59 @@ export default function AboutPage() {
               </h2>
             </ScrollReveal>
 
-            {/* Pull quote */}
-            <ScrollReveal delay={0.1}>
-              <div className={`relative mb-12 ${isRTL ? 'pr-6 border-r-[3px]' : 'pl-6 border-l-[3px]'} border-[#C8A97D]/40`}>
-                <p className="text-xl lg:text-2xl text-[#2D2A33] leading-relaxed italic" style={{ fontFamily: 'var(--font-heading)' }}>
-                  {isRTL
-                    ? 'بوصفي أمًّا لمراهقَين، وزوجةً وَفيّة، ومستشارةً تنبضُ بالعطاء — كرّستُ حياتي لتعزيزِ عافيةِ الأُسَر.'
-                    : "As a mother of two teenagers, a devoted wife, and a compassionate counselor — I've committed my life to strengthening the well-being of families."
-                  }
-                </p>
-              </div>
-            </ScrollReveal>
+            {/* Story content with floating portrait */}
+            <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-start">
+              {/* Portrait — creative floating shape */}
+              <ScrollReveal direction={isRTL ? 'right' : 'left'} className="lg:sticky lg:top-28 flex-shrink-0 mx-auto lg:mx-0">
+                <div className="relative">
+                  {/* Decorative background shape */}
+                  <div className="absolute -top-4 -left-4 w-full h-full rounded-[2rem] bg-gradient-to-br from-[#C8A97D]/15 to-[#C4878A]/10 rotate-3" />
+                  <div className="absolute -bottom-3 -right-3 w-full h-full rounded-[2rem] border-2 border-[#C8A97D]/20 -rotate-2" />
+                  {/* Image */}
+                  <div className="relative w-[240px] sm:w-[280px] h-[320px] sm:h-[370px] rounded-[1.5rem] overflow-hidden shadow-lg">
+                    <Image
+                      src="/images/hala-hero.png"
+                      alt="Dr. Hala Ali"
+                      fill
+                      className="object-cover object-top"
+                    />
+                  </div>
+                  {/* Floating badge */}
+                  <div className={`absolute -bottom-4 ${isRTL ? '-left-4' : '-right-4'} bg-white rounded-xl px-4 py-2 shadow-md border border-[#F3EFE8]`}>
+                    <p className="text-xs font-bold text-[#7A3B5E]">Dr. Hala Ali</p>
+                    <p className="text-[10px] text-[#8E8E9F]">{isRTL ? 'المؤسسة والمستشارة' : 'Founder & Counselor'}</p>
+                  </div>
+                </div>
+              </ScrollReveal>
 
-            {/* Body */}
-            <ScrollReveal delay={0.2}>
-              <div className="space-y-5 text-[17px] text-[#4A4A5C] leading-[1.8]">
-                <p>
-                  {isRTL
-                    ? 'كوني ابنةً لوالدَين استثنائيَّين، وواحدةً من اثنَي عشرَ أخًا وأختًا — منحني ذلك نسيجًا ثريًّا من التجارِب، وبصيرةً عميقةً في ديناميكياتِ الأسرة وخفايا العلاقات.'
-                    : 'Being the daughter of incredible parents and one of 12 siblings has provided me with a rich tapestry of experiences, offering deep insights into family dynamics and relationship nuances.'
-                  }
-                </p>
-                <p>{messages.about.approachText}</p>
+              {/* Text content */}
+              <div className="flex-1 max-w-2xl">
+                {/* Pull quote */}
+                <ScrollReveal delay={0.1}>
+                  <div className={`relative mb-10 ${isRTL ? 'pr-6 border-r-[3px]' : 'pl-6 border-l-[3px]'} border-[#C8A97D]/40`}>
+                    <p className="text-xl lg:text-2xl text-[#2D2A33] leading-relaxed italic" style={{ fontFamily: 'var(--font-heading)' }}>
+                      {isRTL
+                        ? 'بوصفي أمًّا لمراهقَين، وزوجةً وَفيّة، ومستشارةً تنبضُ بالعطاء — كرّستُ حياتي لتعزيزِ عافيةِ الأُسَر.'
+                        : "As a mother of two teenagers, a devoted wife, and a compassionate counselor — I've committed my life to strengthening the well-being of families."
+                      }
+                    </p>
+                  </div>
+                </ScrollReveal>
+
+                {/* Body */}
+                <ScrollReveal delay={0.2}>
+                  <div className="space-y-5 text-[17px] text-[#4A4A5C] leading-[1.8]">
+                    <p>
+                      {isRTL
+                        ? 'كوني ابنةً لوالدَين استثنائيَّين، وواحدةً من اثنَي عشرَ أخًا وأختًا — منحني ذلك نسيجًا ثريًّا من التجارِب، وبصيرةً عميقةً في ديناميكياتِ الأسرة وخفايا العلاقات.'
+                        : 'Being the daughter of incredible parents and one of 12 siblings has provided me with a rich tapestry of experiences, offering deep insights into family dynamics and relationship nuances.'
+                      }
+                    </p>
+                    <p>{messages.about.approachText}</p>
+                  </div>
+                </ScrollReveal>
               </div>
-            </ScrollReveal>
+            </div>
           </div>
         </div>
       </section>
