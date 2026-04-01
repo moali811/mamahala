@@ -454,8 +454,8 @@ export default function Header({ locale, messages }: HeaderProps) {
                 </button>
               </div>
 
-              {/* Scrollable nav — pinned bottom */}
-              <div className="flex flex-col h-[calc(100vh-3.5rem)]">
+              {/* Content + pinned bottom — safe area aware */}
+              <div className="flex flex-col" style={{ height: 'calc(100dvh - 3.5rem)' }}>
                 <nav className="flex-1 overflow-y-auto px-3 py-2">
 
                   {/* About */}
@@ -702,27 +702,27 @@ export default function Header({ locale, messages }: HeaderProps) {
                   </div>
                 </nav>
 
-                {/* Pinned bottom — always visible */}
-                <div className="flex-shrink-0 border-t border-[#F3EFE8] px-4 py-3 bg-white space-y-2.5">
-                  {/* Book CTA */}
-                  <Link
-                    href={`/${locale}/book-a-session`}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] py-3 text-sm font-semibold text-white active:scale-[0.98] transition-transform"
-                  >
-                    <Calendar size={15} />
-                    {nav.bookNow}
-                  </Link>
+                {/* Pinned bottom — safe area aware */}
+                <div className="flex-shrink-0 border-t border-[#F3EFE8] px-4 pt-3 bg-white" style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))' }}>
+                  <div className="flex items-center gap-2">
+                    {/* Book CTA — takes most space */}
+                    <Link
+                      href={`/${locale}/book-a-session`}
+                      onClick={() => setMobileOpen(false)}
+                      className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] py-3 text-sm font-semibold text-white active:scale-[0.98] transition-transform"
+                    >
+                      <Calendar size={15} />
+                      {nav.bookNow}
+                    </Link>
 
-                  {/* Language toggle — compact pill */}
-                  <div className="flex items-center justify-center">
+                    {/* Language toggle — compact square */}
                     <Link
                       href={langSwitchHref}
                       onClick={() => { handleLangSwitch(); setMobileOpen(false); }}
-                      className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F3EFE8] text-xs font-medium text-[#4A4A5C] active:scale-[0.97] transition-transform"
+                      className="flex-shrink-0 flex items-center justify-center gap-1.5 rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] px-3 py-3 text-xs font-semibold text-[#4A4A5C] active:scale-[0.97] transition-transform"
                     >
-                      <Globe size={13} className="text-[#8E8E9F]" />
-                      <span>{locale === 'en' ? 'العربية' : 'English'}</span>
+                      <Globe size={14} className="text-[#8E8E9F]" />
+                      {locale === 'en' ? 'AR' : 'EN'}
                     </Link>
                   </div>
                 </div>
