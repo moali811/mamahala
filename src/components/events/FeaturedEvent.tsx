@@ -57,7 +57,7 @@ export default function FeaturedEvent({ event, locale }: Props) {
 
       <div className="relative p-8 sm:p-10 lg:p-14">
         {/* Featured badge */}
-        <div className="flex items-center gap-2 mb-6">
+        <div className="flex flex-wrap items-center gap-2 mb-6">
           <Badge variant="plum" size="md">
             <Sparkles className="w-3.5 h-3.5 mr-1" />
             {isRTL ? 'الحدث القادم' : 'Next Event'}
