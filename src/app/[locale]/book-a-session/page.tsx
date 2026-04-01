@@ -401,6 +401,8 @@ function BookASessionInner() {
             <span className="text-[#D4D4D4]">·</span>
             <Link
               href={`/${locale}/booking-policy`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-[#7A3B5E] font-semibold hover:underline"
             >
               {isRTL ? 'سياسة الحجز الكاملة' : 'View Booking Policy'}

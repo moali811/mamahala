@@ -182,7 +182,7 @@ export default function Footer({ locale, messages }: FooterProps) {
               { label: footer.terms, href: `/${locale}/terms-of-service` },
               { label: footer.bookingPolicy, href: `/${locale}/booking-policy` },
             ].map((link) => (
-              <Link key={link.href} href={link.href} target="_blank" rel="noopener noreferrer"
+              <Link key={link.href} href={link.href}
                 className="text-[11px] text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
                 {link.label}
               </Link>
