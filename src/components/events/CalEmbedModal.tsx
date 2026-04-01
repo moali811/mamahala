@@ -15,7 +15,7 @@ interface Props {
 
 export default function CalEmbedModal({ calSlug, isOpen, onClose, eventTitle, locale }: Props) {
   const isRTL = locale === 'ar';
-  const embedUrl = `${BUSINESS.calBaseUrl}/${calSlug}?embed=true&theme=light&layout=month_view&hideEventTypeDetails=1`;
+  const embedUrl = `${BUSINESS.calBaseUrl}/${calSlug}?embed=true&theme=light&layout=month_view`;
 
   if (typeof document === 'undefined') return null;
 
