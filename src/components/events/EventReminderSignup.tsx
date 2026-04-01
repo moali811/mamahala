@@ -65,7 +65,7 @@ export default function EventReminderSignup({ locale }: Props) {
           <motion.form
             key="form"
             onSubmit={handleSubmit}
-            className="flex gap-2 max-w-md mx-auto"
+            className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
           >
             <input
               type="email"
@@ -78,7 +78,7 @@ export default function EventReminderSignup({ locale }: Props) {
             <button
               type="submit"
               disabled={status === 'loading'}
-              className="px-6 py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-medium hover:bg-[#5E2D48] transition-colors disabled:opacity-60 flex items-center gap-2 flex-shrink-0"
+              className="px-6 py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-medium hover:bg-[#5E2D48] transition-colors disabled:opacity-60 flex items-center justify-center gap-2 sm:flex-shrink-0"
             >
               {status === 'loading' ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

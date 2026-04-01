@@ -122,7 +122,7 @@ export default function ProgramsComingSoonPage() {
                 {isRTL ? 'سنبلغك فور الإطلاق!' : "We'll notify you at launch!"}
               </motion.div>
             ) : (
-              <form onSubmit={handleNotify} className="flex gap-2 max-w-md mx-auto">
+              <form onSubmit={handleNotify} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
                 <input
                   type="email"
                   value={email}
@@ -134,7 +134,7 @@ export default function ProgramsComingSoonPage() {
                 <button
                   type="submit"
                   disabled={status === 'loading'}
-                  className="px-6 py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#5E2D48] transition-colors disabled:opacity-60 flex items-center gap-2 flex-shrink-0"
+                  className="px-6 py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#5E2D48] transition-colors disabled:opacity-60 flex items-center justify-center gap-2 sm:flex-shrink-0"
                 >
                   {status === 'loading' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
                   {isRTL ? 'أبلغني' : 'Notify Me'}
