@@ -773,6 +773,7 @@ function TestimonialsSection({
           >
             {messages.testimonials.sectionTitle}
           </h2>
+          <p className="text-[#6B6580] mt-3 text-lg">{messages.testimonials.subtitle}</p>
         </ScrollReveal>
 
         {/* Quote Card — warm, inviting, premium */}
