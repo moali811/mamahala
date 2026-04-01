@@ -221,12 +221,12 @@ export default function FAQsPage() {
         fillColorAbove="#FAF7F2"
         headingEn={<>Still Have <span className="text-[#7A3B5E] italic">Questions?</span></>}
         headingAr={<>لا تزالُ لديكَ <span className="text-[#7A3B5E] italic">أسئلة؟</span></>}
-        descEn="Don't hesitate to reach out. We're here to support you every step of the way."
-        descAr="لا تتردّدْ في التواصل. نحنُ هنا لدعمِك في كلِّ خطوة."
-        primaryTextEn="I'm Ready"
-        primaryTextAr="أنا مستعدّ"
-        secondaryTextEn="Ask Us Directly"
-        secondaryTextAr="اسألنا مباشرةً"
+        descEn="Your first conversation is free — 30 minutes, no pressure, just clarity."
+        descAr="محادثتك الأولى مجانية — ٣٠ دقيقة بلا ضغط، فقط وضوح."
+        primaryTextEn="Book a Free Consultation"
+        primaryTextAr="احجز استشارة مجانية"
+        secondaryTextEn="Ask a Specific Question"
+        secondaryTextAr="اسأل سؤالاً محدداً"
       />
     </div>
   );

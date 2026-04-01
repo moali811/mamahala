@@ -241,6 +241,11 @@ export default function ResourcesPage() {
         fillColorAbove="#FAF7F2"
         headingEn={<>Every Heart Deserves to Be <span className="text-[#7A3B5E] italic">Heard</span></>}
         headingAr={<>كلُّ قلبٍ يستحقُّ أن <span className="text-[#7A3B5E] italic">يُسمَع</span></>}
+        primaryTextEn="Start a Conversation"
+        primaryTextAr="ابدأ محادثة"
+        secondaryTextEn="Browse Services"
+        secondaryTextAr="تصفّح الخدمات"
+        secondaryHref={`/${locale}/services`}
       />
     </div>
   );

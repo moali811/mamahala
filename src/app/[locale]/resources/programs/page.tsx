@@ -229,6 +229,13 @@ export default function ProgramsComingSoonPage() {
         fillColorAbove="#FAF7F2"
         headingEn={<>Your Growth Journey <span className="text-[#7A3B5E] italic">Starts Here</span></>}
         headingAr={<>رحلة نموّك <span className="text-[#7A3B5E] italic">تبدأ هنا</span></>}
+        descEn="While our programs are being built, start with a free consultation to explore what support looks like for you."
+        descAr="بينما نبني برامجنا، ابدأ باستشارة مجانية لاستكشاف الدعم المناسب لك."
+        primaryTextEn="Book a Free Consultation"
+        primaryTextAr="احجز استشارة مجانية"
+        secondaryTextEn="Chat on WhatsApp"
+        secondaryTextAr="تواصل عبر واتساب"
+        secondaryHref="https://wa.me/16132222104"
       />
     </div>
   );

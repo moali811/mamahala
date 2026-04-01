@@ -244,18 +244,15 @@ export default function EventsPage() {
       <FinalCTA
         locale={locale}
         fillColorAbove="#ffffff"
-        headingEn={
-          <>
-            Growth Happens in{' '}
-            <span className="text-[#7A3B5E] italic">Community</span>
-          </>
-        }
-        headingAr={
-          <>
-            النّموُّ يحدثُ في{' '}
-            <span className="text-[#7A3B5E] italic">الجماعة</span>
-          </>
-        }
+        headingEn={<>Growth Happens in{' '}<span className="text-[#7A3B5E] italic">Community</span></>}
+        headingAr={<>النّموُّ يحدثُ في{' '}<span className="text-[#7A3B5E] italic">الجماعة</span></>}
+        descEn="Can't find an event that fits? Let's talk about what support looks like for you."
+        descAr="لم تجد فعالية مناسبة؟ دعنا نتحدث عن الدعم الأنسب لك."
+        primaryTextEn="Book a Free Consultation"
+        primaryTextAr="احجز استشارة مجانية"
+        secondaryTextEn="Chat on WhatsApp"
+        secondaryTextAr="تواصل عبر واتساب"
+        secondaryHref="https://wa.me/16132222104"
       />
     </div>
   );
