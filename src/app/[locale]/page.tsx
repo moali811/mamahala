@@ -771,9 +771,8 @@ function TestimonialsSection({
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33]"
             style={{ fontFamily: 'var(--font-heading)' }}
           >
-            {messages.testimonials.sectionTitle}
+            {messages.testimonials.subtitle}
           </h2>
-          <p className="text-[#6B6580] mt-3 text-lg">{messages.testimonials.subtitle}</p>
         </ScrollReveal>
 
         {/* Quote Card — warm, inviting, premium */}
