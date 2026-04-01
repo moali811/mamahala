@@ -28,6 +28,7 @@ export const events: SmartEvent[] = [
     startTime: '19:00',
     endTime: '20:30',
     timezone: 'America/Toronto',
+    dateTBD: true,
     locationType: 'online',
     locationNameEn: 'Google Meet',
     locationNameAr: 'Google Meet',
@@ -38,7 +39,7 @@ export const events: SmartEvent[] = [
     registrationUrl: 'initial-consultation',
     registrationType: 'rsvp',
     registrationFields: { phone: true, notes: false },
-    confirmationMessageEn: 'You\'re all set! Check your email for the Zoom link before the webinar.',
+    confirmationMessageEn: 'You\'re on the interest list! We\'ll contact you with the confirmed date and details once we have enough registrations.',
     confirmationMessageAr: 'أنت مسجل! تحقق من بريدك الإلكتروني للحصول على رابط Zoom قبل الندوة.',
     featured: true,
     facilitator: {
@@ -93,6 +94,7 @@ export const events: SmartEvent[] = [
     startTime: '10:00',
     endTime: '13:00',
     timezone: 'America/Toronto',
+    dateTBD: true,
     locationType: 'online',
     locationNameEn: 'Google Meet',
     locationNameAr: 'Google Meet',
@@ -104,8 +106,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 14,
     registrationStatus: 'open',
     registrationUrl: 'events-couples-communication-workshop',
-    registrationType: 'cal',
-    calEventSlug: 'events-couples-communication-workshop',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: false },
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',
@@ -143,6 +145,7 @@ export const events: SmartEvent[] = [
     startTime: '14:00',
     endTime: '17:00',
     timezone: 'America/Toronto',
+    dateTBD: true,
     locationType: 'in-person',
     locationNameEn: 'McNabb Community Centre, Ottawa',
     locationNameAr: 'مركز ماكناب المجتمعي، أوتاوا',
@@ -192,6 +195,7 @@ export const events: SmartEvent[] = [
     startTime: '10:00',
     endTime: '12:00',
     timezone: 'America/Toronto',
+    dateTBD: true,
     sessions: [
       { date: '2026-06-07', startTime: '10:00', endTime: '12:00' },
       { date: '2026-06-14', startTime: '10:00', endTime: '12:00' },
@@ -212,8 +216,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 25,
     registrationStatus: 'open',
     registrationUrl: 'events-empowering-parents',
-    registrationType: 'cal',
-    calEventSlug: 'events-empowering-parents',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: false },
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',
@@ -252,6 +256,7 @@ export const events: SmartEvent[] = [
     startTime: '09:00',
     endTime: '14:00',
     timezone: 'America/Toronto',
+    dateTBD: true,
     locationType: 'in-person',
     locationNameEn: 'Pink Lake Trail, Gatineau Park',
     locationNameAr: 'مسار البحيرة الوردية، حديقة غاتينو',
@@ -264,8 +269,8 @@ export const events: SmartEvent[] = [
     spotsRemaining: 15,
     registrationStatus: 'open',
     registrationUrl: 'events-quiet-strength',
-    registrationType: 'cal',
-    calEventSlug: 'events-quiet-strength',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: false },
     whatToBringEn: [
       'Comfortable outdoor clothing and shoes',
       'Water bottle',
@@ -366,6 +371,7 @@ export function getEventTypeLabel(type: EventType, isRTL: boolean): string {
 }
 
 export function getFormattedDate(event: SmartEvent, locale: string): string {
+  if (event.dateTBD) return locale === 'ar' ? 'سيتم تحديد الموعد' : 'Date TBD';
   const d = new Date(event.date + 'T12:00:00');
   return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-ca-gregory' : 'en-US', {
     weekday: 'short',
@@ -376,6 +382,7 @@ export function getFormattedDate(event: SmartEvent, locale: string): string {
 }
 
 export function getFormattedTime(event: SmartEvent, locale: string): string {
+  if (event.dateTBD) return locale === 'ar' ? 'سيتم تحديد الوقت' : 'Time TBD';
   const start = new Date(`${event.date}T${event.startTime}:00`);
   const end = new Date(`${event.date}T${event.endTime}:00`);
   const fmt = (d: Date) =>
@@ -459,6 +466,13 @@ export function getCapacityInfo(event: SmartEvent): CapacityInfo | null {
 }
 
 export function getDateParts(event: SmartEvent, locale: string) {
+  if (event.dateTBD) {
+    return {
+      day: locale === 'ar' ? '؟' : '?',
+      month: locale === 'ar' ? 'قريباً' : 'TBD',
+      year: '',
+    };
+  }
   const d = new Date(event.date + 'T12:00:00');
   const day = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-ca-gregory' : 'en-US', { day: 'numeric' }).format(d);
   const month = new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-ca-gregory' : 'en-US', { month: 'short' }).format(d).toUpperCase();

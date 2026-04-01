@@ -207,10 +207,11 @@ export interface SmartEvent {
   relatedServiceSlug?: string;
 
   // Scheduling
-  date: string;         // ISO date '2026-04-15'
+  date: string;         // ISO date '2026-04-15' (use future date for TBD)
   startTime: string;    // 24h '19:00'
   endTime: string;      // 24h '20:30'
   timezone: string;     // IANA 'America/Toronto'
+  dateTBD?: boolean;    // true = date not confirmed yet, show "TBD"
   sessions?: EventSession[]; // Multi-session events
 
   // Location

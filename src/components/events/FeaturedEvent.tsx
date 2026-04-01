@@ -99,19 +99,27 @@ export default function FeaturedEvent({ event, locale }: Props) {
           </Badge>
         </div>
 
-        {/* Countdown */}
-        <div className="mb-8">
-          <p className="text-xs uppercase tracking-[0.2em] text-[#8E8E9F] mb-3">
-            {isRTL ? 'يبدأ خلال' : 'Starts in'}
-          </p>
-          <EventCountdown
-            targetDate={event.date}
-            targetTime={event.startTime}
-            timezone={event.timezone}
-            locale={locale}
-            variant="standalone"
-          />
-        </div>
+        {/* Countdown — only for confirmed dates */}
+        {!event.dateTBD ? (
+          <div className="mb-8">
+            <p className="text-xs uppercase tracking-[0.2em] text-[#8E8E9F] mb-3">
+              {isRTL ? 'يبدأ خلال' : 'Starts in'}
+            </p>
+            <EventCountdown
+              targetDate={event.date}
+              targetTime={event.startTime}
+              timezone={event.timezone}
+              locale={locale}
+              variant="standalone"
+            />
+          </div>
+        ) : (
+          <div className="mb-8 bg-[#C8A97D]/8 rounded-xl px-5 py-4 inline-block">
+            <p className="text-sm font-medium text-[#C8A97D]">
+              {isRTL ? 'سيتم تحديد الموعد بناءً على عدد المسجلين' : 'Date confirmed based on registrations'}
+            </p>
+          </div>
+        )}
 
         {/* Smart CTAs */}
         <div className="flex flex-wrap items-center gap-3">
