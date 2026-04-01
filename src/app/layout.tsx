@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     alternateLocale: 'ar_AE',
-    siteName: 'Mama Hala',
+    siteName: 'mamahala.ca',
   },
 };
 

@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const isAr = locale === 'ar';
   return {
     title: {
-      default: isAr ? 'د. هالة علي | ماما هالة للاستشارات' : 'Dr. Hala Ali | Mama Hala Consulting',
+      default: isAr ? 'د. هالة علي | مجموعة ماما هالة للاستشارات' : 'Dr. Hala Ali | Mama Hala Consulting Group',
       template: isAr ? '%s | ماما هالة للاستشارات' : '%s | Mama Hala Consulting',
     },
     description: isAr
