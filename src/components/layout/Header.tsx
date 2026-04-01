@@ -441,47 +441,29 @@ export default function Header({ locale, messages }: HeaderProps) {
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
               className={`absolute top-0 bottom-0 ${isRTL ? 'left-0' : 'right-0'} w-[85vw] max-w-[380px] bg-white shadow-2xl`}
             >
-              {/* Header with gradient accent */}
-              <div className="relative">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#7A3B5E] via-[#C8A97D] to-[#C4878A]" />
-                <div className="flex h-20 items-center justify-between px-5">
-                  <Link href={`/${locale}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
-                    <Image
-                      src="/images/logo-512.png"
-                      alt="Mama Hala"
-                      width={128}
-                      height={128}
-                      className="h-9 w-9 rounded-full object-cover"
-                    />
-                    <div>
-                      <span className="block text-sm font-semibold text-[#7A3B5E]" style={{ fontFamily: 'var(--font-heading)' }}>
-                        {isRTL ? 'ماما هالة' : 'Mama Hala'}
-                      </span>
-                      <span className="block text-[10px] text-[#8E8E9F]">
-                        {isRTL ? 'إرشاد بحب' : 'Guidance with Heart'}
-                      </span>
-                    </div>
-                  </Link>
-                  <button
-                    onClick={() => setMobileOpen(false)}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F3EFE8] text-[#4A4A5C] transition-colors hover:bg-[#E8E2D8]"
-                    aria-label="Close menu"
-                  >
-                    <X size={18} />
-                  </button>
-                </div>
+              {/* Compact header */}
+              <div className="flex h-14 items-center justify-between px-4 border-b border-[#F3EFE8]">
+                <Link href={`/${locale}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
+                  <Image src="/images/logo-512.png" alt="Mama Hala" width={128} height={128} className="h-8 w-8 rounded-full object-cover" />
+                  <span className="text-sm font-semibold text-[#7A3B5E]" style={{ fontFamily: 'var(--font-heading)' }}>
+                    {isRTL ? 'ماما هالة' : 'Mama Hala'}
+                  </span>
+                </Link>
+                <button onClick={() => setMobileOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F3EFE8] text-[#4A4A5C]" aria-label="Close">
+                  <X size={16} />
+                </button>
               </div>
 
-              {/* Scrollable content */}
-              <div className="flex flex-col h-[calc(100vh-5rem)] overflow-y-auto">
-                <nav className="flex-1 px-4 pb-4">
+              {/* Scrollable nav — pinned bottom */}
+              <div className="flex flex-col h-[calc(100vh-3.5rem)]">
+                <nav className="flex-1 overflow-y-auto px-3 py-2">
 
                   {/* About */}
                   <div>
                     <Link
                       href={`/${locale}/about`}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-medium transition-colors ${
+                      className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-colors ${
                         isActive(`/${locale}/about`)
                           ? 'bg-[#7A3B5E]/5 text-[#7A3B5E]'
                           : 'text-[#2D2A33] hover:bg-[#F9F7F3]'
@@ -498,7 +480,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                         setMobileDropdown(mobileDropdown === 'services' ? null : 'services');
                         if (mobileDropdown !== 'services') setMobileServiceCategory(null);
                       }}
-                      className={`flex w-full items-center justify-between rounded-xl px-4 py-3.5 text-[15px] font-medium transition-colors ${
+                      className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-[15px] font-medium transition-colors ${
                         isServicesActive() ? 'bg-[#7A3B5E]/5 text-[#7A3B5E]' : 'text-[#2D2A33] hover:bg-[#F9F7F3]'
                       }`}
                     >
@@ -626,7 +608,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                   <div>
                     <button
                       onClick={() => setMobileDropdown(mobileDropdown === 'resources' ? null : 'resources')}
-                      className={`flex w-full items-center justify-between rounded-xl px-4 py-3.5 text-[15px] font-medium transition-colors ${
+                      className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-[15px] font-medium transition-colors ${
                         isResourcesActive() ? 'bg-[#7A3B5E]/5 text-[#7A3B5E]' : 'text-[#2D2A33] hover:bg-[#F9F7F3]'
                       }`}
                     >
@@ -709,7 +691,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                     <Link
                       href={`/${locale}/contact`}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 rounded-xl px-4 py-3.5 text-[15px] font-medium transition-colors ${
+                      className={`flex items-center gap-3 rounded-xl px-4 py-3 text-[15px] font-medium transition-colors ${
                         isActive(`/${locale}/contact`)
                           ? 'bg-[#7A3B5E]/5 text-[#7A3B5E]'
                           : 'text-[#2D2A33] hover:bg-[#F9F7F3]'
@@ -720,45 +702,29 @@ export default function Header({ locale, messages }: HeaderProps) {
                   </div>
                 </nav>
 
-                {/* Bottom actions — premium design */}
-                <div className="border-t border-[#F3EFE8] px-4 py-5 space-y-3">
-                  {/* Language toggle — pill switch */}
-                  <div className="flex items-center justify-center">
-                    <div className="relative inline-flex bg-[#F3EFE8] rounded-full p-1">
-                      <Link
-                        href={locale === 'en' ? pathname : langSwitchHref}
-                        onClick={() => { if (locale !== 'en') { handleLangSwitch(); setMobileOpen(false); } }}
-                        className={`relative z-10 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                          locale === 'en'
-                            ? 'bg-white text-[#7A3B5E] shadow-sm'
-                            : 'text-[#8E8E9F] hover:text-[#4A4A5C]'
-                        }`}
-                      >
-                        English
-                      </Link>
-                      <Link
-                        href={locale === 'ar' ? pathname : langSwitchHref}
-                        onClick={() => { if (locale !== 'ar') { handleLangSwitch(); setMobileOpen(false); } }}
-                        className={`relative z-10 px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                          locale === 'ar'
-                            ? 'bg-white text-[#7A3B5E] shadow-sm'
-                            : 'text-[#8E8E9F] hover:text-[#4A4A5C]'
-                        }`}
-                      >
-                        العربية
-                      </Link>
-                    </div>
-                  </div>
-
+                {/* Pinned bottom — always visible */}
+                <div className="flex-shrink-0 border-t border-[#F3EFE8] px-4 py-3 bg-white space-y-2.5">
                   {/* Book CTA */}
                   <Link
                     href={`/${locale}/book-a-session`}
                     onClick={() => setMobileOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] py-3.5 text-sm font-semibold text-white active:scale-[0.98] transition-transform"
+                    className="flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] py-3 text-sm font-semibold text-white active:scale-[0.98] transition-transform"
                   >
-                    <Calendar size={16} />
+                    <Calendar size={15} />
                     {nav.bookNow}
                   </Link>
+
+                  {/* Language toggle — compact pill */}
+                  <div className="flex items-center justify-center">
+                    <Link
+                      href={langSwitchHref}
+                      onClick={() => { handleLangSwitch(); setMobileOpen(false); }}
+                      className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#F3EFE8] text-xs font-medium text-[#4A4A5C] active:scale-[0.97] transition-transform"
+                    >
+                      <Globe size={13} className="text-[#8E8E9F]" />
+                      <span>{locale === 'en' ? 'العربية' : 'English'}</span>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </motion.div>
