@@ -210,7 +210,7 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
                   >
                     {event.isFree
                       ? (isRTL ? 'سجّل مجاناً' : 'Register — Free')
-                      : (isRTL ? 'سجّل الآن' : 'Register Now')}
+                      : (isRTL ? 'سجّل وادفع' : 'Register & Pay')}
                   </Button>
                 )}
                 {event.registrationType === 'cal' && (
