@@ -134,7 +134,7 @@ export default function FeaturedEvent({ event, locale }: Props) {
                   icon={<CalendarDays className="w-5 h-5" />}
                   onClick={() => setShowCalModal(true)}
                 >
-                  {isRTL ? 'احجز مكانك' : 'Book Your Spot'}
+                  {isRTL ? 'سجّل وادفع' : 'Register & Pay'}
                 </Button>
               )}
               {event.registrationType === 'external' && event.externalRegistrationUrl && (

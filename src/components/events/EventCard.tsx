@@ -220,7 +220,7 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
                     icon={<CalendarDays className="w-4 h-4" />}
                     onClick={() => setShowCalModal(true)}
                   >
-                    {isRTL ? 'احجز مكانك' : 'Book Your Spot'}
+                    {isRTL ? 'سجّل وادفع' : 'Register & Pay'}
                   </Button>
                 )}
                 {event.registrationType === 'external' && event.externalRegistrationUrl && (
