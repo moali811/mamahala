@@ -83,11 +83,11 @@ export default function Header({ locale, messages }: HeaderProps) {
 
   /* ── Resources items with icons ───────── */
   const resourcesItems = [
-    { key: 'blog', label: nav.blog, href: `/${locale}/resources/blog`, desc: isRTL ? 'مقالات ونصائح' : 'Articles & insights' },
-    { key: 'programs', label: nav.programs, href: `/${locale}/resources/programs`, desc: isRTL ? 'دورات وبرامج جماعية' : 'Courses & group programs' },
-    { key: 'events', label: nav.events, href: `/${locale}/resources/events`, desc: isRTL ? 'ورش عمل وفعاليات' : 'Workshops & events' },
-    { key: 'downloads', label: nav.downloads, href: `/${locale}/resources/downloads`, desc: isRTL ? 'أدوات ومراجع مجانية' : 'Free tools & guides' },
     { key: 'assessments', label: isRTL ? 'تقييماتٌ ذاتيّة' : 'Self-Assessments', href: `/${locale}/resources/assessments`, desc: isRTL ? 'اكتشِفْ نفسَك وعائلتَك' : 'Understand yourself & family' },
+    { key: 'blog', label: nav.blog, href: `/${locale}/resources/blog`, desc: isRTL ? 'مقالات ونصائح' : 'Articles & insights' },
+    { key: 'downloads', label: nav.downloads, href: `/${locale}/resources/downloads`, desc: isRTL ? 'أدوات ومراجع مجانية' : 'Free tools & guides' },
+    { key: 'events', label: nav.events, href: `/${locale}/resources/events`, desc: isRTL ? 'ورش عمل وفعاليات' : 'Workshops & events' },
+    { key: 'programs', label: nav.programs, href: `/${locale}/resources/programs`, desc: isRTL ? 'دورات وبرامج جماعية' : 'Courses & group programs' },
     { key: 'faqs', label: nav.faqs, href: `/${locale}/resources/faqs`, desc: isRTL ? 'أسئلة شائعة' : 'Common questions' },
   ];
 

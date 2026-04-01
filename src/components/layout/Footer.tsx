@@ -40,11 +40,11 @@ export default function Footer({ locale, messages }: FooterProps) {
   ];
 
   const resourceLinks = [
-    { icon: BookOpen, label: isRTL ? 'المدوّنة' : 'Blog', href: `/${locale}/resources/blog` },
-    { icon: GraduationCap, label: isRTL ? 'البرامج' : 'Programs', href: `/${locale}/resources/programs` },
-    { icon: CalendarDays, label: isRTL ? 'الفعاليّات' : 'Events', href: `/${locale}/resources/events` },
-    { icon: Download, label: isRTL ? 'أدوات مجّانيّة' : 'Free Toolkit', href: `/${locale}/resources/downloads` },
     { icon: Sparkles, label: isRTL ? 'تقييماتٌ ذاتيّة' : 'Self-Assessments', href: `/${locale}/resources/assessments` },
+    { icon: BookOpen, label: isRTL ? 'المدوّنة' : 'Blog', href: `/${locale}/resources/blog` },
+    { icon: Download, label: isRTL ? 'أدوات مجّانيّة' : 'Free Toolkit', href: `/${locale}/resources/downloads` },
+    { icon: CalendarDays, label: isRTL ? 'الفعاليّات' : 'Events', href: `/${locale}/resources/events` },
+    { icon: GraduationCap, label: isRTL ? 'البرامج' : 'Programs', href: `/${locale}/resources/programs` },
     { icon: HelpCircle, label: isRTL ? 'الأسئلة الشائعة' : 'FAQs', href: `/${locale}/resources/faqs` },
   ];
 
