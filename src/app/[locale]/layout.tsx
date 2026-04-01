@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     title: {
       default: isAr ? 'د. هالة علي | مجموعة ماما هالة للاستشارات' : 'Dr. Hala Ali | Mama Hala Consulting Group',
-      template: isAr ? '%s | ماما هالة للاستشارات' : '%s | Mama Hala Consulting',
+      template: isAr ? '%s | ماما هالة' : '%s | Mama Hala',
     },
     description: isAr
       ? 'استشاراتٌ وتوجيهٌ مهنيّ للأفراد والأزواج والعائلات. مستشارة أسريّة معتمدة.'
