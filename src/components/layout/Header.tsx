@@ -62,9 +62,14 @@ export default function Header({ locale, messages }: HeaderProps) {
     const savedY = sessionStorage.getItem('mh_scroll_y');
     if (savedY) {
       sessionStorage.removeItem('mh_scroll_y');
-      requestAnimationFrame(() => {
-        window.scrollTo(0, parseInt(savedY, 10));
-      });
+      const y = parseInt(savedY, 10);
+      // Wait for content to render before restoring scroll
+      const restore = () => window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
+      // Try multiple times as content loads
+      restore();
+      requestAnimationFrame(restore);
+      setTimeout(restore, 100);
+      setTimeout(restore, 300);
     }
   }, []);
 
