@@ -40,7 +40,7 @@ export default function Footer({ locale, messages }: FooterProps) {
   ];
 
   const resourceLinks = [
-    { icon: Sparkles, label: isRTL ? 'تقييماتٌ ذاتيّة' : 'Self-Assessments', href: `/${locale}/resources/assessments` },
+    { icon: Sparkles, label: isRTL ? 'اختبارات' : 'Quizzes', href: `/${locale}/resources/assessments` },
     { icon: BookOpen, label: isRTL ? 'المدوّنة' : 'Blog', href: `/${locale}/resources/blog` },
     { icon: Download, label: isRTL ? 'أدوات مجّانيّة' : 'Free Toolkit', href: `/${locale}/resources/downloads` },
     { icon: CalendarDays, label: isRTL ? 'الفعاليّات' : 'Events', href: `/${locale}/resources/events` },
