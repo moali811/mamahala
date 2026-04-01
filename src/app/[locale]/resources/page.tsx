@@ -45,10 +45,31 @@ import FinalCTA from '@/components/shared/FinalCTA';
  * 6. FAQS — Safety net. Catches anyone with remaining doubts or questions.
  *    Always last because it serves people who are almost ready to act.
  */
+/*
+ * Final strategic order — hybrid of AIDA + counseling journey:
+ *
+ * 1. ASSESS (Quizzes) — Start with self-discovery. Mental health is personal.
+ *    Identify their specific need before they get overwhelmed by content.
+ *
+ * 2. READ (Blog) — Now they have a "score" or focus area, they're primed
+ *    to read relevant articles with purpose — not random browsing.
+ *
+ * 3. DOWNLOAD (Toolkits) — Tangible takeaway they can keep offline.
+ *    Provides a "win" + captures their email. Trust is now established.
+ *
+ * 4. ATTEND (Events) — Transition from solo learning to community.
+ *    Workshops, webinars, live sessions with Dr. Hala.
+ *
+ * 5. LEARN (Programs) — Highest commitment. Deep-dive courses where
+ *    all the above culminates into structured, long-term growth.
+ *
+ * 6. ASK (FAQs) — Safety net. After seeing everything available,
+ *    catches anyone with remaining doubts before they take action.
+ */
 const resourceTypes = [
-  { key: 'quiz', icon: Sparkles, color: '#8B5CF6', bgColor: '#8B5CF6', tag: { en: 'Discover', ar: 'اكتشِفْ' } },
-  { key: 'downloads', icon: Download, color: '#5A8B6E', bgColor: '#5A8B6E', tag: { en: 'Free', ar: 'مجّانيّ' } },
+  { key: 'quiz', icon: Sparkles, color: '#8B5CF6', bgColor: '#8B5CF6', tag: { en: 'Assess', ar: 'قيِّمْ' } },
   { key: 'blog', icon: BookOpen, color: '#C4878A', bgColor: '#C4878A', tag: { en: 'Read', ar: 'اقرأ' } },
+  { key: 'downloads', icon: Download, color: '#5A8B6E', bgColor: '#5A8B6E', tag: { en: 'Download', ar: 'حمِّلْ' } },
   { key: 'events', icon: CalendarDays, color: '#C8A97D', bgColor: '#C8A97D', tag: { en: 'Attend', ar: 'شارِكْ' } },
   { key: 'programs', icon: GraduationCap, color: '#7A3B5E', bgColor: '#7A3B5E', tag: { en: 'Learn', ar: 'تعلَّمْ' } },
   { key: 'faqs', icon: HelpCircle, color: '#D4836A', bgColor: '#D4836A', tag: { en: 'Ask', ar: 'اسأل' } },
