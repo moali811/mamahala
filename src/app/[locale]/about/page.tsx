@@ -179,20 +179,20 @@ export default function AboutPage() {
       <section className="py-20 lg:py-28 bg-white">
         <div className="container-main">
           <div className="max-w-5xl mx-auto">
-            <ScrollReveal>
-              <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-[#C8A97D] mb-6">
+            <ScrollReveal className="text-center lg:text-left mb-10">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.25em] uppercase text-[#C8A97D] mb-6 justify-center lg:justify-start">
                 <span className="w-8 h-[2px] bg-[#C8A97D] rounded-full" />
                 {isRTL ? 'حكايتُنا' : 'Our Story'}
                 <span className="w-8 h-[2px] bg-[#C8A97D] rounded-full" />
               </span>
               <h2
-                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] leading-tight mb-10"
+                className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] leading-tight"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {isRTL ? (
-                  <>مسيرةُ <span className="text-[#7A3B5E] italic">ماما هالة</span></>
+                  <>مسيرةُ <span className="text-[#7A3B5E] italic whitespace-nowrap">ماما هالة</span></>
                 ) : (
-                  <>The Journey of <span className="text-[#7A3B5E] italic">Mama Hala</span></>
+                  <>The Journey of <span className="text-[#7A3B5E] italic whitespace-nowrap">Mama Hala</span></>
                 )}
               </h2>
             </ScrollReveal>
