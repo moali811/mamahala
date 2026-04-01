@@ -24,12 +24,33 @@ import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
 
+/*
+ * Strategic order based on visitor psychology:
+ *
+ * 1. QUIZZES — Lowest friction, highest curiosity. Interactive = instant engagement.
+ *    "What kind of parent am I?" pulls people in before they commit to reading.
+ *
+ * 2. FREE TOOLKITS — Immediate value with zero cost. Builds trust + captures email.
+ *    After the quiz sparks curiosity, a free download feels like a natural next step.
+ *
+ * 3. BLOG — Establishes expertise. Now that they trust you (quiz + freebie),
+ *    they'll invest time reading. Builds the "this person knows what they're talking about" feeling.
+ *
+ * 4. EVENTS — Social proof + urgency. "Other people attend these" + limited spots.
+ *    By now they see you as an expert and want to connect in person/live.
+ *
+ * 5. PROGRAMS — Highest commitment. Only shown after trust is built through
+ *    the above touchpoints. Coming Soon creates anticipation, not pressure.
+ *
+ * 6. FAQS — Safety net. Catches anyone with remaining doubts or questions.
+ *    Always last because it serves people who are almost ready to act.
+ */
 const resourceTypes = [
-  { key: 'blog', icon: BookOpen, color: '#C4878A', bgColor: '#C4878A', tag: { en: 'Read', ar: 'اقرأ' } },
-  { key: 'programs', icon: GraduationCap, color: '#7A3B5E', bgColor: '#7A3B5E', tag: { en: 'Learn', ar: 'تعلَّمْ' } },
-  { key: 'events', icon: CalendarDays, color: '#C8A97D', bgColor: '#C8A97D', tag: { en: 'Attend', ar: 'شارِكْ' } },
+  { key: 'quiz', icon: Sparkles, color: '#8B5CF6', bgColor: '#8B5CF6', tag: { en: 'Discover', ar: 'اكتشِفْ' } },
   { key: 'downloads', icon: Download, color: '#5A8B6E', bgColor: '#5A8B6E', tag: { en: 'Free', ar: 'مجّانيّ' } },
-  { key: 'quiz', icon: Sparkles, color: '#8B5CF6', bgColor: '#8B5CF6', tag: { en: 'Assess', ar: 'قيِّمْ' } },
+  { key: 'blog', icon: BookOpen, color: '#C4878A', bgColor: '#C4878A', tag: { en: 'Read', ar: 'اقرأ' } },
+  { key: 'events', icon: CalendarDays, color: '#C8A97D', bgColor: '#C8A97D', tag: { en: 'Attend', ar: 'شارِكْ' } },
+  { key: 'programs', icon: GraduationCap, color: '#7A3B5E', bgColor: '#7A3B5E', tag: { en: 'Learn', ar: 'تعلَّمْ' } },
   { key: 'faqs', icon: HelpCircle, color: '#D4836A', bgColor: '#D4836A', tag: { en: 'Ask', ar: 'اسأل' } },
 ] as const;
 
