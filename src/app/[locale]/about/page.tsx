@@ -165,11 +165,11 @@ export default function AboutPage() {
                 subAr: 'خبرة سريرية',
               },
               {
-                value: 'Yale',
-                labelEn: 'Doctorate',
-                labelAr: 'دكتوراه',
-                subEn: 'professional training',
-                subAr: 'تأهيل مهني',
+                value: '15+',
+                labelEn: 'Specializations',
+                labelAr: 'تخصصاً',
+                subEn: 'across all ages',
+                subAr: 'لجميع الأعمار',
               },
             ].map((stat, i) => (
               <StaggerChild key={i}>
