@@ -132,7 +132,11 @@ export default function FeaturedEvent({ event, locale }: Props) {
                   icon={<UserPlus className="w-5 h-5" />}
                   onClick={() => setShowModal(true)}
                 >
-                  {isRTL ? (event.isFree ? 'سجّل مجاناً' : 'سجّل وادفع') : (event.isFree ? 'Register Now — Free' : 'Register & Pay')}
+                  {event.dateTBD
+                    ? (isRTL ? 'سجّل اهتمامك' : 'Register Interest')
+                    : event.isFree
+                      ? (isRTL ? 'سجّل مجاناً' : 'Register Now — Free')
+                      : (isRTL ? 'سجّل وادفع' : 'Register & Pay')}
                 </Button>
               )}
               {event.registrationType === 'cal' && (
