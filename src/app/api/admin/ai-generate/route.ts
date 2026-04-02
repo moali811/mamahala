@@ -60,7 +60,7 @@ ${options?.category ? `Category: ${options.category}` : ''}
 Requirements:
 - Title should be compelling, SEO-friendly, under 70 characters
 - Excerpt: 1-2 sentences that hook the reader (under 160 characters)
-- Content: 400-500 words with ## headings and - bullet points (markdown)
+- Content: 600-800 words with ## headings and - bullet points (markdown)
 - Practical, evidence-based advice
 - End with call-to-action for free consultation
 - Generate BOTH English and Arabic (full Tashkeel)
@@ -170,19 +170,15 @@ export async function POST(req: NextRequest) {
 
     const model = 'claude-sonnet-4-20250514';
 
-    // For blog posts, split into 2 calls: English first, then Arabic translation
+    // For blog posts: generate English first, then translate to Arabic in a second call
     if (type === 'blog') {
-      // Step 1: Generate English only (fast)
-      const enPrompt = userPrompt.replace(/Generate BOTH English and Arabic.*$/m, 'Generate ENGLISH only. No Arabic needed.')
-        .replace(/"titleAr.*?"excerptAr.*?",/g, '')
-        .replace(/"contentAr.*?",/g, '');
-
+      // Step 1: Generate English content
       const enMsg = await client.messages.create({
         model,
-        max_tokens: 2048,
+        max_tokens: 3000,
         system: SYSTEM_PROMPT,
         messages: [
-          { role: 'user', content: `${userPrompt}\n\nIMPORTANT: Generate ENGLISH content ONLY. Set all Arabic fields to empty strings "". Keep the response short and fast.` },
+          { role: 'user', content: `${userPrompt}\n\nIMPORTANT: Generate ENGLISH content ONLY. Set all Arabic fields to empty strings "". Keep the response concise.` },
           { role: 'assistant', content: '{' },
         ],
       });
@@ -201,19 +197,68 @@ export async function POST(req: NextRequest) {
           enData = JSON.parse(cleaned);
         }
       } catch {
-        return NextResponse.json({ error: 'Failed to generate. Try again.' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to generate English content. Try again.' }, { status: 500 });
       }
 
-      // Return English immediately — Arabic can be translated separately via the translate button
-      return NextResponse.json({
-        success: true,
-        generated: {
-          ...enData,
-          titleAr: '',
-          excerptAr: '',
-          contentAr: '',
-        },
-      });
+      // Step 2: Translate all fields to Arabic in one call (raw text, no JSON)
+      const translatePrompt = `Translate the following blog article parts to Arabic with FULL Tashkeel (الحَرَكَات).
+
+The translation should:
+- Sound natural in Arabic, not literal word-for-word
+- Maintain the same warmth, meaning, and emotional impact
+- Use Modern Standard Arabic (فُصحى) with accessible vocabulary
+- Include COMPLETE Tashkeel on EVERY word
+- Keep all markdown formatting (## headings, - bullet points, **bold**, etc.)
+- Use Arabic punctuation (، instead of ,)
+
+IMPORTANT: Return the translation in EXACTLY this format with the markers. No extra text.
+
+===TITLE===
+${enData.title || ''}
+===EXCERPT===
+${enData.excerpt || ''}
+===CONTENT===
+${enData.content || ''}`;
+
+      try {
+        const arMsg = await client.messages.create({
+          model,
+          max_tokens: 4096,
+          system: SYSTEM_PROMPT.replace('Always respond with valid JSON only. Never include markdown code blocks, backticks, or any text outside the JSON object. Start your response with { and end with }.', 'Return the translation as plain text using the exact markers provided. No JSON.'),
+          messages: [{ role: 'user', content: translatePrompt }],
+        });
+
+        const arText = arMsg.content
+          .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+          .map(block => block.text).join('');
+
+        // Parse the marker-delimited response
+        const titleMatch = arText.match(/===TITLE===\s*([\s\S]*?)===EXCERPT===/);
+        const excerptMatch = arText.match(/===EXCERPT===\s*([\s\S]*?)===CONTENT===/);
+        const contentMatch = arText.match(/===CONTENT===\s*([\s\S]*?)$/);
+
+        return NextResponse.json({
+          success: true,
+          generated: {
+            ...enData,
+            titleAr: titleMatch?.[1]?.trim() || '',
+            excerptAr: excerptMatch?.[1]?.trim() || '',
+            contentAr: contentMatch?.[1]?.trim() || '',
+          },
+        });
+      } catch (arErr: any) {
+        // If Arabic translation fails, still return the English content
+        console.error('[AI-GENERATE] Arabic translation failed, returning English only:', arErr?.message);
+        return NextResponse.json({
+          success: true,
+          generated: {
+            ...enData,
+            titleAr: '',
+            excerptAr: '',
+            contentAr: '',
+          },
+        });
+      }
     }
 
     // Blog article translations: use raw text mode to avoid JSON parsing issues with markdown
