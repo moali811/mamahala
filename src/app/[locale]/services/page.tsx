@@ -21,7 +21,7 @@ import {
   TreePine,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
-import { serviceCategories, getServiceCountByCategory } from '@/data/services';
+import { useServices } from '@/hooks/useServices';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
@@ -52,6 +52,7 @@ export default function ServicesPage() {
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+  const { serviceCategories, getServiceCountByCategory } = useServices();
 
   return (
     <div className="overflow-hidden">

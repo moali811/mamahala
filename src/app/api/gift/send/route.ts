@@ -12,7 +12,6 @@ interface GiftRequest {
   occasion: string;
   occasionAr: string;
   message?: string;
-  amount?: number;
   locale: 'en' | 'ar';
 }
 
@@ -20,7 +19,7 @@ export async function POST(request: Request) {
   try {
     const body: GiftRequest = await request.json();
 
-    const { gifterName, gifterEmail, recipientName, recipientEmail, category, serviceSlug, occasion, occasionAr, message, amount, locale } = body;
+    const { gifterName, gifterEmail, recipientName, recipientEmail, category, serviceSlug, occasion, occasionAr, message, locale } = body;
 
     // Validate required fields
     if (!gifterName || !gifterEmail || !recipientName || !recipientEmail || !category || !occasion) {
@@ -68,14 +67,13 @@ export async function POST(request: Request) {
       occasionAr,
       personalMessage: cleanMessage,
       schedulingUrl,
-      amount,
       locale,
     });
 
     const isAr = locale === 'ar';
     const subject = isAr
-      ? `${gifterName} أهداكَ جلسةً من ماما هالة للاستشارات`
-      : `${gifterName} gifted you a session with Mama Hala`;
+      ? `${gifterName} أهداكَ هديّةَ رعايةٍ من ماما هالة`
+      : `${gifterName} sent you a gift of care from Mama Hala`;
 
     // Try to send via Resend, fall back to logging
     let emailSent = false;
@@ -104,7 +102,6 @@ export async function POST(request: Request) {
       recipientEmail,
       category,
       serviceSlug,
-      amount,
       emailSent,
     });
 
@@ -117,16 +114,15 @@ export async function POST(request: Request) {
           from: process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboarding@resend.dev>',
           to: process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca',
           replyTo: gifterEmail,
-          subject: `New Gift Card: ${gifterName} → ${recipientName}${amount ? ` (CAD $${amount})` : ''}`,
+          subject: `New Gift of Care: ${gifterName} → ${recipientName}`,
           html: `
             <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#FAF7F2;border-radius:12px;">
-              <h2 style="color:#7A3B5E;">New Gift Card Request</h2>
+              <h2 style="color:#7A3B5E;">New Gift of Care</h2>
               <table style="width:100%;border-collapse:collapse;">
                 <tr><td style="padding:8px 0;color:#8E8E9F;width:140px;">Gifter</td><td style="color:#2D2A33;font-weight:600;">${gifterName} (${gifterEmail})</td></tr>
                 <tr><td style="padding:8px 0;color:#8E8E9F;">Recipient</td><td style="color:#2D2A33;">${recipientName} (${recipientEmail})</td></tr>
                 <tr><td style="padding:8px 0;color:#8E8E9F;">Service</td><td style="color:#2D2A33;">${serviceName}</td></tr>
                 <tr><td style="padding:8px 0;color:#8E8E9F;">Occasion</td><td style="color:#2D2A33;">${occasion}</td></tr>
-                ${amount ? `<tr><td style="padding:8px 0;color:#8E8E9F;">Amount</td><td style="color:#2D2A33;font-weight:600;">CAD $${amount}</td></tr>` : ''}
                 ${cleanMessage ? `<tr><td style="padding:8px 0;color:#8E8E9F;">Personal Message</td><td style="color:#2D2A33;font-style:italic;">"${cleanMessage}"</td></tr>` : ''}
               </table>
               <p style="margin-top:20px;color:#8E8E9F;font-size:12px;">Email to recipient: ${emailSent ? 'Sent ✓' : 'Not sent (no Resend key)'}</p>

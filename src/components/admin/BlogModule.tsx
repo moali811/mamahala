@@ -6,6 +6,9 @@ import {
   Sparkles, Loader2, Trash2, Edit3, Eye, EyeOff, Save, X,
   ChevronDown, ChevronUp, Download, Wand2, CheckCircle,
 } from 'lucide-react';
+import ImageUpload from './ImageUpload';
+import TranslateButton from './TranslateButton';
+import UndoToast, { useUndo } from './UndoToast';
 
 interface CMSBlogPost {
   id: string;
@@ -47,6 +50,8 @@ export default function BlogModule({ password }: Props) {
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<CMSBlogPost | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const { undoAction, pushUndo, clearUndo } = useUndo();
 
   // AI state
   const [aiPrompt, setAiPrompt] = useState('');
@@ -94,9 +99,11 @@ export default function BlogModule({ password }: Props) {
   }, [posts]);
 
   // ─── AI GENERATE ───
+  const [aiError, setAiError] = useState('');
   const handleAIGenerate = async () => {
     if (!aiPrompt.trim()) return;
     setAiLoading(true);
+    setAiError('');
     try {
       const res = await fetch('/api/admin/ai-generate', {
         method: 'POST',
@@ -107,23 +114,23 @@ export default function BlogModule({ password }: Props) {
           options: { tone: aiTone, audience: aiAudience, category: form.category },
         }),
       });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.generated) {
-          setForm(prev => ({
-            ...prev,
-            title: data.generated.title || prev.title,
-            titleAr: data.generated.titleAr || prev.titleAr,
-            excerpt: data.generated.excerpt || prev.excerpt,
-            excerptAr: data.generated.excerptAr || prev.excerptAr,
-            content: data.generated.content || prev.content,
-            contentAr: data.generated.contentAr || prev.contentAr,
-            category: data.generated.category || prev.category,
-            image: data.generated.image || prev.image,
-          }));
-        }
+      const data = await res.json();
+      if (res.ok && data.generated) {
+        setForm(prev => ({
+          ...prev,
+          title: data.generated.title || prev.title,
+          titleAr: data.generated.titleAr || prev.titleAr,
+          excerpt: data.generated.excerpt || prev.excerpt,
+          excerptAr: data.generated.excerptAr || prev.excerptAr,
+          content: data.generated.content || prev.content,
+          contentAr: data.generated.contentAr || prev.contentAr,
+          category: data.generated.category || prev.category,
+          image: data.generated.image || prev.image,
+        }));
+      } else {
+        setAiError(data.error || 'Generation failed. Try again.');
       }
-    } catch { /* ignore */ }
+    } catch { setAiError('Connection timeout. Try a shorter topic.'); }
     setAiLoading(false);
   };
 
@@ -131,9 +138,10 @@ export default function BlogModule({ password }: Props) {
   const handleSave = async () => {
     if (!form.title.trim()) return;
     setSaving(true);
+    const prevPost = editingPost ? { ...editingPost } : null;
     try {
       const action = editingPost ? 'update' : 'create';
-      const slug = form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
+      const slug = editingPost?.slug || form.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '');
       const res = await fetch('/api/admin/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
@@ -150,8 +158,20 @@ export default function BlogModule({ password }: Props) {
         }),
       });
       if (res.ok) {
+        const savedData = await res.json();
         closeEditor();
         fetchPosts();
+        // Undo for edit (restore previous version)
+        if (prevPost) {
+          pushUndo(`Updated "${form.title}"`, async () => {
+            await fetch('/api/admin/content', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
+              body: JSON.stringify({ type: 'blog', action: 'update', data: prevPost }),
+            });
+            fetchPosts();
+          });
+        }
       }
     } catch { /* ignore */ }
     setSaving(false);
@@ -159,7 +179,9 @@ export default function BlogModule({ password }: Props) {
 
   // ─── DELETE POST ───
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this post? This cannot be undone.')) return;
+    const post = posts.find(p => p.id === id);
+    if (!confirm(`Delete "${post?.title || 'this post'}"?`)) return;
+    const prevPosts = [...posts];
     try {
       await fetch('/api/admin/content', {
         method: 'POST',
@@ -167,6 +189,17 @@ export default function BlogModule({ password }: Props) {
         body: JSON.stringify({ type: 'blog', action: 'delete', data: { id } }),
       });
       fetchPosts();
+      if (post) {
+        pushUndo(`Deleted "${post.title}"`, async () => {
+          // Recreate the post
+          await fetch('/api/admin/content', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
+            body: JSON.stringify({ type: 'blog', action: 'create', data: post }),
+          });
+          fetchPosts();
+        });
+      }
     } catch { /* ignore */ }
   };
 
@@ -203,6 +236,7 @@ export default function BlogModule({ password }: Props) {
 
   return (
     <div className="space-y-4 max-w-5xl">
+      <UndoToast action={undoAction} onClear={clearUndo} />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -279,6 +313,7 @@ export default function BlogModule({ password }: Props) {
                     Article generated! Review and edit below, then save.
                   </div>
                 )}
+                {aiError && <div className="mt-3 text-xs text-red-500">{aiError}</div>}
               </div>
             )}
 
@@ -290,26 +325,58 @@ export default function BlogModule({ password }: Props) {
                   className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-[#4A4A5C] mb-1">Title (Arabic)</label>
+                <label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">
+                  Title (Arabic)
+                  <TranslateButton text={form.title} onTranslated={(t) => setForm(p => ({ ...p, titleAr: t }))} password={password} contentType="title" compact />
+                </label>
                 <input type="text" value={form.titleAr} onChange={(e) => setForm(p => ({ ...p, titleAr: e.target.value }))}
                   className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" dir="rtl" />
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-[#4A4A5C] mb-1">Excerpt</label>
-              <textarea value={form.excerpt} onChange={(e) => setForm(p => ({ ...p, excerpt: e.target.value }))} rows={2}
-                className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A] resize-none" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A5C] mb-1">Excerpt (English)</label>
+                <textarea value={form.excerpt} onChange={(e) => setForm(p => ({ ...p, excerpt: e.target.value }))} rows={2}
+                  className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A] resize-none" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">
+                  Excerpt (Arabic)
+                  <TranslateButton text={form.excerpt} onTranslated={(t) => setForm(p => ({ ...p, excerptAr: t }))} password={password} contentType="excerpt" compact />
+                </label>
+                <textarea value={form.excerptAr} onChange={(e) => setForm(p => ({ ...p, excerptAr: e.target.value }))} rows={2}
+                  className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A] resize-none" dir="rtl" />
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-[#4A4A5C] mb-1">
-                Content {form.content && <span className="text-[#8E8E9F] font-normal">({form.content.split(/\s+/).length} words, ~{Math.ceil(form.content.split(/\s+/).length / 200)} min read)</span>}
+                Content (English) {form.content && <span className="text-[#8E8E9F] font-normal">({form.content.split(/\s+/).length} words, ~{Math.ceil(form.content.split(/\s+/).length / 200)} min read)</span>}
               </label>
               <textarea value={form.content} onChange={(e) => setForm(p => ({ ...p, content: e.target.value }))} rows={12}
                 className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A] resize-y font-mono leading-relaxed"
                 placeholder="Write your blog post content here... Supports markdown formatting (## headings, **bold**, bullet points)." />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">
+                <span>Content (Arabic) {form.contentAr && <span className="text-[#8E8E9F] font-normal">({form.contentAr.split(/\s+/).length} words)</span>}</span>
+                <TranslateButton text={form.content} onTranslated={(t) => setForm(p => ({ ...p, contentAr: t }))} password={password} contentType="blog article" compact />
+              </label>
+              <textarea value={form.contentAr} onChange={(e) => setForm(p => ({ ...p, contentAr: e.target.value }))} rows={12}
+                className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A] resize-y font-mono leading-relaxed"
+                dir="rtl"
+                placeholder="اكتب محتوى المقال بالعربية هنا... أو اضغط زر الترجمة ↑" />
+            </div>
+
+            {/* Image Upload */}
+            <ImageUpload
+              value={form.image}
+              onChange={(url) => setForm(p => ({ ...p, image: url }))}
+              password={password}
+              type="blog"
+            />
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
@@ -411,16 +478,12 @@ export default function BlogModule({ password }: Props) {
                         </div>
                       </button>
                       <div className="flex items-center gap-1 flex-shrink-0">
-                        {post.source === 'cms' && (
-                          <>
-                            <button onClick={() => handleEdit(post)} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-[#7A3B5E] hover:bg-[#FAF7F2] transition-colors" title="Edit">
-                              <Edit3 className="w-4 h-4" />
-                            </button>
-                            <button onClick={() => handleDelete(post.id)} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-red-500 hover:bg-red-50 transition-colors" title="Delete">
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
+                        <button onClick={() => handleEdit(post)} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-[#7A3B5E] hover:bg-[#FAF7F2] transition-colors" title="Edit">
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => handleDelete(post.id)} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-red-500 hover:bg-red-50 transition-colors" title="Delete">
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                         <a href={`/en/resources/blog/${post.slug}`} target="_blank" className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-[#7A3B5E] hover:bg-[#FAF7F2] transition-colors" title="View on site">
                           <ExternalLink className="w-4 h-4" />
                         </a>

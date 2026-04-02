@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import FinalCTA from '@/components/shared/FinalCTA';
 import {
   Target,
@@ -61,6 +61,15 @@ export default function AboutPage() {
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
 
+  // Fetch CMS stats
+  const [cmsStats, setCmsStats] = useState<Record<string, string> | null>(null);
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(r => r.json())
+      .then(d => { if (d.settings) setCmsStats(d.settings); })
+      .catch(() => {});
+  }, []);
+
   return (
     <div className="overflow-hidden">
       {/* ================================================================ */}
@@ -114,22 +123,28 @@ export default function AboutPage() {
               </motion.p>
             </motion.div>
 
-            {/* Group workshop image — Mama Hala Consulting at work */}
+            {/* Group workshop image — with decorative frame */}
             <motion.div
               className="flex-shrink-0 w-full max-w-xs sm:max-w-sm lg:max-w-lg"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8, ease }}
             >
-              <div className="relative rounded-2xl overflow-hidden">
-                <Image
-                  src="/images/hala-group.png"
-                  alt={isRTL ? 'فريق ماما هالة للاستشارات' : 'Mama Hala Consulting — group session'}
-                  width={800}
-                  height={500}
-                  className="w-full h-auto object-cover"
-                  priority
-                />
+              <div className="relative">
+                {/* Decorative background shapes */}
+                <div className="absolute -top-3 -left-3 w-full h-full rounded-[1.5rem] bg-gradient-to-br from-[#C8A97D]/15 to-[#C4878A]/10 rotate-2" />
+                <div className="absolute -bottom-3 -right-3 w-full h-full rounded-[1.5rem] border-2 border-[#C8A97D]/20 -rotate-[1.5deg]" />
+                {/* Image */}
+                <div className="relative rounded-[1.25rem] overflow-hidden shadow-lg">
+                  <Image
+                    src="/images/hala-group.png"
+                    alt={isRTL ? 'فريق ماما هالة للاستشارات' : 'Mama Hala Consulting — group session'}
+                    width={800}
+                    height={500}
+                    className="w-full h-auto object-cover"
+                    priority
+                  />
+                </div>
               </div>
             </motion.div>
           </div>
@@ -143,10 +158,10 @@ export default function AboutPage() {
         <div className="container-main">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4 max-w-4xl mx-auto">
             {[
-              { icon: Heart, value: '500+', labelEn: 'Families Supported', labelAr: 'عائلة تم دعمها', descEn: 'since 2018', descAr: 'منذ ٢٠١٨', color: '#7A3B5E' },
-              { icon: Sparkles, value: '98%', labelEn: 'Would Recommend', labelAr: 'يوصون بنا', descEn: 'client satisfaction', descAr: 'رضا العملاء', color: '#C4878A' },
-              { icon: Calendar, value: '8+', labelEn: 'Years of Practice', labelAr: 'سنوات من الممارسة', descEn: 'clinical experience', descAr: 'خبرة سريرية', color: '#C8A97D' },
-              { icon: Brain, value: '15+', labelEn: 'Specializations', labelAr: 'تخصصاً', descEn: 'across all ages', descAr: 'لجميع الأعمار', color: '#7A3B5E' },
+              { icon: Heart, value: cmsStats?.stat1Value || '500+', labelEn: cmsStats?.stat1LabelEn || 'Families Supported', labelAr: cmsStats?.stat1LabelAr || 'عائلة تم دعمها', descEn: cmsStats?.stat1DescEn || 'since 2018', descAr: cmsStats?.stat1DescAr || 'منذ ٢٠١٨', color: '#7A3B5E' },
+              { icon: Sparkles, value: cmsStats?.stat2Value || '98%', labelEn: cmsStats?.stat2LabelEn || 'Would Recommend', labelAr: cmsStats?.stat2LabelAr || 'يوصون بنا', descEn: cmsStats?.stat2DescEn || 'client satisfaction', descAr: cmsStats?.stat2DescAr || 'رضا العملاء', color: '#C4878A' },
+              { icon: Calendar, value: cmsStats?.stat3Value || '8+', labelEn: cmsStats?.stat3LabelEn || 'Years of Practice', labelAr: cmsStats?.stat3LabelAr || 'سنوات من الممارسة', descEn: cmsStats?.stat3DescEn || 'clinical experience', descAr: cmsStats?.stat3DescAr || 'خبرة سريرية', color: '#C8A97D' },
+              { icon: Brain, value: cmsStats?.stat4Value || '15+', labelEn: cmsStats?.stat4LabelEn || 'Specializations', labelAr: cmsStats?.stat4LabelAr || 'تخصصاً', descEn: cmsStats?.stat4DescEn || 'across all ages', descAr: cmsStats?.stat4DescAr || 'لجميع الأعمار', color: '#7A3B5E' },
             ].map((stat, i) => {
               const Icon = stat.icon;
               return (

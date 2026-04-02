@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Star, Plus, Sparkles, Loader2, Trash2, Edit3, Save, X, Wand2 } from 'lucide-react';
+import TranslateButton from './TranslateButton';
+import UndoToast, { useUndo } from './UndoToast';
 
 interface CMSTestimonial {
   id: string; name: string; text: string; textAr: string;
@@ -22,6 +24,7 @@ export default function TestimonialsModule({ password }: Props) {
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [form, setForm] = useState({ name: '', text: '', textAr: '', role: 'Client', roleAr: 'عميل', category: 'general', rating: 5, featured: false });
+  const { undoAction, pushUndo, clearUndo } = useUndo();
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -63,9 +66,16 @@ export default function TestimonialsModule({ password }: Props) {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this testimonial?')) return;
+    const item = items.find(t => t.id === id);
+    if (!confirm(`Delete testimonial by "${item?.name || 'Anonymous'}"?`)) return;
     await fetch('/api/admin/content', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` }, body: JSON.stringify({ type: 'testimonial', action: 'delete', data: { id } }) });
     fetchItems();
+    if (item) {
+      pushUndo(`Deleted testimonial by "${item.name}"`, async () => {
+        await fetch('/api/admin/content', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` }, body: JSON.stringify({ type: 'testimonial', action: 'create', data: item }) });
+        fetchItems();
+      });
+    }
   };
 
   const openNew = () => { setEditing(null); setForm({ name: '', text: '', textAr: '', role: 'Client', roleAr: 'عميل', category: 'general', rating: 5, featured: false }); setAiPrompt(''); setEditorOpen(true); };
@@ -73,6 +83,7 @@ export default function TestimonialsModule({ password }: Props) {
 
   return (
     <div className="space-y-4 max-w-4xl">
+      <UndoToast action={undoAction} onClear={clearUndo} />
       <div className="flex items-center justify-between">
         <p className="text-sm text-[#8E8E9F]">{items.length} testimonials</p>
         <button onClick={openNew} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#7A3B5E] text-white text-sm font-medium hover:bg-[#5E2D48]"><Plus className="w-4 h-4" /> Add Testimonial</button>
@@ -98,9 +109,13 @@ export default function TestimonialsModule({ password }: Props) {
 
           <div className="grid grid-cols-2 gap-4">
             <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Client Name *</label><input value={form.name} onChange={(e) => setForm(p => ({ ...p, name: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm" /></div>
-            <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Role</label><input value={form.role} onChange={(e) => setForm(p => ({ ...p, role: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm" /></div>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Role (English)</label><input value={form.role} onChange={(e) => setForm(p => ({ ...p, role: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm" /></div>
+              <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Role (Arabic)</label><input value={form.roleAr} onChange={(e) => setForm(p => ({ ...p, roleAr: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm" dir="rtl" /></div>
+            </div>
           </div>
-          <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Testimonial *</label><textarea value={form.text} onChange={(e) => setForm(p => ({ ...p, text: e.target.value }))} rows={4} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none" /></div>
+          <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Testimonial (English) *</label><textarea value={form.text} onChange={(e) => setForm(p => ({ ...p, text: e.target.value }))} rows={4} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none" /></div>
+          <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">Testimonial (Arabic) <TranslateButton text={form.text} onTranslated={(t) => setForm(p => ({ ...p, textAr: t }))} password={password} contentType="testimonial" compact /></label><textarea value={form.textAr} onChange={(e) => setForm(p => ({ ...p, textAr: e.target.value }))} rows={4} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none" dir="rtl" /></div>
           <div className="grid grid-cols-3 gap-4">
             <select value={form.category} onChange={(e) => setForm(p => ({ ...p, category: e.target.value }))} className="px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm bg-white capitalize">{CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
             <select value={form.rating} onChange={(e) => setForm(p => ({ ...p, rating: Number(e.target.value) }))} className="px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm bg-white">{[5,4,3].map(r => <option key={r} value={r}>{r} stars</option>)}</select>
@@ -122,12 +137,10 @@ export default function TestimonialsModule({ password }: Props) {
               <p className="text-sm text-[#4A4A5C] leading-relaxed line-clamp-3 mb-3 italic">&ldquo;{t.text}&rdquo;</p>
               <div className="flex items-center justify-between">
                 <div><p className="text-sm font-semibold text-[#2D2A33]">{t.name || 'Anonymous'}</p><p className="text-xs text-[#8E8E9F]">{t.role}</p></div>
-                {t.source === 'cms' && (
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onClick={() => openEdit(t)} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-[#7A3B5E] hover:bg-[#FAF7F2]"><Edit3 className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => handleDelete(t.id)} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-red-500 hover:bg-red-50"><Trash2 className="w-3.5 h-3.5" /></button>
-                  </div>
-                )}
+                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button onClick={() => openEdit(t)} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-[#7A3B5E] hover:bg-[#FAF7F2]"><Edit3 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => handleDelete(t.id)} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-red-500 hover:bg-red-50"><Trash2 className="w-3.5 h-3.5" /></button>
+                </div>
               </div>
             </div>
           ))}

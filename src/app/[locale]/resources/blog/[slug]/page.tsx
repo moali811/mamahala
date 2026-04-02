@@ -24,11 +24,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
-import {
-  getPostBySlug,
-  getRelatedPosts,
-  getCategoryLabel,
-} from '@/data/blog-posts';
+import { useBlog } from '@/hooks/useBlog';
 
 const badgeVariants: Record<string, 'sage' | 'plum' | 'sand' | 'neutral'> = {
   youth: 'sage',
@@ -114,10 +110,19 @@ export default function BlogPostPage() {
 
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
 
+  const { getPostBySlug, getRelatedPosts, getCategoryLabel, loaded } = useBlog();
   const post = getPostBySlug(slug);
   const relatedPosts = getRelatedPosts(slug, 2);
 
   if (!post) {
+    // Still loading — show spinner instead of "not found"
+    if (!loaded) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2]">
+          <div className="w-8 h-8 border-3 border-[#7A3B5E]/20 border-t-[#7A3B5E] rounded-full animate-spin" />
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2]">
         <div className="text-center">

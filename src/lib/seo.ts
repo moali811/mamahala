@@ -94,10 +94,10 @@ export const PAGE_SEO: Record<string, PageSEO> = {
     path: '/quiz',
   },
   gift: {
-    title: 'Gift a Session',
-    titleAr: 'أهدِ جلسة',
-    description: 'Give the gift of being heard. Gift a professional counseling session to someone you care about through Mama Hala Consulting.',
-    descriptionAr: 'أهدِ هديّة الاحتواء. أهدِ جلسة استشاريّة مهنيّة لمن تحبّ عبر ماما هالة للاستشارات.',
+    title: 'Gift of Care',
+    titleAr: 'هديّةُ رعاية',
+    description: 'Give someone you love the gift of care. Send a beautiful invitation to book a session with Dr. Hala through Mama Hala Consulting.',
+    descriptionAr: 'أهدِ مَنْ تحبّ هديّةَ الرّعاية — دعوةٌ جميلةٌ لحجزِ جلسةٍ مع د. هالة عبر ماما هالة للاستشارات.',
     path: '/gift',
   },
   resources: {

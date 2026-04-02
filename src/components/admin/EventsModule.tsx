@@ -3,14 +3,22 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Calendar, Users, Plus, Download, RefreshCw, Sparkles, Search,
-  ChevronDown, ChevronUp, Clock, Trash2, ExternalLink, BarChart3,
+  ChevronDown, ChevronUp, Clock, Trash2, Edit3, ExternalLink, BarChart3,
   ClipboardList, AlertTriangle, CheckCircle, Loader2,
 } from 'lucide-react';
+import ImageUpload from './ImageUpload';
+import TranslateButton from './TranslateButton';
+import UndoToast, { useUndo } from './UndoToast';
 
 interface EventStat {
-  slug: string; titleEn: string; titleAr: string; date: string; type: string;
-  registrationType: string; capacity: number | null; registeredCount: number;
-  waitlistedCount: number; spotsRemaining: number | null; registrationStatus: string;
+  slug: string; titleEn: string; titleAr: string;
+  descriptionEn: string; descriptionAr: string;
+  date: string; startTime: string; endTime: string;
+  type: string; locationType: string; locationNameEn: string;
+  registrationType: string; capacity: number | null;
+  isFree: boolean; priceCAD: number; image: string;
+  registeredCount: number; waitlistedCount: number;
+  spotsRemaining: number | null; registrationStatus: string;
   source: 'static' | 'kv';
 }
 
@@ -37,10 +45,12 @@ export default function EventsModule({ password }: EventsModuleProps) {
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestion, setAiSuggestion] = useState('');
+  const { undoAction, pushUndo, clearUndo } = useUndo();
   const [newEvent, setNewEvent] = useState({
     slug: '', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '',
-    date: '', startTime: '', endTime: '', type: 'workshop', locationType: 'online',
+    date: '', startTime: '', endTime: '', type: 'workshop' as string, locationType: 'online',
     locationNameEn: '', isFree: true, priceCAD: 0, capacity: 30, registrationType: 'rsvp',
+    image: '',
   });
 
   const fetchData = useCallback(async () => {
@@ -96,32 +106,93 @@ export default function EventsModule({ password }: EventsModuleProps) {
       });
       if (res.ok) {
         setShowCreateForm(false);
-        setNewEvent({ slug: '', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '', date: '', startTime: '', endTime: '', type: 'workshop', locationType: 'online', locationNameEn: '', isFree: true, priceCAD: 0, capacity: 30, registrationType: 'rsvp' });
+        setNewEvent({ slug: '', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '', date: '', startTime: '', endTime: '', type: 'workshop', locationType: 'online', locationNameEn: '', isFree: true, priceCAD: 0, capacity: 30, registrationType: 'rsvp', image: '' });
+        setEditingEvent(null);
         fetchData();
       }
     } catch { setError('Failed to create event'); }
   };
 
+  const [editingEvent, setEditingEvent] = useState<EventStat | null>(null);
+
+  const handleEditEvent = (event: EventStat) => {
+    setEditingEvent(event);
+    setNewEvent({
+      slug: event.slug,
+      titleEn: event.titleEn,
+      titleAr: event.titleAr || '',
+      descriptionEn: event.descriptionEn || '',
+      descriptionAr: event.descriptionAr || '',
+      date: event.date,
+      startTime: event.startTime || '',
+      endTime: event.endTime || '',
+      type: event.type,
+      locationType: event.locationType || 'online',
+      locationNameEn: event.locationNameEn || '',
+      isFree: event.isFree ?? true,
+      priceCAD: event.priceCAD || 0,
+      capacity: event.capacity || 30,
+      registrationType: event.registrationType || 'rsvp',
+      image: event.image || '',
+    });
+    setShowCreateForm(true);
+  };
+
+  const handleDeleteEvent = async (slug: string) => {
+    const event = events.find(e => e.slug === slug);
+    if (!confirm(`Delete "${event?.titleEn || 'this event'}"?`)) return;
+    try {
+      const res = await fetch(`/api/events/manage?slug=${slug}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${password}` },
+      });
+      if (res.ok) {
+        fetchData();
+        if (event) {
+          pushUndo(`Deleted "${event.titleEn}"`, async () => {
+            await fetch('/api/events/manage', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
+              body: JSON.stringify({ slug: event.slug, titleEn: event.titleEn, titleAr: event.titleAr, date: event.date, type: event.type, capacity: event.capacity, registrationType: event.registrationType, registrationStatus: 'open', spotsRemaining: event.capacity }),
+            });
+            fetchData();
+          });
+        }
+      }
+    } catch { setError('Failed to delete event'); }
+  };
+
   const generateAIContent = async () => {
     if (!aiPrompt.trim()) return;
     setAiLoading(true); setAiSuggestion('');
-    const prompt = aiPrompt.toLowerCase();
-    let suggestion = '';
-    if (prompt.includes('workshop') || prompt.includes('ورشة')) {
-      const topics = ['parenting', 'communication', 'mindfulness', 'resilience', 'emotional growth'];
-      const topic = topics.find(t => prompt.includes(t)) || 'wellness';
-      suggestion = JSON.stringify({ titleEn: `${topic.charAt(0).toUpperCase() + topic.slice(1)} Workshop: Building Stronger Foundations`, descriptionEn: `An interactive workshop designed to equip participants with practical ${topic} strategies. Led by Dr. Hala Ali, this session combines evidence-based approaches with culturally sensitive guidance.`, type: 'workshop', capacity: 25 }, null, 2);
-    } else if (prompt.includes('webinar') || prompt.includes('ندوة')) {
-      suggestion = JSON.stringify({ titleEn: `Free Webinar: ${aiPrompt.replace(/webinar|free|about/gi, '').trim() || 'Expert Insights for Families'}`, descriptionEn: `Join Dr. Hala Ali for an informative online session exploring practical strategies and evidence-based insights. This free webinar includes Q&A time and a downloadable resource guide.`, type: 'webinar', capacity: 100, isFree: true }, null, 2);
-    } else {
-      suggestion = JSON.stringify({ titleEn: `${aiPrompt.trim()}`, descriptionEn: `A thoughtfully designed event by Mama Hala Consulting, bringing together community members for shared growth and connection.`, type: 'community-gathering', capacity: 40 }, null, 2);
-    }
-    await new Promise(r => setTimeout(r, 800));
-    setAiSuggestion(suggestion); setAiLoading(false);
     try {
-      const parsed = JSON.parse(suggestion);
-      setNewEvent(prev => ({ ...prev, titleEn: parsed.titleEn || prev.titleEn, descriptionEn: parsed.descriptionEn || prev.descriptionEn, type: parsed.type || prev.type, capacity: parsed.capacity || prev.capacity, isFree: parsed.isFree ?? prev.isFree }));
-    } catch { /* ignore */ }
+      const res = await fetch('/api/admin/ai-generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
+        body: JSON.stringify({ type: 'event', prompt: aiPrompt }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.generated) {
+          const g = data.generated;
+          setNewEvent(prev => ({
+            ...prev,
+            titleEn: g.titleEn || prev.titleEn,
+            titleAr: g.titleAr || prev.titleAr,
+            descriptionEn: g.descriptionEn || prev.descriptionEn,
+            descriptionAr: g.descriptionAr || prev.descriptionAr,
+            type: g.type || prev.type,
+            capacity: g.capacity || prev.capacity,
+            isFree: g.isFree ?? prev.isFree,
+          }));
+          setAiSuggestion('Generated');
+        }
+      } else {
+        const err = await res.json();
+        setAiSuggestion(`Error: ${err.error || 'Failed'}`);
+      }
+    } catch { setAiSuggestion('Connection error'); }
+    setAiLoading(false);
   };
 
   const totalRegistered = events.reduce((sum, e) => sum + e.registeredCount, 0);
@@ -133,6 +204,7 @@ export default function EventsModule({ password }: EventsModuleProps) {
 
   return (
     <div className="space-y-6">
+      <UndoToast action={undoAction} onClear={clearUndo} />
       {/* Quick Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
@@ -154,7 +226,7 @@ export default function EventsModule({ password }: EventsModuleProps) {
         <button onClick={fetchData} disabled={loading} className="p-2 rounded-lg text-[#8E8E9F] hover:text-[#7A3B5E] hover:bg-[#FAF7F2] transition-colors">
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
-        <button onClick={() => setShowCreateForm(!showCreateForm)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#7A3B5E] text-white text-sm font-medium hover:bg-[#5E2D48] transition-colors">
+        <button onClick={() => { setEditingEvent(null); setNewEvent({ slug: '', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '', date: '', startTime: '', endTime: '', type: 'workshop', locationType: 'online', locationNameEn: '', isFree: true, priceCAD: 0, capacity: 30, registrationType: 'rsvp', image: '' }); setShowCreateForm(!showCreateForm); }} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#7A3B5E] text-white text-sm font-medium hover:bg-[#5E2D48] transition-colors">
           <Plus className="w-4 h-4" /> New Event
         </button>
       </div>
@@ -166,7 +238,7 @@ export default function EventsModule({ password }: EventsModuleProps) {
         <div className="bg-white rounded-2xl border border-[#F3EFE8] overflow-hidden">
           <div className="bg-gradient-to-r from-[#7A3B5E]/5 to-[#C8A97D]/5 px-6 py-4 border-b border-[#F3EFE8]">
             <h2 className="text-lg font-bold text-[#2D2A33] flex items-center gap-2" style={{ fontFamily: 'Georgia, serif' }}>
-              <Sparkles className="w-5 h-5 text-[#C8A97D]" /> Create New Event
+              <Sparkles className="w-5 h-5 text-[#C8A97D]" /> {editingEvent ? 'Edit Event' : 'Create New Event'}
             </h2>
           </div>
           <div className="p-6">
@@ -199,13 +271,17 @@ export default function EventsModule({ password }: EventsModuleProps) {
                   <input type="text" value={newEvent.titleEn} onChange={(e) => setNewEvent(p => ({ ...p, titleEn: e.target.value }))} required className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-[#4A4A5C] mb-1">Title (Arabic)</label>
+                  <label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">Title (Arabic) <TranslateButton text={newEvent.titleEn} onTranslated={(t) => setNewEvent(p => ({ ...p, titleAr: t }))} password={password} contentType="event title" compact /></label>
                   <input type="text" value={newEvent.titleAr} onChange={(e) => setNewEvent(p => ({ ...p, titleAr: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" dir="rtl" />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-[#4A4A5C] mb-1">Description (English) *</label>
                 <textarea value={newEvent.descriptionEn} onChange={(e) => setNewEvent(p => ({ ...p, descriptionEn: e.target.value }))} rows={3} required className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A] resize-none" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">Description (Arabic) <TranslateButton text={newEvent.descriptionEn} onTranslated={(t) => setNewEvent(p => ({ ...p, descriptionAr: t }))} password={password} contentType="event description" compact /></label>
+                <textarea value={newEvent.descriptionAr} onChange={(e) => setNewEvent(p => ({ ...p, descriptionAr: e.target.value }))} rows={3} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A] resize-none" dir="rtl" />
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Date *</label>
@@ -235,9 +311,17 @@ export default function EventsModule({ password }: EventsModuleProps) {
                 <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Price (CAD)</label>
                   <input type="number" value={newEvent.priceCAD} onChange={(e) => setNewEvent(p => ({ ...p, priceCAD: parseInt(e.target.value) || 0, isFree: parseInt(e.target.value) === 0 }))} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm" /></div>
               </div>
+              {/* Image Upload */}
+              <ImageUpload
+                value={newEvent.image}
+                onChange={(url) => setNewEvent(p => ({ ...p, image: url }))}
+                password={password}
+                type="event"
+              />
+
               <div className="flex gap-3 pt-2">
-                <button type="submit" className="px-6 py-2.5 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#5E2D48] flex items-center gap-2"><Plus className="w-4 h-4" /> Create Event</button>
-                <button type="button" onClick={() => setShowCreateForm(false)} className="px-6 py-2.5 rounded-xl border border-[#F3EFE8] text-sm text-[#4A4A5C] hover:bg-[#FAF7F2]">Cancel</button>
+                <button type="submit" className="px-6 py-2.5 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#5E2D48] flex items-center gap-2"><Plus className="w-4 h-4" /> {editingEvent ? 'Update Event' : 'Create Event'}</button>
+                <button type="button" onClick={() => { setShowCreateForm(false); setEditingEvent(null); }} className="px-6 py-2.5 rounded-xl border border-[#F3EFE8] text-sm text-[#4A4A5C] hover:bg-[#FAF7F2]">Cancel</button>
               </div>
             </form>
           </div>
@@ -294,6 +378,14 @@ export default function EventsModule({ password }: EventsModuleProps) {
                       <div className="h-full rounded-full transition-all" style={{ width: `${fillPercent}%`, backgroundColor: fillPercent > 90 ? '#C45B5B' : fillPercent > 60 ? '#D49A4E' : '#3B8A6E' }} />
                     </div>
                   )}
+                  <div className="flex items-center gap-0.5">
+                    <button onClick={(e) => { e.stopPropagation(); handleEditEvent(event); }} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-[#7A3B5E] hover:bg-[#FAF7F2] transition-colors" title="Edit">
+                      <Edit3 className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={(e) => { e.stopPropagation(); handleDeleteEvent(event.slug); }} className="p-1.5 rounded-lg text-[#8E8E9F] hover:text-red-500 hover:bg-red-50 transition-colors" title="Delete">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                   {isExpanded ? <ChevronUp className="w-4 h-4 text-[#8E8E9F]" /> : <ChevronDown className="w-4 h-4 text-[#8E8E9F]" />}
                 </div>
               </button>

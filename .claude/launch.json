@@ -3,9 +3,10 @@
   "configurations": [
     {
       "name": "mama-hala-dev",
-      "runtimeExecutable": "/Users/moali811/.nvm/versions/node/v20.20.1/bin/npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "runtimeExecutable": "/Users/moali811/.nvm/versions/node/v20.20.1/bin/npx",
+      "runtimeArgs": ["next", "dev"],
+      "port": 3000,
+      "cwd": "/Users/moali811/Claude/Mama Hala Consulting/mama-hala-website"
     }
   ]
 }

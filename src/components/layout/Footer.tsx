@@ -52,7 +52,7 @@ export default function Footer({ locale, messages }: FooterProps) {
     { label: isRTL ? 'من نحن' : 'About', href: `/${locale}/about` },
     { label: isRTL ? 'تواصل معنا' : 'Contact', href: `/${locale}/contact` },
     { label: isRTL ? 'احجز جلسة' : 'Book a Session', href: `/${locale}/book-a-session` },
-    { label: isRTL ? 'أهدِ جلسة' : 'Gift a Session', href: `/${locale}/gift` },
+    { label: isRTL ? 'هديّةُ رعاية' : 'Gift of Care', href: `/${locale}/gift` },
     { label: isRTL ? 'الاختبار السريع' : 'Take the Quiz', href: `/${locale}/quiz` },
   ];
 

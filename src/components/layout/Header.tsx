@@ -10,7 +10,8 @@ import {
   BookOpen, GraduationCap, CalendarDays, Download, HelpCircle, Layers, Sparkles, PenLine, LayoutGrid,
   Sprout, Users, User, Heart, TreePine,
 } from 'lucide-react';
-import { services as allServices, serviceCategories } from '@/data/services';
+import { serviceCategories } from '@/data/services';
+import { useServices } from '@/hooks/useServices';
 import type { Locale } from '@/types';
 
 interface HeaderProps {
@@ -43,9 +44,11 @@ export default function Header({ locale, messages }: HeaderProps) {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
   const [mobileServiceCategory, setMobileServiceCategory] = useState<string | null>(null);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
   const pathname = usePathname();
   const dropdownRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { services: allServices } = useServices();
   const isRTL = locale === 'ar';
   const altLocale = locale === 'en' ? 'ar' : 'en';
   const nav = messages?.nav ?? {};
@@ -76,7 +79,7 @@ export default function Header({ locale, messages }: HeaderProps) {
   /* ── Build services mega-menu data ───────── */
   const serviceCategoryData = serviceCategories.map((cat) => ({
     key: cat.key,
-    label: isRTL ? cat.nameAr : cat.name,
+    label: nav[cat.key] || (isRTL ? cat.nameAr : cat.name),
     href: `/${locale}/services/${cat.key}`,
     services: allServices
       .filter((s) => s.category === cat.key)
@@ -117,10 +120,14 @@ export default function Header({ locale, messages }: HeaderProps) {
   const handleDropdownEnter = useCallback((key: string) => {
     if (dropdownRef.current) clearTimeout(dropdownRef.current);
     setOpenDropdown(key);
-  }, []);
+    if (key === 'services' && serviceCategoryData.length > 0) {
+      const activeCategory = serviceCategoryData.find(c => pathname.startsWith(c.href));
+      setHoveredCategory(activeCategory?.key ?? serviceCategoryData[0].key);
+    }
+  }, [serviceCategoryData, pathname]);
 
   const handleDropdownLeave = useCallback(() => {
-    dropdownRef.current = setTimeout(() => setOpenDropdown(null), 150);
+    dropdownRef.current = setTimeout(() => setOpenDropdown(null), 350);
   }, []);
 
   const isActive = (href: string) => {
@@ -137,12 +144,12 @@ export default function Header({ locale, messages }: HeaderProps) {
         dir={isRTL ? 'rtl' : 'ltr'}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-white shadow-[var(--shadow-subtle)] lg:bg-white/95 lg:backdrop-blur-md'
-            : 'bg-transparent'
+            ? 'bg-white/60 shadow-[var(--shadow-subtle)] backdrop-blur-xl'
+            : 'bg-white/30 backdrop-blur-md'
         }`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-20 items-center justify-between">
+          <div className="flex h-16 items-center justify-between">
             {/* Logo */}
             <Link href={`/${locale}`} className="flex shrink-0 items-center gap-3">
               <Image
@@ -212,9 +219,10 @@ export default function Header({ locale, messages }: HeaderProps) {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 8, scale: 0.97 }}
                       transition={{ duration: 0.2, ease: 'easeOut' }}
-                      className={`absolute top-full ${isRTL ? 'right-0' : 'left-1/2 -translate-x-1/2'} mt-2 w-[740px] overflow-hidden rounded-2xl border border-[#F3EFE8] bg-white shadow-[var(--shadow-elevated)]`}
+                      className={`absolute top-full ${isRTL ? 'right-0' : 'left-1/2 -translate-x-1/2'} mt-2 w-[520px] overflow-hidden rounded-2xl border border-[#F3EFE8] bg-white shadow-[var(--shadow-elevated)]`}
+                      onMouseLeave={() => setHoveredCategory(null)}
                     >
-                      {/* All Services - top banner */}
+                      {/* All Services banner */}
                       <Link
                         href={`/${locale}/services`}
                         className="group flex items-center justify-between bg-gradient-to-r from-[#7A3B5E]/[0.06] to-[#C8A97D]/[0.08] px-5 py-3 transition-all hover:from-[#7A3B5E]/[0.10] hover:to-[#C8A97D]/[0.12]"
@@ -232,43 +240,55 @@ export default function Header({ locale, messages }: HeaderProps) {
                         </span>
                       </Link>
 
-                      {/* Category columns */}
-                      <div className="grid grid-cols-3 gap-0 p-2">
-                        {serviceCategoryData.map((cat) => (
-                            <div key={cat.key} className="p-2">
-                              <Link
-                                href={cat.href}
-                                className="mb-1.5 flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors text-[#2D2A33] hover:bg-[#F9F7F3]"
-                              >
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#F3EFE8] text-[#7A3B5E]">
-                                  {categoryIcons[cat.key]}
-                                </span>
-                                {cat.label}
-                                <ChevronRight size={12} className={`${isRTL ? 'rotate-180' : ''} opacity-40 ${isRTL ? 'mr-auto' : 'ml-auto'}`} />
-                              </Link>
-                              <div className="space-y-0.5">
-                                {cat.services.map((svc) => (
-                                  <Link
-                                    key={svc.href}
-                                    href={svc.href}
-                                    className={`block rounded-md px-3 py-1.5 text-[12.5px] leading-snug transition-colors ${
-                                      isActive(svc.href)
-                                        ? 'bg-[#7A3B5E]/5 text-[#7A3B5E] font-medium'
-                                        : 'text-[#4A4A5C] hover:bg-[#F9F7F3] hover:text-[#2D2A33]'
-                                    }`}
-                                  >
-                                    {svc.label}
-                                  </Link>
-                                ))}
-                              </div>
-                            </div>
+                      {/* Two-level: Categories (left) + Services (right) */}
+                      <div className="flex min-h-[280px]">
+                        {/* Level 1: Category list */}
+                        <div className={`w-[200px] border-${isRTL ? 'l' : 'r'} border-[#F3EFE8] p-1.5`}>
+                          {serviceCategoryData.map((cat) => (
+                            <Link
+                              key={cat.key}
+                              href={cat.href}
+                              onMouseEnter={() => setHoveredCategory(cat.key)}
+                              className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-colors ${
+                                hoveredCategory === cat.key
+                                  ? 'bg-[#7A3B5E]/5 text-[#7A3B5E]'
+                                  : 'text-[#2D2A33] hover:bg-[#F9F7F3]'
+                              }`}
+                            >
+                              <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                                hoveredCategory === cat.key ? 'bg-[#7A3B5E]/10 text-[#7A3B5E]' : 'bg-[#F3EFE8] text-[#7A3B5E]'
+                              }`}>
+                                {categoryIcons[cat.key]}
+                              </span>
+                              <span className="flex-1">{cat.label}</span>
+                              <span className="text-[10px] text-[#8E8E9F] bg-[#F3EFE8] px-1.5 py-0.5 rounded-full">{cat.services.length}</span>
+                              <ChevronRight size={11} className={`opacity-30 ${isRTL ? 'rotate-180' : ''}`} />
+                            </Link>
                           ))}
+                        </div>
+
+                        {/* Level 2: Services for hovered category */}
+                        <div className="flex-1 p-2">
+                          <div className="space-y-0.5">
+                            {serviceCategoryData.find(c => c.key === hoveredCategory)?.services.map((svc) => (
+                              <Link
+                                key={svc.href}
+                                href={svc.href}
+                                className={`block rounded-lg px-3 py-2 text-[12.5px] leading-snug transition-colors ${
+                                  isActive(svc.href)
+                                    ? 'bg-[#7A3B5E]/5 text-[#7A3B5E] font-medium'
+                                    : 'text-[#4A4A5C] hover:bg-[#F9F7F3] hover:text-[#2D2A33]'
+                                }`}
+                              >
+                                {svc.label}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
                       </div>
 
-                      {/* Divider */}
-                      <div className="border-t border-[#F3EFE8]" />
                       {/* Quiz hint */}
-                      <div className="bg-[#FDFCFA] px-5 py-2.5">
+                      <div className="border-t border-[#F3EFE8] bg-[#FDFCFA] px-5 py-2.5">
                         <Link
                           href={`/${locale}/quiz`}
                           className="inline-flex items-center gap-2 text-[11px] font-medium text-[#8E8E9F] transition-colors hover:text-[#7A3B5E]"
@@ -391,17 +411,17 @@ export default function Header({ locale, messages }: HeaderProps) {
               <Link
                 href={langSwitchHref}
                 onClick={handleLangSwitch}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[#F3EFE8] px-3 py-2 text-sm font-medium text-[#4A4A5C] transition-colors hover:border-[#7A3B5E]/20 hover:text-[#7A3B5E]"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-[#F3EFE8] px-2.5 py-1.5 text-xs font-medium text-[#4A4A5C] transition-colors hover:border-[#7A3B5E]/20 hover:text-[#7A3B5E]"
               >
-                <Globe size={15} className="opacity-60" />
+                <Globe size={14} className="opacity-60" />
                 {locale === 'en' ? 'AR' : 'EN'}
               </Link>
 
               <Link
                 href={`/${locale}/book-a-session`}
-                className="inline-flex items-center gap-2 rounded-full bg-[#7A3B5E] px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#5E2D48] hover:shadow-[var(--shadow-glow-plum)] active:scale-[0.98]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#7A3B5E] px-4 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-[#5E2D48] hover:shadow-[var(--shadow-glow-plum)] active:scale-[0.98]"
               >
-                <Calendar size={15} />
+                <Calendar size={14} />
                 {nav.bookNow}
               </Link>
             </div>
@@ -412,7 +432,18 @@ export default function Header({ locale, messages }: HeaderProps) {
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               className="relative z-[60] rounded-lg p-2 text-[#2D2A33] transition-colors hover:bg-[#F3EFE8] lg:hidden"
             >
-              {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={mobileOpen ? 'close' : 'open'}
+                  initial={{ opacity: 0, rotate: -90, scale: 0.8 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 90, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  className="block"
+                >
+                  {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+                </motion.span>
+              </AnimatePresence>
             </button>
           </div>
         </div>
@@ -451,7 +482,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                 <Link href={`/${locale}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
                   <Image src="/images/logo-512.png" alt="Mama Hala" width={128} height={128} className="h-8 w-8 rounded-full object-cover" />
                   <span className="text-sm font-semibold text-[#7A3B5E]" style={{ fontFamily: 'var(--font-heading)' }}>
-                    {isRTL ? 'ماما هالة' : 'Mama Hala'}
+                    {isRTL ? 'د. هالة علي | ماما هالة' : 'Dr. Hala Ali | Mama Hala'}
                   </span>
                 </Link>
                 <button onClick={() => setMobileOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F3EFE8] text-[#4A4A5C]" aria-label="Close">

@@ -34,9 +34,10 @@ import {
   TreePine,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
-import { serviceCategories } from '@/data/services';
-import { testimonials } from '@/data/testimonials';
-import { getLatestPosts, getCategoryLabel } from '@/data/blog-posts';
+import { useServices } from '@/hooks/useServices';
+import { useTestimonials } from '@/hooks/useTestimonials';
+import { useBlog } from '@/hooks/useBlog';
+import { getCategoryLabel } from '@/data/blog-posts';
 import { fadeUp, staggerContainer, ease, viewportOnce } from '@/lib/animations';
 import EmpathySlideshow from '@/components/home/EmpathySlideshow';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
@@ -307,132 +308,84 @@ export default function HomePage() {
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   const aboutRef = useRef<HTMLDivElement>(null);
+  const { serviceCategories } = useServices();
 
   return (
     <div className="overflow-hidden">
       {/* ================================================================ */}
       {/*  SECTION 1: HERO                                                */}
       {/* ================================================================ */}
-      <section className="relative min-h-[auto] lg:min-h-[90vh] flex items-center bg-[#FAF7F2] overflow-hidden">
-        {/* Decorative gradient mesh */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className={`absolute top-20 ${isRTL ? 'left-[10%]' : 'right-[10%]'} w-[500px] h-[500px] rounded-full bg-[#C4878A]/5 hidden lg:block blur-[100px]`} />
-          <div className={`absolute bottom-20 ${isRTL ? 'right-[10%]' : 'left-[10%]'} w-[400px] h-[400px] rounded-full bg-[#7A3B5E]/5 hidden lg:block blur-[100px]`} />
+      <section className="relative min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
+        {/* Editorial image — soft fade via CSS mask */}
+        <div className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}>
+          <Image
+            src="/images/hala-confident.PNG"
+            alt="Dr. Hala Ali - Mama Hala"
+            fill
+            priority
+            quality={100}
+            unoptimized
+            sizes="(min-width: 1536px) 60vw, (min-width: 1024px) 55vw, 100vw"
+            className="object-cover object-top"
+          />
         </div>
 
-        <div className="container-main relative z-10">
-          <div className={`grid lg:grid-cols-2 gap-6 lg:gap-8 items-center lg:min-h-[80vh]`}>
-            {/* Text */}
-            <motion.div
-              className={`flex flex-col gap-4 lg:gap-6 pt-8 pb-4 lg:py-0 lg:order-1 ${isRTL ? 'text-right items-end' : 'items-start'}`}
-              initial="hidden"
-              animate="visible"
-              variants={staggerContainer}
+        {/* Mobile text readability gradient — hidden on desktop where mask handles separation */}
+        <div className="absolute inset-0 z-[5] bg-gradient-to-t from-[#FDF8F4] via-[#FDF8F4]/85 to-transparent lg:hidden" />
+
+        {/* Content layer */}
+        <div className="container-main relative z-10 flex flex-col justify-end lg:justify-center min-h-[80vh] lg:min-h-[75vh] pb-6 lg:pb-6 lg:pt-8">
+          <div className={`max-w-xl ${isRTL ? 'lg:mr-0 lg:ml-auto text-right' : 'lg:ml-0 lg:mr-auto'}`}>
+            <span
+              className={`text-sm font-semibold tracking-[0.2em] uppercase text-[#9A7340] block mb-4 ${isRTL ? 'text-right w-full pt-2' : ''}`}
+              style={{ textShadow: '0 1px 8px rgba(255,255,255,0.8)' }}
             >
+              {messages.hero.badge}
+            </span>
+
+            {/* Gold editorial accent line */}
+            <div className={`w-12 h-[2px] bg-[#C8A97D] mb-6 ${isRTL ? 'ml-auto' : ''}`} />
+
+            <h1
+              className={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] tracking-tight mb-4 ${isRTL ? 'text-right w-full' : ''}`}
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              <span className="block text-[#2D2A33]">
+                {isRTL ? <>لحياةٍ مُفعَمةٍ</> : <>For a Life Full of</>}
+              </span>
               <motion.span
-                variants={fadeUp}
-                custom={0}
-                className={`text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] ${isRTL ? 'text-right w-full' : ''}`}
+                animate={{ color: ['#7A3B5E', '#C4878A', '#7A3B5E'] }}
+                transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+                className="block italic mt-1"
               >
-                {messages.hero.badge}
+                {isRTL ? <>بالحبِّ والسّكينةِ والسّلام.</> : <>Love, Tranquility {'\u0026'} Peace.</>}
               </motion.span>
+            </h1>
 
-              <motion.h1
-                variants={fadeUp}
-                custom={1}
-                className={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] tracking-tight ${isRTL ? 'text-right w-full' : ''}`}
-                style={{ fontFamily: 'var(--font-heading)' }}
+            <p className={`text-base lg:text-lg text-[#4A4A5C] max-w-md leading-relaxed mb-6 ${isRTL ? 'text-right ml-auto' : ''}`}>
+              <span className="hidden sm:inline">{messages.hero.subtitle}</span>
+              <span className="sm:hidden">
+                {isRTL ? 'استشاراتٌ مهنيّةٌ للأفرادِ والأُسَرِ والأزواج.' : 'Professional counseling for individuals, families & couples.'}
+              </span>
+            </p>
+
+            <div className="flex flex-wrap gap-3 w-full">
+              <Button
+                as="a"
+                href={`/${locale}/services`}
+                size="lg"
+                icon={isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+                className="!px-10 !py-4 !text-base"
               >
-                <span className="block text-[#2D2A33]">
-                  {isRTL ? (
-                    <>لحياةٍ مُفعَمةٍ <span className="text-[#7A3B5E] italic">بالحبِّ</span></>
-                  ) : (
-                    <>For a Life Full of <span className="text-[#7A3B5E] italic">Love,</span></>
-                  )}
-                </span>
-                <span className="block text-[#7A3B5E] italic mt-1">{messages.hero.titleLine2}</span>
-              </motion.h1>
-
-              <motion.p
-                variants={fadeUp}
-                custom={2}
-                className={`text-base lg:text-lg text-[#4A4A5C] max-w-md leading-relaxed ${isRTL ? 'text-right ml-auto' : ''}`}
-              >
-                <span className="hidden sm:inline">{messages.hero.subtitle}</span>
-                <span className="sm:hidden">
-                  {isRTL
-                    ? 'استشاراتٌ مهنيّةٌ للأفرادِ والأُسَرِ والأزواج.'
-                    : 'Professional counseling for individuals, families & couples.'}
-                </span>
-              </motion.p>
-
-              <motion.div
-                variants={fadeUp}
-                custom={3}
-                className="flex flex-wrap gap-3 pt-2 w-full"
-              >
-                <Button
-                  as="a"
-                  href={`/${locale}/services`}
-                  size="lg"
-                  icon={isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
-                  className="!px-10 !py-4 !text-base"
-                >
-                  {isRTL ? 'احصلْ على الدّعم' : 'Get Support'}
-                </Button>
-              </motion.div>
-            </motion.div>
-
-            {/* Hero Image */}
-            <motion.div
-              className={`relative lg:order-2`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3, ease }}
-            >
-              <div className="relative h-[360px] sm:h-[450px] lg:h-[640px]">
-                {/* Outer ring — thin elegant border */}
-                <div className="absolute -inset-3 rounded-[40%_60%_55%_45%/50%_40%_60%_50%] border border-[#C8A97D]/15" />
-
-                {/* Blob mask with image */}
-                <div className="absolute inset-0 rounded-[40%_60%_55%_45%/50%_40%_60%_50%] bg-[#C4878A]/8" />
-                <div className="absolute -inset-2 lg:inset-0 rounded-[40%_60%_55%_45%/50%_40%_60%_50%] overflow-hidden">
-                  <Image
-                    src="/images/hala-confident.png"
-                    alt="Dr. Hala Ali - Mama Hala"
-                    fill
-                    priority
-                    className="object-cover object-[70%_15%] scale-110"
-                  />
-                </div>
-
-                {/* Decorative accents */}
-                {/* Top corner: gold arc line */}
-                <svg className={`absolute -top-6 ${isRTL ? '-left-6 -scale-x-100' : '-right-6'} w-24 h-24 hidden lg:block`} viewBox="0 0 96 96" fill="none">
-                  <path d="M 88 8 A 72 72 0 0 1 8 88" stroke="#C8A97D" strokeWidth="1.5" strokeLinecap="round" opacity="0.3" />
-                  <path d="M 80 8 A 64 64 0 0 1 8 80" stroke="#C8A97D" strokeWidth="0.8" strokeLinecap="round" opacity="0.15" />
-                </svg>
-
-                {/* Bottom opposite corner: dotted accent */}
-                <div className={`absolute -bottom-3 ${isRTL ? '-right-3' : '-left-3'} hidden lg:flex gap-1.5`}>
-                  <div className="w-2 h-2 rounded-full bg-[#7A3B5E]/20" />
-                  <div className="w-2 h-2 rounded-full bg-[#7A3B5E]/15" />
-                  <div className="w-2 h-2 rounded-full bg-[#7A3B5E]/10" />
-                </div>
-
-                {/* Bottom same corner: small gold diamond */}
-                <div className={`absolute -bottom-2 ${isRTL ? 'left-12' : 'right-12'} w-4 h-4 rotate-45 bg-[#C8A97D]/20 hidden lg:block`} />
-              </div>
-            </motion.div>
+                {isRTL ? 'احصلْ على الدّعم' : 'Get Support'}
+              </Button>
+            </div>
           </div>
+        </div>
 
-          {/* Trust Bar */}
-          <motion.div
-            className="mt-10 py-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.6, ease }}
-          >
+        {/* Trust bar */}
+        <div className="relative z-20 bg-[#FDF8F4]">
+          <div className="container-main py-4">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4">
               {[
                 {
@@ -466,36 +419,30 @@ export default function HomePage() {
               ].map((stat, i) => {
                 const Icon = stat.icon;
                 return (
-                  <motion.div
-                    key={i}
-                    className="group flex items-start gap-3 lg:flex-col lg:items-center lg:text-center"
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.9 + i * 0.1, duration: 0.5 }}
-                  >
+                  <div key={i} className="group flex items-start gap-3 lg:flex-col lg:items-center lg:text-center">
                     <div
-                      className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                      className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
                       style={{ backgroundColor: `${stat.color}12` }}
                     >
                       <Icon className="w-5 h-5" style={{ color: stat.color }} />
                     </div>
                     <div>
-                      <div
-                        className="text-xl lg:text-2xl font-bold text-[#2D2A33]"
-                        style={{ fontFamily: 'var(--font-heading)' }}
-                      >
+                      <div className="text-xl lg:text-2xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
                         {stat.value}
                       </div>
                       <div className="text-sm font-medium text-[#4A4A5C]">{stat.label}</div>
                       <div className="text-xs text-[#8E8E9F] mt-0.5 hidden lg:block">{stat.desc}</div>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
+
+      {/* Spacer between hero and slides */}
+      <div className="h-16 lg:h-24 bg-[#FDF8F4]" />
 
       {/* ================================================================ */}
       {/*  EMPATHY SLIDESHOW — "You might be here because..."              */}
@@ -714,6 +661,7 @@ function TestimonialsSection({
 }) {
   const [active, setActive] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const { testimonials } = useTestimonials();
   const total = testimonials.length;
 
   const next = useCallback(() => setActive((c) => (c + 1) % total), [total]);
@@ -879,7 +827,10 @@ function BlogPreviewSection({
   isRTL: boolean;
   messages: ReturnType<typeof getMessages>;
 }) {
-  const posts = getLatestPosts(3);
+  const { posts: allBlogPosts, getCategoryLabel } = useBlog();
+  // Show only featured posts on homepage; fall back to latest 3 if none are featured
+  const featuredPosts = allBlogPosts.filter((p: any) => p.featured);
+  const posts = featuredPosts.length > 0 ? featuredPosts.slice(0, 3) : allBlogPosts.slice(0, 3);
   const [activeDot, setActiveDot] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
@@ -921,7 +872,7 @@ function BlogPreviewSection({
         </ScrollReveal>
 
         {/* Desktop: Grid */}
-        <StaggerReveal className="hidden md:grid md:grid-cols-3 gap-6">
+        <StaggerReveal key={`blog-${posts.length}-${posts[0]?.slug || ''}`} className="hidden md:grid md:grid-cols-3 gap-6">
           {posts.map((post) => (
             <StaggerChild key={post.slug}>
               <BlogCard post={post} locale={locale} isRTL={isRTL} />
@@ -974,7 +925,7 @@ function BlogPreviewSection({
 }
 
 /* Shared blog card used by both desktop grid and mobile carousel */
-function BlogCard({ post, locale, isRTL }: { post: ReturnType<typeof getLatestPosts>[0]; locale: string; isRTL: boolean }) {
+function BlogCard({ post, locale, isRTL }: { post: any; locale: string; isRTL: boolean }) {
   return (
     <Link href={`/${locale}/resources/blog/${post.slug}`}>
       <div className="group bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:shadow-[var(--shadow-card)] transition-all duration-300 h-full">

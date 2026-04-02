@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { getMessages, type Locale } from '@/lib/i18n';
-import { getServiceBySlug, getServicesByCategory, getCategoryInfo, getServicePricing } from '@/data/services';
+import { useServices } from '@/hooks/useServices';
 import type { ServiceCategory } from '@/types';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
@@ -27,6 +27,7 @@ export default function ServiceDetailPage() {
   const messages = getMessages(locale as Locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
+  const { getServiceBySlug, getServicesByCategory, getCategoryInfo, getServicePricing } = useServices();
   const service = getServiceBySlug(slug);
   const catInfo = getCategoryInfo(category);
 

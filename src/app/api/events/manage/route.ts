@@ -26,9 +26,17 @@ export async function GET(request: NextRequest) {
       typeof e === 'string' ? JSON.parse(e) : e,
     );
 
+    // Get hidden static event slugs
+    let hiddenSlugs: string[] = [];
+    try {
+      const rawHidden = await kv.get('cms:hidden:events');
+      if (rawHidden && Array.isArray(rawHidden)) hiddenSlugs = rawHidden;
+    } catch { /* ignore */ }
+    const hiddenSet = new Set(hiddenSlugs);
+
     // For each event (including static ones), get registration stats
     const { getUpcomingEvents, getPastEvents } = await import('@/data/events');
-    const allStaticEvents = [...getUpcomingEvents(), ...getPastEvents()];
+    const allStaticEvents = [...getUpcomingEvents(), ...getPastEvents()].filter(e => !hiddenSet.has(e.slug));
 
     const eventStats = await Promise.all(
       [...allStaticEvents, ...parsedEvents].map(async (event: any) => {
@@ -43,10 +51,19 @@ export async function GET(request: NextRequest) {
           slug,
           titleEn: event.titleEn,
           titleAr: event.titleAr || '',
+          descriptionEn: event.descriptionEn || '',
+          descriptionAr: event.descriptionAr || '',
           date: event.date,
+          startTime: event.startTime || '',
+          endTime: event.endTime || '',
           type: event.type,
+          locationType: event.locationType || 'online',
+          locationNameEn: event.locationNameEn || '',
           registrationType: event.registrationType,
           capacity: event.capacity,
+          isFree: event.isFree ?? true,
+          priceCAD: event.priceCAD || 0,
+          image: event.image || '',
           registeredCount: regCount || 0,
           waitlistedCount: waitlistCount || 0,
           spotsRemaining: spots ?? event.spotsRemaining ?? null,
@@ -102,10 +119,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// DELETE: Remove an event from KV
+// DELETE: Remove an event (KV events are removed, static events are hidden)
 export async function DELETE(request: NextRequest) {
   if (!authorize(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (!KV_AVAILABLE) {
+    return NextResponse.json({ error: 'KV not configured' }, { status: 500 });
   }
 
   const slug = request.nextUrl.searchParams.get('slug');
@@ -114,18 +135,32 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
-    // Get all events, filter out the one to delete, rebuild list
+    // Check if it's a KV (custom) event
     const events = await kv.lrange('admin:events', 0, -1) || [];
-    const filtered = events.filter((e: string | object) => {
+    const isKVEvent = events.some((e: string | object) => {
       const parsed = typeof e === 'string' ? JSON.parse(e) : e;
-      return parsed.slug !== slug;
+      return parsed.slug === slug;
     });
 
-    // Clear and rebuild
-    await kv.del('admin:events');
-    if (filtered.length > 0) {
-      for (const e of filtered.reverse()) {
-        await kv.lpush('admin:events', typeof e === 'string' ? e : JSON.stringify(e));
+    if (isKVEvent) {
+      // Remove from KV list
+      const filtered = events.filter((e: string | object) => {
+        const parsed = typeof e === 'string' ? JSON.parse(e) : e;
+        return parsed.slug !== slug;
+      });
+      await kv.del('admin:events');
+      if (filtered.length > 0) {
+        for (const e of filtered.reverse()) {
+          await kv.lpush('admin:events', typeof e === 'string' ? e : JSON.stringify(e));
+        }
+      }
+    } else {
+      // Static event — add to hidden list
+      const rawHidden = await kv.get('cms:hidden:events');
+      const hidden: string[] = rawHidden && Array.isArray(rawHidden) ? rawHidden : [];
+      if (!hidden.includes(slug)) {
+        hidden.push(slug);
+        await kv.set('cms:hidden:events', hidden);
       }
     }
 

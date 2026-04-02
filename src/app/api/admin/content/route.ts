@@ -13,7 +13,11 @@ const KV_KEYS: Record<string, string> = {
   blog: 'cms:blog',
   testimonial: 'cms:testimonials',
   faq: 'cms:faqs',
+  service: 'cms:services',
 };
+
+// KV key for tracking hidden (deleted) static items
+const HIDDEN_KEY = (type: string) => `cms:hidden:${type}`;
 
 // Merge CMS items with static data
 async function getMergedItems(type: string): Promise<any[]> {
@@ -32,24 +36,30 @@ async function getMergedItems(type: string): Promise<any[]> {
   try {
     if (type === 'blog') {
       const { blogPosts } = await import('@/data/blog-posts');
-      staticItems = blogPosts.map((p: any) => ({
+      staticItems = blogPosts.map((p: any) => {
+        const contentEn = Array.isArray(p.contentEn) ? p.contentEn.join('\n\n') : (p.contentEn || p.content || '');
+        const contentAr = Array.isArray(p.contentAr) ? p.contentAr.join('\n\n') : (p.contentAr || '');
+        const excerptEn = Array.isArray(p.excerptEn) ? p.excerptEn.join(' ') : (p.excerptEn || p.excerpt || '');
+        const excerptAr = Array.isArray(p.excerptAr) ? p.excerptAr.join(' ') : (p.excerptAr || '');
+        return {
         id: `static_${p.slug}`,
         slug: p.slug,
         title: p.titleEn || p.title,
         titleAr: p.titleAr || '',
-        excerpt: p.excerptEn || p.excerpt || '',
-        excerptAr: p.excerptAr || '',
-        content: p.contentEn || p.content || '',
-        contentAr: p.contentAr || '',
+        excerpt: excerptEn,
+        excerptAr: excerptAr,
+        content: contentEn,
+        contentAr: contentAr,
         category: p.category,
         date: p.publishDate || p.date,
         author: p.author || 'Dr. Hala Ali',
         readTime: p.readTime || 5,
-        image: p.image || '',
+        image: p.coverImage || p.image || '',
         featured: p.featured || false,
         published: true,
         source: 'static',
-      }));
+      };
+      });
     } else if (type === 'testimonial') {
       const { testimonials } = await import('@/data/testimonials');
       staticItems = testimonials.map((t: any) => ({
@@ -73,18 +83,35 @@ async function getMergedItems(type: string): Promise<any[]> {
         questionAr: f.questionAr || '',
         answer: f.answer,
         answerAr: f.answerAr || '',
-        tag: f.tag || 'general',
+        tag: f.tag || 'General',
         tagAr: f.tagAr || '',
+        source: 'static',
+      }));
+    } else if (type === 'service') {
+      const { services } = await import('@/data/services');
+      staticItems = services.map((s: any) => ({
+        ...s,
+        id: `static_${s.slug}`,
         source: 'static',
       }));
     }
   } catch { /* ignore import errors */ }
 
-  // CMS items first, then static (dedup by slug for blog)
+  // Get hidden static item IDs
+  let hiddenIds: string[] = [];
+  if (KV_AVAILABLE) {
+    try {
+      const raw = await kv.get(HIDDEN_KEY(type));
+      if (raw && Array.isArray(raw)) hiddenIds = raw;
+    } catch { /* ignore */ }
+  }
+
+  // CMS items first, then static (dedup by slug, exclude hidden)
   const cmsSlugs = new Set(cmsItems.map((i: any) => i.slug || i.id));
+  const hiddenSet = new Set(hiddenIds);
   const merged = [
     ...cmsItems,
-    ...staticItems.filter((s: any) => !cmsSlugs.has(s.slug || s.id)),
+    ...staticItems.filter((s: any) => !cmsSlugs.has(s.slug || s.id) && !hiddenSet.has(s.id)),
   ];
 
   return merged;
@@ -96,7 +123,7 @@ export async function GET(req: NextRequest) {
 
   const type = req.nextUrl.searchParams.get('type');
   if (!type || !KV_KEYS[type]) {
-    return NextResponse.json({ error: 'Invalid type. Use: blog, testimonial, faq' }, { status: 400 });
+    return NextResponse.json({ error: 'Invalid type. Use: blog, testimonial, faq, service' }, { status: 400 });
   }
 
   const items = await getMergedItems(type);
@@ -113,8 +140,8 @@ export async function POST(req: NextRequest) {
   if (!type || !KV_KEYS[type]) {
     return NextResponse.json({ error: 'Invalid type' }, { status: 400 });
   }
-  if (!action || !['create', 'update', 'delete'].includes(action)) {
-    return NextResponse.json({ error: 'Invalid action. Use: create, update, delete' }, { status: 400 });
+  if (!action || !['create', 'update', 'delete', 'reorder'].includes(action)) {
+    return NextResponse.json({ error: 'Invalid action. Use: create, update, delete, reorder' }, { status: 400 });
   }
 
   if (!KV_AVAILABLE) {
@@ -128,18 +155,58 @@ export async function POST(req: NextRequest) {
 
     const now = new Date().toISOString();
 
+    const isStaticItem = data.id && String(data.id).startsWith('static_');
+
     if (action === 'create') {
       const id = `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
       items.unshift({ ...data, id, createdAt: now, updatedAt: now });
     } else if (action === 'update') {
       if (!data.id) return NextResponse.json({ error: 'Missing id for update' }, { status: 400 });
-      items = items.map((item: any) => item.id === data.id ? { ...item, ...data, updatedAt: now } : item);
+
+      if (isStaticItem) {
+        // Editing a static item → create a CMS override AND hide the original
+        const newId = `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+        const { id: oldId, source: _source, ...rest } = data;
+        items.unshift({ ...rest, id: newId, _staticOriginId: oldId, createdAt: now, updatedAt: now });
+
+        // Hide the original static item
+        const rawHidden = await kv.get(HIDDEN_KEY(type));
+        const hidden: string[] = rawHidden && Array.isArray(rawHidden) ? rawHidden : [];
+        if (!hidden.includes(oldId)) {
+          hidden.push(oldId);
+          await kv.set(HIDDEN_KEY(type), hidden);
+        }
+      } else {
+        items = items.map((item: any) => item.id === data.id ? { ...item, ...data, updatedAt: now } : item);
+      }
     } else if (action === 'delete') {
       if (!data.id) return NextResponse.json({ error: 'Missing id for delete' }, { status: 400 });
-      items = items.filter((item: any) => item.id !== data.id);
+
+      if (isStaticItem) {
+        // Deleting a static item → add to hidden list
+        const rawHidden = await kv.get(HIDDEN_KEY(type));
+        const hidden: string[] = rawHidden && Array.isArray(rawHidden) ? rawHidden : [];
+        if (!hidden.includes(data.id)) {
+          hidden.push(data.id);
+          await kv.set(HIDDEN_KEY(type), hidden);
+        }
+      } else {
+        items = items.filter((item: any) => item.id !== data.id);
+      }
+    } else if (action === 'reorder') {
+      if (data.order && Array.isArray(data.order)) {
+        // Save full display order (all item IDs including static)
+        await kv.set(`cms:order:${type}`, data.order);
+        return NextResponse.json({ success: true });
+      } else if (data.items && Array.isArray(data.items)) {
+        // Legacy: replace CMS items
+        items = data.items;
+      } else {
+        return NextResponse.json({ error: 'Missing order or items array' }, { status: 400 });
+      }
     }
 
-    // Save back to KV
+    // Save CMS items back to KV
     await kv.set(KV_KEYS[type], items);
 
     return NextResponse.json({ success: true, items, total: items.length });

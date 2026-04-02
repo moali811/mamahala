@@ -14,7 +14,6 @@ export interface GiftEmailParams {
   occasionAr: string;
   personalMessage?: string;
   schedulingUrl: string;
-  amount?: number;
   locale: 'en' | 'ar';
 }
 
@@ -44,7 +43,7 @@ export function generateGiftEmail(params: GiftEmailParams): string {
   const occ = isAr ? occasionAr : occasion;
 
   const t = {
-    giftForYou: isAr ? 'هديّةٌ لك' : 'A Gift For You',
+    giftForYou: isAr ? 'هديّةُ رعايةٍ لك' : 'A Gift of Care For You',
     from: isAr ? 'مِن' : 'From',
     occasion: isAr ? 'المناسبة' : 'Occasion',
     personalMessage: isAr ? 'رسالةٌ شخصيّة' : 'A Personal Message',
@@ -52,12 +51,12 @@ export function generateGiftEmail(params: GiftEmailParams): string {
     service: isAr ? 'الخدمة' : 'Service',
     duration: isAr ? 'المدّة' : 'Duration',
     scheduleBtn: isAr ? 'احجِزْ جلستَك الآن' : 'Schedule Your Session',
-    validNote: isAr
-      ? 'هذه الهديّة صالحةٌ لمدّة 6 أشهر من تاريخِ الإرسال.'
-      : 'This gift is valid for 6 months from the date of this email.',
+    careNote: isAr
+      ? 'شخصٌ يهتمُّ بك يريدُك أن تشعرَ بالدّعم.'
+      : 'Someone who cares about you wants you to feel supported.',
     sentBecause: isAr
-      ? `تلقّيتَ هذا البريدَ لأنّ ${gifterName} أهداك جلسةً عبر ماما هالة للاستشارات.`
-      : `You received this email because ${gifterName} gifted you a session through Mama Hala Consulting.`,
+      ? `تلقّيتَ هذا البريدَ لأنّ ${gifterName} أرسلَ لك هديّةَ رعايةٍ عبر ماما هالة للاستشارات.`
+      : `You received this email because ${gifterName} sent you a gift of care through Mama Hala Consulting.`,
     brandName: isAr ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting',
     tagline: isAr ? 'حيثُ يلتقي النّموُّ بالقلب' : 'Where Growth Meets Heart',
   };
@@ -189,8 +188,8 @@ export function generateGiftEmail(params: GiftEmailParams): string {
           <!-- Footer -->
           <tr>
             <td style="padding:24px 0;border-top:1px solid #F3EFE8;">
-              <p style="margin:0 0 8px;font-family:${sansFont};font-size:12px;color:#8E8E9F;text-align:center;line-height:1.6;">
-                ${t.validNote}
+              <p style="margin:0 0 8px;font-family:${sansFont};font-size:13px;color:#7A3B5E;text-align:center;line-height:1.6;font-weight:500;">
+                ${t.careNote}
               </p>
               <p style="margin:0;font-family:${sansFont};font-size:11px;color:#C4C0BC;text-align:center;line-height:1.6;">
                 ${t.sentBecause}

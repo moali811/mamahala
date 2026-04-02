@@ -105,7 +105,7 @@ export default function ContactPage() {
         { value: 'booking', label: t('Schedule a Session', 'جدولةُ جلسة'), icon: <Calendar className="w-4 h-4" style={{ color: '#7A3B5E' }} />, color: '#7A3B5E' },
         { value: 'services', label: t('Learn About Services', 'التعرُّفُ على الخدمات'), icon: <Star className="w-4 h-4" style={{ color: '#C4878A' }} />, color: '#C4878A' },
         { value: 'general', label: t('General Inquiry', 'استفسارٌ عامّ'), icon: <HelpCircle className="w-4 h-4" style={{ color: '#C8A97D' }} />, color: '#C8A97D' },
-        { value: 'gift', label: t('Gift a Session', 'إهداءُ جلسة'), icon: <Gift className="w-4 h-4" style={{ color: '#D4836A' }} />, color: '#D4836A', redirect: `/${locale}/gift` },
+        { value: 'gift', label: t('Gift of Care', 'هديّةُ رعاية'), icon: <Gift className="w-4 h-4" style={{ color: '#D4836A' }} />, color: '#D4836A', redirect: `/${locale}/gift` },
         { value: 'collaboration', label: t('Collaboration', 'تعاوُن'), icon: <Handshake className="w-4 h-4" style={{ color: '#4A7A6B' }} />, color: '#4A7A6B' },
         { value: 'feedback', label: t('Share Feedback', 'مشاركةُ ملاحظات'), icon: <MessageCircle className="w-4 h-4" style={{ color: '#6B6580' }} />, color: '#6B6580' },
       ],

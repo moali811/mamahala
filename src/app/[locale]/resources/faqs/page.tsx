@@ -20,7 +20,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
-import { generalFaqs } from '@/data/faqs';
+import { useFAQs } from '@/hooks/useFAQs';
 
 export default function FAQsPage() {
   const params = useParams();
@@ -31,13 +31,23 @@ export default function FAQsPage() {
 
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [openId, setOpenId] = useState<number | null>(0);
+  const { faqs: rawFaqs } = useFAQs();
 
-  // Get unique tags
-  const tags = Array.from(new Set(generalFaqs.map((f) => f.tag).filter(Boolean))) as string[];
-  const tagsAr = Array.from(new Set(generalFaqs.map((f) => f.tagAr).filter(Boolean))) as string[];
+  // Normalize tags (handle mixed case from CMS vs static)
+  const generalFaqs = rawFaqs.map((f: any) => ({
+    ...f,
+    tag: f.tag ? f.tag.charAt(0).toUpperCase() + f.tag.slice(1) : 'General',
+  }));
+
+  // Build tag → Arabic tag mapping from FAQ data
+  const tagToAr: Record<string, string> = {};
+  generalFaqs.forEach((f: any) => {
+    if (f.tag && f.tagAr) tagToAr[f.tag] = f.tagAr;
+  });
+  const tags = Array.from(new Set(generalFaqs.map((f: any) => f.tag).filter(Boolean))) as string[];
 
   const filteredFaqs = activeTag
-    ? generalFaqs.filter((f) => f.tag === activeTag)
+    ? generalFaqs.filter((f: any) => f.tag === activeTag)
     : generalFaqs;
 
   return (
@@ -139,7 +149,7 @@ export default function FAQsPage() {
                   }`}
                   whileTap={{ scale: 0.97 }}
                 >
-                  {isRTL ? tagsAr[i] : tag}
+                  {isRTL ? (tagToAr[tag] || tag) : tag}
                 </motion.button>
               ))}
             </div>
@@ -192,7 +202,7 @@ export default function FAQsPage() {
                         >
                           <div className="px-5 pb-6 lg:px-6 lg:pb-8 pt-0">
                             <div className={`${isRTL ? 'pr-14' : 'pl-14'}`}>
-                              <p className="text-[15px] text-[#4A4A5C] leading-[1.8]">{answer}</p>
+                              <SmartAnswer text={answer} locale={locale} isRTL={isRTL} />
                               {faq.link && (
                                 <Link
                                   href={`/${locale}${faq.link.href}`}
@@ -228,6 +238,79 @@ export default function FAQsPage() {
         secondaryTextEn="Ask a Specific Question"
         secondaryTextAr="اسأل سؤالاً محدداً"
       />
+    </div>
+  );
+}
+
+// ─── SMART ANSWER: Auto-links keywords to relevant pages ───
+const SMART_LINKS: { pattern: RegExp; href: string; labelEn: string; labelAr: string; icon?: string }[] = [
+  // Policies
+  { pattern: /cancell?ations?|rescheduling|reschedule|refund|no.?shows?|24.?hour notice|late fee|booking policy|الإلغاء|إعادة.?الجدولة|عدم.?الحضور|سياسة.?الحجز/gi, href: '/booking-policy', labelEn: 'Booking Policy', labelAr: 'سياسة الحجز', icon: '📋' },
+  { pattern: /privacy policy|confidential|confidentiality|سر[ّيية]+|الخصوصي[ّةة]+/gi, href: '/privacy-policy', labelEn: 'Privacy Policy', labelAr: 'سياسة الخصوصيّة', icon: '🔒' },
+  // Booking & contact
+  { pattern: /book a session|book online|booking assistant|free consultation|schedule|your first.+free|completely free|احج[زْ]|حجز|استشار[ةت].+مجان|مجّانيّة|مساعد.?الحجز|جدول[ةت]/gi, href: '/book-a-session', labelEn: 'Book a Session', labelAr: 'احجز جلسة', icon: '📅' },
+  { pattern: /contact form|contact us|get in touch|reach out|نموذج.?الات[صّ]ال|تواصَلْ/gi, href: '/contact', labelEn: 'Contact Us', labelAr: 'تواصل معنا', icon: '✉️' },
+  { pattern: /WhatsApp|واتساب/gi, href: 'https://wa.me/16132222104', labelEn: 'Chat on WhatsApp', labelAr: 'تواصل عبر واتساب', icon: '💬' },
+  // Services
+  { pattern: /\b(?:children|child|teens?|adolescent|youth)\b|الأطفال|المراهق|الناشئة/gi, href: '/services/youth', labelEn: 'Youth Services', labelAr: 'خدمات الناشئة', icon: '🌱' },
+  { pattern: /\bfamil(?:y|ies)\b|العائلات|الأسر[ةه]/gi, href: '/services/families', labelEn: 'Family Services', labelAr: 'خدمات الأسرة', icon: '👨‍👩‍👧' },
+  { pattern: /\bcouples?\b|marriage|pre.?marital|الأزواج|الزواج/gi, href: '/services/couples', labelEn: 'Couples Services', labelAr: 'خدمات الأزواج', icon: '💑' },
+  { pattern: /\badults?\b|individual counseling|individual therapy|anxiety|البالغ[ونين]+|القلق/gi, href: '/services/adults', labelEn: 'Adult Services', labelAr: 'خدمات البالغين', icon: '🧘' },
+  { pattern: /experiential|walk.?and.?talk|plant therapy|العلاج.?التجريبي|المشي.?وال[حك]وار|بالنباتات/gi, href: '/book-a-session', labelEn: 'Book Initial Consultation', labelAr: 'احجز استشارة أولية', icon: '📅' },
+  { pattern: /our services|all services|view services|خدمات[نِ]ا|جميع.?الخدمات/gi, href: '/services', labelEn: 'View All Services', labelAr: 'عرض جميع الخدمات', icon: '🏠' },
+  // Resources
+  { pattern: /\bblog\b|\barticles?\b|المدونة|مقالات/gi, href: '/resources/blog', labelEn: 'Read Our Blog', labelAr: 'اقرأ المدونة', icon: '📝' },
+  { pattern: /\bevents?\b|\bworkshops?\b|\bwebinars?\b|الفعاليات|ورشة|ندوة/gi, href: '/resources/events', labelEn: 'Upcoming Events', labelAr: 'الفعاليات القادمة', icon: '🎯' },
+  { pattern: /gift.?(?:card|session|care)|gifting|هدي[ّةت]|أهدِ.?جلسة|بطاقة.?هدي|المُهداة|رعاية/gi, href: '/gift', labelEn: 'Gift of Care', labelAr: 'هديّةُ رعاية', icon: '🎁' },
+  // About
+  { pattern: /Dr\.?\s*Hala|الدكتورة هالة|ماما هالة/gi, href: '/about', labelEn: 'About Dr. Hala', labelAr: 'عن الدكتورة هالة', icon: '👩‍⚕️' },
+  // Bilingual (EN + AR)
+  { pattern: /bilingual|ثنائي.?اللّغة|بالإنجليزيّة والعربيّة|English and Arabic/gi, href: '/contact', labelEn: 'Contact Us', labelAr: 'تواصل معنا', icon: '🌐' },
+];
+
+function SmartAnswer({ text, locale, isRTL }: { text: string; locale: string; isRTL: boolean }) {
+  if (!text) return null;
+
+  // Find all matching links in this answer (max 4 to keep it clean)
+  const matchedLinks: { href: string; label: string; icon: string }[] = [];
+  const seen = new Set<string>();
+
+  for (const link of SMART_LINKS) {
+    if (matchedLinks.length >= 4) break;
+    if (link.pattern.test(text)) {
+      link.pattern.lastIndex = 0; // Reset regex
+
+      const href = link.href;
+      const label = isRTL ? link.labelAr : link.labelEn;
+      const icon = link.icon || '';
+
+      if (href && label && !seen.has(href)) {
+        seen.add(href);
+        const fullHref = href.startsWith('http') ? href : `/${locale}${href}`;
+        matchedLinks.push({ href: fullHref, label, icon });
+      }
+    }
+  }
+
+  return (
+    <div dir={isRTL ? 'rtl' : 'ltr'}>
+      <p className="text-[15px] text-[#4A4A5C] leading-[1.8]">{text}</p>
+      {matchedLinks.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-3">
+          {matchedLinks.map(({ href, label, icon }) => (
+            <Link
+              key={href}
+              href={href}
+              {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7A3B5E] hover:text-white hover:bg-[#7A3B5E] transition-all duration-200 bg-[#7A3B5E]/5 px-3 py-1.5 rounded-full"
+            >
+              <span className="text-[10px]">{icon}</span>
+              {label}
+              <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isRTL ? 'M19 12H5m0 0l7-7m-7 7l7 7' : 'M5 12h14m0 0l-7-7m7 7l-7 7'} /></svg>
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

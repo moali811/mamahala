@@ -19,12 +19,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
-import {
-  getPublishedPosts,
-  getPostsByCategory,
-  getAllCategories,
-  getCategoryLabel,
-} from '@/data/blog-posts';
+import { useBlog } from '@/hooks/useBlog';
 
 const badgeVariants: Record<string, 'sage' | 'plum' | 'sand' | 'neutral'> = {
   youth: 'sage',
@@ -50,11 +45,12 @@ export default function BlogListingPage() {
   const POSTS_PER_PAGE = 9;
 
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
+  const { posts: allPosts, getCategoryLabel } = useBlog();
 
   const allFilteredPosts =
     activeCategory === 'All'
-      ? getPublishedPosts()
-      : getPostsByCategory(activeCategory);
+      ? allPosts
+      : allPosts.filter(p => p.category === activeCategory);
 
   const totalPages = Math.ceil(allFilteredPosts.length / POSTS_PER_PAGE);
   const filteredPosts = allFilteredPosts.slice(
@@ -62,7 +58,7 @@ export default function BlogListingPage() {
     currentPage * POSTS_PER_PAGE
   );
 
-  const categories = getAllCategories();
+  const categories = Array.from(new Set(allPosts.map(p => p.category)));
 
   return (
     <div className="overflow-hidden">
@@ -166,7 +162,7 @@ export default function BlogListingPage() {
           </ScrollReveal>
 
           {/* Blog Post Grid */}
-          <StaggerReveal key={`${activeCategory}-${currentPage}`} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <StaggerReveal key={`${activeCategory}-${currentPage}-${allFilteredPosts.length}`} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post) => (
               <StaggerChild key={post.slug}>
                 <Link href={`/${locale}/resources/blog/${post.slug}`}>

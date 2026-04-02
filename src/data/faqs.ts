@@ -88,12 +88,14 @@ export const bookingFaqs: FAQ[] = [
     questionAr: 'ماذا يحدثُ في الجلسةِ الأولى؟',
     answer: 'A warm, no-pressure 30-minute conversation where we get to know each other, discuss your concerns, and explore how we can best support you. Completely free for new clients.',
     answerAr: 'محادثةٌ دافئةٌ بلا ضغط لمدّة 30 دقيقة نتعرّفُ فيها على بعضِنا، ونناقشُ مخاوفَك، ونستكشفُ كيفَ نستطيعُ دعمَك. مجّانيّةٌ تمامًا للعملاءِ الجُدد.',
+    tag: 'Booking', tagAr: 'الحجز',
   },
   {
     question: 'Can I cancel or reschedule?',
     questionAr: 'هل يمكنُني الإلغاءُ أو إعادةُ الجدولة؟',
     answer: 'Yes — 24 hours notice required. One free reschedule per booking. Late cancellations incur 50% fee.',
     answerAr: 'نعم — بإشعارٍ قبل 24 ساعة. إعادةُ جدولةٍ مجّانيّة واحدة. الإلغاءُ المتأخِّر يُفرَضُ عليه 50%.',
+    tag: 'Booking', tagAr: 'الحجز',
     link: { href: '/booking-policy', labelEn: 'Full cancellation policy', labelAr: 'سياسةُ الإلغاءِ الكاملة' },
   },
   {
@@ -101,12 +103,14 @@ export const bookingFaqs: FAQ[] = [
     questionAr: 'كيفَ يُحدَّدُ التسعير؟',
     answer: 'Personalized based on your location, session format, needs, and complexity. Your first session is always free.',
     answerAr: 'بشكلٍ شخصيٍّ بناءً على موقعِك وصيغةِ الجلسة واحتياجاتِك ومستوى التعقيد. جلستُك الأولى مجّانيّةٌ دائمًا.',
+    tag: 'Pricing', tagAr: 'الأسعار',
   },
   {
     question: 'How should I prepare?',
     questionAr: 'كيفَ أستعدّ؟',
     answer: 'Find a quiet, private space with stable internet. Be on time. No need to prepare anything specific — just bring yourself.',
     answerAr: 'ابحَثْ عن مكانٍ هادئٍ وخاصٍّ مع إنترنت مستقرّ. كُنْ في الوقت. لا حاجةَ لتحضيرِ شيءٍ — فقط أحضِرْ نفسَك.',
+    tag: 'Sessions', tagAr: 'الجلسات',
   },
 ];
 
@@ -117,40 +121,46 @@ export const contactFaqs: FAQ[] = [
     questionAr: 'ما مدى سرعةِ الردّ؟',
     answer: 'Within 24 hours on business days. For urgent matters, WhatsApp is fastest.',
     answerAr: 'خلال 24 ساعةً في أيّامِ العمل. للأمورِ العاجلة، واتساب أسرع.',
+    tag: 'Communication', tagAr: 'التواصل',
   },
   {
     question: 'What languages do you communicate in?',
     questionAr: 'بأيِّ لغاتٍ تتواصلون؟',
     answer: 'Full bilingual support in English and Arabic — reach out in whichever you prefer.',
     answerAr: 'دعمٌ ثنائيُّ اللّغة بالإنجليزيّة والعربيّة — تواصَلْ بأيِّ لغةٍ تفضّلُها.',
+    tag: 'Communication', tagAr: 'التواصل',
   },
   {
     question: 'Is my message confidential?',
     questionAr: 'هل رسالتي سرّيّة؟',
     answer: 'Yes. All information shared is handled with strict confidentiality.',
     answerAr: 'نعم. جميعُ المعلوماتِ تُعامَلُ بسرّيّةٍ تامّة.',
+    tag: 'Privacy', tagAr: 'الخصوصيّة',
     link: { href: '/privacy-policy', labelEn: 'Read our privacy policy', labelAr: 'اقرأْ سياسةَ الخصوصيّة' },
   },
 ];
 
-// ─── Gift-specific FAQs ───
+// ─── Gift of Care FAQs ───
 export const giftFaqs: FAQ[] = [
   {
-    question: 'How will the recipient receive their gift?',
-    questionAr: 'كيفَ سيتلقّى المُستلِمُ هديّتَه؟',
-    answer: 'Mama Hala personally reaches out with a beautiful digital gift card and helps them schedule their session.',
-    answerAr: 'تتواصلُ ماما هالة شخصيًّا ببطاقةِ هديّةٍ رقميّةٍ جميلة وتُساعدُه في جدولةِ جلسته.',
+    question: 'How will they receive the gift of care?',
+    questionAr: 'كيفَ سيتلقّونَ هديّةَ الرّعاية؟',
+    answer: 'They receive a beautiful branded email with your personal message and a direct link to schedule their session with Dr. Hala.',
+    answerAr: 'يتلقّونَ بريدًا إلكترونيًّا أنيقًا يحتوي على رسالتِك الشّخصيّة ورابطٍ مباشرٍ لحجزِ جلستِهم مع د. هالة.',
+    tag: 'Care Gift', tagAr: 'هديّة رعاية',
   },
   {
-    question: 'Can I choose the session date?',
-    questionAr: 'هل يمكنُني اختيارُ تاريخِ الجلسة؟',
-    answer: 'The recipient chooses their own time for maximum flexibility. You can request a specific timeframe.',
-    answerAr: 'يختارُ المُستلِمُ وقتَه بنفسِه لأقصى مرونة. يمكنُكَ طلبُ إطارٍ زمنيٍّ مُحدَّد.',
+    question: 'Is there any cost to sending a gift of care?',
+    questionAr: 'هل هناك تكلفةٌ لإرسالِ هديّةِ الرّعاية؟',
+    answer: 'Sending the invitation is free. The recipient books and pays for their session directly — you are giving them the connection and the nudge.',
+    answerAr: 'إرسالُ الدّعوةِ مجّانيّ. يحجزُ المُستلِمُ ويدفعُ ثمنَ جلستِه مباشرةً — أنتَ تمنحُه التّواصلَ والدّافع.',
+    tag: 'Care Gift', tagAr: 'هديّة رعاية',
   },
   {
-    question: 'What if the gift is not used?',
-    questionAr: 'ماذا لو لم تُستخدَمِ الهديّة؟',
-    answer: 'Gift sessions are valid for 6 months. If unused, we work with you to find an alternative.',
-    answerAr: 'الجلساتُ المُهداة صالحةٌ لمدّة 6 أشهر. إن لم تُستخدَم، نعملُ معك لإيجادِ بديل.',
+    question: 'What if they don\'t use the invitation?',
+    questionAr: 'ماذا لو لم يستخدِموا الدّعوة؟',
+    answer: 'There is no expiration on kindness. The invitation stays in their inbox and they can schedule whenever they are ready.',
+    answerAr: 'لا تاريخَ انتهاءٍ للطّف. تبقى الدّعوةُ في بريدِهم ويمكنُهم الحجزُ متى كانوا مستعدّين.',
+    tag: 'Care Gift', tagAr: 'هديّة رعاية',
   },
 ];

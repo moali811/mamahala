@@ -131,6 +131,9 @@ h1, h2, h3, h4, h5, h6 {
 [dir="rtl"] h6 {
   font-family: var(--font-arabic) !important;
   letter-spacing: 0;
+  line-height: 1.5 !important;
+  overflow: visible !important;
+  padding-top: 0.15em;
 }
 
 /* Force Tajawal on ALL elements in RTL - overrides inline styles */
@@ -270,6 +273,28 @@ h1, h2, h3, h4, h5, h6 {
   margin-right: auto;
   padding-left: var(--container-padding);
   padding-right: var(--container-padding);
+}
+
+/* Hero image editorial fade mask */
+@utility hero-mask-ltr {
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+
+@utility hero-mask-rtl {
+  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+}
+
+@media (min-width: 1024px) {
+  .hero-mask-ltr {
+    mask-image: linear-gradient(to left, black 40%, transparent 95%);
+    -webkit-mask-image: linear-gradient(to left, black 40%, transparent 95%);
+  }
+  .hero-mask-rtl {
+    mask-image: linear-gradient(to right, black 40%, transparent 95%);
+    -webkit-mask-image: linear-gradient(to right, black 40%, transparent 95%);
+  }
 }
 
 /* Decorative blob */
