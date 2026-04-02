@@ -1,240 +1,334 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Anthropic from '@anthropic-ai/sdk';
+
+// Allow up to 60 seconds for AI generation (blog posts need time)
+export const maxDuration = 60;
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 function authorize(req: NextRequest): boolean {
   return req.headers.get('authorization') === `Bearer ${ADMIN_PASSWORD}`;
 }
 
-/* ================================================================
-   AI Content Generation Engine for Mama Hala Consulting
+// ─── SYSTEM PROMPT: Mama Hala Brand Voice + Arabic Tashkeel ───
+const SYSTEM_PROMPT = `You are the AI content assistant for Mama Hala Consulting — a bilingual (English/Arabic) counseling and mental health practice founded by Dr. Hala Ali.
 
-   Template-based intelligent content generation.
-   No external AI API calls — all logic is self-contained.
-   Generates content in Mama Hala's brand voice:
-   warm, evidence-based, culturally sensitive, actionable.
-   ================================================================ */
+## BRAND VOICE
+- Warm, compassionate, and professionally grounded
+- Evidence-based yet accessible — no clinical jargon
+- Culturally sensitive — many clients are Arab families living abroad
+- Empowering — you help clients feel seen, not judged
+- Always hopeful and solution-oriented
 
-// ─── BRAND VOICE VOCABULARY ───
-const HOOKS = [
-  `If you've ever felt overwhelmed by`,
-  `Many families struggle with`,
-  `As parents, we often wonder about`,
-  `One of the most common challenges families face is`,
-  `It's completely normal to feel uncertain about`,
-  `In today's world, navigating`,
-  `Whether you're a new parent or have years of experience,`,
-  `Every family goes through seasons of`,
-  `Behind every challenging behavior is`,
-  `The journey of parenting through`,
-];
+## BUSINESS CONTEXT
+- Founder: Dr. Hala Ali (الدّكتورة هالة علي) — known as "Mama Hala"
+- Locations: Ottawa, Canada & Dubai, UAE (most sessions are online)
+- Services: Youth counseling, family therapy, couples counseling, adult mental health, experiential therapy
+- Categories: Youth (children & teens), Families, Adults, Couples, Experiential Therapy
+- Initial consultation: Free, 30 minutes
+- Standard sessions: 50 minutes
+- Website: mamahala.ca
+- Phone: +1 613-222-2104
+- Booking: cal.com/mamahala
 
-const EVIDENCE_PHRASES = [
-  'Research consistently shows that',
-  'Studies in child development suggest',
-  'According to family psychology research,',
-  'Evidence-based approaches tell us that',
-  'What the research reveals is',
-  'Decades of developmental science confirm',
-  'Clinical experience and research both point to',
-];
+## ARABIC TRANSLATION RULES (CRITICAL)
+When generating Arabic content:
+1. ALWAYS include FULL Tashkeel (الحَرَكَات) on EVERY word — fatha, kasra, damma, sukun, shadda, tanween
+2. Use Modern Standard Arabic (فُصحى) with a warm, accessible tone
+3. Maintain the same meaning and emotional impact as the English version
+4. Arabic text must read naturally — not a literal word-for-word translation
+5. Adapt cultural references appropriately for Arab readers
+6. Use proper Arabic punctuation (، — not , )
 
-const CULTURAL_BRIDGES = [
-  'For Arab families living abroad, this takes on an added dimension — balancing cultural values with the realities of a new environment.',
-  'In multicultural families, these strategies can be adapted to honor both heritage and the local context children navigate daily.',
-  'Many families in our community find strength in their cultural roots while building new tools for modern challenges.',
-  'Cultural identity can be a powerful source of resilience — when families weave their heritage into everyday problem-solving, children develop a stronger sense of belonging.',
-];
+Example of correct Tashkeel:
+❌ "نحن نساعد العائلات" (no tashkeel)
+✅ "نَحْنُ نُسَاعِدُ العَائِلَاتِ" (full tashkeel)
 
-const CLOSINGS = [
-  `Remember, seeking support is a sign of strength, not weakness. Every family deserves guidance that honors their unique story.`,
-  `Change doesn't happen overnight, but with consistent, small steps, transformation is always possible. You don't have to figure this out alone.`,
-  `The fact that you're reading this shows how much you care. That care is the foundation everything else builds on.`,
-  `Every family's journey is different, and there's no single right answer. What matters is showing up with intention and love.`,
-];
+## OUTPUT FORMAT
+Always respond with valid JSON only. Never include markdown code blocks, backticks, or any text outside the JSON object. Start your response with { and end with }.`;
 
-const STRATEGY_TEMPLATES = [
-  { title: 'Start with Connection', body: 'Before addressing any challenge, strengthen your emotional bond. Children (and partners) are more receptive when they feel seen and heard. Try spending 10-15 minutes of uninterrupted quality time daily — no phones, no agenda, just presence.' },
-  { title: 'Create a Safe Space for Feelings', body: `Emotional literacy begins when we normalize all emotions. Instead of saying "Don't cry" or "Calm down," try "I can see you're feeling frustrated. That makes sense." This co-regulation approach builds your child's emotional vocabulary and self-awareness.` },
-  { title: 'Set Boundaries with Warmth', body: `Boundaries aren't about control — they're about safety and respect. The key is firm and kind: "I understand you want to stay up late. The rule is bedtime at 8:30 because your body needs rest to grow strong." Acknowledge the feeling, hold the boundary.` },
-  { title: 'Model What You Want to See', body: `Children learn more from what we do than what we say. If we want calm responses, we need to practice calming ourselves first. Share your own emotional process: "I'm feeling stressed right now, so I'm going to take three deep breaths."` },
-  { title: 'Practice Active Listening', body: `Put down your phone, make eye contact, and reflect back what you hear. "So what you're telling me is..." This simple technique can transform communication and make family members feel truly valued.` },
-  { title: 'Build Daily Rituals', body: 'Predictable routines create emotional safety. Family dinner conversations, bedtime check-ins, weekend walks — these small rituals become the anchors that hold families together through challenging times.' },
-  { title: 'Embrace Imperfection', body: `Perfectionism is the enemy of connection. When you make a mistake (and you will), model accountability: "I shouldn't have raised my voice. I'm sorry. Let me try again." This teaches children that repair is always possible.` },
-  { title: 'Know When to Seek Support', body: `Professional guidance isn't a last resort — it's a wise investment. A counselor can offer fresh perspectives, evidence-based tools, and a safe space to explore patterns that are hard to see from inside the family system.` },
-  { title: 'Use the Pause', body: `When emotions run high, the most powerful thing you can do is pause. Count to five. Take a breath. Ask yourself: "What does my child need right now?" Often, the answer is simpler than we think — they need to know we're not going anywhere.` },
-  { title: 'Celebrate Small Wins', body: 'Progress is rarely linear. Notice and name the moments that go well: "I loved how we talked through that disagreement calmly." Positive reinforcement works for the whole family — including parents.' },
-];
+// ─── CONTENT TYPE PROMPTS ───
+const CONTENT_PROMPTS: Record<string, (prompt: string, options?: any) => string> = {
+  blog: (prompt, options) => `Write a professional, engaging blog article for Mama Hala Consulting's website.
 
-function pick<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+Topic: "${prompt}"
+${options?.tone ? `Tone: ${options.tone}` : ''}
+${options?.audience ? `Target audience: ${options.audience}` : ''}
+${options?.category ? `Category: ${options.category}` : ''}
 
-function pickN<T>(arr: T[], n: number): T[] {
-  const shuffled = [...arr].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, n);
-}
+Requirements:
+- Title should be compelling, SEO-friendly, under 70 characters
+- Excerpt: 1-2 sentences that hook the reader (under 160 characters)
+- Content: 400-500 words with ## headings and - bullet points (markdown)
+- Practical, evidence-based advice
+- End with call-to-action for free consultation
+- Generate BOTH English and Arabic (full Tashkeel)
+- Be concise
 
-function generateSlug(title: string): string {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '').slice(0, 60);
-}
+Respond with this exact JSON structure (no markdown, no code blocks):
+{"title":"English title","titleAr":"Arabic title with tashkeel","excerpt":"English excerpt","excerptAr":"Arabic excerpt with tashkeel","content":"Full English article in markdown","contentAr":"Full Arabic article in markdown with tashkeel","category":"${options?.category || 'families'}","image":""}`,
 
-// ─── BLOG POST GENERATOR ───
-function generateBlogPost(prompt: string, options: any = {}): any {
-  const topic = prompt.trim();
-  const tone = options.tone || 'warm';
-  const audience = options.audience || 'families';
-  const category = options.category || audience;
+  event: (prompt) => `Generate event details for Mama Hala Consulting based on this description:
 
-  const title = topic.length > 10 ? topic : `${topic}: A Guide for ${audience === 'youth' ? 'Teens and Young Adults' : audience === 'couples' ? 'Couples' : audience === 'adults' ? 'Adults' : 'Families'}`;
+"${prompt}"
 
-  const strategies = pickN(STRATEGY_TEMPLATES, 4);
-  const hook = pick(HOOKS);
-  const evidence = pick(EVIDENCE_PHRASES);
-  const cultural = pick(CULTURAL_BRIDGES);
-  const closing = pick(CLOSINGS);
+Requirements:
+- Professional, inviting title and description
+- Determine the best event type: workshop, webinar, community-gathering, retreat, or support-group
+- Suggest appropriate capacity and whether it should be free or paid
+- Generate BOTH English and Arabic (with full Tashkeel)
 
-  const audienceLabel = audience === 'youth' ? 'young people' : audience === 'couples' ? 'couples' : audience === 'adults' ? 'individuals' : 'parents and families';
+Respond with this exact JSON structure (no markdown, no code blocks):
+{"titleEn":"English event title","titleAr":"Arabic event title with tashkeel","descriptionEn":"English description (2-3 paragraphs)","descriptionAr":"Arabic description with tashkeel","type":"workshop","capacity":25,"isFree":true}`,
 
-  const content = `${hook} ${topic.toLowerCase()}? You're not alone. This is one of the most frequent concerns ${audienceLabel} bring to our sessions at Mama Hala Consulting — and the good news is, there are practical, evidence-based strategies that can make a real difference.
+  faq: (prompt) => `Write a comprehensive, empathetic answer for this FAQ on Mama Hala Consulting's website:
 
-## Why This Matters
+Question: "${prompt}"
 
-${evidence} ${topic.toLowerCase()} has a significant impact on emotional wellbeing and relationship quality. When left unaddressed, it can create patterns that affect not just the individual, but the entire family system. Understanding this is the first step toward meaningful change.
+Requirements:
+- Answer in 2-4 sentences — clear, warm, and reassuring
+- Address the emotional concern behind the question, not just the facts
+- Include specific details relevant to Mama Hala (free first session, online sessions, bilingual, etc.)
+- Generate BOTH English and Arabic (with full Tashkeel) answers
 
-The important thing to remember is that struggling with ${topic.toLowerCase()} doesn't mean anything is "wrong" with you or your family. It means you're human, navigating complex emotions in a complex world.
+Respond with this exact JSON structure (no markdown, no code blocks):
+{"answer":"English answer","answerAr":"Arabic answer with full tashkeel"}`,
 
-## Practical Strategies That Work
+  testimonial: (prompt) => `Polish this raw client feedback into a professional testimonial for Mama Hala Consulting:
 
-${strategies.map((s, i) => `### ${i + 1}. ${s.title}
+Raw feedback: "${prompt}"
 
-${s.body}`).join('\n\n')}
+Requirements:
+- Keep the authentic voice but make it more polished and impactful
+- 2-3 sentences maximum
+- Should feel genuine, not corporate
+- Generate BOTH English and Arabic (with full Tashkeel) versions
+- Suggest appropriate client initials and role
 
-## The Cultural Dimension
+Respond with this exact JSON structure (no markdown, no code blocks):
+{"text":"Polished English testimonial","textAr":"Polished Arabic testimonial with full tashkeel","name":"A.B.","role":"Parent","roleAr":"وَالِد","rating":5,"category":"families"}`,
 
-${cultural}
+  service: (prompt) => `Generate service details for Mama Hala Consulting based on this description:
 
-## Moving Forward
+"${prompt}"
 
-${closing}
+Requirements:
+- Professional, empathetic service description
+- Include who the service is for, what to expect, and the therapeutic approach
+- Generate BOTH English and Arabic (with full Tashkeel)
 
----
+Respond with this exact JSON structure (no markdown, no code blocks):
+{"name":"English service name","nameAr":"Arabic service name with tashkeel","shortDesc":"Short English description (1 sentence)","shortDescAr":"Short Arabic description with tashkeel","description":"Full English description","descriptionAr":"Full Arabic description with tashkeel","whoIsThisFor":["Person type 1","Person type 2","Person type 3"],"whoIsThisForAr":["Arabic with tashkeel 1","Arabic with tashkeel 2","Arabic with tashkeel 3"],"whatToExpect":["Step 1","Step 2","Step 3","Step 4"],"whatToExpectAr":["Arabic with tashkeel 1","Arabic with tashkeel 2","Arabic with tashkeel 3","Arabic with tashkeel 4"],"approach":"English approach description","approachAr":"Arabic approach with tashkeel","category":"families"}`,
 
-*If you'd like personalized guidance on ${topic.toLowerCase()}, Dr. Hala Ali offers individual, family, and couples counseling — both online and in-person. [Book a free consultation](/en/book-a-session) to take the first step.*`;
+  translate: (prompt, options) => `Translate the following English text to Arabic with FULL Tashkeel (الحَرَكَات).
 
-  const excerpt = `${hook} ${topic.toLowerCase()}? Discover practical, evidence-based strategies that can make a real difference for ${audienceLabel}.`;
+The translation should:
+- Sound natural in Arabic, not a literal word-for-word translation
+- Maintain the same warmth, meaning, and emotional impact
+- Use Modern Standard Arabic (فُصحى) with accessible vocabulary
+- Include COMPLETE Tashkeel on EVERY word
+- Adapt cultural references appropriately
 
-  const wordCount = content.split(/\s+/).length;
-  const readTime = Math.max(3, Math.ceil(wordCount / 200));
+Content type: ${options?.contentType || 'general'}
 
-  return {
-    title,
-    titleAr: `[ترجمة عربية مطلوبة] ${title}`,
-    excerpt,
-    excerptAr: `[ترجمة عربية مطلوبة] ${excerpt}`,
-    content,
-    contentAr: `[ترجمة عربية مطلوبة]`,
-    category,
-    author: 'Dr. Hala Ali',
-    readTime,
-    image: '',
-    featured: false,
-    published: true,
-  };
-}
+Text to translate:
+"""
+${prompt}
+"""
 
-// ─── EVENT GENERATOR ───
-function generateEvent(prompt: string, options: any = {}): any {
-  const topic = prompt.trim();
-  const isWebinar = /webinar|online|virtual|ندوة/i.test(prompt);
-  const isRetreat = /retreat|nature|outdoor|خلوة/i.test(prompt);
-  const isCommunity = /community|gathering|cultural|مجتمع/i.test(prompt);
-  const type = isWebinar ? 'webinar' : isRetreat ? 'retreat' : isCommunity ? 'community-gathering' : 'workshop';
-  const isFree = isWebinar || /free|مجاني/i.test(prompt);
-
-  const title = topic.length > 10 ? topic : `${topic} — A ${type === 'webinar' ? 'Free Webinar' : type === 'retreat' ? 'Wellness Retreat' : 'Workshop'} by Mama Hala`;
-
-  return {
-    titleEn: title,
-    titleAr: `[ترجمة عربية مطلوبة] ${title}`,
-    descriptionEn: `Join Dr. Hala Ali for ${type === 'webinar' ? 'an informative online session' : type === 'retreat' ? 'an immersive outdoor experience' : 'an interactive workshop'} exploring ${topic.toLowerCase()}. This ${type === 'webinar' ? 'free webinar' : 'session'} combines evidence-based strategies with culturally sensitive guidance, offering practical takeaways you can implement immediately.`,
-    descriptionAr: `[ترجمة عربية مطلوبة]`,
-    type,
-    capacity: type === 'webinar' ? 100 : type === 'retreat' ? 15 : 30,
-    isFree,
-    suggestedPrice: isFree ? 0 : type === 'retreat' ? 45 : 55,
-    duration: type === 'webinar' ? '60-90 min' : type === 'retreat' ? '4-6 hours' : '2-3 hours',
-    whatToBring: type === 'retreat'
-      ? ['Comfortable outdoor clothing', 'Water bottle', 'Sunscreen', 'Journal']
-      : type === 'webinar'
-        ? ['A quiet space', 'Notebook for takeaways', 'Your questions']
-        : ['Notebook and pen', 'An open mind', 'Questions about your experience'],
-    faqs: [
-      { q: 'Who is this event for?', a: `This event is designed for anyone interested in ${topic.toLowerCase()}. No prior experience or knowledge is required.` },
-      { q: 'Will there be a recording?', a: type === 'webinar' ? 'Yes, all registered participants will receive the recording within 24 hours.' : 'This is a live, in-person experience and will not be recorded.' },
-    ],
-  };
-}
-
-// ─── FAQ GENERATOR ───
-function generateFAQ(prompt: string): any {
-  const question = prompt.trim();
-  const topic = question.replace(/\?$/, '').toLowerCase();
-
-  return {
-    question,
-    questionAr: `[ترجمة عربية مطلوبة] ${question}`,
-    answer: `Great question! At Mama Hala Consulting, we approach ${topic} with care and evidence-based strategies tailored to each family's unique situation. Dr. Hala Ali works collaboratively with clients to understand the root of the concern and develop practical, culturally sensitive solutions. Every journey is different, and the first step is always a warm, no-pressure conversation to explore what support looks like for you. We offer both online and in-person sessions across Ottawa and Dubai.`,
-    answerAr: `[ترجمة عربية مطلوبة]`,
-    tag: 'general',
-    tagAr: 'عام',
-  };
-}
-
-// ─── TESTIMONIAL POLISHER ───
-function generateTestimonial(prompt: string): any {
-  const raw = prompt.trim();
-  return {
-    text: raw.length > 50 ? raw : `Working with Dr. Hala has been transformative for our family. ${raw} We felt heard, supported, and equipped with real tools we could use at home. The cultural sensitivity and warmth made all the difference.`,
-    textAr: `[ترجمة عربية مطلوبة]`,
-    name: '',
-    role: 'Client',
-    roleAr: 'عميل',
-    category: 'general',
-    rating: 5,
-    featured: false,
-  };
-}
+Respond with this exact JSON structure (no markdown, no code blocks):
+${options?.fields ? `{${options.fields.map((f: string) => `"${f}":"Arabic translation with tashkeel"`).join(',')}}` : '{"translation":"Arabic translation with full tashkeel"}'}`,
+};
 
 // ─── API HANDLER ───
 export async function POST(req: NextRequest) {
-  if (!authorize(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-  const body = await req.json();
-  const { type, prompt, options } = body;
-
-  if (!type || !prompt) {
-    return NextResponse.json({ error: 'Missing type and prompt' }, { status: 400 });
+  if (!authorize(req)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let generated: any;
-
-  switch (type) {
-    case 'blog':
-      generated = generateBlogPost(prompt, options);
-      break;
-    case 'event':
-      generated = generateEvent(prompt, options);
-      break;
-    case 'faq':
-      generated = generateFAQ(prompt);
-      break;
-    case 'testimonial':
-      generated = generateTestimonial(prompt);
-      break;
-    default:
-      return NextResponse.json({ error: 'Invalid type. Use: blog, event, faq, testimonial' }, { status: 400 });
+  if (!ANTHROPIC_API_KEY) {
+    return NextResponse.json({ error: 'AI service not configured. Add ANTHROPIC_API_KEY to environment variables.' }, { status: 500 });
   }
 
-  return NextResponse.json({ success: true, generated });
+  try {
+    const body = await req.json();
+    const { type, prompt, options } = body;
+
+    if (!type || !prompt) {
+      return NextResponse.json({ error: 'Missing type or prompt' }, { status: 400 });
+    }
+
+    const promptBuilder = CONTENT_PROMPTS[type];
+    if (!promptBuilder) {
+      return NextResponse.json({ error: `Invalid type: ${type}. Use: blog, event, faq, testimonial, service, translate` }, { status: 400 });
+    }
+
+    const userPrompt = promptBuilder(prompt, options);
+
+    const client = new Anthropic({ apiKey: ANTHROPIC_API_KEY });
+
+    const model = 'claude-sonnet-4-20250514';
+
+    // For blog posts, split into 2 calls: English first, then Arabic translation
+    if (type === 'blog') {
+      // Step 1: Generate English only (fast)
+      const enPrompt = userPrompt.replace(/Generate BOTH English and Arabic.*$/m, 'Generate ENGLISH only. No Arabic needed.')
+        .replace(/"titleAr.*?"excerptAr.*?",/g, '')
+        .replace(/"contentAr.*?",/g, '');
+
+      const enMsg = await client.messages.create({
+        model,
+        max_tokens: 2048,
+        system: SYSTEM_PROMPT,
+        messages: [
+          { role: 'user', content: `${userPrompt}\n\nIMPORTANT: Generate ENGLISH content ONLY. Set all Arabic fields to empty strings "". Keep the response short and fast.` },
+          { role: 'assistant', content: '{' },
+        ],
+      });
+
+      const enText = '{' + enMsg.content
+        .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+        .map(block => block.text).join('');
+
+      let enData;
+      try {
+        let cleaned = enText.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+        try { enData = JSON.parse(cleaned); } catch {
+          const open = (cleaned.match(/\{/g) || []).length;
+          const close = (cleaned.match(/\}/g) || []).length;
+          if (open > close) { cleaned += '"}'.repeat(open - close); }
+          enData = JSON.parse(cleaned);
+        }
+      } catch {
+        return NextResponse.json({ error: 'Failed to generate. Try again.' }, { status: 500 });
+      }
+
+      // Return English immediately — Arabic can be translated separately via the translate button
+      return NextResponse.json({
+        success: true,
+        generated: {
+          ...enData,
+          titleAr: '',
+          excerptAr: '',
+          contentAr: '',
+        },
+      });
+    }
+
+    // Blog article translations: use raw text mode to avoid JSON parsing issues with markdown
+    if (type === 'translate' && options?.contentType === 'blog article') {
+      console.log('[AI-GENERATE] Blog article translation requested, content length:', prompt.length);
+      const rawPrompt = `Translate the following English blog article to Arabic with FULL Tashkeel (الحَرَكَات).
+
+The translation should:
+- Sound natural in Arabic, not a literal word-for-word translation
+- Maintain the same warmth, meaning, and emotional impact
+- Use Modern Standard Arabic (فُصحى) with accessible vocabulary
+- Include COMPLETE Tashkeel on EVERY word
+- Adapt cultural references appropriately
+- Keep all markdown formatting (## headings, - bullet points, **bold**, etc.)
+- Use Arabic punctuation (، instead of ,)
+
+IMPORTANT: Return ONLY the Arabic translation. No JSON, no code blocks, no explanation. Just the translated text.
+
+Text to translate:
+"""
+${prompt}
+"""`;
+
+      try {
+        const message = await client.messages.create({
+          model,
+          max_tokens: 4096,
+          system: SYSTEM_PROMPT.replace('Always respond with valid JSON only. Never include markdown code blocks, backticks, or any text outside the JSON object. Start your response with { and end with }.', 'Return the translation as plain text. No JSON wrapping.'),
+          messages: [{ role: 'user', content: rawPrompt }],
+        });
+
+        console.log('[AI-GENERATE] Blog translation response received, stop_reason:', message.stop_reason, 'blocks:', message.content.length);
+
+        const translation = message.content
+          .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+          .map(block => block.text)
+          .join('');
+
+        console.log('[AI-GENERATE] Translation length:', translation.length, 'preview:', translation.substring(0, 100));
+
+        if (!translation.trim()) {
+          return NextResponse.json({ error: 'Translation returned empty. Try again.' }, { status: 500 });
+        }
+
+        return NextResponse.json({ success: true, generated: { translation } });
+      } catch (translateErr: any) {
+        console.error('[AI-GENERATE] Blog translation API error:', translateErr?.message || translateErr);
+        return NextResponse.json({ error: translateErr?.message || 'Translation API call failed' }, { status: 500 });
+      }
+    }
+
+    // For non-blog types (FAQ, event, testimonial, service, short translate) — single call with JSON
+    const maxTokens = 2048;
+    const message = await client.messages.create({
+      model,
+      max_tokens: maxTokens,
+      system: SYSTEM_PROMPT,
+      messages: [
+        { role: 'user', content: userPrompt },
+        { role: 'assistant', content: '{' },
+      ],
+    });
+
+    const responseText = '{' + message.content
+      .filter((block): block is Anthropic.TextBlock => block.type === 'text')
+      .map(block => block.text)
+      .join('');
+
+    // Parse JSON from response
+    let generated;
+    try {
+      // Strip markdown code blocks if present
+      let cleaned = responseText.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+
+      // Try direct parse first
+      try {
+        generated = JSON.parse(cleaned);
+      } catch {
+        // If response was truncated (max_tokens hit), try to fix it
+        // Add closing braces/quotes if needed
+        let fixed = cleaned;
+
+        // Count open vs close braces
+        const openBraces = (fixed.match(/\{/g) || []).length;
+        const closeBraces = (fixed.match(/\}/g) || []).length;
+
+        // If truncated mid-string, close the string and object
+        if (openBraces > closeBraces) {
+          // Check if we're inside a string value
+          const lastQuote = fixed.lastIndexOf('"');
+          const afterLastQuote = fixed.substring(lastQuote + 1).trim();
+
+          if (!afterLastQuote || afterLastQuote === '' || afterLastQuote.endsWith('\\')) {
+            // We're mid-string — close it
+            fixed += '"';
+          }
+
+          // Add missing closing braces
+          for (let i = 0; i < openBraces - closeBraces; i++) {
+            fixed += '}';
+          }
+        }
+
+        generated = JSON.parse(fixed);
+      }
+    } catch (parseErr: any) {
+      console.error('JSON parse failed:', parseErr.message);
+      console.error('Response preview:', responseText.substring(0, 300));
+      console.error('Response end:', responseText.substring(responseText.length - 200));
+      return NextResponse.json({ error: 'AI response was incomplete. Try a shorter topic or try again.', raw: responseText.substring(0, 300) }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, generated });
+  } catch (err: any) {
+    console.error('AI generation error:', err?.message || err);
+    return NextResponse.json({ error: err?.message || 'AI generation failed' }, { status: 500 });
+  }
 }
