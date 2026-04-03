@@ -60,7 +60,7 @@ ${options?.category ? `Category: ${options.category}` : ''}
 Requirements:
 - Title should be compelling, SEO-friendly, under 70 characters
 - Excerpt: 1-2 sentences that hook the reader (under 160 characters)
-- Content: 600-800 words with ## headings and - bullet points (markdown)
+- Content: 600-700 words with ## headings and - bullet points (markdown)
 - Practical, evidence-based advice
 - End with call-to-action for free consultation
 - Generate BOTH English and Arabic (full Tashkeel)
