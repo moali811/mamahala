@@ -9,6 +9,7 @@ import {
 import ImageUpload from './ImageUpload';
 import TranslateButton from './TranslateButton';
 import UndoToast, { useUndo } from './UndoToast';
+import ContentAutopilot from './ContentAutopilot';
 
 interface CMSBlogPost {
   id: string;
@@ -237,6 +238,7 @@ export default function BlogModule({ password }: Props) {
   return (
     <div className="space-y-4 max-w-5xl">
       <UndoToast action={undoAction} onClear={clearUndo} />
+      <ContentAutopilot password={password} onArticleGenerated={fetchPosts} />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
