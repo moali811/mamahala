@@ -13,7 +13,7 @@ export const strongerTogetherProgram: AcademyProgram = {
   color: '#D4836A',
   icon: 'Heart',
   isFree: false,
-  priceCAD: 15,
+  priceCAD: 9,
   totalModules: 12,
   totalDurationHours: 12,
   levels: [

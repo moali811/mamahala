@@ -33,7 +33,7 @@ export const BUSINESS = {
   } as Record<string, string>,
 
   // Per-module price
-  academyModulePrice: 15,
+  academyModulePrice: 9,
 
   // Social
   social: {

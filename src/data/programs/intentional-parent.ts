@@ -13,7 +13,7 @@ export const intentionalParentProgram: AcademyProgram = {
   color: '#7A3B5E',
   icon: 'Heart',
   isFree: false,
-  priceCAD: 15,
+  priceCAD: 9,
   totalModules: 15,
   totalDurationHours: 12,
   certificate: {
