@@ -308,6 +308,67 @@ export default function FrameworkVisualizer({
     );
   };
 
+  const renderSpectrum = () => {
+    const count = diagram.nodes.length;
+    const svgW = 380;
+    const svgH = 140;
+    const paddingX = 40;
+    const cy = 45;
+    const spacing = (svgW - paddingX * 2) / Math.max(count - 1, 1);
+
+    return (
+      <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full max-w-[380px] mx-auto">
+        {/* Connection line (gradient) */}
+        <defs>
+          <linearGradient id="spectrumGrad">
+            {diagram.nodes.map((node, i) => (
+              <stop key={i} offset={`${(i / Math.max(count - 1, 1)) * 100}%`} stopColor={node.color || color} stopOpacity={0.6} />
+            ))}
+          </linearGradient>
+        </defs>
+        <motion.line
+          x1={paddingX} y1={cy} x2={svgW - paddingX} y2={cy}
+          stroke="url(#spectrumGrad)" strokeWidth={3} strokeLinecap="round"
+          variants={drawLine} initial="hidden" animate={isInView ? 'visible' : 'hidden'}
+        />
+
+        {/* Nodes */}
+        {diagram.nodes.map((node, i) => {
+          const x = paddingX + i * spacing;
+          const isSelected = selectedNode === node.id;
+          const nodeColor = node.color || color;
+          const label = t(node.labelEn, node.labelAr, isRTL);
+
+          return (
+            <g key={node.id}>
+              <motion.circle
+                cx={x} cy={cy} r={isSelected ? 18 : 14}
+                fill={`${nodeColor}15`}
+                stroke={nodeColor}
+                strokeWidth={isSelected ? 3 : 2}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={isInView ? { scale: 1, opacity: 1 } : {}}
+                transition={{ duration: 0.4, delay: 0.3 + i * 0.1, ease }}
+                style={{ cursor: interactive ? 'pointer' : 'default' }}
+                onClick={() => interactive && setSelectedNode(isSelected ? null : node.id)}
+              />
+              {/* Label below circle */}
+              <text
+                x={x} y={cy + 30}
+                textAnchor="middle"
+                dominantBaseline="hanging"
+                className="text-[9px] font-medium pointer-events-none"
+                fill={nodeColor}
+              >
+                {label}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
+
   const renderDefault = () => {
     // Generic node-based layout using position percentages
     return (
@@ -360,7 +421,7 @@ export default function FrameworkVisualizer({
     quadrant: renderQuadrant,
     iceberg: renderIceberg,
     cycle: renderWheel,
-    spectrum: renderDefault,
+    spectrum: renderSpectrum,
     flowchart: renderDefault,
   };
 
