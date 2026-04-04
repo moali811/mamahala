@@ -304,7 +304,7 @@ export default function ProgramsPage() {
                           <div className="flex items-center gap-3 text-xs text-[#8E8E9F]">
                             <span>{prog.modules} {isRTL ? 'وحدة' : 'modules'}</span>
                             <span>{prog.hours}h</span>
-                            <span>{prog.free ? (isRTL ? 'مجاني' : 'Free') : `CAD $${prog.price}`}</span>
+                            <span>{prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `$${prog.price}/وحدة` : `$${prog.price}/module`)}</span>
                           </div>
                         </div>
                         <ArrowRight className="w-5 h-5 text-[#8E8E9F] flex-shrink-0 mt-2" />
@@ -381,7 +381,7 @@ export default function ProgramsPage() {
                       <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {prog.hours}h</span>
                       <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1"><Award className="w-3.5 h-3.5" /> {isRTL ? 'شهادة' : 'Certificate'}</span>
                       <span className="ml-auto text-sm font-bold" style={{ color: prog.color }}>
-                        {prog.free ? (isRTL ? 'مجاني' : 'Free') : `$${prog.price}`}
+                        {prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `$${prog.price}/وحدة` : `$${prog.price}/module`)}
                       </span>
                     </div>
                   </div>
@@ -444,7 +444,7 @@ export default function ProgramsPage() {
                         <td className="py-3 px-3 text-center text-[#4A4A5C]">{prog.hours}h</td>
                         <td className="py-3 px-3 text-center">
                           <span className="font-semibold" style={{ color: prog.color }}>
-                            {prog.free ? (isRTL ? 'مجاني' : 'Free') : `$${prog.price}`}
+                            {prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `$${prog.price}/وحدة` : `$${prog.price}/module`)}
                           </span>
                         </td>
                         <td className="py-3 px-3 text-center">

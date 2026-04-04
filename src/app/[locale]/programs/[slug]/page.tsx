@@ -18,6 +18,8 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
+import CalEmbedModal from '@/components/events/CalEmbedModal';
+import { BUSINESS } from '@/config/business';
 import { t, tArray } from '@/lib/academy-helpers';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import SkillMeter from '@/components/academy/visual/SkillMeter';
@@ -63,60 +65,71 @@ export default function ProgramOverviewPage() {
   const [enrollName, setEnrollName] = useState('');
   const [enrolling, setEnrolling] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
-  const [hasPaidAccess, setHasPaidAccess] = useState(false);
-  const [upgrading, setUpgrading] = useState(false);
+  const [unlockedModules, setUnlockedModules] = useState<Set<string>>(new Set());
+  const [showCalModal, setShowCalModal] = useState(false);
+  const [unlockingModuleSlug, setUnlockingModuleSlug] = useState<string | null>(null);
 
   useEffect(() => {
     loadProgram(slug).then(p => { setProgram(p); setLoading(false); });
   }, [slug]);
 
-  // Check paid access
+  // Load per-module unlock state from localStorage
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const paid = localStorage.getItem(`academy:paid:${slug}`);
-      if (paid === 'true') setHasPaidAccess(true);
+    if (typeof window !== 'undefined' && program) {
+      const unlocked = new Set<string>();
+      const allMods = program.levels.flatMap(l => l.modules);
+      allMods.forEach(mod => {
+        if (localStorage.getItem(`academy:paid:${slug}:${mod.slug}`) === 'true') {
+          unlocked.add(mod.slug);
+        }
+      });
+      setUnlockedModules(unlocked);
+    }
+  }, [slug, program]);
 
-      // Also check server-side
-      const email = localStorage.getItem('academy_email');
-      if (email) {
-        fetch(`/api/academy/access?email=${encodeURIComponent(email)}&programSlug=${slug}`)
-          .then(r => r.json())
-          .then(data => {
-            if (data.hasPaidAccess) {
-              setHasPaidAccess(true);
-              localStorage.setItem(`academy:paid:${slug}`, 'true');
-            }
-          })
-          .catch(() => {});
-      }
-
-      // Handle payment success redirect
+  // Auto-open Cal.com if redirected with ?unlock=moduleSlug
+  useEffect(() => {
+    if (typeof window !== 'undefined' && enrolled) {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('payment') === 'success') {
-        setHasPaidAccess(true);
-        localStorage.setItem(`academy:paid:${slug}`, 'true');
-        // Clean URL
+      const unlockSlug = params.get('unlock');
+      if (unlockSlug) {
+        setUnlockingModuleSlug(unlockSlug);
+        setShowCalModal(true);
         window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
       }
     }
-  }, [slug, locale]);
+  }, [enrolled, slug, locale]);
 
-  const handleUpgrade = async () => {
-    const email = localStorage.getItem('academy_email');
-    if (!email) return;
-    setUpgrading(true);
-    try {
-      const res = await fetch('/api/academy/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, programSlug: slug, locale }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
+  const handleUnlockModule = (moduleSlug: string) => {
+    setUnlockingModuleSlug(moduleSlug);
+    setShowCalModal(true);
+  };
+
+  const handleCalModalClose = () => {
+    setShowCalModal(false);
+    // After closing Cal modal, show confirmation
+    if (unlockingModuleSlug) {
+      const confirmed = window.confirm(
+        isRTL
+          ? 'هل أتممت الدفع بنجاح؟ اضغط موافق لفتح الوحدة.'
+          : 'Did you complete the payment? Click OK to unlock the module.'
+      );
+      if (confirmed) {
+        localStorage.setItem(`academy:paid:${slug}:${unlockingModuleSlug}`, 'true');
+        setUnlockedModules(prev => new Set([...prev, unlockingModuleSlug]));
+
+        // Also save to server
+        const email = localStorage.getItem('academy_email');
+        if (email) {
+          fetch('/api/academy/progress', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, programSlug: slug, moduleSlug: unlockingModuleSlug, action: 'unlock' }),
+          }).catch(() => {});
+        }
       }
-    } catch { /* ignore */ }
-    setUpgrading(false);
+      setUnlockingModuleSlug(null);
+    }
   };
 
   const handleEnroll = async (e: React.FormEvent): Promise<void> => {
@@ -384,7 +397,7 @@ export default function ProgramOverviewPage() {
                               {level.modules.map((mod) => {
                                 moduleNumber++;
                                 const modTitle = t(mod.titleEn, mod.titleAr, isRTL);
-                                const canAccess = enrolled && (level.isFree || program.isFree || hasPaidAccess);
+                                const canAccess = enrolled && (level.isFree || program.isFree || unlockedModules.has(mod.slug));
                                 const hasInteractive = !!(mod.scenarios?.length || mod.dragMatchExercises?.length || mod.likertReflections?.length);
 
                                 return (
@@ -421,34 +434,36 @@ export default function ProgramOverviewPage() {
                                         </div>
                                         <span className="text-sm text-[#4A4A5C] flex-1">{modTitle}</span>
                                         <span className="text-xs text-[#8E8E9F]">{mod.durationMinutes} min</span>
-                                        <Lock className="w-3.5 h-3.5 text-[#B0B0C0]" />
+                                        {/* Show unlock button for the NEXT module in sequence, lock icon for others */}
+                                        {enrolled && !level.isFree && !program.isFree ? (
+                                          (() => {
+                                            // Check if this is the next unlockable module (all previous are completed or unlocked)
+                                            const allMods = program.levels.flatMap(l => l.modules);
+                                            const currentIdx = allMods.indexOf(mod);
+                                            const prevMod = currentIdx > 0 ? allMods[currentIdx - 1] : null;
+                                            const prevCompleted = !prevMod || localStorage.getItem(`academy:quiz-passed:${slug}:${prevMod.slug}`) === 'true';
+                                            const isNextUnlockable = prevCompleted && !unlockedModules.has(mod.slug);
+
+                                            return isNextUnlockable ? (
+                                              <button
+                                                onClick={() => handleUnlockModule(mod.slug)}
+                                                className="px-3 py-1.5 rounded-lg text-[10px] font-semibold text-white transition-all hover:shadow-sm flex items-center gap-1"
+                                                style={{ backgroundColor: program.color }}
+                                              >
+                                                ${BUSINESS.academyModulePrice}
+                                              </button>
+                                            ) : (
+                                              <Lock className="w-3.5 h-3.5 text-[#B0B0C0]" />
+                                            );
+                                          })()
+                                        ) : (
+                                          <Lock className="w-3.5 h-3.5 text-[#B0B0C0]" />
+                                        )}
                                       </div>
                                     )}
                                   </div>
                                 );
                               })}
-                              {/* Upgrade CTA for paid locked levels */}
-                              {enrolled && !level.isFree && !program.isFree && !hasPaidAccess && (
-                                <div className="mx-3 mb-4 mt-2 p-4 rounded-xl text-center" style={{ backgroundColor: `${program.color}06`, border: `1px dashed ${program.color}30` }}>
-                                  <p className="text-sm font-medium text-[#2D2A33] mb-2">
-                                    {isRTL ? 'افتح هذا المستوى' : 'Unlock This Level'}
-                                  </p>
-                                  <p className="text-xs text-[#6B6580] mb-3">
-                                    {isRTL
-                                      ? `احصل على الوصول الكامل لجميع المستويات مقابل ${program.priceCAD} دولار كندي`
-                                      : `Get full access to all levels for CAD $${program.priceCAD}`}
-                                  </p>
-                                  <button
-                                    onClick={handleUpgrade}
-                                    disabled={upgrading}
-                                    className="px-6 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-md disabled:opacity-60 inline-flex items-center gap-2"
-                                    style={{ backgroundColor: program.color }}
-                                  >
-                                    {upgrading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
-                                    {isRTL ? `افتح الآن — $${program.priceCAD}` : `Unlock Now — $${program.priceCAD}`}
-                                  </button>
-                                </div>
-                              )}
                             </div>
                           </motion.div>
                         )}
@@ -529,7 +544,7 @@ export default function ProgramOverviewPage() {
                   </form>
                   {!program.isFree && (
                     <p className="text-xs text-[#8E8E9F] text-center mt-3">
-                      {isRTL ? `المستوى الأول مجاني · المستويات المتقدمة ${program.priceCAD} دولار كندي` : `Level 1 is free · Advanced levels CAD $${program.priceCAD}`}
+                      {isRTL ? `المستوى الأول مجاني · الوحدات المتقدمة $${BUSINESS.academyModulePrice} لكل وحدة` : `Level 1 is free · Advanced modules $${BUSINESS.academyModulePrice} each`}
                     </p>
                   )}
                 </>
@@ -545,6 +560,19 @@ export default function ProgramOverviewPage() {
         headingEn={<>Ready to <span className="text-[#7A3B5E] italic">Transform?</span></>}
         headingAr={<>مستعد <span className="text-[#7A3B5E] italic">للتحول؟</span></>}
       />
+
+      {/* Cal.com Payment Modal */}
+      {BUSINESS.academyCalSlugs[slug] && (
+        <CalEmbedModal
+          calSlug={BUSINESS.academyCalSlugs[slug]}
+          isOpen={showCalModal}
+          onClose={handleCalModalClose}
+          eventTitle={isRTL ? `فتح الوحدة التالية — ${program.titleAr}` : `Unlock Next Module — ${program.titleEn}`}
+          locale={locale}
+          prefillEmail={typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : ''}
+          prefillNotes={`Program: ${program.titleEn} | Module: ${unlockingModuleSlug || ''}`}
+        />
+      )}
     </div>
   );
 }

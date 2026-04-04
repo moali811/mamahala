@@ -13,7 +13,7 @@ export const innerCompassProgram: AcademyProgram = {
   color: '#C8A97D',
   icon: 'Compass',
   isFree: false,
-  priceCAD: 99,
+  priceCAD: 15,
   totalModules: 12,
   totalDurationHours: 12,
   levels: [

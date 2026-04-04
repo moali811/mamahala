@@ -13,7 +13,7 @@ export const resilientTeensProgram: AcademyProgram = {
   color: '#C4878A',
   icon: 'Shield',
   isFree: false,
-  priceCAD: 129,
+  priceCAD: 15,
   totalModules: 12,
   totalDurationHours: 10,
   researchFoundation: {

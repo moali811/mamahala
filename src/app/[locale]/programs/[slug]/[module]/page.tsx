@@ -87,19 +87,18 @@ export default function ModuleLessonPage() {
 
           // Check if user has access to this module's level
           const isEnrolled = localStorage.getItem(`academy_enrolled_${programSlug}`);
-          const hasPaid = localStorage.getItem(`academy:paid:${programSlug}`);
           const moduleLevel = p.levels.find(l => l.modules.some(m => m.slug === moduleSlug));
           const levelIsFree = moduleLevel?.isFree || p.isFree;
+          const moduleUnlocked = localStorage.getItem(`academy:paid:${programSlug}:${moduleSlug}`) === 'true';
 
           if (!isEnrolled) {
-            // Not enrolled at all — redirect to program page
             router.replace(`/${locale}/programs/${programSlug}`);
             return;
           }
 
-          if (!levelIsFree && !hasPaid) {
-            // Paid level, user hasn't paid — redirect to program page with upgrade message
-            router.replace(`/${locale}/programs/${programSlug}?upgrade=true`);
+          if (!levelIsFree && !moduleUnlocked) {
+            // This module requires payment — redirect to program page to pay
+            router.replace(`/${locale}/programs/${programSlug}?unlock=${moduleSlug}`);
             return;
           }
         }
@@ -177,7 +176,18 @@ export default function ModuleLessonPage() {
     setShowCelebration(true);
     setTimeout(() => {
       if (moduleIndex < allModules.length - 1) {
-        router.push(`/${locale}/programs/${programSlug}/${allModules[moduleIndex + 1].slug}`);
+        const nextMod = allModules[moduleIndex + 1];
+        // Check if next module is in a paid level and not yet unlocked
+        const nextLevel = program?.levels.find(l => l.modules.some(m => m.slug === nextMod.slug));
+        const nextIsFree = nextLevel?.isFree || program?.isFree;
+        const nextIsUnlocked = localStorage.getItem(`academy:paid:${programSlug}:${nextMod.slug}`) === 'true';
+
+        if (nextIsFree || nextIsUnlocked) {
+          router.push(`/${locale}/programs/${programSlug}/${nextMod.slug}`);
+        } else {
+          // Next module is paid and locked — go to program page to pay
+          router.push(`/${locale}/programs/${programSlug}?unlock=${nextMod.slug}`);
+        }
       } else {
         router.push(`/${locale}/programs/${programSlug}`);
       }

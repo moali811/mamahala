@@ -24,6 +24,17 @@ export const BUSINESS = {
   calUsername: 'mamahala',
   calBaseUrl: 'https://cal.com/mamahala',
 
+  // Academy Cal.com event slugs (per-module payment via Cal.com)
+  academyCalSlugs: {
+    'intentional-parent': 'academy-intentional-parent',
+    'resilient-teens': 'academy-resilient-teens',
+    'stronger-together': 'academy-stronger-together',
+    'inner-compass': 'academy-inner-compass',
+  } as Record<string, string>,
+
+  // Per-module price
+  academyModulePrice: 15,
+
   // Social
   social: {
     instagram: 'https://www.instagram.com/mamahala.ca/',
