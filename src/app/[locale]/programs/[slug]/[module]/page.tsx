@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react'
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
-  BookOpen, CheckCircle, ArrowRight, ArrowLeft, Loader2,
+  BookOpen, CheckCircle, ArrowRight, ArrowLeft, Loader2, Lock,
   GraduationCap, Lightbulb, PenLine, Activity, HelpCircle,
   Award, Sparkles, MessageCircle, Zap, ChevronDown,
 } from 'lucide-react';
@@ -63,6 +63,9 @@ export default function ModuleLessonPage() {
   // Reflection state
   const [reflection, setReflection] = useState('');
 
+  // Quiz gating — must pass quiz to complete module
+  const [quizPassed, setQuizPassed] = useState(false);
+
   // Section tracking
   const [activeSection, setActiveSection] = useState('lesson');
   const [completedSections, setCompletedSections] = useState<string[]>([]);
@@ -81,10 +84,34 @@ export default function ModuleLessonPage() {
         if (idx >= 0) {
           setCurrentModule(mods[idx]);
           setModuleIndex(idx);
+
+          // Check if user has access to this module's level
+          const isEnrolled = localStorage.getItem(`academy_enrolled_${programSlug}`);
+          const hasPaid = localStorage.getItem(`academy:paid:${programSlug}`);
+          const moduleLevel = p.levels.find(l => l.modules.some(m => m.slug === moduleSlug));
+          const levelIsFree = moduleLevel?.isFree || p.isFree;
+
+          if (!isEnrolled) {
+            // Not enrolled at all — redirect to program page
+            router.replace(`/${locale}/programs/${programSlug}`);
+            return;
+          }
+
+          if (!levelIsFree && !hasPaid) {
+            // Paid level, user hasn't paid — redirect to program page with upgrade message
+            router.replace(`/${locale}/programs/${programSlug}?upgrade=true`);
+            return;
+          }
         }
       }
       setLoading(false);
     });
+  }, [programSlug, moduleSlug, locale, router]);
+
+  // Check if quiz was previously passed
+  useEffect(() => {
+    const passed = localStorage.getItem(`academy:quiz-passed:${programSlug}:${moduleSlug}`);
+    if (passed === 'true') setQuizPassed(true);
   }, [programSlug, moduleSlug]);
 
   // Load saved reflection
@@ -437,7 +464,11 @@ export default function ModuleLessonPage() {
             color={program.color}
             programSlug={programSlug}
             moduleSlug={moduleSlug}
-            onPass={() => markSectionComplete('quiz')}
+            onPass={() => {
+              markSectionComplete('quiz');
+              setQuizPassed(true);
+              localStorage.setItem(`academy:quiz-passed:${programSlug}:${moduleSlug}`, 'true');
+            }}
           />
         </div>
 
@@ -508,17 +539,28 @@ export default function ModuleLessonPage() {
               </a>
             ) : <div />}
 
-            <button
-              onClick={handleComplete}
-              className="px-8 py-3 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-md flex items-center gap-2"
-              style={{ backgroundColor: program.color }}
-            >
-              {nextModule ? (
-                <>{isRTL ? 'أكمل وانتقل للتالي' : 'Complete & Continue'} <ArrowRight className="w-4 h-4" /></>
-              ) : (
-                <>{isRTL ? 'أكمل البرنامج' : 'Complete Program'} <GraduationCap className="w-4 h-4" /></>
+            <div className="flex flex-col items-end gap-2">
+              <button
+                onClick={handleComplete}
+                disabled={!quizPassed}
+                className={`px-8 py-3 rounded-xl text-white text-sm font-semibold transition-all flex items-center gap-2 ${
+                  quizPassed ? 'hover:shadow-md' : 'opacity-50 cursor-not-allowed'
+                }`}
+                style={{ backgroundColor: program.color }}
+              >
+                {!quizPassed && <Lock className="w-4 h-4" />}
+                {nextModule ? (
+                  <>{isRTL ? 'أكمل وانتقل للتالي' : 'Complete & Continue'} {quizPassed && <ArrowRight className="w-4 h-4" />}</>
+                ) : (
+                  <>{isRTL ? 'أكمل البرنامج' : 'Complete Program'} {quizPassed && <GraduationCap className="w-4 h-4" />}</>
+                )}
+              </button>
+              {!quizPassed && (
+                <p className="text-[10px] text-[#8E8E9F]">
+                  {isRTL ? 'اجتز اختبار الوحدة للمتابعة' : 'Pass the module quiz to continue'}
+                </p>
               )}
-            </button>
+            </div>
           </div>
         </div>
       </main>

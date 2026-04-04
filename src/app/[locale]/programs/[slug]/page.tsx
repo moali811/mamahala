@@ -63,10 +63,61 @@ export default function ProgramOverviewPage() {
   const [enrollName, setEnrollName] = useState('');
   const [enrolling, setEnrolling] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
+  const [hasPaidAccess, setHasPaidAccess] = useState(false);
+  const [upgrading, setUpgrading] = useState(false);
 
   useEffect(() => {
     loadProgram(slug).then(p => { setProgram(p); setLoading(false); });
   }, [slug]);
+
+  // Check paid access
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const paid = localStorage.getItem(`academy:paid:${slug}`);
+      if (paid === 'true') setHasPaidAccess(true);
+
+      // Also check server-side
+      const email = localStorage.getItem('academy_email');
+      if (email) {
+        fetch(`/api/academy/access?email=${encodeURIComponent(email)}&programSlug=${slug}`)
+          .then(r => r.json())
+          .then(data => {
+            if (data.hasPaidAccess) {
+              setHasPaidAccess(true);
+              localStorage.setItem(`academy:paid:${slug}`, 'true');
+            }
+          })
+          .catch(() => {});
+      }
+
+      // Handle payment success redirect
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('payment') === 'success') {
+        setHasPaidAccess(true);
+        localStorage.setItem(`academy:paid:${slug}`, 'true');
+        // Clean URL
+        window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
+      }
+    }
+  }, [slug, locale]);
+
+  const handleUpgrade = async () => {
+    const email = localStorage.getItem('academy_email');
+    if (!email) return;
+    setUpgrading(true);
+    try {
+      const res = await fetch('/api/academy/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, programSlug: slug, locale }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch { /* ignore */ }
+    setUpgrading(false);
+  };
 
   const handleEnroll = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -333,7 +384,7 @@ export default function ProgramOverviewPage() {
                               {level.modules.map((mod) => {
                                 moduleNumber++;
                                 const modTitle = t(mod.titleEn, mod.titleAr, isRTL);
-                                const canAccess = enrolled && (level.isFree || program.isFree);
+                                const canAccess = enrolled && (level.isFree || program.isFree || hasPaidAccess);
                                 const hasInteractive = !!(mod.scenarios?.length || mod.dragMatchExercises?.length || mod.likertReflections?.length);
 
                                 return (
@@ -370,12 +421,34 @@ export default function ProgramOverviewPage() {
                                         </div>
                                         <span className="text-sm text-[#4A4A5C] flex-1">{modTitle}</span>
                                         <span className="text-xs text-[#8E8E9F]">{mod.durationMinutes} min</span>
-                                        {!enrolled && <Lock className="w-3.5 h-3.5 text-[#B0B0C0]" />}
+                                        <Lock className="w-3.5 h-3.5 text-[#B0B0C0]" />
                                       </div>
                                     )}
                                   </div>
                                 );
                               })}
+                              {/* Upgrade CTA for paid locked levels */}
+                              {enrolled && !level.isFree && !program.isFree && !hasPaidAccess && (
+                                <div className="mx-3 mb-4 mt-2 p-4 rounded-xl text-center" style={{ backgroundColor: `${program.color}06`, border: `1px dashed ${program.color}30` }}>
+                                  <p className="text-sm font-medium text-[#2D2A33] mb-2">
+                                    {isRTL ? 'افتح هذا المستوى' : 'Unlock This Level'}
+                                  </p>
+                                  <p className="text-xs text-[#6B6580] mb-3">
+                                    {isRTL
+                                      ? `احصل على الوصول الكامل لجميع المستويات مقابل ${program.priceCAD} دولار كندي`
+                                      : `Get full access to all levels for CAD $${program.priceCAD}`}
+                                  </p>
+                                  <button
+                                    onClick={handleUpgrade}
+                                    disabled={upgrading}
+                                    className="px-6 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-md disabled:opacity-60 inline-flex items-center gap-2"
+                                    style={{ backgroundColor: program.color }}
+                                  >
+                                    {upgrading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
+                                    {isRTL ? `افتح الآن — $${program.priceCAD}` : `Unlock Now — $${program.priceCAD}`}
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           </motion.div>
                         )}
