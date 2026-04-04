@@ -1,30 +1,25 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { InboxIcon } from 'lucide-react';
+import { Activity, CalendarCheck, Sparkles, History } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
-import type { EventType } from '@/types';
+import { categorizeEvents } from '@/lib/event-lifecycle';
+import { getSeasonalTheme } from '@/lib/seasonal-themes';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
-
-import FeaturedEvent from '@/components/events/FeaturedEvent';
+import PulseCarousel from '@/components/events/PulseCarousel';
 import EventCard from '@/components/events/EventCard';
-import EventFilters from '@/components/events/EventFilters';
 import PastEventCard from '@/components/events/PastEventCard';
-import EventDetailExpansion from '@/components/events/EventDetailExpansion';
+import EventUrgencyBadge from '@/components/events/EventUrgencyBadge';
 import EventReminderSignup from '@/components/events/EventReminderSignup';
-
-import {
-  getUpcomingEvents,
-  getPastEvents,
-  getFeaturedEvent,
-  getEventsByType,
-  getAvailableEventTypes,
-} from '@/data/events';
+import EventFilters, { type Filters } from '@/components/events/EventFilters';
+import ForYouSection from '@/components/events/ForYouSection';
+import { useVisitorProfile } from '@/hooks/useVisitorProfile';
+import type { SmartEvent } from '@/types';
 
 export default function EventsPage() {
   const params = useParams();
@@ -32,24 +27,65 @@ export default function EventsPage() {
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
 
-  const [activeFilter, setActiveFilter] = useState<string>('all');
-  const [expandedEvent, setExpandedEvent] = useState<string | null>(null);
+  const seasonal = getSeasonalTheme();
+  const profile = useVisitorProfile();
+  const [allEvents, setAllEvents] = useState<SmartEvent[]>([]);
+  const [pulseCounts, setPulseCounts] = useState<Record<string, number>>({});
+  const [expandedSlug, setExpandedSlug] = useState<string | null>(null);
+  const [filters, setFilters] = useState<Filters>({ audience: 'all', format: 'all', price: 'all' });
+  const [loading, setLoading] = useState(true);
 
-  // Data
-  const featured = getFeaturedEvent();
-  const allUpcoming = getUpcomingEvents();
-  const pastEvents = getPastEvents();
-  const availableTypes = getAvailableEventTypes();
+  // Fetch events with KV overrides applied
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/events/data').then((r) => r.json()).catch(() => ({ events: [] })),
+    ]).then(([eventData]) => {
+      const events: SmartEvent[] = eventData.events || [];
+      setAllEvents(events);
 
-  // Filter upcoming (exclude featured from the list)
-  const filteredUpcoming =
-    activeFilter === 'all'
-      ? allUpcoming.filter((e) => e.slug !== featured?.slug)
-      : getEventsByType(activeFilter as EventType).filter(
-          (e) => e.slug !== featured?.slug,
-        );
+      // Fetch pulse counts
+      const slugs = events.map((e) => e.slug).join(',');
+      if (slugs) {
+        fetch(`/api/events/pulse?slugs=${slugs}`)
+          .then((r) => r.json())
+          .then((d) => { if (d.counts) setPulseCounts(d.counts); })
+          .catch(() => {});
+      }
+      setLoading(false);
+    });
+  }, []);
 
-  const upcomingCount = allUpcoming.length;
+  const handleResonate = useCallback(async (slug: string) => {
+    setPulseCounts((prev) => ({ ...prev, [slug]: (prev[slug] || 0) + 1 }));
+    try {
+      await fetch('/api/events/pulse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, action: 'resonate' }),
+      });
+    } catch { /* silent — optimistic update already applied */ }
+  }, []);
+
+  // Categorize events by lifecycle
+  const { upcoming, pulse, past } = categorizeEvents(allEvents, pulseCounts);
+
+  // Apply filters to pulse + upcoming sections
+  const filterEvent = (event: SmartEvent) => {
+    if (filters.audience !== 'all' && !event.audiences?.includes(filters.audience)) return false;
+    if (filters.format !== 'all' && event.locationType !== filters.format) return false;
+    if (filters.price === 'free' && !event.isFree) return false;
+    if (filters.price === 'paid' && event.isFree) return false;
+    return true;
+  };
+
+  const filteredUpcoming = upcoming.filter(filterEvent);
+  const filteredPulse = pulse.filter(filterEvent);
+  const hasActiveFilters = filters.audience !== 'all' || filters.format !== 'all' || filters.price !== 'all';
+
+  const hasUpcoming = filteredUpcoming.length > 0;
+  const hasPulse = filteredPulse.length > 0;
+  const hasPast = past.length > 0;
+  const totalTopics = upcoming.length + pulse.length;
 
   return (
     <div className="overflow-hidden">
@@ -78,23 +114,47 @@ export default function EventsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
+            <div className="flex items-center gap-2 mb-5">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C4878A] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#7A3B5E]" />
+              </span>
+              <span className="text-sm font-semibold tracking-[0.1em] uppercase text-[#7A3B5E]">
+                {isRTL ? 'الفعاليّاتُ والمجتمع' : 'Events & Community'}
+              </span>
+            </div>
+
             <h1
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {isRTL ? 'الفعاليات' : 'Events'}
+              {isRTL
+                ? <>تجارِبُ تنمو من{' '}<span className="text-[#7A3B5E] italic">احتياجاتِكم</span></>
+                : <>Experiences Shaped by{' '}<span className="text-[#7A3B5E] italic">Your Needs</span></>}
             </h1>
             <p className="mt-5 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed">
-              {isRTL
-                ? 'ورش عمل وندوات وفعاليات مجتمعية لدعم رحلتك نحو النمو'
-                : 'Workshops, webinars, and community events to support your growth journey'}
+              {isRTL ? seasonal.subtitleAr : seasonal.subtitleEn}
             </p>
-            {upcomingCount > 0 && (
-              <p className="mt-3 text-sm text-[#C8A97D] font-medium">
-                {isRTL
-                  ? `${new Intl.NumberFormat('ar-SA').format(upcomingCount)} فعاليات قادمة`
-                  : `${upcomingCount} upcoming event${upcomingCount > 1 ? 's' : ''}`}
-              </p>
+
+            {!loading && (
+              <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-[#8E8E9F]">
+                {hasUpcoming && (
+                  <span className="inline-flex items-center gap-1.5">
+                    <CalendarCheck className="w-4 h-4 text-[#3B8A6E]" />
+                    {isRTL
+                      ? `${upcoming.length} ${upcoming.length <= 2 ? 'فعاليّة قادمة' : upcoming.length <= 10 ? 'فعاليّاتٍ قادمة' : 'فعاليّةً قادمة'}`
+                      : `${upcoming.length} upcoming event${upcoming.length !== 1 ? 's' : ''}`}
+                  </span>
+                )}
+                {hasPulse && (
+                  <span className="inline-flex items-center gap-1.5">
+                    <Activity className="w-4 h-4 text-[#C8A97D]" />
+                    {isRTL
+                      ? `${pulse.length} ${pulse.length <= 2 ? 'فكرة تنتظرُ' : pulse.length <= 10 ? 'أفكارٍ تنتظرُ' : 'فكرةً تنتظرُ'} صوتَك`
+                      : `${pulse.length} idea${pulse.length !== 1 ? 's' : ''} awaiting your voice`}
+                  </span>
+                )}
+              </div>
             )}
           </motion.div>
         </div>
@@ -102,94 +162,170 @@ export default function EventsPage() {
       </section>
 
       {/* ================================================================ */}
-      {/*  FEATURED EVENT                                                  */}
+      {/*  FOR YOU — Personalized recommendations (only with profile)     */}
       {/* ================================================================ */}
-      {featured && (
-        <section className="py-12 lg:py-16 bg-[#FAF7F2]">
+      {!loading && profile.hasProfile && (
+        <ForYouSection
+          events={[...upcoming, ...pulse]}
+          pulseCounts={pulseCounts}
+          profile={profile}
+          locale={locale}
+        />
+      )}
+
+      {/* ================================================================ */}
+      {/*  FILTERS — audience, format, price                              */}
+      {/* ================================================================ */}
+      {!loading && totalTopics > 3 && (
+        <section className={`pt-8 pb-2 ${profile.hasProfile ? 'bg-[#FAF7F2]' : 'bg-[#FAF7F2]'}`}>
           <div className="container-main">
-            <FeaturedEvent event={featured} locale={locale} />
+            <EventFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              locale={locale}
+            />
           </div>
         </section>
       )}
 
       {/* ================================================================ */}
-      {/*  UPCOMING EVENTS                                                 */}
+      {/*  SECTION 1: COMING UP — Scheduled events with dates              */}
       {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
-        <div className="container-main">
-          {/* Section header + Filters */}
-          <ScrollReveal className="mb-10">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
-              <div>
-                <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
-                  {isRTL ? 'قادمة' : 'Upcoming'}
+      {hasUpcoming && (
+        <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+          <div className="container-main">
+            <ScrollReveal className="mb-10">
+              <div className="flex items-center gap-3 mb-2">
+                <CalendarCheck className="w-5 h-5 text-[#3B8A6E]" />
+                <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#3B8A6E]">
+                  {isRTL ? 'قادمة' : 'Coming Up'}
                 </span>
-                <h2
-                  className="text-3xl sm:text-4xl text-[#2D2A33] leading-tight"
-                  style={{ fontFamily: 'var(--font-heading)' }}
-                >
-                  {isRTL ? 'الفعاليات القادمة' : 'More Events'}
-                </h2>
               </div>
-            </div>
+              <h2
+                className="text-3xl sm:text-4xl text-[#2D2A33] leading-tight"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {isRTL ? 'فعاليّاتٌ مفتوحةُ التّسجيل' : 'Events Open for Registration'}
+              </h2>
+              <p className="mt-3 text-sm text-[#6B6580] max-w-xl">
+                {isRTL
+                  ? 'سجّلْ الآنَ لتضمنَ مكانَك — الأماكنُ محدودة.'
+                  : 'Register now to secure your spot — spaces are limited.'}
+              </p>
+            </ScrollReveal>
 
-            {availableTypes.length > 1 && (
-              <EventFilters
-                activeFilter={activeFilter}
-                onFilterChange={setActiveFilter}
-                availableTypes={availableTypes}
-                locale={locale}
-              />
-            )}
-          </ScrollReveal>
-
-          {/* Event Cards */}
-          {filteredUpcoming.length > 0 ? (
             <StaggerReveal className="space-y-6">
               {filteredUpcoming.map((event) => (
                 <StaggerChild key={event.slug}>
-                  <div className="bg-white rounded-2xl overflow-hidden border border-[#F3EFE8]">
+                  <div className="relative rounded-2xl border border-[#F3EFE8] overflow-hidden bg-white">
+                    {/* Urgency badge */}
+                    {event.lifecycle.badgeLabelEn && event.lifecycle.urgency !== 'none' && (
+                      <div className={`absolute top-4 ${isRTL ? 'left-4' : 'right-4'} z-10`}>
+                        <EventUrgencyBadge lifecycle={event.lifecycle} locale={locale} />
+                      </div>
+                    )}
                     <EventCard
                       event={event}
                       locale={locale}
-                      isExpanded={expandedEvent === event.slug}
+                      isExpanded={expandedSlug === event.slug}
                       onToggleExpand={() =>
-                        setExpandedEvent(
-                          expandedEvent === event.slug ? null : event.slug,
-                        )
+                        setExpandedSlug(expandedSlug === event.slug ? null : event.slug)
                       }
-                    />
-                    <EventDetailExpansion
-                      event={event}
-                      locale={locale}
-                      isOpen={expandedEvent === event.slug}
                     />
                   </div>
                 </StaggerChild>
               ))}
             </StaggerReveal>
-          ) : (
-            <ScrollReveal>
-              <div className="text-center py-16 rounded-2xl border-2 border-dashed border-[#F3EFE8]">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#F3EFE8] mb-5">
-                  <InboxIcon className="w-7 h-7 text-[#8E8E9F]" />
-                </div>
-                <p className="text-lg text-[#8E8E9F] font-medium">
-                  {activeFilter !== 'all'
-                    ? (isRTL ? 'لا توجد فعاليات في هذه الفئة حالياً' : 'No events in this category yet')
-                    : (isRTL ? 'لا توجد فعاليات إضافية في الوقت الحالي' : 'No additional events at the moment')}
-                </p>
-                <p className="text-sm text-[#8E8E9F]/70 mt-2">
-                  {isRTL ? 'ترقبوا فعالياتنا القادمة' : 'Stay tuned for upcoming events'}
-                </p>
-              </div>
-            </ScrollReveal>
-          )}
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* ================================================================ */}
-      {/*  EVENT REMINDER SIGNUP                                           */}
+      {/*  SECTION 2: SHAPE WHAT'S NEXT — Pulse / concept voting           */}
+      {/* ================================================================ */}
+      {hasPulse && (
+        <section className={`py-16 lg:py-24 ${hasUpcoming ? 'bg-white' : 'bg-[#FAF7F2]'}`}>
+          <div className="container-main">
+            <ScrollReveal className="mb-10">
+              <div className="flex items-center gap-3 mb-2">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C4878A] opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#C8A97D]" />
+                </span>
+                <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D]">
+                  {isRTL ? 'نبضُ المجتمع' : 'Community Pulse'}
+                </span>
+              </div>
+              <h2
+                className="text-3xl sm:text-4xl text-[#2D2A33] leading-tight"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {isRTL ? 'شارِكْ في صناعةِ ما هو قادم' : 'Shape What Happens Next'}
+              </h2>
+              <p className="mt-3 text-sm text-[#6B6580] max-w-xl">
+                {isRTL
+                  ? 'اضغَطْ "هذا يعنيني" على أيّ موضوعٍ يتردّدُ صداه معك. كلّما زادَ الاهتمام، اقتربنا من تحويلِه إلى فعاليّةٍ حقيقيّة.'
+                  : 'Tap "This Resonates" on any topic that speaks to you. The more interest, the closer we are to making it a real event.'}
+              </p>
+            </ScrollReveal>
+
+            <PulseCarousel
+              events={filteredPulse}
+              pulseCounts={pulseCounts}
+              locale={locale}
+              onResonate={handleResonate}
+              expandedSlug={expandedSlug}
+              onToggleExpand={(slug) => setExpandedSlug(expandedSlug === slug ? null : slug)}
+            />
+          </div>
+        </section>
+      )}
+
+      {/* No results message when filters exclude everything */}
+      {hasActiveFilters && !hasUpcoming && !hasPulse && (
+        <section className="py-16 bg-[#FAF7F2]">
+          <div className="container-main text-center">
+            <p className="text-[#8E8E9F] text-sm">
+              {isRTL ? 'لا توجدُ فعاليّاتٌ تطابقُ الفلاتر. جرِّبْ تعديلَها.' : 'No events match your filters. Try adjusting them.'}
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* ================================================================ */}
+      {/*  SECTION 3: PAST EVENTS                                          */}
+      {/* ================================================================ */}
+      {hasPast && (
+        <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+          <div className="container-main">
+            <ScrollReveal className="mb-10">
+              <div className="flex items-center gap-3 mb-2">
+                <History className="w-4 h-4 text-[#8E8E9F]" />
+                <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#8E8E9F]">
+                  {isRTL ? 'فعاليّاتٌ سابقة' : 'Past Events'}
+                </span>
+              </div>
+              <h2
+                className="text-2xl sm:text-3xl text-[#2D2A33]/70 leading-tight"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {isRTL ? 'ما حدثَ من قبل' : "What We've Done Together"}
+              </h2>
+            </ScrollReveal>
+
+            <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {past.map((event) => (
+                <StaggerChild key={event.slug}>
+                  <PastEventCard event={event} locale={locale} />
+                </StaggerChild>
+              ))}
+            </StaggerReveal>
+          </div>
+        </section>
+      )}
+
+      {/* ================================================================ */}
+      {/*  REMINDER SIGNUP                                                 */}
       {/* ================================================================ */}
       <section className="py-16 lg:py-24 bg-white">
         <div className="container-main">
@@ -201,58 +337,17 @@ export default function EventsPage() {
         </div>
       </section>
 
-      {/* ================================================================ */}
-      {/*  PAST EVENTS                                                     */}
-      {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-white">
-        <div className="container-main">
-          <ScrollReveal className={`mb-10 ${isRTL ? 'text-right' : 'text-left'}`}>
-            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
-              {isRTL ? 'أرشيف' : 'Archive'}
-            </span>
-            <h2
-              className="text-3xl sm:text-4xl text-[#2D2A33] leading-tight"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {isRTL ? 'الفعاليات السابقة' : 'Past Events'}
-            </h2>
-          </ScrollReveal>
-
-          {pastEvents.length > 0 ? (
-            <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {pastEvents.map((event) => (
-                <StaggerChild key={event.slug}>
-                  <PastEventCard event={event} locale={locale} />
-                </StaggerChild>
-              ))}
-            </StaggerReveal>
-          ) : (
-            <ScrollReveal>
-              <div className="text-center py-16 rounded-2xl border-2 border-dashed border-[#F3EFE8]">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#F3EFE8] mb-5">
-                  <InboxIcon className="w-7 h-7 text-[#8E8E9F]" />
-                </div>
-                <p className="text-lg text-[#8E8E9F] font-medium">
-                  {isRTL ? 'لا توجد فعاليات سابقة بعد' : 'No past events yet'}
-                </p>
-              </div>
-            </ScrollReveal>
-          )}
-        </div>
-      </section>
-
       <FinalCTA
         locale={locale}
         fillColorAbove="#ffffff"
         headingEn={<>Growth Happens in{' '}<span className="text-[#7A3B5E] italic">Community</span></>}
         headingAr={<>النّموُّ يحدثُ في{' '}<span className="text-[#7A3B5E] italic">الجماعة</span></>}
-        descEn="Can't find an event that fits? Let's talk about what support looks like for you."
-        descAr="لم تجد فعالية مناسبة؟ دعنا نتحدث عن الدعم الأنسب لك."
+        descEn="Can't find a topic that fits? Let's talk about what support looks like for you."
+        descAr="لم تجدْ موضوعًا مناسبًا؟ دعنا نتحدّثْ عن الدّعمِ الأنسبِ لك."
         primaryTextEn="Book a Free Consultation"
-        primaryTextAr="احجز استشارة مجانية"
+        primaryTextAr="احجزْ استشارةً مجّانيّة"
         secondaryTextEn="Chat on WhatsApp"
-        secondaryTextAr="تواصل عبر واتساب"
-        secondaryHref="https://wa.me/16132222104"
+        secondaryTextAr="تواصلْ عبر واتساب"
       />
     </div>
   );

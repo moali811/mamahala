@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
                 <p style="color:#4A4A5C;">You're now enrolled! Your learning journey is ready to begin.</p>
                 <p style="color:#4A4A5C;">Take your time with each module — real growth happens when we reflect, not just read.</p>
                 <div style="text-align:center;margin:24px 0;">
-                  <a href="https://mama-hala-website.vercel.app/en/programs/${programSlug}" style="display:inline-block;padding:12px 28px;background:#7A3B5E;color:white;text-decoration:none;border-radius:10px;font-weight:600;">Start Learning</a>
+                  <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app'}/en/programs/${programSlug}#curriculum" style="display:inline-block;padding:12px 28px;background:#7A3B5E;color:white;text-decoration:none;border-radius:10px;font-weight:600;">Start Learning</a>
                 </div>
               </div>
               <p style="text-align:center;color:#8E8E9F;font-size:12px;">Mama Hala Consulting — Guidance with Heart</p>

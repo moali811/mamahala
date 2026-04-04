@@ -34,6 +34,7 @@ import {
   getEventTypeLabel,
   getDateParts,
 } from '@/data/events';
+import { getServiceBySlug } from '@/data/services';
 
 interface Props {
   event: SmartEvent;
@@ -78,6 +79,9 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
   const formattedDate = getFormattedDate(event, locale);
   const formattedTime = getFormattedTime(event, locale);
   const locLabel = isRTL ? locationTypeLabels[event.locationType].ar : locationTypeLabels[event.locationType].en;
+
+  // Related service cross-link
+  const relatedService = event.relatedServiceSlug ? getServiceBySlug(event.relatedServiceSlug) : undefined;
 
   // Early bird check
   const now = new Date().toISOString().split('T')[0];
@@ -169,9 +173,21 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
           </h3>
 
           {/* Description */}
-          <p className="text-[#4A4A5C] leading-relaxed mb-6 flex-1">
+          <p className="text-[#4A4A5C] leading-relaxed mb-4 flex-1">
             {description}
           </p>
+
+          {/* Related service cross-link */}
+          {relatedService && (
+            <a
+              href={`/${locale}/services/${relatedService.category}/${relatedService.slug}`}
+              className="inline-flex items-center gap-1.5 text-xs text-[#C8A97D] hover:text-[#7A3B5E] font-medium mb-5 transition-colors"
+            >
+              <Sparkles className="w-3 h-3" />
+              {isRTL ? `ذو صلة: ${relatedService.nameAr}` : `Related: ${relatedService.name}`}
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          )}
 
           {/* Meta row */}
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-[#8E8E9F] mb-6">
@@ -209,7 +225,7 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
                     onClick={() => setShowModal(true)}
                   >
                     {event.dateTBD
-                      ? (isRTL ? 'سجّل اهتمامك' : 'Register Interest')
+                      ? (isRTL ? 'أنا مهتمّ' : "I'm Interested")
                       : event.isFree
                         ? (isRTL ? 'سجّل مجاناً' : 'Register — Free')
                         : (isRTL ? 'سجّل وادفع' : 'Register & Pay')}

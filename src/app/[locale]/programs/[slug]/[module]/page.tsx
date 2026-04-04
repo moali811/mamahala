@@ -1,18 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   BookOpen, CheckCircle, ArrowRight, ArrowLeft, Loader2,
   GraduationCap, Lightbulb, PenLine, Activity, HelpCircle,
-  ChevronDown, ChevronUp, Award, Sparkles, MessageCircle,
+  Award, Sparkles, MessageCircle, Zap, ChevronDown,
 } from 'lucide-react';
 import type { AcademyProgram, AcademyModule } from '@/types';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Accordion from '@/components/ui/Accordion';
 import { t, tArray } from '@/lib/academy-helpers';
+import { fadeUp, staggerContainer, viewportOnce } from '@/lib/animations';
+import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
+
+// Academy components
+import ReadingProgressBar from '@/components/academy/layout/ReadingProgressBar';
+import TimeRemaining from '@/components/academy/layout/TimeRemaining';
+import ModuleSidebar, { getModuleSections } from '@/components/academy/layout/ModuleSidebar';
+import SectionDivider from '@/components/academy/layout/SectionDivider';
+import LearningObjectivesChecklist from '@/components/academy/layout/LearningObjectivesChecklist';
+import CompletionCelebration from '@/components/academy/layout/CompletionCelebration';
+import ProgressRing from '@/components/academy/visual/ProgressRing';
+import QuizEnhanced from '@/components/academy/content/QuizEnhanced';
+import ResearchSpotlight from '@/components/academy/academic/ResearchSpotlight';
+import MethodologyBadge from '@/components/academy/academic/MethodologyBadge';
+import FrameworkVisualizer from '@/components/academy/academic/FrameworkVisualizer';
+import ScenarioBrancher from '@/components/academy/interactive/ScenarioBrancher';
+import DragMatchGame from '@/components/academy/interactive/DragMatchGame';
+import LikertScale from '@/components/academy/interactive/LikertScale';
+import SelfAssessmentRadar from '@/components/academy/interactive/SelfAssessmentRadar';
 
 // Dynamic program loader
 async function loadProgram(slug: string): Promise<AcademyProgram | null> {
@@ -22,8 +41,6 @@ async function loadProgram(slug: string): Promise<AcademyProgram | null> {
       case 'resilient-teens': return (await import('@/data/programs/resilient-teens')).resilientTeensProgram;
       case 'stronger-together': return (await import('@/data/programs/stronger-together')).strongerTogetherProgram;
       case 'inner-compass': return (await import('@/data/programs/inner-compass')).innerCompassProgram;
-      case 'cultural-roots': return (await import('@/data/programs/cultural-roots')).culturalRootsProgram;
-      case 'cultural-roots-modern-wings': return (await import('@/data/programs/cultural-roots')).culturalRootsProgram;
       default: return null;
     }
   } catch { return null; }
@@ -43,18 +60,16 @@ export default function ModuleLessonPage() {
   const [allModules, setAllModules] = useState<AcademyModule[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Quiz state
-  const [quizStarted, setQuizStarted] = useState(false);
-  const [quizAnswers, setQuizAnswers] = useState<(number | null)[]>([]);
-  const [quizSubmitted, setQuizSubmitted] = useState(false);
-  const [quizScore, setQuizScore] = useState(0);
-
   // Reflection state
   const [reflection, setReflection] = useState('');
 
-  // Section visibility
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [showFAQ, setShowFAQ] = useState(false);
+  // Section tracking
+  const [activeSection, setActiveSection] = useState('lesson');
+  const [completedSections, setCompletedSections] = useState<string[]>([]);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  // Section refs for intersection observer
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     loadProgram(programSlug).then(p => {
@@ -66,35 +81,59 @@ export default function ModuleLessonPage() {
         if (idx >= 0) {
           setCurrentModule(mods[idx]);
           setModuleIndex(idx);
-          setQuizAnswers(new Array(mods[idx].quiz.questions.length).fill(null));
         }
       }
       setLoading(false);
     });
   }, [programSlug, moduleSlug]);
 
-  const handleQuizSubmit = async () => {
-    if (!currentModule) return;
-    const correct = currentModule.quiz.questions.map((q, i) => {
-      const selectedIdx = quizAnswers[i];
-      return selectedIdx !== null && q.options[selectedIdx]?.correct;
-    });
-    const score = Math.round((correct.filter(Boolean).length / correct.length) * 100);
-    setQuizScore(score);
-    setQuizSubmitted(true);
-
-    // Save to API
-    const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') : null;
-    if (email) {
-      try {
-        await fetch('/api/academy/quiz', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, programSlug, moduleSlug, answers: correct, totalQuestions: correct.length }),
-        });
-      } catch { /* ignore */ }
+  // Load saved reflection
+  useEffect(() => {
+    if (currentModule) {
+      const saved = localStorage.getItem(`academy:reflection:${programSlug}:${moduleSlug}`);
+      if (saved) setReflection(saved);
     }
-  };
+  }, [currentModule, programSlug, moduleSlug]);
+
+  // Auto-save reflection
+  useEffect(() => {
+    if (reflection) {
+      localStorage.setItem(`academy:reflection:${programSlug}:${moduleSlug}`, reflection);
+    }
+  }, [reflection, programSlug, moduleSlug]);
+
+  // Intersection observer for section tracking
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter(e => e.isIntersecting);
+        if (visible.length > 0) {
+          // Pick the most visible entry
+          const top = visible.reduce((a, b) => a.intersectionRatio > b.intersectionRatio ? a : b);
+          const id = top.target.getAttribute('data-section-id');
+          if (id) setActiveSection(id);
+        }
+      },
+      { rootMargin: '-20% 0px -60% 0px', threshold: [0, 0.25, 0.5] }
+    );
+
+    Object.values(sectionRefs.current).forEach(el => {
+      if (el) observer.observe(el);
+    });
+
+    return () => observer.disconnect();
+  }, [currentModule]);
+
+  const markSectionComplete = useCallback((id: string) => {
+    setCompletedSections(prev => prev.includes(id) ? prev : [...prev, id]);
+  }, []);
+
+  const scrollToSection = useCallback((id: string) => {
+    const el = sectionRefs.current[id];
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
 
   const handleComplete = async () => {
     const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') : null;
@@ -108,12 +147,14 @@ export default function ModuleLessonPage() {
       } catch { /* ignore */ }
     }
 
-    // Navigate to next module
-    if (moduleIndex < allModules.length - 1) {
-      router.push(`/${locale}/programs/${programSlug}/${allModules[moduleIndex + 1].slug}`);
-    } else {
-      router.push(`/${locale}/programs/${programSlug}`);
-    }
+    setShowCelebration(true);
+    setTimeout(() => {
+      if (moduleIndex < allModules.length - 1) {
+        router.push(`/${locale}/programs/${programSlug}/${allModules[moduleIndex + 1].slug}`);
+      } else {
+        router.push(`/${locale}/programs/${programSlug}`);
+      }
+    }, 1200);
   };
 
   if (loading) {
@@ -141,216 +182,344 @@ export default function ModuleLessonPage() {
   const prevModule = moduleIndex > 0 ? allModules[moduleIndex - 1] : null;
   const nextModule = moduleIndex < allModules.length - 1 ? allModules[moduleIndex + 1] : null;
 
+  // Interactive content checks
+  const hasObjectives = !!currentModule.learningObjectives?.length;
+  const hasResearch = !!currentModule.researchCitations?.length;
+  const hasFrameworks = !!currentModule.frameworkDiagrams?.length;
+  const hasScenarios = !!currentModule.scenarios?.length;
+  const hasDragMatch = !!currentModule.dragMatchExercises?.length;
+  const hasLikert = !!currentModule.likertReflections?.length;
+  const hasSelfAssessment = !!currentModule.selfAssessment;
+  const hasExercises = hasScenarios || hasDragMatch || hasLikert || hasFrameworks || hasSelfAssessment;
+  const totalWords = lessonContent.split(/\s+/).length;
+
+  const sidebarSections = getModuleSections(isRTL, {
+    hasObjectives,
+    hasScenarios,
+    hasDragMatch,
+    hasLikert,
+    hasFramework: hasFrameworks,
+    hasDrNote: !!drNote,
+  });
+
+  const setSectionRef = (id: string) => (el: HTMLElement | null) => {
+    sectionRefs.current[id] = el;
+  };
+
   return (
     <div className="min-h-screen bg-[#FAF7F2]">
+      {/* Reading progress bar */}
+      <ReadingProgressBar color={program.color} />
+      <CompletionCelebration show={showCelebration} color={program.color} />
+
       {/* ─── TOP BAR ─── */}
-      <header className="bg-white border-b border-[#F3EFE8] sticky top-0 z-20">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <header className="bg-white border-b border-[#F3EFE8] sticky top-[3px] z-20">
+        <div className="max-w-4xl mx-auto lg:ml-64 lg:mr-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <a href={`/${locale}/programs/${programSlug}`} className="text-sm text-[#8E8E9F] hover:text-[#7A3B5E] flex items-center gap-1.5 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            {t(program.titleEn, program.titleAr, isRTL)}
+            <span className="hidden sm:inline">{t(program.titleEn, program.titleAr, isRTL)}</span>
           </a>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[#8E8E9F]">{moduleIndex + 1} / {allModules.length}</span>
-            <div className="w-20 h-1.5 bg-[#F3EFE8] rounded-full overflow-hidden">
-              <div className="h-full rounded-full transition-all" style={{ width: `${((moduleIndex + 1) / allModules.length) * 100}%`, backgroundColor: program.color }} />
+          <div className="flex items-center gap-3">
+            <TimeRemaining totalWords={totalWords} isRTL={isRTL} />
+            <div className="w-px h-4 bg-[#F3EFE8]" />
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[#8E8E9F]">{moduleIndex + 1} / {allModules.length}</span>
+              <div className="w-16 h-1.5 bg-[#F3EFE8] rounded-full overflow-hidden">
+                <div className="h-full rounded-full transition-all" style={{ width: `${((moduleIndex + 1) / allModules.length) * 100}%`, backgroundColor: program.color }} />
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      {/* Sidebar */}
+      <ModuleSidebar
+        sections={sidebarSections}
+        activeSection={activeSection}
+        completedSections={completedSections}
+        moduleTitle={modTitle}
+        moduleIndex={moduleIndex}
+        totalModules={allModules.length}
+        durationMinutes={currentModule.durationMinutes}
+        color={program.color}
+        isRTL={isRTL}
+        onSectionClick={scrollToSection}
+      />
+
+      {/* ─── MAIN CONTENT ─── */}
+      <main className="max-w-3xl mx-auto lg:ml-72 lg:mr-auto px-4 sm:px-6 py-8 space-y-8">
+
         {/* ─── MODULE HEADER ─── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-          <Badge variant="neutral" size="sm" className="mb-3">
-            {isRTL ? `الوحدة ${moduleIndex + 1}` : `Module ${moduleIndex + 1}`} · {currentModule.durationMinutes} min
-          </Badge>
-          <h1 className="text-3xl sm:text-4xl font-bold text-[#2D2A33] leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+          <div className="flex items-center gap-2 flex-wrap mb-3">
+            <Badge variant="neutral" size="sm">
+              {isRTL ? `الوحدة ${moduleIndex + 1}` : `Module ${moduleIndex + 1}`} · {currentModule.durationMinutes} min
+            </Badge>
+            {currentModule.skillTags?.map(tag => (
+              <Badge key={tag} variant="sand" size="sm">{tag}</Badge>
+            ))}
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-bold text-[#2D2A33] leading-tight mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
             {modTitle}
           </h1>
+          {/* Methodology badges */}
+          {program.researchFoundation?.theoreticalBases && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {program.researchFoundation.theoreticalBases.map(method => (
+                <MethodologyBadge key={method} method={method} />
+              ))}
+            </div>
+          )}
         </motion.div>
 
+        {/* ─── LEARNING OBJECTIVES ─── */}
+        {hasObjectives && (
+          <div ref={setSectionRef('objectives')} data-section-id="objectives">
+            <LearningObjectivesChecklist
+              objectives={currentModule.learningObjectives!}
+              isRTL={isRTL}
+              moduleSlug={moduleSlug}
+              color={program.color}
+            />
+          </div>
+        )}
+
         {/* ─── LESSON CONTENT ─── */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
-          <div className="flex items-center gap-2 mb-6">
-            <BookOpen className="w-5 h-5 text-[#C8A97D]" />
-            <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-[#C8A97D]">{isRTL ? 'الدرس' : 'Lesson'}</h2>
+        <div ref={setSectionRef('lesson')} data-section-id="lesson">
+          <SectionDivider icon={<BookOpen className="w-4 h-4" />} label={isRTL ? 'الدرس' : 'Lesson'} color="#C8A97D" />
+
+          <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
+            <div className="prose prose-sm max-w-none text-[#4A4A5C] leading-relaxed whitespace-pre-line">
+              {lessonContent}
+            </div>
+
+            {/* Research citations inline */}
+            {hasResearch && (
+              <div className="mt-6 pt-4 border-t border-[#F3EFE8]">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8E8E9F] mb-3">
+                  {isRTL ? 'الأبحاث المرجعية' : 'Research References'}
+                </p>
+                {currentModule.researchCitations!.map((citation, i) => (
+                  <ResearchSpotlight key={i} citation={citation} isRTL={isRTL} color={program.color} />
+                ))}
+              </div>
+            )}
           </div>
-          <div className="prose prose-sm max-w-none text-[#4A4A5C] leading-relaxed whitespace-pre-line">
-            {lessonContent}
-          </div>
-        </motion.div>
+
+          {/* Framework diagrams */}
+          {hasFrameworks && currentModule.frameworkDiagrams!.map((diagram, i) => (
+            <FrameworkVisualizer key={i} diagram={diagram} isRTL={isRTL} color={program.color} />
+          ))}
+        </div>
 
         {/* ─── DR. HALA'S NOTE ─── */}
         {drNote && (
-          <div className="rounded-2xl border-l-4 p-6 sm:p-8" style={{ borderColor: program.color, backgroundColor: `${program.color}06` }}>
-            <div className="flex items-center gap-2 mb-3">
-              <Sparkles className="w-5 h-5" style={{ color: program.color }} />
-              <h3 className="text-sm font-semibold" style={{ color: program.color }}>
-                {isRTL ? 'ملاحظة الدكتورة هالة' : "Dr. Hala's Note"}
-              </h3>
-            </div>
-            <p className="text-[#4A4A5C] italic leading-relaxed">{drNote}</p>
+          <div ref={setSectionRef('dr-hala-note')} data-section-id="dr-hala-note">
+            <ScrollReveal direction="left">
+              <div className="rounded-2xl border-l-4 p-6 sm:p-8 relative overflow-hidden" style={{ borderColor: program.color, backgroundColor: `${program.color}06` }}>
+                <div className="absolute top-3 right-4 text-6xl opacity-[0.04] leading-none" style={{ fontFamily: 'var(--font-heading)', color: program.color }}>&ldquo;</div>
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-5 h-5" style={{ color: program.color }} />
+                  <h3 className="text-sm font-semibold" style={{ color: program.color }}>
+                    {isRTL ? 'ملاحظة الدكتورة هالة' : "Dr. Hala's Note"}
+                  </h3>
+                </div>
+                <p className="text-[#4A4A5C] italic leading-relaxed">{drNote}</p>
+              </div>
+            </ScrollReveal>
           </div>
         )}
 
         {/* ─── KEY TAKEAWAYS ─── */}
-        <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Lightbulb className="w-5 h-5 text-[#C8A97D]" />
-            <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-[#C8A97D]">{isRTL ? 'النقاط الرئيسية' : 'Key Takeaways'}</h2>
-          </div>
-          <div className="space-y-3">
-            {takeaways.map((item, i) => (
-              <div key={i} className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-[#3B8A6E] mt-0.5 flex-shrink-0" />
-                <span className="text-[#4A4A5C]">{item}</span>
-              </div>
-            ))}
+        <div ref={setSectionRef('takeaways')} data-section-id="takeaways">
+          <SectionDivider icon={<Lightbulb className="w-4 h-4" />} label={isRTL ? 'النقاط الرئيسية' : 'Key Takeaways'} color="#C8A97D" />
+
+          <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
+            <StaggerReveal className="space-y-3">
+              {takeaways.map((item, i) => (
+                <StaggerChild key={i}>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="w-5 h-5 text-[#3B8A6E] mt-0.5 flex-shrink-0" />
+                    <span className="text-[#4A4A5C]">{item}</span>
+                  </div>
+                </StaggerChild>
+              ))}
+            </StaggerReveal>
           </div>
         </div>
 
-        {/* ─── REFLECTION ─── */}
-        <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
-          <div className="flex items-center gap-2 mb-4">
-            <PenLine className="w-5 h-5 text-[#C4878A]" />
-            <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-[#C4878A]">{isRTL ? 'تأمّل' : 'Reflection'}</h2>
+        {/* ─── INTERACTIVE EXERCISES ─── */}
+        {hasExercises && (
+          <div ref={setSectionRef('exercises')} data-section-id="exercises">
+            <SectionDivider icon={<Zap className="w-4 h-4" />} label={isRTL ? 'تمارين تفاعلية' : 'Interactive Exercises'} color={program.color} />
+
+            <div className="space-y-6">
+              {/* Scenarios */}
+              {hasScenarios && currentModule.scenarios!.map((scenario, i) => (
+                <ScenarioBrancher key={i} scenario={scenario} isRTL={isRTL} color={program.color} />
+              ))}
+
+              {/* Drag-match exercises */}
+              {hasDragMatch && currentModule.dragMatchExercises!.map((exercise, i) => (
+                <DragMatchGame key={i} exercise={exercise} isRTL={isRTL} color={program.color} />
+              ))}
+
+              {/* Framework visualizers (interactive) */}
+              {hasFrameworks && currentModule.frameworkDiagrams!.length > 1 && currentModule.frameworkDiagrams!.slice(1).map((diagram, i) => (
+                <FrameworkVisualizer key={i} diagram={diagram} isRTL={isRTL} color={program.color} interactive />
+              ))}
+
+              {/* Likert reflections */}
+              {hasLikert && currentModule.likertReflections!.map((lr, i) => (
+                <LikertScale
+                  key={i}
+                  reflection={lr}
+                  isRTL={isRTL}
+                  color={program.color}
+                  storageKey={`academy:likert:${programSlug}:${moduleSlug}:${i}`}
+                />
+              ))}
+
+              {/* Self-assessment radar */}
+              {hasSelfAssessment && (
+                <SelfAssessmentRadar
+                  assessment={currentModule.selfAssessment!}
+                  isRTL={isRTL}
+                  color={program.color}
+                  storageKey={`academy:radar:${programSlug}:${moduleSlug}`}
+                />
+              )}
+            </div>
           </div>
-          <p className="text-[#4A4A5C] mb-4 italic">{reflectionPrompt}</p>
-          <textarea
-            value={reflection}
-            onChange={(e) => setReflection(e.target.value)}
-            placeholder={isRTL ? 'اكتب أفكارك هنا...' : 'Write your thoughts here...'}
-            rows={4}
-            className="w-full px-4 py-3 rounded-xl border border-[#F3EFE8] text-sm text-[#4A4A5C] focus:outline-none focus:border-[#C4878A] focus:ring-2 focus:ring-[#C4878A]/20 resize-y"
-          />
+        )}
+
+        {/* ─── REFLECTION ─── */}
+        <div ref={setSectionRef('reflection')} data-section-id="reflection">
+          <SectionDivider icon={<PenLine className="w-4 h-4" />} label={isRTL ? 'تأمّل' : 'Reflection'} color="#C4878A" />
+
+          <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
+            <p className="text-[#4A4A5C] mb-4 italic">{reflectionPrompt}</p>
+            <textarea
+              value={reflection}
+              onChange={(e) => setReflection(e.target.value)}
+              placeholder={isRTL ? 'اكتب أفكارك هنا...' : 'Write your thoughts here...'}
+              rows={5}
+              className="w-full px-4 py-3 rounded-xl border border-[#F3EFE8] text-sm text-[#4A4A5C] focus:outline-none focus:border-[#C4878A] focus:ring-2 focus:ring-[#C4878A]/20 resize-y"
+            />
+            <div className="flex items-center justify-between mt-2">
+              <p className="text-[10px] text-[#B0B0C0]">
+                {isRTL ? 'يتم الحفظ تلقائياً' : 'Auto-saved locally'}
+              </p>
+              <p className="text-[10px] text-[#B0B0C0]">
+                {reflection.split(/\s+/).filter(Boolean).length} {isRTL ? 'كلمة' : 'words'}
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* ─── PRACTICAL ACTIVITY ─── */}
-        <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity className="w-5 h-5 text-[#D4836A]" />
-            <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-[#D4836A]">{isRTL ? 'نشاط عملي' : 'Practical Activity'}</h2>
+        <div ref={setSectionRef('activity')} data-section-id="activity">
+          <SectionDivider icon={<Activity className="w-4 h-4" />} label={isRTL ? 'نشاط عملي' : 'Practical Activity'} color="#D4836A" />
+
+          <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
+            <h3 className="font-bold text-[#2D2A33] mb-2">{activityTitle}</h3>
+            <p className="text-[#4A4A5C] leading-relaxed">{activityDesc}</p>
           </div>
-          <h3 className="font-bold text-[#2D2A33] mb-2">{activityTitle}</h3>
-          <p className="text-[#4A4A5C] leading-relaxed">{activityDesc}</p>
         </div>
 
         {/* ─── MODULE QUIZ ─── */}
-        <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
-          <button onClick={() => setShowQuiz(!showQuiz)} className="w-full flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Award className="w-5 h-5 text-[#7A3B5E]" />
-              <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-[#7A3B5E]">{isRTL ? 'اختبار الوحدة' : 'Module Quiz'}</h2>
-              <Badge variant="neutral" size="sm">{currentModule.quiz.questions.length} {isRTL ? 'أسئلة' : 'questions'}</Badge>
-            </div>
-            {showQuiz ? <ChevronUp className="w-5 h-5 text-[#8E8E9F]" /> : <ChevronDown className="w-5 h-5 text-[#8E8E9F]" />}
-          </button>
+        <div ref={setSectionRef('quiz')} data-section-id="quiz">
+          <SectionDivider icon={<Award className="w-4 h-4" />} label={isRTL ? 'اختبار الوحدة' : 'Module Quiz'} color="#7A3B5E" />
 
-          {showQuiz && (
-            <div className="mt-6 space-y-6">
-              {currentModule.quiz.questions.map((q, qi) => {
-                const qText = t(q.textEn, q.textAr, isRTL);
-                return (
-                  <div key={qi}>
-                    <p className="font-medium text-[#2D2A33] mb-3">{qi + 1}. {qText}</p>
-                    <div className="space-y-2">
-                      {q.options.map((opt, oi) => {
-                        const optLabel = t(opt.labelEn, opt.labelAr, isRTL);
-                        const isSelected = quizAnswers[qi] === oi;
-                        const showResult = quizSubmitted;
-                        const isCorrect = opt.correct;
-
-                        return (
-                          <button
-                            key={oi}
-                            onClick={() => {
-                              if (quizSubmitted) return;
-                              const newAnswers = [...quizAnswers];
-                              newAnswers[qi] = oi;
-                              setQuizAnswers(newAnswers);
-                            }}
-                            disabled={quizSubmitted}
-                            className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition-all ${
-                              showResult && isCorrect ? 'border-[#3B8A6E] bg-[#3B8A6E]/5 text-[#3B8A6E]' :
-                              showResult && isSelected && !isCorrect ? 'border-red-300 bg-red-50 text-red-600' :
-                              isSelected ? 'border-[#7A3B5E] bg-[#7A3B5E]/5 text-[#7A3B5E]' :
-                              'border-[#F3EFE8] text-[#4A4A5C] hover:border-[#C4878A]/30'
-                            }`}
-                          >
-                            {optLabel}
-                            {showResult && isCorrect && <CheckCircle className="w-4 h-4 inline ml-2" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-
-              {!quizSubmitted ? (
-                <button
-                  onClick={handleQuizSubmit}
-                  disabled={quizAnswers.some(a => a === null)}
-                  className="px-6 py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#5E2D48] disabled:opacity-40 transition-colors"
-                >
-                  {isRTL ? 'إرسال الإجابات' : 'Submit Answers'}
-                </button>
-              ) : (
-                <div className={`p-4 rounded-xl ${quizScore >= 75 ? 'bg-[#3B8A6E]/5 border border-[#3B8A6E]/20' : 'bg-[#D49A4E]/5 border border-[#D49A4E]/20'}`}>
-                  <p className="font-bold text-lg" style={{ color: quizScore >= 75 ? '#3B8A6E' : '#D49A4E' }}>
-                    {quizScore}% — {quizScore >= 75 ? (isRTL ? 'ممتاز! نجحت!' : 'Excellent! You passed!') : (isRTL ? 'حاول مرة أخرى' : 'Try again to pass (75% needed)')}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+          <QuizEnhanced
+            quiz={currentModule.quiz}
+            isRTL={isRTL}
+            color={program.color}
+            programSlug={programSlug}
+            moduleSlug={moduleSlug}
+            onPass={() => markSectionComplete('quiz')}
+          />
         </div>
 
         {/* ─── AI FAQ ─── */}
         {currentModule.aiFaq && currentModule.aiFaq.length > 0 && (
-          <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
-            <button onClick={() => setShowFAQ(!showFAQ)} className="w-full flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <MessageCircle className="w-5 h-5 text-[#C8A97D]" />
-                <h2 className="text-sm font-semibold uppercase tracking-[0.1em] text-[#C8A97D]">{isRTL ? 'اسأل ماما هالة' : 'Ask Mama Hala'}</h2>
-              </div>
-              {showFAQ ? <ChevronUp className="w-5 h-5 text-[#8E8E9F]" /> : <ChevronDown className="w-5 h-5 text-[#8E8E9F]" />}
-            </button>
+          <div ref={setSectionRef('faq')} data-section-id="faq">
+            <SectionDivider icon={<MessageCircle className="w-4 h-4" />} label={isRTL ? 'اسأل ماما هالة' : 'Ask Mama Hala'} color="#C8A97D" />
 
-            {showFAQ && (
-              <div className="mt-4">
-                <Accordion
-                  items={currentModule.aiFaq.map((faq, i) => ({
-                    id: `faq-${i}`,
-                    title: t(faq.questionEn, faq.questionAr, isRTL),
-                    content: t(faq.answerEn, faq.answerAr, isRTL),
-                  }))}
-                />
-              </div>
-            )}
+            <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
+              <Accordion
+                items={currentModule.aiFaq.map((faq, i) => ({
+                  id: `faq-${i}`,
+                  title: t(faq.questionEn, faq.questionAr, isRTL),
+                  content: t(faq.answerEn, faq.answerAr, isRTL),
+                }))}
+              />
+            </div>
           </div>
         )}
 
-        {/* ─── NAVIGATION ─── */}
-        <div className="flex items-center justify-between pt-4">
-          {prevModule ? (
-            <a href={`/${locale}/programs/${programSlug}/${prevModule.slug}`} className="flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
-              <ArrowLeft className="w-4 h-4" /> {isRTL ? 'السابق' : 'Previous'}
-            </a>
-          ) : <div />}
-
-          <button
-            onClick={handleComplete}
-            className="px-8 py-3 rounded-xl text-white text-sm font-semibold transition-colors flex items-center gap-2"
+        {/* ─── CONSULTATION UPSELL ─── */}
+        <div className="rounded-2xl p-5 sm:p-6 text-center" style={{ background: `linear-gradient(135deg, ${program.color}08, ${program.color}04)`, border: `1px solid ${program.color}15` }}>
+          <Sparkles className="w-6 h-6 mx-auto mb-2" style={{ color: program.color }} />
+          <h3 className="text-sm font-bold text-[#2D2A33] mb-1">
+            {isRTL ? 'هل تريد إرشاداً شخصياً؟' : 'Want Personalized Guidance?'}
+          </h3>
+          <p className="text-xs text-[#6B6580] mb-3 max-w-sm mx-auto">
+            {isRTL
+              ? 'احجز جلسة مع الدكتورة هالة لمناقشة كيفية تطبيق ما تعلمته على وضعك الخاص.'
+              : 'Book a session with Dr. Hala to discuss how to apply what you\'ve learned to your unique situation.'}
+          </p>
+          <a
+            href={`/${locale}/book-a-session`}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-semibold text-white transition-all hover:shadow-md"
             style={{ backgroundColor: program.color }}
           >
-            {nextModule ? (
-              <>{isRTL ? 'أكمل وانتقل للتالي' : 'Complete & Continue'} <ArrowRight className="w-4 h-4" /></>
-            ) : (
-              <>{isRTL ? 'أكمل البرنامج' : 'Complete Program'} <GraduationCap className="w-4 h-4" /></>
-            )}
-          </button>
+            {isRTL ? 'احجز جلسة' : 'Book a Session'}
+          </a>
+        </div>
+
+        {/* ─── NAVIGATION ─── */}
+        <div className="pt-4 space-y-4">
+          {/* Overall progress */}
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-[#F3EFE8]">
+            <ProgressRing value={Math.round(((moduleIndex + 1) / allModules.length) * 100)} size={36} strokeWidth={3} color={program.color} />
+            <div className="flex-1">
+              <p className="text-xs font-medium text-[#2D2A33]">
+                {isRTL ? 'التقدم الكلي' : 'Overall Progress'}
+              </p>
+              <p className="text-[10px] text-[#8E8E9F]">
+                {moduleIndex + 1} / {allModules.length} {isRTL ? 'وحدات مكتملة' : 'modules'}
+              </p>
+            </div>
+          </div>
+
+          {/* Nav buttons */}
+          <div className="flex items-center justify-between">
+            {prevModule ? (
+              <a
+                href={`/${locale}/programs/${programSlug}/${prevModule.slug}`}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm text-[#6B6580] hover:text-[#2D2A33] hover:bg-white border border-transparent hover:border-[#F3EFE8] transition-all"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <div className="hidden sm:block text-left">
+                  <p className="text-[10px] text-[#8E8E9F]">{isRTL ? 'السابق' : 'Previous'}</p>
+                  <p className="text-xs font-medium truncate max-w-[160px]">{t(prevModule.titleEn, prevModule.titleAr, isRTL)}</p>
+                </div>
+              </a>
+            ) : <div />}
+
+            <button
+              onClick={handleComplete}
+              className="px-8 py-3 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-md flex items-center gap-2"
+              style={{ backgroundColor: program.color }}
+            >
+              {nextModule ? (
+                <>{isRTL ? 'أكمل وانتقل للتالي' : 'Complete & Continue'} <ArrowRight className="w-4 h-4" /></>
+              ) : (
+                <>{isRTL ? 'أكمل البرنامج' : 'Complete Program'} <GraduationCap className="w-4 h-4" /></>
+              )}
+            </button>
+          </div>
         </div>
       </main>
     </div>

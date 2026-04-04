@@ -108,12 +108,129 @@ export interface Program {
 export interface ModuleQuizQuestion {
   textEn: string;
   textAr: string;
-  options: { labelEn: string; labelAr: string; correct: boolean }[];
+  options: { labelEn: string; labelAr: string; correct: boolean; explanationEn?: string; explanationAr?: string }[];
+  explanationEn?: string;
+  explanationAr?: string;
 }
 
 export interface ModuleQuiz {
   questions: ModuleQuizQuestion[];
   passingScore: number; // percentage 0-100
+}
+
+/* ── Interactive & Academic Data Types ───────────────────────── */
+
+export interface ResearchCitation {
+  authorShort: string;           // e.g. "Gottman & Silver, 1999"
+  titleEn: string;
+  titleAr: string;
+  journal?: string;
+  year: number;
+  doi?: string;
+  findingEn: string;             // one-sentence key finding
+  findingAr: string;
+  evidenceStrength: 'strong' | 'moderate' | 'emerging';
+}
+
+export type FrameworkDiagramType = 'triangle' | 'wheel' | 'cycle' | 'spectrum' | 'iceberg' | 'quadrant' | 'flowchart';
+
+export interface FrameworkNode {
+  id: string;
+  labelEn: string;
+  labelAr: string;
+  descriptionEn: string;
+  descriptionAr: string;
+  color?: string;
+  position: { x: number; y: number }; // percentage 0-100
+}
+
+export interface FrameworkConnection {
+  from: string;
+  to: string;
+  labelEn?: string;
+  labelAr?: string;
+}
+
+export interface FrameworkDiagram {
+  type: FrameworkDiagramType;
+  titleEn: string;
+  titleAr: string;
+  nodes: FrameworkNode[];
+  connections?: FrameworkConnection[];
+}
+
+export interface ScenarioChoice {
+  labelEn: string;
+  labelAr: string;
+  feedbackEn: string;
+  feedbackAr: string;
+  isRecommended: boolean;
+  nextStep?: number;
+}
+
+export interface ScenarioStep {
+  textEn: string;
+  textAr: string;
+  choices: ScenarioChoice[];
+}
+
+export interface InteractiveScenario {
+  titleEn: string;
+  titleAr: string;
+  contextEn: string;
+  contextAr: string;
+  steps: ScenarioStep[];
+}
+
+export interface DragMatchPair {
+  conceptEn: string;
+  conceptAr: string;
+  matchEn: string;
+  matchAr: string;
+}
+
+export interface DragMatchExercise {
+  titleEn: string;
+  titleAr: string;
+  instructionEn: string;
+  instructionAr: string;
+  pairs: DragMatchPair[];
+}
+
+export interface LikertInterpretation {
+  min: number;
+  max: number;
+  labelEn: string;
+  labelAr: string;
+  feedbackEn: string;
+  feedbackAr: string;
+}
+
+export interface LikertReflection {
+  titleEn: string;
+  titleAr: string;
+  statementEn: string;
+  statementAr: string;
+  scaleLabels: { lowEn: string; lowAr: string; highEn: string; highAr: string };
+  interpretations: LikertInterpretation[];
+}
+
+export interface SelfAssessmentDimension {
+  labelEn: string;
+  labelAr: string;
+  descriptionEn: string;
+  descriptionAr: string;
+}
+
+export interface SelfAssessmentWheel {
+  titleEn: string;
+  titleAr: string;
+  dimensions: SelfAssessmentDimension[];
+}
+
+export interface LearningObjective {
+  textEn: string;
+  textAr: string;
 }
 
 export interface AcademyModule {
@@ -128,6 +245,16 @@ export interface AcademyModule {
   activity: { titleEn: string; titleAr: string; descriptionEn: string; descriptionAr: string };
   quiz: ModuleQuiz;
   aiFaq: { questionEn: string; questionAr: string; answerEn: string; answerAr: string }[];
+  // Enhanced interactive fields (all optional for backward compatibility)
+  learningObjectives?: LearningObjective[];
+  researchCitations?: ResearchCitation[];
+  frameworkDiagrams?: FrameworkDiagram[];
+  scenarios?: InteractiveScenario[];
+  dragMatchExercises?: DragMatchExercise[];
+  likertReflections?: LikertReflection[];
+  selfAssessment?: SelfAssessmentWheel;
+  estimatedReadTimeMinutes?: number;
+  skillTags?: string[];
 }
 
 export interface AcademyLevel {
@@ -140,6 +267,12 @@ export interface AcademyLevel {
   descriptionAr: string;
   isFree: boolean;
   modules: AcademyModule[];
+}
+
+export interface ProgramFinderQuestion {
+  questionEn: string;
+  questionAr: string;
+  answerOptions: { labelEn: string; labelAr: string; matchScore: number }[];
 }
 
 export interface AcademyProgram {
@@ -162,6 +295,14 @@ export interface AcademyProgram {
   certificate: { titleEn: string; titleAr: string; signedBy: string };
   whoIsThisFor: { en: string[]; ar: string[] };
   whatYouWillLearn: { en: string[]; ar: string[] };
+  // Enhanced fields
+  researchFoundation?: {
+    primaryFrameworkEn: string;
+    primaryFrameworkAr: string;
+    theoreticalBases: string[];
+  };
+  skillDimensions?: string[];
+  recommendedFor?: ProgramFinderQuestion[];
 }
 
 /* ── Smart Events System ─────────────────────────────────────── */
@@ -201,6 +342,8 @@ export interface SmartEvent {
   descriptionAr: string;
   longDescriptionEn?: string;
   longDescriptionAr?: string;
+  scenarioEn?: string;
+  scenarioAr?: string;
 
   type: EventType;
   audiences: EventAudience[];
@@ -251,6 +394,22 @@ export interface SmartEvent {
   whatToBringAr?: string[];
   faqs?: EventFAQ[];
 
+  // Learning outcomes
+  outcomesEn?: string[];
+  outcomesAr?: string[];
+
+  // Target audience description
+  audienceDescEn?: string;
+  audienceDescAr?: string;
+
+  // Fee/pricing display
+  feeDisplayEn?: string;
+  feeDisplayAr?: string;
+
+  // Duration & format description
+  formatDescEn?: string;
+  formatDescAr?: string;
+
   // Past events
   galleryImages?: string[];
   highlightEn?: string;
@@ -259,6 +418,27 @@ export interface SmartEvent {
   // Series grouping
   seriesId?: string;
   tags?: string[];
+}
+
+/* ── Event Lifecycle ────────────────────────────────────────── */
+
+export type EventLifecycleState =
+  | 'concept'           // dateTBD, low pulse — idea stage
+  | 'gauging'           // dateTBD, pulse >= threshold — gaining traction
+  | 'scheduled'         // date confirmed, registration not yet open
+  | 'registration-open' // date set, registration open, plenty of spots
+  | 'almost-full'       // spots remaining <= 20% of capacity
+  | 'sold-out'          // spots remaining = 0 or waitlist
+  | 'live'              // happening right now
+  | 'completed'         // past event, < 30 days ago
+  | 'archived';         // past event, >= 30 days ago
+
+export interface EventLifecycle {
+  state: EventLifecycleState;
+  section: 'upcoming' | 'pulse' | 'past';
+  urgency: 'none' | 'low' | 'medium' | 'high';
+  badgeLabelEn?: string;
+  badgeLabelAr?: string;
 }
 
 export interface Download {

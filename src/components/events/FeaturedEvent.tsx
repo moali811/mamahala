@@ -60,7 +60,7 @@ export default function FeaturedEvent({ event, locale }: Props) {
         <div className="flex flex-wrap items-center gap-2 mb-6">
           <Badge variant="plum" size="md">
             <Sparkles className="w-3.5 h-3.5 mr-1" />
-            {isRTL ? 'الحدث القادم' : 'Next Event'}
+            {isRTL ? 'موضوعٌ مميّز' : 'Featured Topic'}
           </Badge>
           <Badge variant="neutral" size="sm">{typeLabel}</Badge>
           {capacity && (
@@ -116,7 +116,7 @@ export default function FeaturedEvent({ event, locale }: Props) {
         ) : (
           <div className="mb-8 bg-[#C8A97D]/8 rounded-xl px-5 py-4 inline-block">
             <p className="text-sm font-medium text-[#C8A97D]">
-              {isRTL ? 'سيتم تحديد الموعد بناءً على عدد المسجلين' : 'Date confirmed based on registrations'}
+              {isRTL ? 'يُعلَنُ الموعدُ عندما يكونُ هناك اهتمامٌ كافٍ — سجِّلْ ليصلَك الإعلان' : "Date announced when there's enough interest — register to be notified"}
             </p>
           </div>
         )}
@@ -133,7 +133,7 @@ export default function FeaturedEvent({ event, locale }: Props) {
                   onClick={() => setShowModal(true)}
                 >
                   {event.dateTBD
-                    ? (isRTL ? 'سجّل اهتمامك' : 'Register Interest')
+                    ? (isRTL ? 'أنا مهتمّ' : "I'm Interested")
                     : event.isFree
                       ? (isRTL ? 'سجّل مجاناً' : 'Register Now — Free')
                       : (isRTL ? 'سجّل وادفع' : 'Register & Pay')}

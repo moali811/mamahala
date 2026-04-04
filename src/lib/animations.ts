@@ -170,6 +170,55 @@ export const drawLine: Variants = {
   },
 };
 
+// ---- Progress Fill ----
+export const progressFill: Variants = {
+  hidden: { scaleX: 0 },
+  visible: (width: number = 1) => ({
+    scaleX: width,
+    transition: { duration: 1, ease },
+  }),
+};
+
+// ---- Pulse Glow ----
+export const pulseGlow: Variants = {
+  hidden: { opacity: 0.4, scale: 0.95 },
+  visible: {
+    opacity: [0.4, 1, 0.4],
+    scale: [0.95, 1.02, 0.95],
+    transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+  },
+};
+
+// ---- Slide Horizontal (for quiz transitions) ----
+export const slideLeft: Variants = {
+  hidden: { opacity: 0, x: 60 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease } },
+  exit: { opacity: 0, x: -60, transition: { duration: 0.3, ease } },
+};
+
+export const slideRight: Variants = {
+  hidden: { opacity: 0, x: -60 },
+  visible: { opacity: 1, x: 0, transition: { duration: 0.4, ease } },
+  exit: { opacity: 0, x: 60, transition: { duration: 0.3, ease } },
+};
+
+// ---- Confetti Particle ----
+export const confettiParticle: Variants = {
+  hidden: { opacity: 1, scale: 0, y: 0, x: 0 },
+  visible: (i: number) => ({
+    opacity: [1, 1, 0],
+    scale: [0, 1.2, 0.8],
+    y: [0, -80 - Math.random() * 120, 40 + Math.random() * 60],
+    x: [0, (Math.random() - 0.5) * 200],
+    rotate: Math.random() * 720 - 360,
+    transition: {
+      duration: 1.2 + Math.random() * 0.6,
+      delay: i * 0.03,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  }),
+};
+
 // ---- Viewport Settings ----
 export const viewportOnce = { once: true, margin: '-80px' as const };
 export const viewportOnceEarly = { once: true, margin: '-40px' as const };

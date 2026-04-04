@@ -11,11 +11,21 @@ interface Props {
   onClose: () => void;
   eventTitle?: string;
   locale?: string;
+  /** Pre-fill guest name */
+  prefillName?: string;
+  /** Pre-fill guest email */
+  prefillEmail?: string;
+  /** Pre-fill notes field */
+  prefillNotes?: string;
 }
 
-export default function CalEmbedModal({ calSlug, isOpen, onClose, eventTitle, locale }: Props) {
+export default function CalEmbedModal({ calSlug, isOpen, onClose, eventTitle, locale, prefillName, prefillEmail, prefillNotes }: Props) {
   const isRTL = locale === 'ar';
-  const embedUrl = `${BUSINESS.calBaseUrl}/${calSlug}?embed=true&theme=light&layout=month_view`;
+  const params = new URLSearchParams({ embed: 'true', theme: 'light', layout: 'month_view' });
+  if (prefillName) params.set('name', prefillName);
+  if (prefillEmail) params.set('email', prefillEmail);
+  if (prefillNotes) params.set('notes', prefillNotes);
+  const embedUrl = `${BUSINESS.calBaseUrl}/${calSlug}?${params.toString()}`;
 
   if (typeof document === 'undefined') return null;
 

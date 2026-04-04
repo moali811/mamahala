@@ -1,47 +1,127 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import type { EventType } from '@/types';
-import { getEventTypeLabel } from '@/data/events';
+import type { EventAudience } from '@/types';
 
-interface Props {
-  activeFilter: string;
-  onFilterChange: (filter: string) => void;
-  availableTypes: EventType[];
-  locale: string;
+interface Filters {
+  audience: EventAudience | 'all';
+  format: 'all' | 'online' | 'in-person' | 'hybrid';
+  price: 'all' | 'free' | 'paid';
 }
 
-export default function EventFilters({ activeFilter, onFilterChange, availableTypes, locale }: Props) {
-  const isRTL = locale === 'ar';
-  const allLabel = isRTL ? 'الكل' : 'All';
+interface Props {
+  filters: Filters;
+  onFiltersChange: (filters: Filters) => void;
+  locale: string;
+  /** Pre-selected audience from visitor profile */
+  suggestedAudience?: EventAudience;
+}
 
-  const filters = [
-    { key: 'all', label: allLabel },
-    ...availableTypes.map((type) => ({
-      key: type,
-      label: getEventTypeLabel(type, isRTL),
-    })),
-  ];
+const audienceLabels: Record<string, { en: string; ar: string }> = {
+  all: { en: 'All', ar: 'الكلّ' },
+  youth: { en: 'Youth', ar: 'الشّباب' },
+  families: { en: 'Families', ar: 'العائلات' },
+  adults: { en: 'Adults', ar: 'البالغون' },
+  couples: { en: 'Couples', ar: 'الأزواج' },
+  community: { en: 'Community', ar: 'المجتمع' },
+};
+
+const formatLabels: Record<string, { en: string; ar: string }> = {
+  all: { en: 'Any Format', ar: 'أيُّ صيغة' },
+  online: { en: 'Online', ar: 'عبر الإنترنت' },
+  'in-person': { en: 'In Person', ar: 'حضوريّ' },
+  hybrid: { en: 'Hybrid', ar: 'حضوريّ + عن بُعد' },
+};
+
+const priceLabels: Record<string, { en: string; ar: string }> = {
+  all: { en: 'Any Price', ar: 'أيُّ سعر' },
+  free: { en: 'Free', ar: 'مجّانيّ' },
+  paid: { en: 'Paid', ar: 'مدفوع' },
+};
+
+function Pill({
+  active,
+  label,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <motion.button
+      type="button"
+      onClick={onClick}
+      className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors duration-200 ${
+        active
+          ? 'bg-[#7A3B5E] text-white shadow-sm'
+          : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
+      }`}
+      whileTap={{ scale: 0.97 }}
+    >
+      {label}
+    </motion.button>
+  );
+}
+
+export default function EventFilters({ filters, onFiltersChange, locale }: Props) {
+  const isRTL = locale === 'ar';
+
+  const hasActiveFilter = filters.audience !== 'all' || filters.format !== 'all' || filters.price !== 'all';
 
   return (
-    <div className="flex flex-wrap gap-2">
-      {filters.map(({ key, label }) => {
-        const isActive = activeFilter === key;
-        return (
-          <motion.button
+    <div className="space-y-3">
+      {/* Audience row */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8E8E9F] w-12 flex-shrink-0">
+          {isRTL ? 'لِمَن' : 'For'}
+        </span>
+        {Object.entries(audienceLabels).map(([key, labels]) => (
+          <Pill
             key={key}
-            onClick={() => onFilterChange(key)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors duration-200 ${
-              isActive
-                ? 'bg-[#7A3B5E] text-white shadow-sm'
-                : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
-            }`}
-            whileTap={{ scale: 0.97 }}
-          >
-            {label}
-          </motion.button>
-        );
-      })}
+            active={filters.audience === key}
+            label={isRTL ? labels.ar : labels.en}
+            onClick={() => onFiltersChange({ ...filters, audience: key as Filters['audience'] })}
+          />
+        ))}
+      </div>
+
+      {/* Format + Price row */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8E8E9F] w-12 flex-shrink-0">
+          {isRTL ? 'كيف' : 'How'}
+        </span>
+        {Object.entries(formatLabels).map(([key, labels]) => (
+          <Pill
+            key={key}
+            active={filters.format === key}
+            label={isRTL ? labels.ar : labels.en}
+            onClick={() => onFiltersChange({ ...filters, format: key as Filters['format'] })}
+          />
+        ))}
+        <span className="text-[#E8E4DE] mx-1">|</span>
+        {Object.entries(priceLabels).map(([key, labels]) => (
+          <Pill
+            key={key}
+            active={filters.price === key}
+            label={isRTL ? labels.ar : labels.en}
+            onClick={() => onFiltersChange({ ...filters, price: key as Filters['price'] })}
+          />
+        ))}
+      </div>
+
+      {/* Clear button */}
+      {hasActiveFilter && (
+        <button
+          type="button"
+          onClick={() => onFiltersChange({ audience: 'all', format: 'all', price: 'all' })}
+          className="text-xs text-[#C4878A] hover:text-[#7A3B5E] font-medium transition-colors"
+        >
+          {isRTL ? 'مسحُ الفلاتر' : 'Clear filters'}
+        </button>
+      )}
     </div>
   );
 }
+
+export type { Filters };

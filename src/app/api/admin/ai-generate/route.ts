@@ -79,8 +79,51 @@ Requirements:
 - Suggest appropriate capacity and whether it should be free or paid
 - Generate BOTH English and Arabic (with full Tashkeel)
 
+Also generate:
+- A scenario hook (2-3 emotional sentences that describe what someone going through this would feel)
+- 3-4 learning outcomes (what attendees will walk away with)
+- Target audience description
+- Expected fee display text
+- Format description (duration and delivery method)
+
 Respond with this exact JSON structure (no markdown, no code blocks):
-{"titleEn":"English event title","titleAr":"Arabic event title with tashkeel","descriptionEn":"English description (2-3 paragraphs)","descriptionAr":"Arabic description with tashkeel","type":"workshop","capacity":25,"isFree":true}`,
+{"titleEn":"English event title","titleAr":"Arabic event title with tashkeel","descriptionEn":"English description (2-3 paragraphs)","descriptionAr":"Arabic description with tashkeel","scenarioEn":"Emotional scenario hook in English","scenarioAr":"Arabic scenario with tashkeel","type":"workshop","capacity":25,"isFree":true,"outcomesEn":["Outcome 1","Outcome 2","Outcome 3"],"outcomesAr":["النّتيجة 1","النّتيجة 2","النّتيجة 3"],"audienceDescEn":"Target audience","audienceDescAr":"الجمهور المستهدف","feeDisplayEn":"Free","feeDisplayAr":"مجّانيّ","formatDescEn":"90-minute webinar","formatDescAr":"ندوة 90 دقيقة"}`,
+
+  'event-full': (prompt) => `Generate COMPLETE event details for Mama Hala Consulting based on this description:
+
+"${prompt}"
+
+Generate ALL of the following fields in BOTH English and Arabic (with full Tashkeel):
+- Title
+- Short description (2-3 sentences)
+- Long description (1-2 paragraphs with more detail)
+- Scenario hook (2-3 emotional sentences describing what someone going through this would feel — written in second person "you")
+- 4 learning outcomes
+- 3 "what to bring" items
+- 3-4 FAQ pairs (question + answer)
+- Target audience description
+- Fee display text
+- Format description (duration and method)
+- Event type: workshop, webinar, community-gathering, retreat, or support-group
+- Suggested capacity and price
+
+Respond with this exact JSON structure (no markdown, no code blocks):
+{"titleEn":"","titleAr":"","descriptionEn":"","descriptionAr":"","longDescriptionEn":"","longDescriptionAr":"","scenarioEn":"","scenarioAr":"","type":"workshop","capacity":25,"isFree":false,"priceCAD":45,"outcomesEn":["","","",""],"outcomesAr":["","","",""],"whatToBringEn":["","",""],"whatToBringAr":["","",""],"faqs":[{"questionEn":"","questionAr":"","answerEn":"","answerAr":""}],"audienceDescEn":"","audienceDescAr":"","feeDisplayEn":"","feeDisplayAr":"","formatDescEn":"","formatDescAr":""}`,
+
+  'event-suggestions': (prompt) => `Suggest 3-5 new event concepts for Mama Hala Consulting.
+
+Context about current events and season: "${prompt}"
+
+For each suggestion, provide:
+- A compelling title
+- One-line description
+- Why it would resonate with the community
+- Recommended type (workshop, webinar, community-gathering, retreat, support-group)
+
+Make suggestions diverse — mix free community events with paid workshops, online and in-person, different audience groups.
+
+Respond with this exact JSON structure:
+{"suggestions":[{"titleEn":"","titleAr":"","descriptionEn":"","descriptionAr":"","type":"workshop","rationale":"Why this would work"}]}`,
 
   faq: (prompt) => `Write a comprehensive, empathetic answer for this FAQ on Mama Hala Consulting's website:
 

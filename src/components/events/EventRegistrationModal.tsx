@@ -234,7 +234,7 @@ export default function EventRegistrationModal({ event, locale, isOpen, onClose 
                       <>
                         <UserPlus className="w-4 h-4" />
                         {event.dateTBD
-                          ? (isRTL ? 'سجّل اهتمامك' : 'Register Interest')
+                          ? (isRTL ? 'أنا مهتمّ' : "I'm Interested")
                           : event.isFree
                             ? (isRTL ? 'سجّل الآن — مجاناً' : "Register — It's Free")
                             : (isRTL ? `سجّل الآن — ${price}` : `Register — ${price}`)}

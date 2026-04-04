@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Calendar, Users, Plus, Download, RefreshCw, Sparkles, Search,
   ChevronDown, ChevronUp, Clock, Trash2, Edit3, ExternalLink, BarChart3,
-  ClipboardList, AlertTriangle, CheckCircle, Loader2,
+  ClipboardList, AlertTriangle, CheckCircle, Loader2, Bell, Eye, EyeOff,
 } from 'lucide-react';
 import ImageUpload from './ImageUpload';
 import TranslateButton from './TranslateButton';
@@ -13,13 +13,14 @@ import UndoToast, { useUndo } from './UndoToast';
 interface EventStat {
   slug: string; titleEn: string; titleAr: string;
   descriptionEn: string; descriptionAr: string;
-  date: string; startTime: string; endTime: string;
+  date: string; dateTBD?: boolean; startTime: string; endTime: string;
   type: string; locationType: string; locationNameEn: string;
   registrationType: string; capacity: number | null;
   isFree: boolean; priceCAD: number; image: string;
   registeredCount: number; waitlistedCount: number;
   spotsRemaining: number | null; registrationStatus: string;
-  source: 'static' | 'kv';
+  pulseCount: number; pulseEmails: number;
+  source: 'static' | 'kv'; hasOverrides?: boolean;
 }
 
 interface Registration {
@@ -48,10 +49,84 @@ export default function EventsModule({ password }: EventsModuleProps) {
   const { undoAction, pushUndo, clearUndo } = useUndo();
   const [newEvent, setNewEvent] = useState({
     slug: '', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '',
+    scenarioEn: '', scenarioAr: '',
     date: '', startTime: '', endTime: '', type: 'workshop' as string, locationType: 'online',
     locationNameEn: '', isFree: true, priceCAD: 0, capacity: 30, registrationType: 'rsvp',
     image: '',
+    outcomesEn: '' as string, outcomesAr: '' as string,
+    audienceDescEn: '', audienceDescAr: '',
+    feeDisplayEn: '', feeDisplayAr: '',
+    formatDescEn: '', formatDescAr: '',
   });
+
+  // ─── LIFECYCLE CONTROLS ───
+  const [datePickerSlug, setDatePickerSlug] = useState<string | null>(null);
+  const [pendingDate, setPendingDate] = useState('');
+  const [pendingStartTime, setPendingStartTime] = useState('');
+  const [pendingEndTime, setPendingEndTime] = useState('');
+  const [overrideLoading, setOverrideLoading] = useState<string | null>(null);
+  const [notifyStatus, setNotifyStatus] = useState<Record<string, string>>({});
+
+  const applyOverride = async (slug: string, overrides: Record<string, unknown>) => {
+    setOverrideLoading(slug);
+    try {
+      const res = await fetch('/api/events/manage', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
+        body: JSON.stringify({ slug, overrides }),
+      });
+      if (res.ok) await fetchData();
+    } catch { /* ignore */ }
+    setOverrideLoading(null);
+  };
+
+  const handleSetDate = async (slug: string) => {
+    if (!pendingDate) return;
+    await applyOverride(slug, { date: pendingDate, startTime: pendingStartTime || '10:00', endTime: pendingEndTime || '12:00', dateTBD: false });
+    setDatePickerSlug(null); setPendingDate(''); setPendingStartTime(''); setPendingEndTime('');
+  };
+
+  const handleToggleRegistration = async (slug: string, currentStatus: string) => {
+    await applyOverride(slug, { registrationStatus: currentStatus === 'open' ? 'closed' : 'open' });
+  };
+
+  const handleResetToTBD = async (slug: string) => {
+    await applyOverride(slug, { dateTBD: true });
+  };
+
+  const [editingCount, setEditingCount] = useState<{ slug: string; field: 'pulse' | 'spots'; value: string } | null>(null);
+
+  const handleUpdateCount = async (slug: string, field: 'pulse' | 'spots', value: number) => {
+    setOverrideLoading(slug);
+    try {
+      const res = await fetch('/api/events/manage', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
+        body: JSON.stringify({
+          slug,
+          overrides: field === 'spots' ? { spotsRemaining: value } : {},
+          ...(field === 'pulse' ? { pulseOverride: value } : {}),
+        }),
+      });
+      if (res.ok) await fetchData();
+    } catch { /* ignore */ }
+    setOverrideLoading(null);
+    setEditingCount(null);
+  };
+
+  const handleSendDateAnnouncement = async (slug: string) => {
+    setNotifyStatus(prev => ({ ...prev, [slug]: 'sending' }));
+    try {
+      const res = await fetch('/api/events/notify-date', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
+        body: JSON.stringify({ slug }),
+      });
+      const data = await res.json();
+      if (res.ok) setNotifyStatus(prev => ({ ...prev, [slug]: `sent:${data.sent}/${data.total}` }));
+      else setNotifyStatus(prev => ({ ...prev, [slug]: data.alreadySent ? 'already-sent' : `error` }));
+    } catch { setNotifyStatus(prev => ({ ...prev, [slug]: 'error' })); }
+  };
 
   const fetchData = useCallback(async () => {
     setLoading(true); setError('');
@@ -102,11 +177,24 @@ export default function EventsModule({ password }: EventsModuleProps) {
       const res = await fetch('/api/events/manage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
-        body: JSON.stringify({ ...newEvent, slug, spotsRemaining: newEvent.capacity, registrationStatus: 'open', timezone: 'America/Toronto', locationNameAr: newEvent.locationNameEn, audiences: ['community'], featured: false, registrationFields: { phone: true, notes: false } }),
+        body: JSON.stringify({
+          ...newEvent,
+          slug,
+          outcomesEn: newEvent.outcomesEn ? newEvent.outcomesEn.split('\n').filter(Boolean) : [],
+          outcomesAr: newEvent.outcomesAr ? newEvent.outcomesAr.split('\n').filter(Boolean) : [],
+          spotsRemaining: newEvent.capacity,
+          registrationStatus: 'open',
+          timezone: 'America/Toronto',
+          locationNameAr: newEvent.locationNameEn,
+          audiences: ['community'],
+          featured: false,
+          dateTBD: true,
+          registrationFields: { phone: true, notes: false },
+        }),
       });
       if (res.ok) {
         setShowCreateForm(false);
-        setNewEvent({ slug: '', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '', date: '', startTime: '', endTime: '', type: 'workshop', locationType: 'online', locationNameEn: '', isFree: true, priceCAD: 0, capacity: 30, registrationType: 'rsvp', image: '' });
+        setNewEvent({ slug: '', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '', scenarioEn: '', scenarioAr: '', date: '', startTime: '', endTime: '', type: 'workshop', locationType: 'online', locationNameEn: '', isFree: true, priceCAD: 0, capacity: 30, registrationType: 'rsvp', image: '', outcomesEn: '', outcomesAr: '', audienceDescEn: '', audienceDescAr: '', feeDisplayEn: '', feeDisplayAr: '', formatDescEn: '', formatDescAr: '' });
         setEditingEvent(null);
         fetchData();
       }
@@ -134,6 +222,11 @@ export default function EventsModule({ password }: EventsModuleProps) {
       capacity: event.capacity || 30,
       registrationType: event.registrationType || 'rsvp',
       image: event.image || '',
+      scenarioEn: '', scenarioAr: '',
+      outcomesEn: '', outcomesAr: '',
+      audienceDescEn: '', audienceDescAr: '',
+      feeDisplayEn: '', feeDisplayAr: '',
+      formatDescEn: '', formatDescAr: '',
     });
     setShowCreateForm(true);
   };
@@ -181,9 +274,19 @@ export default function EventsModule({ password }: EventsModuleProps) {
             titleAr: g.titleAr || prev.titleAr,
             descriptionEn: g.descriptionEn || prev.descriptionEn,
             descriptionAr: g.descriptionAr || prev.descriptionAr,
+            scenarioEn: g.scenarioEn || prev.scenarioEn,
+            scenarioAr: g.scenarioAr || prev.scenarioAr,
             type: g.type || prev.type,
             capacity: g.capacity || prev.capacity,
             isFree: g.isFree ?? prev.isFree,
+            outcomesEn: g.outcomesEn ? (Array.isArray(g.outcomesEn) ? g.outcomesEn.join('\n') : g.outcomesEn) : prev.outcomesEn,
+            outcomesAr: g.outcomesAr ? (Array.isArray(g.outcomesAr) ? g.outcomesAr.join('\n') : g.outcomesAr) : prev.outcomesAr,
+            audienceDescEn: g.audienceDescEn || prev.audienceDescEn,
+            audienceDescAr: g.audienceDescAr || prev.audienceDescAr,
+            feeDisplayEn: g.feeDisplayEn || prev.feeDisplayEn,
+            feeDisplayAr: g.feeDisplayAr || prev.feeDisplayAr,
+            formatDescEn: g.formatDescEn || prev.formatDescEn,
+            formatDescAr: g.formatDescAr || prev.formatDescAr,
           }));
           setAiSuggestion('Generated');
         }
@@ -226,7 +329,7 @@ export default function EventsModule({ password }: EventsModuleProps) {
         <button onClick={fetchData} disabled={loading} className="p-2 rounded-lg text-[#8E8E9F] hover:text-[#7A3B5E] hover:bg-[#FAF7F2] transition-colors">
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </button>
-        <button onClick={() => { setEditingEvent(null); setNewEvent({ slug: '', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '', date: '', startTime: '', endTime: '', type: 'workshop', locationType: 'online', locationNameEn: '', isFree: true, priceCAD: 0, capacity: 30, registrationType: 'rsvp', image: '' }); setShowCreateForm(!showCreateForm); }} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#7A3B5E] text-white text-sm font-medium hover:bg-[#5E2D48] transition-colors">
+        <button onClick={() => { setEditingEvent(null); setNewEvent({ slug: '', titleEn: '', titleAr: '', descriptionEn: '', descriptionAr: '', scenarioEn: '', scenarioAr: '', date: '', startTime: '', endTime: '', type: 'workshop', locationType: 'online', locationNameEn: '', isFree: true, priceCAD: 0, capacity: 30, registrationType: 'rsvp', image: '', outcomesEn: '', outcomesAr: '', audienceDescEn: '', audienceDescAr: '', feeDisplayEn: '', feeDisplayAr: '', formatDescEn: '', formatDescAr: '' }); setShowCreateForm(!showCreateForm); }} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#7A3B5E] text-white text-sm font-medium hover:bg-[#5E2D48] transition-colors">
           <Plus className="w-4 h-4" /> New Event
         </button>
       </div>
@@ -311,6 +414,47 @@ export default function EventsModule({ password }: EventsModuleProps) {
                 <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Price (CAD)</label>
                   <input type="number" value={newEvent.priceCAD} onChange={(e) => setNewEvent(p => ({ ...p, priceCAD: parseInt(e.target.value) || 0, isFree: parseInt(e.target.value) === 0 }))} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm" /></div>
               </div>
+              {/* ── Community Pulse Fields ── */}
+              <div className="border-t border-[#F3EFE8] pt-4 mt-2">
+                <p className="text-xs font-semibold uppercase tracking-wider text-[#C8A97D] mb-3">Community Pulse Details</p>
+
+                {/* Scenario Hook */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Scenario Hook (EN)</label>
+                    <textarea value={newEvent.scenarioEn} onChange={(e) => setNewEvent(p => ({ ...p, scenarioEn: e.target.value }))} rows={2} placeholder="Your teen has stopped talking to you..." className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none focus:outline-none focus:border-[#C4878A]" /></div>
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Scenario Hook (AR)</label>
+                    <textarea value={newEvent.scenarioAr} onChange={(e) => setNewEvent(p => ({ ...p, scenarioAr: e.target.value }))} rows={2} dir="rtl" placeholder="ابنُك المراهق توقّف عن الحديث معك..." className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none focus:outline-none focus:border-[#C4878A]" /></div>
+                </div>
+
+                {/* Outcomes */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Outcomes (EN) — one per line</label>
+                    <textarea value={newEvent.outcomesEn} onChange={(e) => setNewEvent(p => ({ ...p, outcomesEn: e.target.value }))} rows={4} placeholder={"Identify your triggers\nBuild a family plan\nLearn 3 techniques"} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none focus:outline-none focus:border-[#C4878A]" /></div>
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Outcomes (AR) — one per line</label>
+                    <textarea value={newEvent.outcomesAr} onChange={(e) => setNewEvent(p => ({ ...p, outcomesAr: e.target.value }))} rows={4} dir="rtl" placeholder={"حدّد محفّزاتك\nابنِ خطّة عائليّة\nتعلّم 3 تقنيّات"} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none focus:outline-none focus:border-[#C4878A]" /></div>
+                </div>
+
+                {/* Audience + Format + Fee */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Audience (EN)</label>
+                    <input value={newEvent.audienceDescEn} onChange={(e) => setNewEvent(p => ({ ...p, audienceDescEn: e.target.value }))} placeholder="Parents of children aged 5-17" className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" /></div>
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Audience (AR)</label>
+                    <input value={newEvent.audienceDescAr} onChange={(e) => setNewEvent(p => ({ ...p, audienceDescAr: e.target.value }))} dir="rtl" placeholder="أولياء أمور الأطفال من 5 إلى 17" className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" /></div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Fee Display (EN)</label>
+                    <input value={newEvent.feeDisplayEn} onChange={(e) => setNewEvent(p => ({ ...p, feeDisplayEn: e.target.value }))} placeholder="Free, $75 CAD, Pay what you can" className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" /></div>
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Fee Display (AR)</label>
+                    <input value={newEvent.feeDisplayAr} onChange={(e) => setNewEvent(p => ({ ...p, feeDisplayAr: e.target.value }))} dir="rtl" placeholder="مجّانيّ، 75 دولار كنديّ" className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" /></div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Format (EN)</label>
+                    <input value={newEvent.formatDescEn} onChange={(e) => setNewEvent(p => ({ ...p, formatDescEn: e.target.value }))} placeholder="90-minute live webinar with Q&A" className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" /></div>
+                  <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Format (AR)</label>
+                    <input value={newEvent.formatDescAr} onChange={(e) => setNewEvent(p => ({ ...p, formatDescAr: e.target.value }))} dir="rtl" placeholder="ندوة حيّة مدّتها 90 دقيقة" className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A]" /></div>
+                </div>
+              </div>
+
               {/* Image Upload */}
               <ImageUpload
                 value={newEvent.image}
@@ -392,6 +536,115 @@ export default function EventsModule({ password }: EventsModuleProps) {
 
               {isExpanded && (
                 <div className="border-t border-[#F3EFE8] px-5 py-4 bg-[#FAF7F2]/30">
+                  {/* ── Lifecycle Controls ── */}
+                  <div className="mb-4 p-4 bg-white rounded-xl border border-[#F3EFE8]">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8E8E9F] mb-3">Event Lifecycle</h4>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {event.dateTBD !== false && (
+                        <span className="text-xs px-2.5 py-1 rounded-full bg-[#C8A97D]/10 text-[#C8A97D] font-semibold">Date TBD</span>
+                      )}
+                      {event.dateTBD === false && (
+                        <span className="text-xs px-2.5 py-1 rounded-full bg-[#3B8A6E]/10 text-[#3B8A6E] font-semibold">Date Confirmed</span>
+                      )}
+                      {event.pulseCount > 0 && (
+                        <span className="text-xs px-2.5 py-1 rounded-full bg-[#7A3B5E]/10 text-[#7A3B5E]">{event.pulseCount} votes · {event.pulseEmails} notify emails</span>
+                      )}
+                      <span className={`text-xs px-2.5 py-1 rounded-full ${event.registrationStatus === 'open' ? 'bg-[#3B8A6E]/10 text-[#3B8A6E]' : 'bg-[#8E8E9F]/10 text-[#8E8E9F]'}`}>
+                        Reg: {event.registrationStatus}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2 mt-3">
+                      {event.dateTBD !== false ? (
+                        <button onClick={() => setDatePickerSlug(datePickerSlug === event.slug ? null : event.slug)} disabled={overrideLoading === event.slug}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3B8A6E] text-white text-xs font-medium hover:bg-[#2D7A5E] disabled:opacity-50">
+                          <Calendar className="w-3.5 h-3.5" /> Set Date
+                        </button>
+                      ) : (
+                        <button onClick={() => handleResetToTBD(event.slug)} disabled={overrideLoading === event.slug}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#F3EFE8] text-xs text-[#8E8E9F] hover:bg-[#FAF7F2] disabled:opacity-50">
+                          <Clock className="w-3.5 h-3.5" /> Reset to TBD
+                        </button>
+                      )}
+                      <button onClick={() => handleToggleRegistration(event.slug, event.registrationStatus)} disabled={overrideLoading === event.slug}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium disabled:opacity-50 ${
+                          event.registrationStatus === 'open' ? 'border border-[#C4878A]/30 text-[#C4878A] hover:bg-[#C4878A]/5' : 'bg-[#3B8A6E] text-white hover:bg-[#2D7A5E]'}`}>
+                        {event.registrationStatus === 'open' ? <><EyeOff className="w-3.5 h-3.5" /> Close Reg</> : <><Eye className="w-3.5 h-3.5" /> Open Reg</>}
+                      </button>
+                      {event.dateTBD === false && event.pulseEmails > 0 && (
+                        <button onClick={() => handleSendDateAnnouncement(event.slug)}
+                          disabled={notifyStatus[event.slug]?.startsWith('sent') || notifyStatus[event.slug] === 'already-sent' || notifyStatus[event.slug] === 'sending'}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#C8A97D] text-white text-xs font-medium hover:bg-[#B08D5E] disabled:opacity-50">
+                          {notifyStatus[event.slug] === 'sending' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Bell className="w-3.5 h-3.5" />}
+                          {notifyStatus[event.slug]?.startsWith('sent') ? `Sent (${notifyStatus[event.slug].split(':')[1]})` : notifyStatus[event.slug] === 'already-sent' ? 'Already Sent' : `Notify ${event.pulseEmails}`}
+                        </button>
+                      )}
+                        {overrideLoading === event.slug && <Loader2 className="w-4 h-4 animate-spin text-[#7A3B5E]" />}
+                    </div>
+
+                    {/* Editable counts */}
+                    <div className="flex flex-wrap items-center gap-4 mt-3 pt-3 border-t border-[#F3EFE8]">
+                      {/* Pulse votes */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-semibold uppercase text-[#8E8E9F]">Votes:</span>
+                        {editingCount?.slug === event.slug && editingCount.field === 'pulse' ? (
+                          <div className="flex items-center gap-1">
+                            <input type="number" value={editingCount.value} onChange={e => setEditingCount({ ...editingCount, value: e.target.value })}
+                              className="w-16 px-2 py-1 rounded border border-[#E8E4DE] text-xs text-center focus:outline-none focus:border-[#7A3B5E]" autoFocus />
+                            <button onClick={() => handleUpdateCount(event.slug, 'pulse', parseInt(editingCount.value) || 0)}
+                              className="px-2 py-1 rounded bg-[#3B8A6E] text-white text-[10px] font-medium">Save</button>
+                            <button onClick={() => setEditingCount(null)} className="px-2 py-1 rounded border border-[#F3EFE8] text-[10px] text-[#8E8E9F]">Cancel</button>
+                          </div>
+                        ) : (
+                          <button onClick={() => setEditingCount({ slug: event.slug, field: 'pulse', value: String(event.pulseCount || 0) })}
+                            className="text-sm font-bold text-[#7A3B5E] hover:underline cursor-pointer">{event.pulseCount || 0}</button>
+                        )}
+                      </div>
+
+                      {/* Spots remaining */}
+                      {event.capacity && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-semibold uppercase text-[#8E8E9F]">Spots Left:</span>
+                          {editingCount?.slug === event.slug && editingCount.field === 'spots' ? (
+                            <div className="flex items-center gap-1">
+                              <input type="number" value={editingCount.value} onChange={e => setEditingCount({ ...editingCount, value: e.target.value })}
+                                className="w-16 px-2 py-1 rounded border border-[#E8E4DE] text-xs text-center focus:outline-none focus:border-[#7A3B5E]" autoFocus />
+                              <button onClick={() => handleUpdateCount(event.slug, 'spots', parseInt(editingCount.value) || 0)}
+                                className="px-2 py-1 rounded bg-[#3B8A6E] text-white text-[10px] font-medium">Save</button>
+                              <button onClick={() => setEditingCount(null)} className="px-2 py-1 rounded border border-[#F3EFE8] text-[10px] text-[#8E8E9F]">Cancel</button>
+                            </div>
+                          ) : (
+                            <button onClick={() => setEditingCount({ slug: event.slug, field: 'spots', value: String(event.spotsRemaining ?? event.capacity) })}
+                              className="text-sm font-bold text-[#4A4A5C] hover:underline cursor-pointer">{event.spotsRemaining ?? event.capacity} / {event.capacity}</button>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Registered count (read-only) */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-semibold uppercase text-[#8E8E9F]">Registered:</span>
+                        <span className="text-sm font-bold text-[#4A4A5C]">{event.registeredCount}</span>
+                      </div>
+                    </div>
+
+                    {datePickerSlug === event.slug && (
+                      <div className="mt-3 p-3 bg-[#FAF7F2] rounded-lg border border-[#F3EFE8]">
+                        <div className="grid grid-cols-3 gap-3 mb-3">
+                          <div><label className="block text-[10px] font-semibold uppercase text-[#8E8E9F] mb-1">Date</label>
+                            <input type="date" value={pendingDate} onChange={e => setPendingDate(e.target.value)} className="w-full px-2.5 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:border-[#3B8A6E] bg-white" /></div>
+                          <div><label className="block text-[10px] font-semibold uppercase text-[#8E8E9F] mb-1">Start</label>
+                            <input type="time" value={pendingStartTime} onChange={e => setPendingStartTime(e.target.value)} className="w-full px-2.5 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:border-[#3B8A6E] bg-white" /></div>
+                          <div><label className="block text-[10px] font-semibold uppercase text-[#8E8E9F] mb-1">End</label>
+                            <input type="time" value={pendingEndTime} onChange={e => setPendingEndTime(e.target.value)} className="w-full px-2.5 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:border-[#3B8A6E] bg-white" /></div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => handleSetDate(event.slug)} disabled={!pendingDate} className="px-4 py-1.5 rounded-lg bg-[#3B8A6E] text-white text-xs font-medium hover:bg-[#2D7A5E] disabled:opacity-40">Confirm Date</button>
+                          <button onClick={() => setDatePickerSlug(null)} className="px-4 py-1.5 rounded-lg border border-[#F3EFE8] text-xs text-[#8E8E9F] hover:bg-white">Cancel</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* ── Attendees ── */}
                   <div className="flex items-center justify-between mb-3">
                     <h4 className="text-sm font-semibold text-[#4A4A5C] flex items-center gap-1.5">
                       <ClipboardList className="w-4 h-4" /> Attendees ({regs.filter(r => !r.waitlisted).length})

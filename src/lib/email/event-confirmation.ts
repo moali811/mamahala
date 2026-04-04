@@ -6,6 +6,7 @@
 import type { SmartEvent } from '@/types';
 import { generateGoogleCalendarUrl } from '@/lib/calendar';
 import { getFormattedDate, getFormattedTime } from '@/data/events';
+import { getServiceBySlug } from '@/data/services';
 
 interface EventConfirmationParams {
   firstName: string;
@@ -122,6 +123,28 @@ export function generateEventConfirmationEmail(params: EventConfirmationParams):
       </td></tr>
     </table>
   </td></tr>` : ''}
+
+  ${(() => {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app';
+    const relatedService = event.relatedServiceSlug ? getServiceBySlug(event.relatedServiceSlug) : undefined;
+    if (!relatedService || waitlisted) return '';
+    const serviceName = isAr ? relatedService.nameAr : relatedService.name;
+    const serviceUrl = `${siteUrl}/${locale}/services/${relatedService.category}/${relatedService.slug}?utm_source=event&utm_medium=email&utm_campaign=${event.slug}`;
+    return `
+  <!-- Deeper Support CTA -->
+  <tr><td style="padding:0 0 24px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F2;border-radius:12px;border:1px solid #F3EFE8;">
+      <tr><td style="padding:20px;text-align:center;">
+        <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#7A3B5E;">💡 ${isAr ? 'هل تريدُ دعمًا أعمق؟' : 'Want Deeper Support?'}</p>
+        <p style="margin:0 0 12px;font-size:13px;color:#4A4A5C;line-height:1.5;">${isAr ? `ما تعلّمتَه في هذه الفعاليّة هو بدايةٌ رائعة. للحصولِ على إرشادٍ شخصيّ، د. هالة تقدّمُ جلساتِ "${serviceName}".` : `What you'll learn in this event is a great start. For personalized guidance, Dr. Hala offers "${serviceName}" sessions.`}</p>
+        <a href="${serviceUrl}" target="_blank" style="display:inline-block;padding:10px 24px;background:#C8A97D;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600;">
+          ${isAr ? 'تعرَّفْ على الخدمة' : 'Learn About This Service'}
+        </a>
+        <p style="margin:8px 0 0;font-size:12px;color:#8E8E9F;">${isAr ? 'الاستشارةُ الأولى مجّانيّة — 30 دقيقة' : 'First consultation is free — 30 minutes'}</p>
+      </td></tr>
+    </table>
+  </td></tr>`;
+  })()}
 
   <!-- Questions -->
   <tr><td style="padding:0 0 24px;text-align:center;">

@@ -277,23 +277,23 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Hero image editorial fade mask */
 @utility hero-mask-ltr {
-  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 70%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 95%);
 }
 
 @utility hero-mask-rtl {
-  mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 70%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 95%);
 }
 
 @media (min-width: 1024px) {
   .hero-mask-ltr {
-    mask-image: linear-gradient(to left, black 40%, transparent 95%);
-    -webkit-mask-image: linear-gradient(to left, black 40%, transparent 95%);
+    mask-image: linear-gradient(to left, black 60%, transparent 90%);
+    -webkit-mask-image: linear-gradient(to left, black 60%, transparent 90%);
   }
   .hero-mask-rtl {
-    mask-image: linear-gradient(to right, black 40%, transparent 95%);
-    -webkit-mask-image: linear-gradient(to right, black 40%, transparent 95%);
+    mask-image: linear-gradient(to right, black 60%, transparent 90%);
+    -webkit-mask-image: linear-gradient(to right, black 60%, transparent 90%);
   }
 }
 

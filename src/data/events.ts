@@ -12,7 +12,9 @@ export const events: SmartEvent[] = [
   {
     slug: 'parenting-digital-age',
     titleEn: 'Parenting in the Digital Age',
-    titleAr: 'الأبوة في العصر الرقمي',
+    titleAr: 'التّربية في العصرِ الرّقميّ',
+    scenarioEn: 'Your teen has stopped talking to you. Dinner is silent. Their phone is their whole world — and you feel like you\'re losing them.',
+    scenarioAr: 'ابنُك المراهقُ توقّفَ عن الحديثِ معك. العشاءُ صامت. هاتفُه هو عالمُه بأكملِه — وتشعرُ أنّك تفقدُه.',
     descriptionEn:
       'A free webinar exploring how to set healthy screen boundaries, keep communication open, and protect your child\'s emotional wellbeing in the digital age.',
     descriptionAr:
@@ -72,6 +74,24 @@ export const events: SmartEvent[] = [
         answerAr: 'نعم، سيحصل جميع المشاركين المسجلين على التسجيل خلال 24 ساعة.',
       },
     ],
+    outcomesEn: [
+      'Identify your child\'s screen triggers and emotional patterns',
+      'Build a family media agreement everyone can follow',
+      'Learn 3 conversation starters that replace conflict',
+      'Understand age-appropriate screen limits backed by research',
+    ],
+    outcomesAr: [
+      'حدِّدْ مُحفّزاتِ طفلِك تجاهَ الشّاشة وأنماطَه العاطفيّة',
+      'ابنِ اتّفاقيّةَ إعلامٍ عائليّةً يلتزمُ بها الجميع',
+      'تعلَّمْ 3 بداياتٍ للحوارِ تحلُّ محلَّ الصّراع',
+      'افهَمْ حدودَ الشّاشةِ المناسبةَ للعمرِ المدعومةَ بالأبحاث',
+    ],
+    audienceDescEn: 'Parents of children aged 5–17 navigating screens and technology',
+    audienceDescAr: 'أولياءُ أمورِ الأطفالِ من 5 إلى 17 عامًا الذين يتعاملونَ مع الشّاشاتِ والتّكنولوجيا',
+    feeDisplayEn: 'Free',
+    feeDisplayAr: 'مجّانيّ',
+    formatDescEn: '90-minute live webinar with Q&A on Google Meet',
+    formatDescAr: 'ندوةٌ حيّةٌ مدّتُها 90 دقيقةً مع أسئلةٍ وأجوبة عبر Google Meet',
     tags: ['parenting', 'screen-time', 'digital-wellness'],
   },
 
@@ -79,6 +99,8 @@ export const events: SmartEvent[] = [
     slug: 'couples-communication',
     titleEn: 'Couples Communication Workshop',
     titleAr: 'ورشة عمل تواصل الأزواج',
+    scenarioEn: 'You love each other — but the same argument keeps happening. You say one thing, they hear another. The distance is growing.',
+    scenarioAr: 'تحبّانِ بعضَكما — لكنّ الخلافَ نفسَه يتكرّر. تقولُ شيئًا ويسمعُ شريكُك شيئًا آخر. المسافةُ تكبُر.',
     descriptionEn:
       'An interactive workshop for couples looking to improve their communication skills, resolve conflicts constructively, and deepen their connection.',
     descriptionAr:
@@ -124,6 +146,24 @@ export const events: SmartEvent[] = [
       'دفتر وقلم',
       'الاستعداد لتجربة أساليب جديدة',
     ],
+    outcomesEn: [
+      'Understand your own and your partner\'s communication style',
+      'Learn the 4 patterns that predict relationship breakdown',
+      'Practice active listening exercises you can use at home',
+      'Leave with a personalized communication toolkit',
+    ],
+    outcomesAr: [
+      'افهَمْ أسلوبَ تواصلِك وأسلوبَ شريكِك',
+      'تعرَّفْ على الأنماطِ الأربعةِ التي تُنبئُ بانهيارِ العلاقة',
+      'مارِسْ تمارينَ الاستماعِ الفعّال التي يمكنُك استخدامُها في المنزل',
+      'غادِرْ بمجموعةِ أدواتِ تواصلٍ مُخصَّصة',
+    ],
+    audienceDescEn: 'Couples at any stage — whether newly together or decades in',
+    audienceDescAr: 'أزواجٌ في أيّ مرحلة — سواءٌ حديثو العلاقةِ أو منذ عقود',
+    feeDisplayEn: '$49 CAD per couple · Sliding scale available',
+    feeDisplayAr: '49 دولار كنديّ للزّوجَين · مقياسٌ متدرّجٌ متاح',
+    formatDescEn: '3-hour interactive workshop with breakout exercises',
+    formatDescAr: 'ورشةُ عملٍ تفاعليّةٌ مدّتُها 3 ساعاتٍ مع تمارينَ جماعيّة',
     tags: ['couples', 'communication', 'relationships'],
   },
 
@@ -131,6 +171,8 @@ export const events: SmartEvent[] = [
     slug: 'mindfulness-cultural-sharing',
     titleEn: 'Mindfulness and Cultural Sharing Afternoon',
     titleAr: 'عصرية اليقظة الذهنية والمشاركة الثقافية',
+    scenarioEn: 'You moved across the world for a better life — but some days you feel caught between two cultures, and your kids don\'t understand where you came from.',
+    scenarioAr: 'انتقلتَ عبرَ العالمِ لحياةٍ أفضل — لكنّك أحيانًا تشعرُ بأنّك عالقٌ بين ثقافتَين، وأطفالُك لا يفهمونَ من أينَ جئت.',
     descriptionEn:
       'Engage in mindfulness activities and cultural sharing to enhance family well-being, with a focus on promoting mental health in Arab families living abroad.',
     descriptionAr:
@@ -173,6 +215,24 @@ export const events: SmartEvent[] = [
       'دفتر أو مذكرة',
       'عنصر ثقافي أو وصفة للمشاركة (اختياري)',
     ],
+    outcomesEn: [
+      'Connect with other Arab families navigating life abroad',
+      'Learn mindfulness techniques rooted in cultural context',
+      'Share stories in a safe, judgment-free space',
+      'Build a local support network that understands your experience',
+    ],
+    outcomesAr: [
+      'تواصَلْ مع عائلاتٍ عربيّةٍ أخرى تعيشُ في الخارج',
+      'تعلَّمْ تقنيّاتِ اليقظةِ الذّهنيّةِ المتجذّرةِ في السّياقِ الثّقافيّ',
+      'شارِكْ قصصَك في مساحةٍ آمنةٍ خاليةٍ من الأحكام',
+      'ابنِ شبكةَ دعمٍ محلّيّةً تفهمُ تجربتَك',
+    ],
+    audienceDescEn: 'Arab families living abroad — all generations welcome',
+    audienceDescAr: 'العائلاتُ العربيّةُ المقيمةُ في الخارج — جميعُ الأجيالِ مرحَّبٌ بها',
+    feeDisplayEn: 'Free — community gathering',
+    feeDisplayAr: 'مجّانيّ — لقاءٌ مجتمعيّ',
+    formatDescEn: '2-hour in-person gathering with tea, mindfulness, and sharing circles',
+    formatDescAr: 'لقاءٌ حضوريٌّ مدّتُه ساعتان مع شاي ويقظةٍ ذهنيّةٍ وحلقاتِ مشاركة',
     tags: ['mindfulness', 'cultural', 'community', 'arab-families'],
   },
 
@@ -180,6 +240,8 @@ export const events: SmartEvent[] = [
     slug: 'empowering-parents-emotional-growth',
     titleEn: 'Empowering Parents for Emotional Growth',
     titleAr: 'تمكين الوالدين للنمو العاطفي',
+    scenarioEn: 'Your child had a meltdown at the store — again. You tried everything. You\'re exhausted, and you\'re starting to wonder if you\'re doing this wrong.',
+    scenarioAr: 'طفلُك انهارَ في المتجرِ — مرّةً أخرى. جرّبتَ كلَّ شيء. أنتَ مُنهَك، وبدأتَ تتساءلُ إن كنتَ تفعلُ هذا بشكلٍ خاطئ.',
     descriptionEn:
       'Participate in dynamic sessions designed to empower parents with strategies for nurturing emotional growth and health in children.',
     descriptionAr:
@@ -234,6 +296,24 @@ export const events: SmartEvent[] = [
       'أمثلة على لحظات صعبة مع طفلك',
       'قلب منفتح',
     ],
+    outcomesEn: [
+      'Respond to meltdowns with calm confidence instead of frustration',
+      'Understand the brain science behind big emotions in children',
+      'Build an emotional vocabulary with your child',
+      'Create a "cool down" plan that actually works',
+    ],
+    outcomesAr: [
+      'استجِبْ لنوباتِ الغضبِ بثقةٍ هادئةٍ بدلاً من الإحباط',
+      'افهَمْ علمَ الدّماغِ وراءَ المشاعرِ الكبيرةِ لدى الأطفال',
+      'ابنِ مفرداتٍ عاطفيّةً مع طفلِك',
+      'أنشِئْ خطّةَ "تهدئة" تعملُ فعلاً',
+    ],
+    audienceDescEn: 'Parents of children aged 3–12 dealing with emotional challenges',
+    audienceDescAr: 'أولياءُ أمورِ الأطفالِ من 3 إلى 12 عامًا الذين يواجهونَ تحدّياتٍ عاطفيّة',
+    feeDisplayEn: '$149 CAD for the full 4-week program · Pay what you can',
+    feeDisplayAr: '149 دولار كنديّ للبرنامجِ الكامل · ادفَعْ ما تستطيع',
+    formatDescEn: '4-week program — 1 hour per week, live online with homework exercises',
+    formatDescAr: 'برنامجٌ من 4 أسابيع — ساعةٌ أسبوعيًّا، حيّ عبرَ الإنترنت مع تمارينَ منزليّة',
     tags: ['parenting', 'emotional-growth', 'children'],
   },
 
@@ -241,6 +321,8 @@ export const events: SmartEvent[] = [
     slug: 'quiet-strength-anxiety-nature',
     titleEn: 'Quiet Strength: Anxiety Skills in Nature',
     titleAr: 'القوة الهادئة: مهارات التعامل مع القلق في الطبيعة',
+    scenarioEn: 'The racing thoughts won\'t stop. Your chest feels tight. You\'ve tried apps and breathing videos — but nothing sticks when the anxiety hits.',
+    scenarioAr: 'الأفكارُ المتسارعةُ لا تتوقّف. صدرُك يضيق. جرّبتَ التّطبيقاتِ وفيديوهاتِ التّنفّس — لكن لا شيءَ يَثبُتُ عندما يضربُ القلق.',
     descriptionEn:
       'Learn grounding and anxiety management techniques in a peaceful outdoor setting. Suitable for teens and adults.',
     descriptionAr:
@@ -283,6 +365,24 @@ export const events: SmartEvent[] = [
       'واقي شمسي',
       'بطانية صغيرة أو حصيرة للجلوس',
     ],
+    outcomesEn: [
+      'Learn 5 grounding techniques you can use anywhere, anytime',
+      'Understand why nature reduces anxiety at a neurological level',
+      'Practice mindful walking and sensory awareness exercises',
+      'Leave with a personal anxiety toolkit tailored to your needs',
+    ],
+    outcomesAr: [
+      'تعلَّمْ 5 تقنيّاتٍ للتّأريضِ يمكنُك استخدامُها في أيّ مكانٍ وزمان',
+      'افهَمْ لماذا تُقلّلُ الطّبيعةُ القلقَ على المستوى العصبيّ',
+      'مارِسِ المشيَ اليقِظَ وتمارينَ الوعيِ الحسّيّ',
+      'غادِرْ بمجموعةِ أدواتِ قلقٍ شخصيّةٍ مُصمَّمةٍ لاحتياجاتِك',
+    ],
+    audienceDescEn: 'Teens and adults experiencing anxiety — no prior experience needed',
+    audienceDescAr: 'المراهقونَ والبالغونَ الذين يعانونَ من القلق — لا تجربةَ سابقةً مطلوبة',
+    feeDisplayEn: '$99 CAD — includes materials and refreshments · Sliding scale available',
+    feeDisplayAr: '99 دولار كنديّ — يشملُ الموادَّ والمرطّبات · مقياسٌ متدرّجٌ متاح',
+    formatDescEn: 'Half-day outdoor retreat (5 hours) in a peaceful nature setting',
+    formatDescAr: 'خلوةٌ في الهواءِ الطّلقِ لنصفِ يوم (5 ساعات) في بيئةٍ طبيعيّةٍ هادئة',
     tags: ['anxiety', 'nature', 'grounding', 'mindfulness'],
   },
 

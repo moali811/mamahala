@@ -16,9 +16,13 @@ import {
   Mail,
   Check,
   Unlock,
+  Compass,
+  PenLine,
+  ListChecks,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
+import MobileCarousel from '@/components/ui/MobileCarousel';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -170,10 +174,10 @@ const resources: DownloadResource[] = [
 ];
 
 const typeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
-  guide: FileText,
-  worksheet: FileText,
+  guide: Compass,
+  worksheet: PenLine,
   ebook: BookOpen,
-  checklist: FileText,
+  checklist: ListChecks,
 };
 
 const typeLabels: Record<string, { en: string; ar: string }> = {
@@ -359,7 +363,7 @@ export default function DownloadsPage() {
             </ScrollReveal>
           )}
 
-          <StaggerReveal className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <MobileCarousel desktopGrid="sm:grid-cols-2 lg:grid-cols-3" gap={32} mobileWidth="85vw">
             {resources.map((resource) => {
               const title = isRTL ? resource.title.ar : resource.title.en;
               const description = isRTL ? resource.description.ar : resource.description.en;
@@ -368,8 +372,7 @@ export default function DownloadsPage() {
               const TypeIcon = typeIcons[resource.type] || FileText;
 
               return (
-                <StaggerChild key={resource.id}>
-                  <motion.div
+                <motion.div key={resource.id}
                     className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300 h-full flex flex-col"
                     whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -440,10 +443,9 @@ export default function DownloadsPage() {
                       </div>
                     </div>
                   </motion.div>
-                </StaggerChild>
               );
             })}
-          </StaggerReveal>
+          </MobileCarousel>
         </div>
       </section>
 

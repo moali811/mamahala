@@ -6,7 +6,7 @@
 
 import { kv } from '@vercel/kv';
 
-export type EventType = 'toolkit_download' | 'newsletter_signup' | 'booking_visit' | 'contact_form' | 'page_view' | 'service_detail_view' | 'event_registration';
+export type EventType = 'toolkit_download' | 'newsletter_signup' | 'booking_visit' | 'contact_form' | 'page_view' | 'service_detail_view' | 'event_registration' | 'event_to_service_click' | 'event_to_booking';
 
 export interface AnalyticsEvent {
   type: EventType;

@@ -319,19 +319,18 @@ export default function HomePage() {
         {/* Editorial image — soft fade via CSS mask */}
         <div className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}>
           <Image
-            src="/images/hala-confident.PNG"
+            src="/images/hala-confident.webp"
             alt="Dr. Hala Ali - Mama Hala"
             fill
             priority
-            quality={100}
-            unoptimized
+            quality={90}
             sizes="(min-width: 1536px) 60vw, (min-width: 1024px) 55vw, 100vw"
             className="object-cover object-top"
           />
         </div>
 
-        {/* Mobile text readability gradient — hidden on desktop where mask handles separation */}
-        <div className="absolute inset-0 z-[5] bg-gradient-to-t from-[#FDF8F4] via-[#FDF8F4]/85 to-transparent lg:hidden" />
+        {/* Mobile text readability gradient — lighter to preserve image richness */}
+        <div className="absolute inset-0 z-[5] bg-gradient-to-t from-[#FDF8F4] via-[#FDF8F4]/60 to-transparent lg:hidden" />
 
         {/* Content layer */}
         <div className="container-main relative z-10 flex flex-col justify-end lg:justify-center min-h-[80vh] lg:min-h-[75vh] pb-6 lg:pb-6 lg:pt-8">
@@ -348,21 +347,28 @@ export default function HomePage() {
 
             <h1
               className={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] tracking-tight mb-4 ${isRTL ? 'text-right w-full' : ''}`}
-              style={{ fontFamily: 'var(--font-heading)' }}
+              style={{ fontFamily: 'var(--font-heading)', textShadow: '0 1px 12px rgba(253,248,244,0.6)' }}
             >
               <span className="block text-[#2D2A33]">
                 {isRTL ? <>لحياةٍ مُفعَمةٍ</> : <>For a Life Full of</>}
               </span>
+              {/* Kinetic color on desktop only — static plum on mobile for performance */}
               <motion.span
                 animate={{ color: ['#7A3B5E', '#C4878A', '#7A3B5E'] }}
                 transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-                className="block italic mt-1"
+                className="hidden lg:block italic mt-1"
               >
                 {isRTL ? <>بالحبِّ والسّكينةِ والسّلام.</> : <>Love, Tranquility {'\u0026'} Peace.</>}
               </motion.span>
+              <span className="block lg:hidden italic mt-1 text-[#7A3B5E]">
+                {isRTL ? <>بالحبِّ والسّكينةِ والسّلام.</> : <>Love, Tranquility {'\u0026'} Peace.</>}
+              </span>
             </h1>
 
-            <p className={`text-base lg:text-lg text-[#4A4A5C] max-w-md leading-relaxed mb-6 ${isRTL ? 'text-right ml-auto' : ''}`}>
+            <p
+              className={`text-base lg:text-lg text-[#3A3848] max-w-md leading-relaxed mb-6 ${isRTL ? 'text-right ml-auto' : ''}`}
+              style={{ textShadow: '0 1px 8px rgba(253,248,244,0.5)' }}
+            >
               <span className="hidden sm:inline">{messages.hero.subtitle}</span>
               <span className="sm:hidden">
                 {isRTL ? 'استشاراتٌ مهنيّةٌ للأفرادِ والأُسَرِ والأزواج.' : 'Professional counseling for individuals, families & couples.'}
@@ -383,61 +389,78 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Trust bar */}
+        {/* Trust bar — horizontal pills on mobile, full grid on desktop */}
         <div className="relative z-20 bg-[#FDF8F4]">
-          <div className="container-main py-4">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4">
-              {[
-                {
-                  icon: GraduationCap,
-                  value: isRTL ? 'ييل' : 'Yale',
-                  label: isRTL ? 'دكتوراه مهنيّة' : 'Professional Doctorate',
-                  desc: isRTL ? 'صحّةُ الطّفلِ والأسرة' : 'Child & Family Health',
-                  color: '#7A3B5E',
-                },
-                {
-                  icon: Heart,
-                  value: isRTL ? 'مُعتمَدة' : 'Certified',
-                  label: isRTL ? 'مُستشارةٌ أُسَريّة' : 'Family Counselor',
-                  desc: isRTL ? 'علاجٌ سلوكيٌّ معرفيٌّ وتدريبٌ تنفيذيّ' : 'CBT specialist & executive coach',
-                  color: '#C4878A',
-                },
-                {
-                  icon: MessageCircle,
-                  value: isRTL ? 'ثنائيُّ اللّغة' : 'Bilingual',
-                  label: isRTL ? 'عربي / English' : 'English / عربي',
-                  desc: isRTL ? 'دعمٌ حسّاسٌ ثقافيًّا' : 'Culturally sensitive support',
-                  color: '#C8A97D',
-                },
-                {
-                  icon: Calendar,
-                  value: isRTL ? 'عبر الإنترنت' : 'Online',
-                  label: isRTL ? 'وحضوري' : '& In-Person',
-                  desc: isRTL ? 'جلساتٌ مَرِنةٌ عالميًّا' : 'Flexible sessions worldwide',
-                  color: '#7A3B5E',
-                },
-              ].map((stat, i) => {
-                const Icon = stat.icon;
-                return (
-                  <div key={i} className="group flex items-start gap-3 lg:flex-col lg:items-center lg:text-center">
-                    <div
-                      className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
-                      style={{ backgroundColor: `${stat.color}12` }}
-                    >
-                      <Icon className="w-5 h-5" style={{ color: stat.color }} />
-                    </div>
-                    <div>
-                      <div className="text-xl lg:text-2xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
-                        {stat.value}
-                      </div>
-                      <div className="text-sm font-medium text-[#4A4A5C]">{stat.label}</div>
-                      <div className="text-xs text-[#8E8E9F] mt-0.5 hidden lg:block">{stat.desc}</div>
-                    </div>
+          {(() => {
+            const trustItems = [
+              {
+                icon: GraduationCap,
+                value: isRTL ? 'ييل' : 'Yale',
+                label: isRTL ? 'دكتوراه مهنيّة' : 'Professional Doctorate',
+                desc: isRTL ? 'صحّةُ الطّفلِ والأسرة' : 'Child & Family Health',
+                color: '#7A3B5E',
+              },
+              {
+                icon: Heart,
+                value: isRTL ? 'مُعتمَدة' : 'Certified',
+                label: isRTL ? 'مُستشارةٌ أُسَريّة' : 'Family Counselor',
+                desc: isRTL ? 'علاجٌ سلوكيٌّ معرفيٌّ وتدريبٌ تنفيذيّ' : 'CBT specialist & executive coach',
+                color: '#C4878A',
+              },
+              {
+                icon: MessageCircle,
+                value: isRTL ? 'ثنائيُّ اللّغة' : 'Bilingual',
+                label: isRTL ? 'عربي / English' : 'English / عربي',
+                desc: isRTL ? 'دعمٌ حسّاسٌ ثقافيًّا' : 'Culturally sensitive support',
+                color: '#C8A97D',
+              },
+              {
+                icon: Calendar,
+                value: isRTL ? 'عبر الإنترنت' : 'Online',
+                label: isRTL ? 'وحضوري' : '& In-Person',
+                desc: isRTL ? 'جلساتٌ مَرِنةٌ عالميًّا' : 'Flexible sessions worldwide',
+                color: '#7A3B5E',
+              },
+            ];
+            return (
+              <>
+                {/* Mobile: elegant single-line trust whisper */}
+                <div className="lg:hidden py-5 text-center">
+                  <p className="text-[11px] tracking-[0.08em] text-[#8E8E9F] leading-relaxed">
+                    {isRTL
+                      ? 'ييل · مُعتمَدة · ثنائيّةُ اللّغة · عبر الإنترنت وحضوريًّا'
+                      : 'Yale · Certified · Bilingual · Online & In-Person'}
+                  </p>
+                </div>
+
+                {/* Desktop: full grid */}
+                <div className="hidden lg:block container-main py-4">
+                  <div className="grid grid-cols-4 gap-4">
+                    {trustItems.map((stat, i) => {
+                      const Icon = stat.icon;
+                      return (
+                        <div key={i} className="group flex flex-col items-center text-center">
+                          <div
+                            className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center"
+                            style={{ backgroundColor: `${stat.color}12` }}
+                          >
+                            <Icon className="w-5 h-5" style={{ color: stat.color }} />
+                          </div>
+                          <div>
+                            <div className="text-2xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
+                              {stat.value}
+                            </div>
+                            <div className="text-sm font-medium text-[#4A4A5C]">{stat.label}</div>
+                            <div className="text-xs text-[#8E8E9F] mt-0.5">{stat.desc}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </div>
+              </>
+            );
+          })()}
         </div>
       </section>
 

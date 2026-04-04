@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
   Calendar, Users, Plus, Download, RefreshCw, Lock, Eye, EyeOff,
-  Sparkles, Search, ChevronDown, ChevronUp, UserPlus,
+  Sparkles, Search, ChevronDown, ChevronUp, UserPlus, Bell, Send,
   Clock, MapPin, Trash2, ExternalLink, BarChart3, ArrowLeft,
   ClipboardList, AlertTriangle, CheckCircle, Loader2,
 } from 'lucide-react';
@@ -13,6 +13,7 @@ interface EventStat {
   titleEn: string;
   titleAr: string;
   date: string;
+  dateTBD?: boolean;
   type: string;
   registrationType: string;
   capacity: number | null;
@@ -20,7 +21,10 @@ interface EventStat {
   waitlistedCount: number;
   spotsRemaining: number | null;
   registrationStatus: string;
+  pulseCount: number;
+  pulseEmails: number;
   source: 'static' | 'kv';
+  hasOverrides?: boolean;
 }
 
 interface Registration {
@@ -148,6 +152,78 @@ export default function AdminEventsPage() {
     URL.revokeObjectURL(url);
   };
 
+  // ─── LIFECYCLE CONTROLS ───
+  const [datePickerSlug, setDatePickerSlug] = useState<string | null>(null);
+  const [pendingDate, setPendingDate] = useState('');
+  const [pendingStartTime, setPendingStartTime] = useState('');
+  const [pendingEndTime, setPendingEndTime] = useState('');
+  const [overrideLoading, setOverrideLoading] = useState<string | null>(null);
+
+  const applyOverride = async (slug: string, overrides: Record<string, unknown>) => {
+    setOverrideLoading(slug);
+    try {
+      const res = await fetch('/api/events/manage', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${password}`,
+        },
+        body: JSON.stringify({ slug, overrides }),
+      });
+      if (res.ok) {
+        await fetchData(); // Refresh
+      }
+    } catch { /* ignore */ }
+    setOverrideLoading(null);
+  };
+
+  const handleSetDate = async (slug: string) => {
+    if (!pendingDate) return;
+    await applyOverride(slug, {
+      date: pendingDate,
+      startTime: pendingStartTime || '10:00',
+      endTime: pendingEndTime || '12:00',
+      dateTBD: false,
+    });
+    setDatePickerSlug(null);
+    setPendingDate('');
+    setPendingStartTime('');
+    setPendingEndTime('');
+  };
+
+  const handleToggleRegistration = async (slug: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'open' ? 'closed' : 'open';
+    await applyOverride(slug, { registrationStatus: newStatus });
+  };
+
+  const handleResetToTBD = async (slug: string) => {
+    await applyOverride(slug, { dateTBD: true });
+  };
+
+  const [notifyStatus, setNotifyStatus] = useState<Record<string, string>>({});
+
+  const handleSendDateAnnouncement = async (slug: string) => {
+    setNotifyStatus((prev) => ({ ...prev, [slug]: 'sending' }));
+    try {
+      const res = await fetch('/api/events/notify-date', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${password}`,
+        },
+        body: JSON.stringify({ slug }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNotifyStatus((prev) => ({ ...prev, [slug]: `sent:${data.sent}/${data.total}` }));
+      } else {
+        setNotifyStatus((prev) => ({ ...prev, [slug]: data.alreadySent ? 'already-sent' : `error:${data.error}` }));
+      }
+    } catch {
+      setNotifyStatus((prev) => ({ ...prev, [slug]: 'error:Failed' }));
+    }
+  };
+
   const handleCreateEvent = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -182,72 +258,49 @@ export default function AdminEventsPage() {
     } catch { setError('Failed to create event'); }
   };
 
-  // AI Content Generator
+  // AI Content Generator — uses Claude API via /api/admin/ai-generate
   const generateAIContent = async () => {
     if (!aiPrompt.trim()) return;
     setAiLoading(true);
     setAiSuggestion('');
 
-    // Smart template-based generation (no external AI API needed)
-    const prompt = aiPrompt.toLowerCase();
-    let suggestion = '';
+    try {
+      const res = await fetch('/api/admin/ai-generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${password}`,
+        },
+        body: JSON.stringify({ type: 'event-full', prompt: aiPrompt }),
+      });
 
-    if (prompt.includes('workshop') || prompt.includes('ورشة')) {
-      const topics = ['parenting', 'communication', 'mindfulness', 'resilience', 'emotional growth'];
-      const topic = topics.find(t => prompt.includes(t)) || 'wellness';
-      suggestion = JSON.stringify({
-        titleEn: `${topic.charAt(0).toUpperCase() + topic.slice(1)} Workshop: Building Stronger Foundations`,
-        descriptionEn: `An interactive, hands-on workshop designed to equip participants with practical ${topic} strategies they can implement immediately. Led by Dr. Hala Ali, this session combines evidence-based approaches with culturally sensitive guidance.`,
-        type: 'workshop',
-        capacity: 25,
-        duration: '2-3 hours',
-        suggestedPrice: 'CAD $45-75',
-      }, null, 2);
-    } else if (prompt.includes('webinar') || prompt.includes('ندوة')) {
-      suggestion = JSON.stringify({
-        titleEn: `Free Webinar: ${aiPrompt.replace(/webinar|free|about/gi, '').trim() || 'Expert Insights for Families'}`,
-        descriptionEn: `Join Dr. Hala Ali for an informative online session exploring practical strategies and evidence-based insights. This free webinar includes Q&A time and a downloadable resource guide.`,
-        type: 'webinar',
-        capacity: 100,
-        isFree: true,
-        duration: '60-90 minutes',
-      }, null, 2);
-    } else if (prompt.includes('retreat') || prompt.includes('خلوة')) {
-      suggestion = JSON.stringify({
-        titleEn: `Retreat: ${aiPrompt.replace(/retreat|about/gi, '').trim() || 'Finding Peace in Nature'}`,
-        descriptionEn: `An immersive outdoor experience combining evidence-based therapeutic techniques with the healing power of nature. Participants will learn grounding exercises, mindful movement, and stress regulation skills in a peaceful setting.`,
-        type: 'retreat',
-        capacity: 15,
-        duration: '4-6 hours',
-        suggestedPrice: 'CAD $35-65',
-      }, null, 2);
-    } else {
-      suggestion = JSON.stringify({
-        titleEn: `${aiPrompt.trim()}`,
-        descriptionEn: `A thoughtfully designed event by Mama Hala Consulting, bringing together community members for shared growth and connection. Led by Dr. Hala Ali, this session offers practical takeaways grounded in evidence-based practice.`,
-        type: 'community-gathering',
-        capacity: 40,
-        duration: '2-3 hours',
-      }, null, 2);
+      const data = await res.json();
+
+      if (data.success && data.generated) {
+        const gen = data.generated;
+        setAiSuggestion(JSON.stringify(gen, null, 2));
+
+        // Auto-fill form
+        setNewEvent(prev => ({
+          ...prev,
+          titleEn: gen.titleEn || prev.titleEn,
+          titleAr: gen.titleAr || prev.titleAr,
+          descriptionEn: gen.descriptionEn || prev.descriptionEn,
+          descriptionAr: gen.descriptionAr || prev.descriptionAr,
+          type: gen.type || prev.type,
+          capacity: gen.capacity || prev.capacity,
+          isFree: gen.isFree ?? prev.isFree,
+          priceCAD: gen.priceCAD || prev.priceCAD,
+        }));
+      } else {
+        // Fallback to simple template
+        setAiSuggestion(data.error || 'AI generation failed. Fill in manually.');
+      }
+    } catch {
+      setAiSuggestion('Connection error. Fill in manually.');
     }
 
-    // Simulate brief loading for UX
-    await new Promise(r => setTimeout(r, 800));
-    setAiSuggestion(suggestion);
     setAiLoading(false);
-
-    // Auto-fill form from suggestion
-    try {
-      const parsed = JSON.parse(suggestion);
-      setNewEvent(prev => ({
-        ...prev,
-        titleEn: parsed.titleEn || prev.titleEn,
-        descriptionEn: parsed.descriptionEn || prev.descriptionEn,
-        type: parsed.type || prev.type,
-        capacity: parsed.capacity || prev.capacity,
-        isFree: parsed.isFree ?? prev.isFree,
-      }));
-    } catch { /* ignore parse errors */ }
   };
 
   // Auto-refresh
@@ -561,6 +614,9 @@ export default function AdminEventsPage() {
                       {event.source === 'kv' && (
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#C8A97D]/10 text-[#C8A97D] font-semibold uppercase">Custom</span>
                       )}
+                      {event.dateTBD !== false && !isPast && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#C8A97D]/10 text-[#C8A97D] font-semibold uppercase">TBD</span>
+                      )}
                       {isPast && (
                         <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#8E8E9F]/10 text-[#8E8E9F] font-semibold uppercase">Past</span>
                       )}
@@ -604,9 +660,160 @@ export default function AdminEventsPage() {
                   </div>
                 </button>
 
-                {/* Expanded: Attendee List */}
+                {/* Expanded: Lifecycle Controls + Attendee List */}
                 {isExpanded && (
                   <div className="border-t border-[#F3EFE8] px-5 py-4 bg-[#FAF7F2]/30">
+                    {/* ── Lifecycle Controls ── */}
+                    <div className="mb-4 p-4 bg-white rounded-xl border border-[#F3EFE8]">
+                      <h4 className="text-xs font-semibold uppercase tracking-wider text-[#8E8E9F] mb-3">Event Lifecycle</h4>
+                      <div className="flex flex-wrap items-center gap-3">
+                        {/* Status badges */}
+                        {event.dateTBD !== false && (
+                          <span className="text-xs px-2.5 py-1 rounded-full bg-[#C8A97D]/10 text-[#C8A97D] font-semibold">
+                            Date TBD — Concept Stage
+                          </span>
+                        )}
+                        {event.dateTBD === false && (
+                          <span className="text-xs px-2.5 py-1 rounded-full bg-[#3B8A6E]/10 text-[#3B8A6E] font-semibold">
+                            Date Confirmed
+                          </span>
+                        )}
+                        {event.pulseCount > 0 && (
+                          <span className="text-xs px-2.5 py-1 rounded-full bg-[#7A3B5E]/10 text-[#7A3B5E] font-medium">
+                            {event.pulseCount} pulse votes · {event.pulseEmails} notify emails
+                          </span>
+                        )}
+                        <span className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                          event.registrationStatus === 'open'
+                            ? 'bg-[#3B8A6E]/10 text-[#3B8A6E]'
+                            : 'bg-[#8E8E9F]/10 text-[#8E8E9F]'
+                        }`}>
+                          Registration: {event.registrationStatus}
+                        </span>
+                        {event.hasOverrides && (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#7A3B5E]/10 text-[#7A3B5E] font-semibold uppercase">
+                            Has Overrides
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Action buttons */}
+                      <div className="flex flex-wrap items-center gap-2 mt-3">
+                        {/* Set Date / Reset to TBD */}
+                        {event.dateTBD !== false ? (
+                          <button
+                            onClick={() => setDatePickerSlug(datePickerSlug === event.slug ? null : event.slug)}
+                            disabled={overrideLoading === event.slug}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#3B8A6E] text-white text-xs font-medium hover:bg-[#2D7A5E] transition-colors disabled:opacity-50"
+                          >
+                            <Calendar className="w-3.5 h-3.5" />
+                            Set Date
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleResetToTBD(event.slug)}
+                            disabled={overrideLoading === event.slug}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#F3EFE8] text-xs text-[#8E8E9F] hover:bg-[#FAF7F2] transition-colors disabled:opacity-50"
+                          >
+                            <Clock className="w-3.5 h-3.5" />
+                            Reset to TBD
+                          </button>
+                        )}
+
+                        {/* Toggle Registration */}
+                        <button
+                          onClick={() => handleToggleRegistration(event.slug, event.registrationStatus)}
+                          disabled={overrideLoading === event.slug}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors disabled:opacity-50 ${
+                            event.registrationStatus === 'open'
+                              ? 'border border-[#C4878A]/30 text-[#C4878A] hover:bg-[#C4878A]/5'
+                              : 'bg-[#3B8A6E] text-white hover:bg-[#2D7A5E]'
+                          }`}
+                        >
+                          {event.registrationStatus === 'open' ? (
+                            <><EyeOff className="w-3.5 h-3.5" /> Close Registration</>
+                          ) : (
+                            <><Eye className="w-3.5 h-3.5" /> Open Registration</>
+                          )}
+                        </button>
+
+                        {/* Send Date Announcement (only when date is set and has notify emails) */}
+                        {event.dateTBD === false && event.pulseEmails > 0 && (
+                          <button
+                            onClick={() => handleSendDateAnnouncement(event.slug)}
+                            disabled={notifyStatus[event.slug]?.startsWith('sent') || notifyStatus[event.slug] === 'already-sent' || notifyStatus[event.slug] === 'sending'}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#C8A97D] text-white text-xs font-medium hover:bg-[#B08D5E] transition-colors disabled:opacity-50"
+                          >
+                            {notifyStatus[event.slug] === 'sending' ? (
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            ) : (
+                              <Bell className="w-3.5 h-3.5" />
+                            )}
+                            {notifyStatus[event.slug]?.startsWith('sent')
+                              ? `Sent (${notifyStatus[event.slug].split(':')[1]})`
+                              : notifyStatus[event.slug] === 'already-sent'
+                                ? 'Already Sent'
+                                : `Notify ${event.pulseEmails} Subscriber${event.pulseEmails !== 1 ? 's' : ''}`}
+                          </button>
+                        )}
+
+                        {overrideLoading === event.slug && (
+                          <Loader2 className="w-4 h-4 animate-spin text-[#7A3B5E]" />
+                        )}
+                      </div>
+
+                      {/* Date picker (shown when "Set Date" is clicked) */}
+                      {datePickerSlug === event.slug && (
+                        <div className="mt-3 p-3 bg-[#FAF7F2] rounded-lg border border-[#F3EFE8]">
+                          <div className="grid grid-cols-3 gap-3 mb-3">
+                            <div>
+                              <label className="block text-[10px] font-semibold uppercase text-[#8E8E9F] mb-1">Date</label>
+                              <input
+                                type="date"
+                                value={pendingDate}
+                                onChange={(e) => setPendingDate(e.target.value)}
+                                className="w-full px-2.5 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:border-[#3B8A6E] bg-white"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-semibold uppercase text-[#8E8E9F] mb-1">Start</label>
+                              <input
+                                type="time"
+                                value={pendingStartTime}
+                                onChange={(e) => setPendingStartTime(e.target.value)}
+                                className="w-full px-2.5 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:border-[#3B8A6E] bg-white"
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-[10px] font-semibold uppercase text-[#8E8E9F] mb-1">End</label>
+                              <input
+                                type="time"
+                                value={pendingEndTime}
+                                onChange={(e) => setPendingEndTime(e.target.value)}
+                                className="w-full px-2.5 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:border-[#3B8A6E] bg-white"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleSetDate(event.slug)}
+                              disabled={!pendingDate}
+                              className="px-4 py-1.5 rounded-lg bg-[#3B8A6E] text-white text-xs font-medium hover:bg-[#2D7A5E] transition-colors disabled:opacity-40"
+                            >
+                              Confirm Date
+                            </button>
+                            <button
+                              onClick={() => setDatePickerSlug(null)}
+                              className="px-4 py-1.5 rounded-lg border border-[#F3EFE8] text-xs text-[#8E8E9F] hover:bg-white transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* ── Attendees ── */}
                     <div className="flex items-center justify-between mb-3">
                       <h4 className="text-sm font-semibold text-[#4A4A5C] flex items-center gap-1.5">
                         <ClipboardList className="w-4 h-4" />

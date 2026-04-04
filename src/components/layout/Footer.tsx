@@ -54,6 +54,7 @@ export default function Footer({ locale, messages }: FooterProps) {
     { label: isRTL ? 'احجز جلسة' : 'Book a Session', href: `/${locale}/book-a-session` },
     { label: isRTL ? 'هديّةُ رعاية' : 'Gift of Care', href: `/${locale}/gift` },
     { label: isRTL ? 'الاختبار السريع' : 'Take the Quiz', href: `/${locale}/quiz` },
+    { label: isRTL ? 'لوحة التعلّم' : 'My Dashboard', href: `/${locale}/dashboard` },
   ];
 
 
