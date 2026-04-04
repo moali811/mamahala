@@ -105,31 +105,58 @@ export default function ProgramOverviewPage() {
     setShowCalModal(true);
   };
 
+  const [verifyingPayment, setVerifyingPayment] = useState(false);
+
   const handleCalModalClose = () => {
     setShowCalModal(false);
-    // After closing Cal modal, show confirmation
-    if (unlockingModuleSlug) {
-      const confirmed = window.confirm(
-        isRTL
-          ? 'هل أتممت الدفع بنجاح؟ اضغط موافق لفتح الوحدة.'
-          : 'Did you complete the payment? Click OK to unlock the module.'
-      );
-      if (confirmed) {
-        localStorage.setItem(`academy:paid:${slug}:${unlockingModuleSlug}`, 'true');
-        setUnlockedModules(prev => new Set([...prev, unlockingModuleSlug]));
+    if (!unlockingModuleSlug) return;
 
-        // Also save to server
-        const email = localStorage.getItem('academy_email');
-        if (email) {
-          fetch('/api/academy/progress', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, programSlug: slug, moduleSlug: unlockingModuleSlug, action: 'unlock' }),
-          }).catch(() => {});
+    const moduleToUnlock = unlockingModuleSlug;
+    setVerifyingPayment(true);
+
+    // Poll server to check if webhook has confirmed the payment
+    const email = localStorage.getItem('academy_email');
+    if (!email) { setVerifyingPayment(false); setUnlockingModuleSlug(null); return; }
+
+    let attempts = 0;
+    const maxAttempts = 12; // 12 attempts × 5 seconds = 60 seconds max wait
+
+    const checkPayment = async () => {
+      attempts++;
+      try {
+        const res = await fetch(`/api/academy/access?email=${encodeURIComponent(email)}&programSlug=${slug}&moduleSlug=${moduleToUnlock}`);
+        const data = await res.json();
+
+        if (data.hasPaidAccess || (data.unlockedModules && data.unlockedModules.includes(moduleToUnlock))) {
+          // Payment confirmed by webhook!
+          localStorage.setItem(`academy:paid:${slug}:${moduleToUnlock}`, 'true');
+          setUnlockedModules(prev => new Set([...prev, moduleToUnlock]));
+          setVerifyingPayment(false);
+          setUnlockingModuleSlug(null);
+          return;
         }
+      } catch { /* ignore */ }
+
+      if (attempts < maxAttempts) {
+        setTimeout(checkPayment, 5000); // Check every 5 seconds
+      } else {
+        // Timeout — fall back to manual confirmation
+        setVerifyingPayment(false);
+        const confirmed = window.confirm(
+          isRTL
+            ? 'لم نتمكن من التحقق تلقائياً. هل أتممت الدفع بنجاح؟'
+            : 'We couldn\'t verify automatically. Did you complete the payment?'
+        );
+        if (confirmed) {
+          localStorage.setItem(`academy:paid:${slug}:${moduleToUnlock}`, 'true');
+          setUnlockedModules(prev => new Set([...prev, moduleToUnlock]));
+        }
+        setUnlockingModuleSlug(null);
       }
-      setUnlockingModuleSlug(null);
-    }
+    };
+
+    // Start checking after 3 seconds (give webhook time to process)
+    setTimeout(checkPayment, 3000);
   };
 
   const handleEnroll = async (e: React.FormEvent): Promise<void> => {
@@ -560,6 +587,21 @@ export default function ProgramOverviewPage() {
         headingEn={<>Ready to <span className="text-[#7A3B5E] italic">Transform?</span></>}
         headingAr={<>مستعد <span className="text-[#7A3B5E] italic">للتحول؟</span></>}
       />
+
+      {/* Payment verification overlay */}
+      {verifyingPayment && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-8 text-center max-w-sm mx-4 shadow-xl">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: program?.color || '#7A3B5E' }} />
+            <h3 className="text-lg font-bold text-[#2D2A33] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+              {isRTL ? 'جاري التحقق من الدفع...' : 'Verifying Payment...'}
+            </h3>
+            <p className="text-sm text-[#6B6580]">
+              {isRTL ? 'يرجى الانتظار بينما نؤكد عملية الدفع.' : 'Please wait while we confirm your payment.'}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Cal.com Payment Modal */}
       {BUSINESS.academyCalSlugs[slug] && (

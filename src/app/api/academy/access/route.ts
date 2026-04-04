@@ -14,15 +14,16 @@ async function getKV() {
 export async function GET(req: NextRequest) {
   const email = req.nextUrl.searchParams.get('email');
   const programSlug = req.nextUrl.searchParams.get('programSlug');
+  const moduleSlug = req.nextUrl.searchParams.get('moduleSlug');
 
   if (!email || !programSlug) {
-    return NextResponse.json({ hasPaidAccess: false });
+    return NextResponse.json({ hasPaidAccess: false, unlockedModules: [] });
   }
 
   try {
     const kvInstance = await getKV();
     if (!kvInstance) {
-      return NextResponse.json({ hasPaidAccess: false });
+      return NextResponse.json({ hasPaidAccess: false, unlockedModules: [] });
     }
 
     const normalizedEmail = email.toLowerCase().trim();
@@ -30,15 +31,22 @@ export async function GET(req: NextRequest) {
     const student = await kvInstance.get(studentKey) as Record<string, unknown> | null;
 
     if (!student) {
-      return NextResponse.json({ hasPaidAccess: false });
+      return NextResponse.json({ hasPaidAccess: false, unlockedModules: [] });
     }
 
-    const paidPrograms = (student.paidPrograms as string[]) || [];
-    const hasPaidAccess = paidPrograms.includes(programSlug);
+    // Check per-module unlocks
+    const unlockedModules = ((student.unlockedModules as Record<string, string[]>) || {})[programSlug] || [];
 
-    return NextResponse.json({ hasPaidAccess });
+    // If checking a specific module
+    if (moduleSlug) {
+      const isUnlocked = unlockedModules.includes(moduleSlug);
+      return NextResponse.json({ hasPaidAccess: isUnlocked, unlockedModules });
+    }
+
+    // Return all unlocked modules for this program
+    return NextResponse.json({ hasPaidAccess: unlockedModules.length > 0, unlockedModules });
   } catch (error) {
     console.error('Access check error:', error);
-    return NextResponse.json({ hasPaidAccess: false });
+    return NextResponse.json({ hasPaidAccess: false, unlockedModules: [] });
   }
 }
