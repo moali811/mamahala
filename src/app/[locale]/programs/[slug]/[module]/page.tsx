@@ -270,13 +270,13 @@ export default function ModuleLessonPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2]">
+    <div className="min-h-screen bg-[#FAF7F2] pt-16">
       {/* Reading progress bar */}
       <ReadingProgressBar color={program.color} />
       <CompletionCelebration show={showCelebration} color={program.color} />
 
       {/* ─── TOP BAR ─── */}
-      <header className="bg-white border-b border-[#F3EFE8] sticky top-[3px] z-20">
+      <header className="bg-white border-b border-[#F3EFE8] sticky top-[64px] z-20">
         <div className="max-w-4xl mx-auto lg:ml-64 lg:mr-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <a href={`/${locale}/programs/${programSlug}`} className="text-sm text-[#8E8E9F] hover:text-[#7A3B5E] flex items-center gap-1.5 transition-colors">
             <ArrowLeft className="w-4 h-4" />

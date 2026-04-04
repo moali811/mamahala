@@ -100,7 +100,7 @@ export default function ModuleSidebar({
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:block fixed top-[53px] left-0 w-64 h-[calc(100vh-53px)] bg-white border-r border-[#F3EFE8] z-10 overflow-hidden">
+      <aside className="hidden lg:block fixed top-[112px] left-0 w-64 h-[calc(100vh-112px)] bg-white border-r border-[#F3EFE8] z-10 overflow-hidden">
         {sidebarContent}
       </aside>
 
