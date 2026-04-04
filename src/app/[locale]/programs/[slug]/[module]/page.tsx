@@ -71,6 +71,8 @@ export default function ModuleLessonPage() {
   const [completedSections, setCompletedSections] = useState<string[]>([]);
   const [showCelebration, setShowCelebration] = useState(false);
 
+  const sectionsStorageKey = `academy:sections:${programSlug}:${moduleSlug}`;
+
   // Section refs for intersection observer
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -111,7 +113,13 @@ export default function ModuleLessonPage() {
   useEffect(() => {
     const passed = localStorage.getItem(`academy:quiz-passed:${programSlug}:${moduleSlug}`);
     if (passed === 'true') setQuizPassed(true);
-  }, [programSlug, moduleSlug]);
+
+    // Load completed sections from localStorage
+    const savedSections = localStorage.getItem(sectionsStorageKey);
+    if (savedSections) {
+      try { setCompletedSections(JSON.parse(savedSections)); } catch {}
+    }
+  }, [programSlug, moduleSlug, sectionsStorageKey]);
 
   // Load saved reflection
   useEffect(() => {
@@ -132,9 +140,22 @@ export default function ModuleLessonPage() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
+        entries.forEach(entry => {
+          const id = entry.target.getAttribute('data-section-id');
+          if (!id) return;
+          // Mark section as viewed/complete when it enters viewport (more than 30% visible)
+          if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
+            setCompletedSections(prev => {
+              if (prev.includes(id)) return prev;
+              const next = [...prev, id];
+              localStorage.setItem(sectionsStorageKey, JSON.stringify(next));
+              return next;
+            });
+          }
+        });
+
         const visible = entries.filter(e => e.isIntersecting);
         if (visible.length > 0) {
-          // Pick the most visible entry
           const top = visible.reduce((a, b) => a.intersectionRatio > b.intersectionRatio ? a : b);
           const id = top.target.getAttribute('data-section-id');
           if (id) setActiveSection(id);
@@ -148,11 +169,16 @@ export default function ModuleLessonPage() {
     });
 
     return () => observer.disconnect();
-  }, [currentModule]);
+  }, [currentModule, sectionsStorageKey]);
 
   const markSectionComplete = useCallback((id: string) => {
-    setCompletedSections(prev => prev.includes(id) ? prev : [...prev, id]);
-  }, []);
+    setCompletedSections(prev => {
+      if (prev.includes(id)) return prev;
+      const next = [...prev, id];
+      localStorage.setItem(sectionsStorageKey, JSON.stringify(next));
+      return next;
+    });
+  }, [sectionsStorageKey]);
 
   const scrollToSection = useCallback((id: string) => {
     const el = sectionRefs.current[id];
