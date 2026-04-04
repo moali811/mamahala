@@ -53,7 +53,7 @@ function DashboardPage() {
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   const [loginEmail, setLoginEmail] = useState('');
-  const [loginState, setLoginState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [loginState, setLoginState] = useState<'idle' | 'sending' | 'sent' | 'error' | 'notEnrolled'>('idle');
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -81,7 +81,12 @@ function DashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: loginEmail }),
       });
-      setLoginState(res.ok ? 'sent' : 'error');
+      if (res.ok) {
+        setLoginState('sent');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setLoginState(data.notEnrolled ? 'notEnrolled' : 'error');
+      }
     } catch {
       setLoginState('error');
     }
@@ -168,6 +173,22 @@ function DashboardPage() {
                   </button>
                   {loginState === 'error' && (
                     <p className="text-sm text-[#C45B5B] text-center">{isRTL ? 'حدث خطأ. حاول مرة أخرى.' : 'Something went wrong. Try again.'}</p>
+                  )}
+                  {loginState === 'notEnrolled' && (
+                    <div className="text-center p-4 rounded-xl bg-[#D49A4E]/8 border border-[#D49A4E]/20">
+                      <p className="text-sm text-[#D49A4E] mb-2 font-medium">
+                        {isRTL ? 'لم نعثر على حساب بهذا البريد الإلكتروني' : 'No account found with this email'}
+                      </p>
+                      <p className="text-xs text-[#6B6580] mb-3">
+                        {isRTL ? 'يرجى التسجيل في برنامج أولاً.' : 'Please enroll in a program first.'}
+                      </p>
+                      <a
+                        href={`/${locale}/resources/programs`}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#7A3B5E] hover:text-[#5E2D48]"
+                      >
+                        {isRTL ? 'تصفّح البرامج' : 'Browse Programs'} <ArrowIcon className="w-3 h-3" />
+                      </a>
+                    </div>
                   )}
                 </motion.form>
               )}

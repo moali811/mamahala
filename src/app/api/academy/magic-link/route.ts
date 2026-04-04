@@ -26,8 +26,10 @@ export async function POST(request: NextRequest) {
     // Check if student exists
     const student = await kv.get(`academy:student:${normalizedEmail}`);
     if (!student) {
-      // Don't reveal that the email isn't enrolled — just say "check your email"
-      return NextResponse.json({ success: true, message: 'If you have an account, check your email.' });
+      return NextResponse.json({
+        error: 'No account found with this email. Please enroll in a program first.',
+        notEnrolled: true,
+      }, { status: 404 });
     }
 
     // Generate token

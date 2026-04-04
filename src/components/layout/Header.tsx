@@ -418,14 +418,6 @@ export default function Header({ locale, messages }: HeaderProps) {
               </Link>
 
               <Link
-                href={`/${locale}/dashboard`}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-[#F3EFE8] px-2.5 py-1.5 text-xs font-medium text-[#4A4A5C] transition-colors hover:border-[#7A3B5E]/20 hover:text-[#7A3B5E]"
-              >
-                <LayoutGrid size={14} className="opacity-60" />
-                {locale === 'ar' ? 'لوحتي' : 'My Dashboard'}
-              </Link>
-
-              <Link
                 href={`/${locale}/book-a-session`}
                 className="inline-flex items-center gap-1.5 rounded-full bg-[#7A3B5E] px-4 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-[#5E2D48] hover:shadow-[var(--shadow-glow-plum)] active:scale-[0.98]"
               >

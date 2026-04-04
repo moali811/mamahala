@@ -17,6 +17,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
+import MyLearningButton from '@/components/academy/layout/MyLearningButton';
 import AnimatedStatCard from '@/components/academy/visual/AnimatedStatCard';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import { programCatalog } from '@/data/programs/index';
@@ -510,6 +511,8 @@ export default function ProgramsPage() {
         secondaryTextAr="تواصل عبر واتساب"
         secondaryHref="https://wa.me/16132222104"
       />
+
+      <MyLearningButton locale={locale} color="#7A3B5E" />
     </div>
   );
 }

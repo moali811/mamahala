@@ -18,6 +18,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
+import MyLearningButton from '@/components/academy/layout/MyLearningButton';
 import CalEmbedModal from '@/components/events/CalEmbedModal';
 import { BUSINESS } from '@/config/business';
 import { t, tArray } from '@/lib/academy-helpers';
@@ -602,6 +603,8 @@ export default function ProgramOverviewPage() {
           </div>
         </div>
       )}
+
+      <MyLearningButton locale={locale} color={program?.color || '#7A3B5E'} />
 
       {/* Cal.com Payment Modal */}
       {BUSINESS.academyCalSlugs[slug] && (
