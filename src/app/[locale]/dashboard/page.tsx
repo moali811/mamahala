@@ -14,10 +14,10 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 
 /* ── Program metadata (static, no need to import full data) ── */
 const programMeta: Record<string, { titleEn: string; titleAr: string; icon: React.ReactNode; color: string; totalModules: number; isFree: boolean; price: number; firstModule: string }> = {
-  'intentional-parent': { titleEn: 'The Intentional Parent', titleAr: 'الوالد الواعي', icon: <Heart className="w-6 h-6" />, color: '#7A3B5E', totalModules: 15, isFree: false, price: 149, firstModule: 'understanding-child-development' },
-  'resilient-teens': { titleEn: 'Raising Resilient Teens', titleAr: 'تربية مراهقين أقوياء', icon: <Sprout className="w-6 h-6" />, color: '#C4878A', totalModules: 12, isFree: false, price: 129, firstModule: 'understanding-adolescent-brain' },
-  'stronger-together': { titleEn: 'Stronger Together', titleAr: 'أقوى معاً', icon: <HeartHandshake className="w-6 h-6" />, color: '#D4836A', totalModules: 12, isFree: false, price: 149, firstModule: 'foundations-of-partnership' },
-  'inner-compass': { titleEn: 'Inner Compass', titleAr: 'البوصلة الداخلية', icon: <Compass className="w-6 h-6" />, color: '#C8A97D', totalModules: 12, isFree: false, price: 99, firstModule: 'self-awareness-foundations' },
+  'intentional-parent': { titleEn: 'The Intentional Parent', titleAr: 'الوالد الواعي', icon: <Heart className="w-6 h-6" />, color: '#7A3B5E', totalModules: 15, isFree: false, price: 9, firstModule: 'understanding-childs-emotional-world' },
+  'resilient-teens': { titleEn: 'Raising Resilient Teens', titleAr: 'تربية مراهقين أقوياء', icon: <Sprout className="w-6 h-6" />, color: '#C4878A', totalModules: 12, isFree: false, price: 9, firstModule: 'understanding-the-teen-brain' },
+  'stronger-together': { titleEn: 'Stronger Together', titleAr: 'أقوى معاً', icon: <HeartHandshake className="w-6 h-6" />, color: '#D4836A', totalModules: 12, isFree: false, price: 9, firstModule: 'love-languages-rediscovered' },
+  'inner-compass': { titleEn: 'Inner Compass', titleAr: 'البوصلة الداخلية', icon: <Compass className="w-6 h-6" />, color: '#C8A97D', totalModules: 12, isFree: false, price: 9, firstModule: 'who-am-i-really' },
 };
 
 interface ProgramProgress {
