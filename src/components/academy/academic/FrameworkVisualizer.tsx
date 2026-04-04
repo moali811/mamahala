@@ -28,18 +28,34 @@ export default function FrameworkVisualizer({
 
   const title = t(diagram.titleEn, diagram.titleAr, isRTL);
 
+  // Helper: split label into lines that fit inside a circle
+  const wrapLabel = (label: string, maxCharsPerLine = 10) => {
+    const words = label.split(' ');
+    const lines: string[] = [];
+    let current = '';
+    for (const word of words) {
+      if (current && (current + ' ' + word).length > maxCharsPerLine) {
+        lines.push(current);
+        current = word;
+      } else {
+        current = current ? current + ' ' + word : word;
+      }
+    }
+    if (current) lines.push(current);
+    return lines;
+  };
+
   const renderTriangle = () => {
-    const svgSize = 320;
+    const svgSize = 360;
     const cx = svgSize / 2;
-    const padding = 40;
-    // Equilateral triangle vertices
+    const padding = 55;
     const top = { x: cx, y: padding };
     const bl = { x: padding, y: svgSize - padding };
     const br = { x: svgSize - padding, y: svgSize - padding };
     const positions = [top, bl, br];
 
     return (
-      <svg viewBox={`0 0 ${svgSize} ${svgSize}`} className="w-full max-w-[320px] mx-auto">
+      <svg viewBox={`0 0 ${svgSize} ${svgSize}`} className="w-full max-w-[360px] mx-auto">
         {/* Connection lines */}
         {diagram.connections?.map((conn, i) => {
           const fromNode = diagram.nodes.find(n => n.id === conn.from);
@@ -67,11 +83,14 @@ export default function FrameworkVisualizer({
           const pos = positions[i] || positions[0];
           const isSelected = selectedNode === node.id;
           const nodeColor = node.color || color;
+          const label = t(node.labelEn, node.labelAr, isRTL);
+          const lines = wrapLabel(label, 12);
+          const r = isSelected ? 42 : 38;
           return (
             <g key={node.id}>
               <motion.circle
-                cx={pos.x} cy={pos.y} r={isSelected ? 32 : 28}
-                fill={`${nodeColor}15`}
+                cx={pos.x} cy={pos.y} r={r}
+                fill={`${nodeColor}12`}
                 stroke={nodeColor}
                 strokeWidth={isSelected ? 3 : 2}
                 initial={{ scale: 0, opacity: 0 }}
@@ -84,10 +103,12 @@ export default function FrameworkVisualizer({
                 x={pos.x} y={pos.y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                className="text-[10px] font-semibold pointer-events-none"
+                className="text-[8px] font-semibold pointer-events-none"
                 fill={nodeColor}
               >
-                {t(node.labelEn, node.labelAr, isRTL)}
+                {lines.map((line, li) => (
+                  <tspan key={li} x={pos.x} dy={li === 0 ? `${-(lines.length - 1) * 0.5}em` : '1.1em'}>{line}</tspan>
+                ))}
               </text>
             </g>
           );
@@ -168,13 +189,12 @@ export default function FrameworkVisualizer({
   };
 
   const renderQuadrant = () => {
-    const svgSize = 340;
+    const svgSize = 380;
     const cx = svgSize / 2;
     const cy = svgSize / 2;
-    const halfW = 130;
-    const halfH = 120;
+    const halfW = 150;
+    const halfH = 140;
 
-    // Position nodes in quadrants
     const quadrantPos = [
       { x: cx - halfW / 2, y: cy - halfH / 2 },
       { x: cx + halfW / 2, y: cy - halfH / 2 },
@@ -183,7 +203,7 @@ export default function FrameworkVisualizer({
     ];
 
     return (
-      <svg viewBox={`0 0 ${svgSize} ${svgSize}`} className="w-full max-w-[340px] mx-auto">
+      <svg viewBox={`0 0 ${svgSize} ${svgSize}`} className="w-full max-w-[380px] mx-auto">
         {/* Grid lines */}
         <motion.line x1={cx} y1={cy - halfH - 20} x2={cx} y2={cy + halfH + 20} stroke={`${color}20`} strokeWidth={1.5} variants={drawLine} initial="hidden" animate={isInView ? 'visible' : 'hidden'} />
         <motion.line x1={cx - halfW - 20} y1={cy} x2={cx + halfW + 20} y2={cy} stroke={`${color}20`} strokeWidth={1.5} variants={drawLine} initial="hidden" animate={isInView ? 'visible' : 'hidden'} />
@@ -193,11 +213,14 @@ export default function FrameworkVisualizer({
           const pos = quadrantPos[i];
           const isSelected = selectedNode === node.id;
           const nodeColor = node.color || color;
+          const label = t(node.labelEn, node.labelAr, isRTL);
+          const lines = wrapLabel(label, 14);
+          const rectH = Math.max(50, lines.length * 16 + 16);
           return (
             <g key={node.id}>
               <motion.rect
-                x={pos.x - 45} y={pos.y - 25}
-                width={90} height={50}
+                x={pos.x - 55} y={pos.y - rectH / 2}
+                width={110} height={rectH}
                 rx={12}
                 fill={`${nodeColor}10`}
                 stroke={isSelected ? nodeColor : `${nodeColor}40`}
@@ -212,10 +235,12 @@ export default function FrameworkVisualizer({
                 x={pos.x} y={pos.y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                className="text-[10px] font-semibold pointer-events-none"
+                className="text-[9px] font-semibold pointer-events-none"
                 fill={nodeColor}
               >
-                {t(node.labelEn, node.labelAr, isRTL)}
+                {lines.map((line, li) => (
+                  <tspan key={li} x={pos.x} dy={li === 0 ? `${-(lines.length - 1) * 0.5}em` : '1.15em'}>{line}</tspan>
+                ))}
               </text>
             </g>
           );
