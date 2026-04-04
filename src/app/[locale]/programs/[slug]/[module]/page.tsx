@@ -12,6 +12,7 @@ import type { AcademyProgram, AcademyModule } from '@/types';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import Accordion from '@/components/ui/Accordion';
+import MyLearningButton from '@/components/academy/layout/MyLearningButton';
 import { t, tArray } from '@/lib/academy-helpers';
 import { fadeUp, staggerContainer, viewportOnce } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
@@ -270,13 +271,13 @@ export default function ModuleLessonPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] pt-16">
+    <div className="min-h-screen bg-[#FAF7F2] pt-28">
       {/* Reading progress bar */}
       <ReadingProgressBar color={program.color} />
       <CompletionCelebration show={showCelebration} color={program.color} />
 
       {/* ─── TOP BAR ─── */}
-      <header className="bg-white border-b border-[#F3EFE8] sticky top-[64px] z-20">
+      <header className="bg-white border-b border-[#F3EFE8] fixed top-16 left-0 right-0 z-20">
         <div className="max-w-4xl mx-auto lg:ml-64 lg:mr-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <a href={`/${locale}/programs/${programSlug}`} className="text-sm text-[#8E8E9F] hover:text-[#7A3B5E] flex items-center gap-1.5 transition-colors">
             <ArrowLeft className="w-4 h-4" />
@@ -600,6 +601,8 @@ export default function ModuleLessonPage() {
           </div>
         </div>
       </main>
+
+      <MyLearningButton locale={locale} color={program.color} />
     </div>
   );
 }
