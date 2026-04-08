@@ -11,6 +11,16 @@ const TOOLKIT_NAMES: Record<string, string> = {
   'complete-parenting-guide': 'The Intentional Parent',
   'couples-communication-workbook': 'Couples Communication Workbook',
   'anxiety-recovery-journal': 'Anxiety Recovery Journal',
+  'social-media-survival-guide': 'Social Media Survival Guide',
+  'teen-anger-toolkit': 'Brain on Fire: Anger Toolkit',
+  'teen-identity-map': 'Who Am I? Identity Map',
+  'friendship-flags-checklist': 'Friendship Red/Green Flags',
+  'exam-season-emergency-kit': 'Exam Emergency Kit',
+  'imposter-syndrome-playbook': 'Imposter Syndrome Playbook',
+  'adulting-emotional-edition': 'Adulting 101: Emotional Edition',
+  'student-burnout-recovery': 'Burnout Recovery Plan',
+  'bicultural-student-guide': 'Bicultural Student Guide',
+  'student-loneliness-toolkit': 'Loneliness Toolkit',
 };
 
 const PROGRAMS = [

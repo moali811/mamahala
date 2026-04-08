@@ -346,6 +346,3 @@ If this assessment revealed that you're struggling more than you realized, pleas
 
 *You've already taken the first step by being honest with yourself. The next step is asking for support.*
 
----
-
-*Copyright Mama Hala Consulting. This toolkit is for personal use only and is not a substitute for professional counseling.*

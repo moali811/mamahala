@@ -377,7 +377,7 @@ export default function QuizPage() {
                     <p className="text-sm text-[#8E8E9F] mb-4">{sDesc}</p>
                     <div className="flex items-center gap-3">
                       <Badge variant="sand" size="sm">
-                        {messages.services.priceFrom} ${service.priceFrom}
+                        {messages.services.priceFrom} ${service.priceFrom} CAD
                       </Badge>
                       <Badge variant="neutral" size="sm">{service.duration}</Badge>
                     </div>

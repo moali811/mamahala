@@ -14,6 +14,21 @@ import FinalCTA from '@/components/shared/FinalCTA';
 
 type Category = 'all' | 'youth' | 'families' | 'adults' | 'couples';
 
+const NEW_BADGE_DAYS = 14;
+function isNew(dateAdded?: string): boolean {
+  if (!dateAdded) return false;
+  return Date.now() - new Date(dateAdded).getTime() < NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
+}
+
+const audienceLabels: Record<string, { en: string; ar: string; color: string }> = {
+  parents: { en: 'For Parents', ar: 'للآباء', color: '#C8A97D' },
+  families: { en: 'For Families', ar: 'للعائلات', color: '#7A3B5E' },
+  teens: { en: 'For Teens', ar: 'للمراهقين', color: '#C4878A' },
+  adults: { en: 'For Adults', ar: 'للبالغين', color: '#5A8B6F' },
+  university: { en: 'For University Students', ar: 'لطلّابِ الجامعات', color: '#4A8B6E' },
+  couples: { en: 'For Couples', ar: 'للأزواج', color: '#D4836A' },
+};
+
 const assessments = [
   {
     href: 'quiz/emotional-intelligence',
@@ -25,6 +40,7 @@ const assessments = [
     color: '#D4836A',
     questions: 12,
     category: 'youth' as Category,
+    audience: 'parents',
   },
   {
     href: 'quiz/executive-function',
@@ -36,6 +52,7 @@ const assessments = [
     color: '#C4878A',
     questions: 10,
     category: 'youth' as Category,
+    audience: 'parents',
   },
   {
     href: 'quiz/family-harmony',
@@ -47,6 +64,7 @@ const assessments = [
     color: '#7A3B5E',
     questions: 12,
     category: 'families' as Category,
+    audience: 'families',
   },
   {
     href: 'quiz/parenting-style',
@@ -58,6 +76,7 @@ const assessments = [
     color: '#25D366',
     questions: 16,
     category: 'families' as Category,
+    audience: 'parents',
   },
   {
     href: 'quiz/wellbeing',
@@ -69,6 +88,7 @@ const assessments = [
     color: '#C8A97D',
     questions: 5,
     category: 'adults' as Category,
+    audience: 'adults',
   },
   {
     href: 'quiz/life-balance',
@@ -80,6 +100,7 @@ const assessments = [
     color: '#C4878A',
     questions: 12,
     category: 'adults' as Category,
+    audience: 'adults',
   },
   {
     href: 'quiz/relationship-health',
@@ -91,6 +112,7 @@ const assessments = [
     color: '#D4836A',
     questions: 16,
     category: 'couples' as Category,
+    audience: 'couples',
   },
   {
     href: 'quiz/pre-marriage',
@@ -102,6 +124,78 @@ const assessments = [
     color: '#7A3B5E',
     questions: 15,
     category: 'couples' as Category,
+    audience: 'couples',
+  },
+
+  // ─── FOR TEENS (self-reported) ───
+  {
+    href: 'quiz/digital-life',
+    titleEn: 'My Digital Life Check-in',
+    titleAr: 'فحصُ حياتي الرقميّة',
+    descEn: 'How is your screen time really affecting you? A quick, honest check-in on social media, sleep, and how you feel online.',
+    descAr: 'كيفَ يؤثّرُ وقتُ الشاشةِ عليك حقًّا؟ فحصٌ سريعٌ وصادقٌ عن وسائلِ التواصلِ والنومِ وشعورِك على الإنترنت.',
+    duration: { en: '4 min', ar: '4 دقائق' },
+    color: '#6C7BD4',
+    questions: 12,
+    category: 'youth' as Category,
+    audience: 'teens',
+    dateAdded: '2026-04-08',
+  },
+  {
+    href: 'quiz/identity-compass',
+    titleEn: 'Who Am I Becoming?',
+    titleAr: 'مَن أنا الذي أصبح؟',
+    descEn: "Explore how you feel about your identity, friendships, family culture, and the future. No wrong answers — just self-discovery.",
+    descAr: 'استكشِفْ كيفَ تشعرُ تجاهَ هُويّتِك وصداقاتِك وثقافةِ عائلتِك والمستقبل. لا إجاباتٍ خاطئة — فقط اكتشافُ ذات.',
+    duration: { en: '5 min', ar: '5 دقائق' },
+    color: '#9B6B9E',
+    questions: 12,
+    category: 'youth' as Category,
+    audience: 'teens',
+    dateAdded: '2026-04-08',
+  },
+
+  // ─── FOR UNIVERSITY STUDENTS ───
+  {
+    href: 'quiz/adulting-check',
+    titleEn: 'The Adulting Reality Check',
+    titleAr: 'فحصُ واقعِ حياةِ الكبار',
+    descEn: "University life hits different. Check in on your stress, confidence, loneliness, and how you're handling independence.",
+    descAr: 'الحياةُ الجامعيّةُ مختلفة. تحقَّقْ من توتُّرِك وثقتِك ووحدتِك وكيفَ تتعاملُ مع الاستقلاليّة.',
+    duration: { en: '5 min', ar: '5 دقائق' },
+    color: '#4A8B6E',
+    questions: 15,
+    category: 'adults' as Category,
+    audience: 'university',
+    dateAdded: '2026-04-08',
+  },
+
+  // ─── MORE COUPLES ───
+  {
+    href: 'quiz/conflict-style',
+    titleEn: 'How Do We Fight?',
+    titleAr: 'كيفَ نتخاصم؟',
+    descEn: "Every couple argues — what matters is how. Discover your conflict style and learn to disagree without disconnecting.",
+    descAr: 'كلُّ زوجين يتخاصمان — المهمُّ هو كيف. اكتشِفْ نمطَ خلافِك وتعلَّمْ أن تختلفَ دونَ أن تنفصل.',
+    duration: { en: '6 min', ar: '6 دقائق' },
+    color: '#B85C4A',
+    questions: 16,
+    category: 'couples' as Category,
+    audience: 'couples',
+    dateAdded: '2026-04-08',
+  },
+  {
+    href: 'quiz/communication-style',
+    titleEn: 'Are We Speaking the Same Language?',
+    titleAr: 'هل نتحدّثُ اللغةَ نفسَها؟',
+    descEn: "Misunderstandings happen when partners communicate differently. Discover your communication pattern and bridge the gap.",
+    descAr: 'سوءُ الفهمِ يحدثُ عندما يتواصلُ الشريكان بشكلٍ مختلف. اكتشِفْ نمطَ تواصلِك وجسِّرِ الفجوة.',
+    duration: { en: '5 min', ar: '5 دقائق' },
+    color: '#5A7B9E',
+    questions: 12,
+    category: 'couples' as Category,
+    audience: 'couples',
+    dateAdded: '2026-04-08',
   },
 ];
 
@@ -121,9 +215,10 @@ export default function AssessmentsPage() {
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
   const [activeCategory, setActiveCategory] = useState<Category>('all');
 
-  const filtered = activeCategory === 'all'
+  const filtered = (activeCategory === 'all'
     ? assessments
-    : assessments.filter(a => a.category === activeCategory);
+    : assessments.filter(a => a.category === activeCategory)
+  ).sort((a, b) => (isNew(b.dateAdded) ? 1 : 0) - (isNew(a.dateAdded) ? 1 : 0));
 
   return (
     <div className="overflow-hidden">
@@ -197,9 +292,16 @@ export default function AssessmentsPage() {
                         <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${tool.color}12` }}>
                           <Sparkles className="w-6 h-6" style={{ color: tool.color }} />
                         </div>
-                        <span className="text-xs font-medium text-[#5A8B6E] bg-[#5A8B6E]/10 px-2.5 py-1 rounded-full">
-                          {isRTL ? 'مجّانيّ' : 'Free'}
-                        </span>
+                        <div className="flex items-center gap-1.5">
+                          {isNew(tool.dateAdded) && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] shadow-sm animate-pulse">
+                              <Sparkles className="w-3 h-3" /> {isRTL ? 'جديد' : 'New'}
+                            </span>
+                          )}
+                          <span className="text-xs font-medium text-[#5A8B6E] bg-[#5A8B6E]/10 px-2.5 py-1 rounded-full">
+                            {isRTL ? 'مجّانيّ' : 'Free'}
+                          </span>
+                        </div>
                       </div>
                       <h3
                         className="text-lg font-bold text-[#2D2A33] mb-2 group-hover:text-[#7A3B5E] transition-colors"
@@ -207,6 +309,17 @@ export default function AssessmentsPage() {
                       >
                         {isRTL ? tool.titleAr : tool.titleEn}
                       </h3>
+                      {tool.audience && audienceLabels[tool.audience] && (
+                        <span
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold mb-3"
+                          style={{
+                            backgroundColor: `${audienceLabels[tool.audience].color}15`,
+                            color: audienceLabels[tool.audience].color,
+                          }}
+                        >
+                          {isRTL ? audienceLabels[tool.audience].ar : audienceLabels[tool.audience].en}
+                        </span>
+                      )}
                       <p className="text-sm text-[#6B6580] leading-relaxed mb-5 flex-1">
                         {isRTL ? tool.descAr : tool.descEn}
                       </p>

@@ -35,6 +35,11 @@ const QUIZ_NAMES: Record<string, { en: string; ar: string }> = {
   'life-balance': { en: 'Life Balance & Fulfillment Assessment', ar: 'تقييمُ التوازنِ والرضا في الحياة' },
   'relationship-health': { en: "Mama Hala's Relationship Compass", ar: 'بوصلةُ ماما هالة للعلاقات' },
   'pre-marriage': { en: 'Pre-Marriage Readiness Check', ar: 'فحصُ الجاهزيّةِ لِلزّواج' },
+  'digital-life': { en: 'My Digital Life Check-in', ar: 'فحصُ حياتي الرقميّة' },
+  'identity-compass': { en: 'Who Am I Becoming?', ar: 'مَن أنا الذي أصبح؟' },
+  'adulting-check': { en: 'The Adulting Reality Check', ar: 'فحصُ واقعِ حياةِ الكبار' },
+  'conflict-style': { en: 'How Do We Fight?', ar: 'كيفَ نتخاصم؟' },
+  'communication-style': { en: 'Are We Speaking the Same Language?', ar: 'هل نتحدّثُ اللغةَ نفسَها؟' },
 };
 
 /** Generate a unique session ID */

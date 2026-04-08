@@ -1039,6 +1039,3 @@ When that happens, open this workbook again. Pick one exercise. Start over. The 
 
 *Your relationship is worth the effort. And you don't have to figure it out alone.*
 
----
-
-*Copyright Mama Hala Consulting. This workbook is for personal use only and is not a substitute for professional counseling.*

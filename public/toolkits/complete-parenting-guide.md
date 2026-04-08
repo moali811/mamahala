@@ -864,6 +864,3 @@ That's intentional parenting. And you're already doing it.
 
 *You're not doing this alone. And you don't have to.*
 
----
-
-*Copyright Mama Hala Consulting. This guide is for personal and family use only and is not a substitute for professional counseling. If your child is in crisis or you are concerned about their safety, please contact a mental health professional or emergency services immediately.*

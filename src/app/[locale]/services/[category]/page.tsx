@@ -279,7 +279,7 @@ export default function ServiceCategoryPage() {
                         {service.priceFrom === 0 ? (
                           <span className="text-[#5A8B6F] font-medium">{isRTL ? 'مجّانيّة' : 'Free'}</span>
                         ) : (
-                          <span>{isRTL ? `من ${service.priceFrom}$ كندي` : `From $${service.priceFrom}`}</span>
+                          <span>{isRTL ? `من ${service.priceFrom}$ كندي` : `From $${service.priceFrom} CAD`}</span>
                         )}
                       </div>
                     </div>

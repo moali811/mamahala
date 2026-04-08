@@ -10,6 +10,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Heart,
+  Sparkles,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer, ease } from '@/lib/animations';
@@ -46,10 +47,15 @@ export default function BlogListingPage() {
   const Arrow = isRTL ? ArrowLeft : ArrowRight;
   const { posts: allPosts, getCategoryLabel } = useBlog();
 
-  const allFilteredPosts =
+  const allFilteredPosts = (
     activeCategory === 'All'
       ? allPosts
-      : allPosts.filter(p => p.category === activeCategory);
+      : allPosts.filter(p => p.category === activeCategory)
+  ).sort((a, b) => {
+    const aNew = a.publishDate && (Date.now() - new Date(a.publishDate).getTime() < 14 * 86400000);
+    const bNew = b.publishDate && (Date.now() - new Date(b.publishDate).getTime() < 14 * 86400000);
+    return (bNew ? 1 : 0) - (aNew ? 1 : 0);
+  });
 
   const totalPages = Math.ceil(allFilteredPosts.length / POSTS_PER_PAGE);
   const filteredPosts = allFilteredPosts.slice(
@@ -180,10 +186,15 @@ export default function BlogListingPage() {
                         gradient={gradientMap[post.category] || 'from-[#C4878A] to-[#B07578]'}
                       />
                       {/* Category badge */}
-                      <div className="absolute top-4 left-4">
+                      <div className="absolute top-4 left-4 flex items-center gap-1.5">
                         <Badge variant={badgeVariants[post.category] || 'sage'} size="sm">
                           {getCategoryLabel(post.category, isRTL)}
                         </Badge>
+                        {post.publishDate && (Date.now() - new Date(post.publishDate).getTime() < 14 * 86400000) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] shadow-sm animate-pulse">
+                            <Sparkles className="w-2.5 h-2.5" /> {isRTL ? 'جديد' : 'New'}
+                          </span>
+                        )}
                       </div>
                       {/* Reading time */}
                       <div className="absolute top-4 right-4 flex items-center gap-1.5 bg-black/40 rounded-full px-3 py-1 text-white text-xs">

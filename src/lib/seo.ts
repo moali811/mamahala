@@ -160,7 +160,7 @@ export const PAGE_SEO: Record<string, PageSEO> = {
   },
   assessments: {
     title: 'Check-ins',
-    titleAr: 'مراجعات',
+    titleAr: 'تقييماتٌ ذاتيّة',
     description: 'Quick self-assessment tools to reflect on your well-being, relationships, and personal growth. Start your journey with clarity.',
     descriptionAr: 'أدوات تقييم ذاتي سريعة للتأمّل في صحّتك النفسيّة وعلاقاتك ونموّك الشخصي. ابدأ رحلتك بوضوح.',
     path: '/resources/assessments',

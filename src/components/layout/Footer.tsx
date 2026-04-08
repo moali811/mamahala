@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import {
   Mail, Instagram, Facebook, Youtube,
   MessageCircle, MapPin, ArrowUp, Clock,
@@ -19,11 +20,24 @@ interface FooterProps {
 
 export default function Footer({ locale, messages }: FooterProps) {
   const isRTL = locale === 'ar';
+  const pathname = usePathname();
 
   const footer = messages?.footer ?? {};
   const contact = messages?.contact ?? {};
   const currentYear = new Date().getFullYear();
 
+  // Check if a link matches the current path (including subpages and related routes)
+  const isActive = (href: string) => {
+    if (href === `/${locale}`) return pathname === href;
+    if (pathname.startsWith(href)) return true;
+    // Map related routes: e.g. /programs/* → Programs resource link
+    const relatedRoutes: Record<string, string[]> = {
+      [`/${locale}/resources/programs`]: [`/${locale}/programs`],
+    };
+    const related = relatedRoutes[href];
+    if (related) return related.some(r => pathname.startsWith(r));
+    return false;
+  };
 
   const socials = [
     { icon: Instagram, href: 'https://www.instagram.com/mamahala.ca/', label: 'Instagram' },
@@ -40,7 +54,7 @@ export default function Footer({ locale, messages }: FooterProps) {
   ];
 
   const resourceLinks = [
-    { icon: Sparkles, label: isRTL ? 'مراجعات' : 'Check-ins', href: `/${locale}/resources/assessments` },
+    { icon: Sparkles, label: isRTL ? 'تقييماتٌ ذاتيّة' : 'Check-ins', href: `/${locale}/resources/assessments` },
     { icon: BookOpen, label: isRTL ? 'المدوّنة' : 'Blog', href: `/${locale}/resources/blog` },
     { icon: Download, label: isRTL ? 'أدوات مجّانيّة' : 'Free Toolkit', href: `/${locale}/resources/downloads` },
     { icon: CalendarDays, label: isRTL ? 'الفعاليّات' : 'Events', href: `/${locale}/resources/events` },
@@ -53,27 +67,34 @@ export default function Footer({ locale, messages }: FooterProps) {
     { label: isRTL ? 'تواصل معنا' : 'Contact', href: `/${locale}/contact` },
     { label: isRTL ? 'احجز جلسة' : 'Book a Session', href: `/${locale}/book-a-session` },
     { label: isRTL ? 'هديّةُ رعاية' : 'Gift of Care', href: `/${locale}/gift` },
-    { label: isRTL ? 'الاختبار السريع' : 'Take the Quiz', href: `/${locale}/quiz` },
+    { label: isRTL ? 'اكتشِفْ ما يناسبُك' : 'Find Your Fit', href: `/${locale}/quiz` },
   ];
 
+  // Active link styles — bold only, no dot
+  const linkClass = (href: string, base: string = '') =>
+    `${base} transition-all duration-200 ${
+      isActive(href)
+        ? 'text-[#7A3B5E] font-semibold'
+        : 'text-[#6B6580] hover:text-[#7A3B5E]'
+    }`;
 
   return (
     <footer dir={isRTL ? 'rtl' : 'ltr'}>
 
       {/* ═══ MAIN FOOTER ═══ */}
-      <div className="bg-[#F5F0EA] pt-12 pb-10">
-        <div className="container-main">
-          <div className="grid grid-cols-2 md:grid-cols-12 gap-10 lg:gap-6">
+      <div className="bg-[#F5F0EA] pt-14 pb-12">
+        <div className="container-main max-w-7xl">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-10 lg:gap-12">
 
             {/* Col 1: Brand */}
-            <div className="col-span-2 md:col-span-3">
+            <div className="col-span-2 md:col-span-1">
               <Link href={`/${locale}`} className="flex items-center gap-3 mb-4">
                 <Image src="/images/logo-512.png" alt="Mama Hala Consulting" width={128} height={128} className="h-10 w-10 rounded-full object-cover" />
                 <span className="text-sm font-semibold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
                   {isRTL ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting'}
                 </span>
               </Link>
-              <p className="text-sm text-[#6B6580] leading-relaxed mb-6 max-w-[260px]">
+              <p className="text-sm text-[#6B6580] leading-relaxed mb-6">
                 {isRTL
                   ? 'لحياةٍ مُفعَمةٍ بالحبِّ والسّكينةِ والسّلام.'
                   : 'For a life full of love, tranquility & peace.'}
@@ -89,14 +110,14 @@ export default function Footer({ locale, messages }: FooterProps) {
             </div>
 
             {/* Col 2: Services */}
-            <div className="col-span-1 md:col-span-2">
+            <div className="col-span-1">
               <h4 className="text-xs font-semibold text-[#C8A97D] uppercase tracking-[0.2em] mb-5">
                 {isRTL ? 'الخدمات' : 'Services'}
               </h4>
               <div className="space-y-2.5">
                 {serviceLinks.map((link) => (
                   <Link key={link.href} href={link.href}
-                    className="block text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
+                    className={linkClass(link.href, 'flex items-center gap-2 text-sm')}>
                     {link.label}
                   </Link>
                 ))}
@@ -104,15 +125,15 @@ export default function Footer({ locale, messages }: FooterProps) {
             </div>
 
             {/* Col 3: Resources */}
-            <div className="col-span-1 md:col-span-2">
+            <div className="col-span-1">
               <h4 className="text-xs font-semibold text-[#C8A97D] uppercase tracking-[0.2em] mb-5">
                 {isRTL ? 'الموارد' : 'Resources'}
               </h4>
               <div className="space-y-2.5">
                 {resourceLinks.map((link) => (
                   <Link key={link.href} href={link.href}
-                    className="flex items-center gap-2 text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
-                    <link.icon size={13} className="opacity-60" />
+                    className={linkClass(link.href, 'flex items-center gap-2 text-sm')}>
+                    <link.icon size={13} className={`shrink-0 ${isActive(link.href) ? 'opacity-100' : 'opacity-60'}`} />
                     {link.label}
                   </Link>
                 ))}
@@ -120,14 +141,14 @@ export default function Footer({ locale, messages }: FooterProps) {
             </div>
 
             {/* Col 4: Quick Links */}
-            <div className="col-span-1 md:col-span-2">
+            <div className="col-span-1">
               <h4 className="text-xs font-semibold text-[#C8A97D] uppercase tracking-[0.2em] mb-5">
                 {isRTL ? 'روابط سريعة' : 'Quick Links'}
               </h4>
               <div className="space-y-2.5">
                 {quickLinks.map((link) => (
                   <Link key={link.href} href={link.href}
-                    className="block text-sm text-[#6B6580] hover:text-[#7A3B5E] transition-colors">
+                    className={linkClass(link.href, 'flex items-center gap-2 text-sm')}>
                     {link.label}
                   </Link>
                 ))}
@@ -135,7 +156,7 @@ export default function Footer({ locale, messages }: FooterProps) {
             </div>
 
             {/* Col 5: Reach Us */}
-            <div className="col-span-1 md:col-span-3">
+            <div className="col-span-1">
               <h4 className="text-xs font-semibold text-[#C8A97D] uppercase tracking-[0.2em] mb-5">
                 {isRTL ? 'تواصَلْ' : 'Reach Us'}
               </h4>
@@ -172,7 +193,7 @@ export default function Footer({ locale, messages }: FooterProps) {
 
       {/* ═══ BOTTOM BAR ═══ */}
       <div className="bg-[#F5F0EA] border-t border-[#D4ADA8]/20">
-        <div className="container-main py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="container-main max-w-7xl py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[11px] text-[#8E8E9F]">
             &copy; {currentYear} {isRTL ? 'مجموعة ماما هالة للاستشارات' : 'Mama Hala Consulting Group'}. {footer.rights}
           </p>
@@ -183,7 +204,11 @@ export default function Footer({ locale, messages }: FooterProps) {
               { label: footer.bookingPolicy, href: `/${locale}/booking-policy` },
             ].map((link) => (
               <Link key={link.href} href={link.href}
-                className="text-[11px] text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors">
+                className={`text-[11px] transition-colors ${
+                  isActive(link.href)
+                    ? 'text-[#7A3B5E] font-semibold'
+                    : 'text-[#8E8E9F] hover:text-[#7A3B5E]'
+                }`}>
                 {link.label}
               </Link>
             ))}

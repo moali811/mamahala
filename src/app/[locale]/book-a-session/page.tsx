@@ -301,7 +301,7 @@ function BookASessionInner() {
                           ) : (
                             <>
                               <p className="text-[10px] text-[#8E8E9F] uppercase tracking-wider">{isRTL ? 'يبدأ من' : 'From'}</p>
-                              <p className="text-sm font-bold text-[#2D2A33]">${service.priceFrom}</p>
+                              <p className="text-sm font-bold text-[#2D2A33]">${service.priceFrom} CAD</p>
                             </>
                           )}
                           <p className="text-[10px] text-[#8E8E9F] mt-0.5">{service.duration}</p>

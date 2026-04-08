@@ -182,18 +182,3 @@ The fact that you are even reading this, that you are trying to be a calmer, mor
 
 Keep going.
 
----
-
-## Ready for Deeper Support?
-
-If you find that staying calm feels impossible no matter what you try, if your stress or overwhelm is bigger than a checklist can hold, that is not a failure. That is information. It means you might benefit from working with someone who can help you understand the roots of your reactivity and build a personalized plan for emotional regulation.
-
-At Mama Hala Consulting, Dr. Hala Ali works with parents who are carrying more than they should have to carry alone. Parenting is hard. You do not have to do it without support.
-
-**Book a session:** [mama-hala-website.vercel.app/en/book-a-session](https://mama-hala-website.vercel.app/en/book-a-session)
-
-*Bilingual services available in English and Arabic. Online and in-person sessions in Ottawa, Canada and Dubai, UAE.*
-
----
-
-*Copyright Mama Hala Consulting. This checklist is for personal use only. Please do not reproduce or distribute without permission.*

@@ -223,18 +223,3 @@ Sometimes the other person is upset about something you do not agree with. You d
 
 This is especially useful with teenagers who are pushing against boundaries. It holds the boundary while honoring the relationship.
 
----
-
-## Ready for Deeper Support?
-
-These tools are a starting point, and for many families, they are enough to shift the dynamic in meaningful ways. But if your family is stuck in patterns that feel bigger than a worksheet can address, or if conversations consistently end in conflict, silence, or pain, professional support can help.
-
-At Mama Hala Consulting, Dr. Hala Ali works with families, couples, teens, and individuals to rebuild communication, strengthen relationships, and create the kind of home where everyone feels heard.
-
-**Book a session:** [mama-hala-website.vercel.app/en/book-a-session](https://mama-hala-website.vercel.app/en/book-a-session)
-
-*Bilingual services available in English and Arabic. Online and in-person sessions in Ottawa, Canada and Dubai, UAE.*
-
----
-
-*Copyright Mama Hala Consulting. This toolkit is for personal use only. Please do not reproduce or distribute without permission.*

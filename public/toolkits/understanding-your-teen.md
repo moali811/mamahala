@@ -232,18 +232,3 @@ If you are concerned, do not wait. Approach your teen with care, not alarm.
 
 This gives them permission to open up, and it acknowledges that sometimes a teen needs a safe adult who is not their parent.
 
----
-
-## Ready for Deeper Support?
-
-Parenting a teenager is one of the most complex and rewarding challenges you will face. If you are struggling to connect with your teen, if your home feels more like a battleground than a safe harbor, or if you are concerned about your teen's emotional wellbeing, professional guidance can help.
-
-At Mama Hala Consulting, Dr. Hala Ali works with both parents and teens, individually and together, to rebuild trust, improve communication, and navigate the challenges of adolescence with confidence and compassion.
-
-**Book a session:** [mama-hala-website.vercel.app/en/book-a-session](https://mama-hala-website.vercel.app/en/book-a-session)
-
-*Bilingual services available in English and Arabic. Online and in-person sessions in Ottawa, Canada and Dubai, UAE.*
-
----
-
-*Copyright Mama Hala Consulting. This guide is for personal use only. Please do not reproduce or distribute without permission.*

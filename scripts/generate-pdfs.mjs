@@ -54,6 +54,46 @@ const META = {
     subtitle: 'A 90-day guided journal combining CBT, gratitude & cognitive reframing',
     category: 'Mental Health',
   },
+  'social-media-survival-guide': {
+    subtitle: 'Practical strategies for a healthier relationship with social media',
+    category: 'Digital Wellness',
+  },
+  'teen-anger-toolkit': {
+    subtitle: 'Understanding, managing, and channeling anger in healthy ways',
+    category: 'Teen Mental Health',
+  },
+  'teen-identity-map': {
+    subtitle: 'A guided exploration of who you are, who you are becoming, and what matters most',
+    category: 'Teen Identity',
+  },
+  'friendship-flags-checklist': {
+    subtitle: 'How to recognize healthy friendships, red flags, and everything in between',
+    category: 'Relationships',
+  },
+  'exam-season-emergency-kit': {
+    subtitle: 'Practical strategies for managing stress, staying focused, and surviving exam season',
+    category: 'Student Wellness',
+  },
+  'imposter-syndrome-playbook': {
+    subtitle: 'Recognizing, reframing, and overcoming the voice that says you do not belong',
+    category: 'Mental Health',
+  },
+  'adulting-emotional-edition': {
+    subtitle: 'A guide to the emotional skills nobody taught you in school',
+    category: 'Young Adult',
+  },
+  'student-burnout-recovery': {
+    subtitle: 'Identifying burnout, rebuilding energy, and creating sustainable habits',
+    category: 'Student Wellness',
+  },
+  'bicultural-student-guide': {
+    subtitle: 'Navigating two worlds without losing yourself',
+    category: 'Cultural Identity',
+  },
+  'student-loneliness-toolkit': {
+    subtitle: 'Understanding, managing, and overcoming loneliness as a student',
+    category: 'Student Wellness',
+  },
 };
 
 // ---------------------------------------------------------------------------
@@ -301,16 +341,19 @@ function buildFullHtml(title, subtitle, category, bodyHtml, logoDataUri, qrDataU
   const isRTL = lang === 'ar';
   const dir = isRTL ? 'rtl' : 'ltr';
   const fontFamily = isRTL
-    ? "'Noto Naskh Arabic', 'Amiri', 'Traditional Arabic', 'Simplified Arabic', serif"
+    ? "'Tajawal', 'Noto Naskh Arabic', 'Amiri', 'Traditional Arabic', 'Simplified Arabic', system-ui, serif"
     : "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
   const headingFont = isRTL
-    ? "'Noto Naskh Arabic', 'Amiri', Georgia, serif"
+    ? "'Tajawal', 'Noto Naskh Arabic', 'Amiri', Georgia, serif"
     : "Georgia, 'Times New Roman', serif";
 
   return `<!DOCTYPE html>
 <html lang="${lang}" dir="${dir}">
 <head>
 <meta charset="UTF-8">
+${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">` : ''}
 <style>
   /* ============ RESET ============ */
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -337,8 +380,9 @@ function buildFullHtml(title, subtitle, category, bodyHtml, logoDataUri, qrDataU
   body {
     font-family: ${fontFamily};
     color: ${B.dark};
-    font-size: ${isRTL ? '11.5pt' : '10.5pt'};
-    line-height: ${isRTL ? '2' : '1.75'};
+    font-size: ${isRTL ? '12pt' : '10.5pt'};
+    line-height: ${isRTL ? '2.1' : '1.75'};
+    ${isRTL ? 'word-spacing: 2px; letter-spacing: 0.01em;' : ''}
     direction: ${dir};
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;

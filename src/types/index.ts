@@ -465,6 +465,9 @@ export interface SmartEvent {
   // Series grouping
   seriesId?: string;
   tags?: string[];
+
+  // Content freshness
+  dateAdded?: string; // ISO date — shows "New" badge for 14 days
 }
 
 /* ── Event Lifecycle ────────────────────────────────────────── */

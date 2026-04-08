@@ -10,6 +10,18 @@ const toolkitNames: Record<string, { en: string; ar: string }> = {
   'complete-parenting-guide': { en: 'The Intentional Parent: A Complete Guide', ar: 'الوالد الواعي: دليل شامل' },
   'couples-communication-workbook': { en: 'Couples Communication Workbook', ar: 'دفتر عمل التواصل للأزواج' },
   'anxiety-recovery-journal': { en: 'The Anxiety Recovery Journal', ar: 'يوميات التعافي من القلق' },
+  // Teen toolkits
+  'social-media-survival-guide': { en: 'The Social Media Survival Guide', ar: 'دليل النجاة في وسائل التواصل الاجتماعي' },
+  'teen-anger-toolkit': { en: 'Brain on Fire: Your Anger Is Not the Enemy', ar: 'دماغ مشتعل: غضبك ليس عدوك' },
+  'teen-identity-map': { en: 'The "Who Am I Actually?" Identity Map', ar: 'خريطة "من أنا فعلاً؟"' },
+  'friendship-flags-checklist': { en: 'Friendship Red Flags & Green Flags', ar: 'علامات الصداقة الحمراء والخضراء' },
+  'exam-season-emergency-kit': { en: 'Exam Season Emergency Kit', ar: 'حقيبة طوارئ موسم الامتحانات' },
+  // University student toolkits
+  'imposter-syndrome-playbook': { en: 'The Imposter Syndrome Playbook', ar: 'دليل التعامل مع متلازمة المحتال' },
+  'adulting-emotional-edition': { en: 'Adulting 101: The Emotional Edition', ar: 'دليل الكبار 101: النسخة العاطفية' },
+  'student-burnout-recovery': { en: 'Burnout Is Not a Badge of Honor', ar: 'الإنهاك ليس وسام شرف' },
+  'bicultural-student-guide': { en: "Caught Between Two Worlds: A Bicultural Student's Guide", ar: 'بين عالمين: دليل الطالب ثنائي الثقافة' },
+  'student-loneliness-toolkit': { en: 'The Loneliness Toolkit', ar: 'أدوات التغلب على الوحدة' },
 };
 
 export async function POST(request: Request) {
@@ -84,7 +96,7 @@ export async function POST(request: Request) {
                     ${isAr ? 'تواصَلْ معنا' : 'Contact Us'}
                   </a>
                 </div>
-                <div style="border-top:1px solid #F3EFE8;padding-top:24px;margin-top:8px;">
+                <div style="border-top:1px solid #F3EFE8;padding-top:24px;margin-top:24px;text-align:center;">
                   <p style="color:#4A4A5C;font-size:14px;line-height:1.7;margin:0 0 16px;">
                     ${isAr
                       ? 'هل تحتاجُ دعمًا شخصيًّا؟ محادثتُك الأولى مجّانيّة — 30 دقيقة بلا التزام.'
@@ -95,7 +107,7 @@ export async function POST(request: Request) {
                   </a>
                 </div>
               </div>
-              <div style="padding:16px 32px;text-align:center;border-radius:0 0 12px 12px;background:#FAF7F2;border:1px solid #F3EFE8;border-top:none;">
+              <div style="padding:24px 32px;text-align:center;border-radius:0 0 12px 12px;background:#FAF7F2;border:1px solid #F3EFE8;border-top:none;">
                 <p style="color:#8E8E9F;font-size:11px;margin:0;">
                   ${isAr ? 'ماما هالة للاستشارات — حيثُ يلتقي النّموُّ بالقلب' : 'Mama Hala Consulting — Where Growth Meets Heart'}
                 </p>

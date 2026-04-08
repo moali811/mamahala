@@ -37,6 +37,26 @@ const domainIcons: Record<string, React.ReactNode> = {
   RefreshCw: <RefreshCw className="w-4 h-4" />,
 };
 
+// Map service slugs to their categories for building links
+const serviceCategories: Record<string, string> = {
+  'adhd-executive-function-coaching': 'adults',
+  'cbt-youth': 'youth',
+  'parenting-coaching': 'families',
+  'teen-behavioral-coaching': 'youth',
+  'under-18-counseling': 'youth',
+  'supporting-children-through-change': 'families',
+};
+
+// Human-readable service names
+const serviceNames: Record<string, { en: string; ar: string }> = {
+  'adhd-executive-function-coaching': { en: 'ADHD & Executive Function Coaching', ar: 'تدريبُ ADHD والوظائفِ التنفيذيّة' },
+  'cbt-youth': { en: 'CBT for Youth', ar: 'العلاجُ السلوكيُّ المعرفيُّ للشباب' },
+  'parenting-coaching': { en: 'Parenting Coaching', ar: 'توجيهُ الأبوّةِ والأمومة' },
+  'teen-behavioral-coaching': { en: 'Teen Behavioral Coaching', ar: 'التوجيهُ السلوكيُّ للمراهقين' },
+  'under-18-counseling': { en: 'Under 18 Counseling', ar: 'استشارةُ لمن هم أقلّ من 18' },
+  'supporting-children-through-change': { en: 'Supporting Children Through Change', ar: 'دعمُ الأطفالِ خلالَ التغيير' },
+};
+
 function getDomainForStep(step: number): EFDomain | null {
   if (step < 1 || step > 10) return null;
   const question = questions[step - 1];
@@ -404,43 +424,35 @@ export default function ExecutiveFunctionQuizPage() {
                       </div>
                     </div>
 
-                    {/* Disclaimer box */}
-                    <div className="bg-[#FFF9F0] border border-[#C8A97D]/30 rounded-2xl p-5 mb-10">
-                      <div className="flex gap-3">
-                        <AlertCircle className="w-5 h-5 text-[#C8A97D] shrink-0 mt-0.5" />
-                        <div>
-                          <p className="text-sm font-semibold text-[#2D2A33] mb-1">
-                            {isRTL ? 'تنبيهٌ مهمّ' : 'Important Note'}
-                          </p>
-                          <p className="text-xs text-[#6B6580] leading-relaxed">
-                            {isRTL
-                              ? 'أداةُ الفحصِ هذه تعليميّةٌ ولا تحلُّ محلَّ التقييمِ السريريِّ المهنيّ. إذا كانت لديك مخاوفُ بشأنِ نموِّ طفلِك، نشجِّعُك على حجزِ استشارةٍ مع مختصٍّ مؤهَّل.'
-                              : 'This screening tool is educational and does not replace a professional clinical assessment. If you have concerns about your child\u2019s development, we encourage you to schedule a consultation with a qualified professional.'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Suggested services */}
+                    {/* Suggested Services */}
                     {tier.suggestedServices.length > 0 && (
                       <div className="mb-10">
                         <h3
-                          className="text-base font-bold text-[#2D2A33] mb-3"
+                          className="text-lg font-bold text-[#2D2A33] mb-4"
                           style={{ fontFamily: 'var(--font-heading)' }}
                         >
-                          {isRTL ? 'خدماتٌ مقترحة' : 'Suggested Services'}
+                          {isRTL ? 'خدمات مقترحة لك' : 'Recommended for You'}
                         </h3>
-                        <div className="flex flex-wrap gap-2">
-                          {tier.suggestedServices.map((service) => (
-                            <span
-                              key={service}
-                              className="inline-block px-3 py-1.5 rounded-full text-xs font-medium bg-[#7A3B5E]/8 text-[#7A3B5E]"
-                            >
-                              {service
-                                .replace(/-/g, ' ')
-                                .replace(/\b\w/g, (c) => c.toUpperCase())}
-                            </span>
-                          ))}
+                        <div className="space-y-3">
+                          {tier.suggestedServices.map((slug) => {
+                            const category = serviceCategories[slug] || 'adults';
+                            const name = serviceNames[slug];
+                            return (
+                              <Link
+                                key={slug}
+                                href={`/${locale}/services/${category}/${slug}`}
+                                className="flex items-center justify-between gap-3 px-5 py-4 rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] hover:bg-white hover:border-[#C4878A]/30 transition-all group"
+                              >
+                                <span className="text-sm font-medium text-[#2D2A33]">
+                                  {name ? (isRTL ? name.ar : name.en) : slug}
+                                </span>
+                                <span className="text-xs text-[#C4878A] font-medium flex items-center gap-1 group-hover:gap-2 transition-all">
+                                  {isRTL ? 'اعرف المزيد' : 'Learn More'}
+                                  <ArrowIcon className="w-3.5 h-3.5" />
+                                </span>
+                              </Link>
+                            );
+                          })}
                         </div>
                       </div>
                     )}

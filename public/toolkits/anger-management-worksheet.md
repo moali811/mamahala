@@ -283,18 +283,3 @@ Use this simple log to track anger episodes over the coming weeks. Notice patter
 | __________ | ________________________ | _____ | ________________________ | Yes / No | ________________________ |
 | __________ | ________________________ | _____ | ________________________ | Yes / No | ________________________ |
 
----
-
-## Ready for Deeper Support?
-
-Managing anger is a skill, and like any skill, it gets stronger with practice and guidance. If you find that your anger is consistently damaging your relationships, affecting your work, or leaving you feeling out of control despite your best efforts, working with a professional can make a significant difference.
-
-At Mama Hala Consulting, Dr. Hala Ali provides a safe, nonjudgmental space to explore the roots of anger, develop personalized strategies, and build the emotional regulation skills that change how you show up in every area of your life.
-
-**Book a session:** [mama-hala-website.vercel.app/en/book-a-session](https://mama-hala-website.vercel.app/en/book-a-session)
-
-*Bilingual services available in English and Arabic. Online and in-person sessions in Ottawa, Canada and Dubai, UAE.*
-
----
-
-*Copyright Mama Hala Consulting. This worksheet is for personal use only. Please do not reproduce or distribute without permission.*

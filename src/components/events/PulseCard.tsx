@@ -173,6 +173,11 @@ export default function PulseCard({ event, locale, pulseCount, onResonate, isExp
             {accent.icon}
           </div>
           <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[#8E8E9F]">{typeLabel}</span>
+          {event.dateAdded && (Date.now() - new Date(event.dateAdded).getTime() < 14 * 86400000) && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] shadow-sm animate-pulse">
+              <Sparkles className="w-2.5 h-2.5" /> {isRTL ? 'جديد' : 'New'}
+            </span>
+          )}
           {event.isFree && <Badge variant="success" size="sm">{isRTL ? 'مجّانيّ' : 'Free'}</Badge>}
           {event.locationType === 'online' && <Badge variant="sand" size="sm">{isRTL ? 'عبر الإنترنت' : 'Online'}</Badge>}
           {event.locationType === 'in-person' && <Badge variant="neutral" size="sm">{isRTL ? 'حضوريّ' : 'In Person'}</Badge>}

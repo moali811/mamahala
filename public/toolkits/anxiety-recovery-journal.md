@@ -704,6 +704,3 @@ That's not the end of anxiety. It's the beginning of freedom.
 
 *You've done 90 days of hard, honest work. Whatever comes next, you are ready.*
 
----
-
-*Copyright Mama Hala Consulting. This journal is for personal use only and is not a substitute for professional counseling or therapy. If you are experiencing severe anxiety, panic attacks, or thoughts of self-harm, please contact a mental health professional or crisis service immediately.*

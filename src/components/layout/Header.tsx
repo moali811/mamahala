@@ -91,7 +91,7 @@ export default function Header({ locale, messages }: HeaderProps) {
 
   /* ── Resources items with icons ───────── */
   const resourcesItems = [
-    { key: 'assessments', label: isRTL ? 'مراجعات' : 'Check-ins', href: `/${locale}/resources/assessments`, desc: isRTL ? 'اكتشِفْ نفسَك وعائلتَك' : 'Understand yourself & family' },
+    { key: 'assessments', label: isRTL ? 'تقييماتٌ ذاتيّة' : 'Check-ins', href: `/${locale}/resources/assessments`, desc: isRTL ? 'اكتشِفْ نفسَك وعائلتَك' : 'Understand yourself & family' },
     { key: 'blog', label: nav.blog, href: `/${locale}/resources/blog`, desc: isRTL ? 'مقالات ونصائح' : 'Articles & insights' },
     { key: 'downloads', label: nav.downloads, href: `/${locale}/resources/downloads`, desc: isRTL ? 'أدوات ومراجع مجانية' : 'Free tools & guides' },
     { key: 'events', label: nav.events, href: `/${locale}/resources/events`, desc: isRTL ? 'ورش عمل وفعاليات' : 'Workshops & events' },
