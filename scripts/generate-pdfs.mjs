@@ -486,6 +486,8 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
   /* ============ CONTENT ============ */
   .content {
     padding-top: 8px;
+    text-align: ${isRTL ? 'right' : 'left'};
+    direction: ${dir};
   }
 
   /* ============ BRANDED PAGE HEADER ============ */
@@ -591,6 +593,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     display: flex;
     gap: 12px;
     align-items: flex-start;
+    ${isRTL ? 'flex-direction: row-reverse; text-align: right;' : ''}
   }
   .callout-icon {
     font-size: 16pt;
@@ -741,6 +744,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     line-height: 1.75;
     orphans: 3;
     widows: 3;
+    text-align: ${isRTL ? 'right' : 'left'};
   }
 
   strong { color: ${B.dark}; font-weight: 600; }
@@ -778,8 +782,9 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
 
   /* ============ LISTS ============ */
   ul, ol {
-    margin: 10px 0 10px 6px;
-    padding-left: 0;
+    margin: 10px 0 10px ${isRTL ? '0' : '6px'};
+    ${isRTL ? 'margin-right: 6px;' : ''}
+    ${isRTL ? 'padding-right: 0; padding-left: 0;' : 'padding-left: 0;'}
   }
 
   ul {
@@ -807,7 +812,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
   ol {
     list-style: none;
     counter-reset: list-counter;
-    padding-left: 0;
+    ${isRTL ? 'padding-right: 0; padding-left: 0;' : 'padding-left: 0;'}
   }
 
   ol > li {
@@ -847,6 +852,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     gap: 10px;
     margin: 8px 0;
     line-height: 1.6;
+    ${isRTL ? 'flex-direction: row-reverse; text-align: right;' : ''}
   }
 
   .checkbox-box {
@@ -901,6 +907,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     border-bottom: 1px solid ${B.border};
     vertical-align: top;
     line-height: 1.55;
+    text-align: ${isRTL ? 'right' : 'left'};
   }
 
   tr.alt-row {
