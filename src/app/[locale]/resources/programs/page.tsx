@@ -21,6 +21,7 @@ import MyLearningButton from '@/components/academy/layout/MyLearningButton';
 import AnimatedStatCard from '@/components/academy/visual/AnimatedStatCard';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import { programCatalog } from '@/data/programs/index';
+import ProgramsHeroVideo from '@/components/programs/ProgramsHeroVideo';
 
 // Icon mapping for dynamic rendering from catalog
 const iconMap: Record<string, React.ReactNode> = {
@@ -192,7 +193,10 @@ export default function ProgramsPage() {
         <WaveDivider position="bottom" fillColor="#ffffff" variant="gentle" />
       </section>
 
-      {/* ─── PROGRAM FINDER QUIZ ─── */}
+      {/* ─── PROGRAMS HERO VIDEO ─── */}
+      <ProgramsHeroVideo locale={locale} />
+
+            {/* ─── PROGRAM FINDER QUIZ ─── */}
       <section className="py-16 lg:py-20 bg-white">
         <div className="container-main">
           <ScrollReveal className="text-center mb-10">
