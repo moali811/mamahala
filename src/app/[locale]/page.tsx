@@ -322,7 +322,7 @@ export default function HomePage() {
           style={{ backgroundColor: '#E8D5D0' }}
         >
           <Image
-            src="/images/hala-confident.PNG"
+            src="/images/hala-confident.png"
             alt="Dr. Hala Ali - Mama Hala"
             fill
             priority
