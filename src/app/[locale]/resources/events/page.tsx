@@ -17,6 +17,8 @@ import PastEventCard from '@/components/events/PastEventCard';
 import EventUrgencyBadge from '@/components/events/EventUrgencyBadge';
 import EventReminderSignup from '@/components/events/EventReminderSignup';
 import EventFilters, { type Filters } from '@/components/events/EventFilters';
+import MobileCarousel from '@/components/ui/MobileCarousel';
+import { Sprout } from 'lucide-react';
 import ForYouSection from '@/components/events/ForYouSection';
 import { useVisitorProfile } from '@/hooks/useVisitorProfile';
 import type { SmartEvent } from '@/types';
@@ -129,11 +131,13 @@ export default function EventsPage() {
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {isRTL
-                ? <>تجارِبُ تنمو من{' '}<span className="text-[#7A3B5E] italic">احتياجاتِكم</span></>
-                : <>Experiences Shaped by{' '}<span className="text-[#7A3B5E] italic">Your Needs</span></>}
+                ? <>فَعالِيّاتٌ{' '}<span className="text-[#7A3B5E] italic">تَصْنَعونَها مَعَنا</span></>
+                : <>Events You{' '}<span className="text-[#7A3B5E] italic">Help Us Build</span></>}
             </h1>
             <p className="mt-5 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed">
-              {isRTL ? seasonal.subtitleAr : seasonal.subtitleEn}
+              {isRTL
+                ? 'تَصَفَّحوا الأَفْكار. اِضْغَطوا "هذا يَعْنيني" على ما يَتَرَدَّدُ صَداهُ مَعَكُم. نَسْتَضيفُ الفَعاليّاتِ الّتي تَظْهَرونَ فيها.'
+                : "Browse the ideas. Tap 'This Resonates' on what speaks to you. We host the ones you show up for."}
             </p>
 
             {!loading && (
@@ -142,16 +146,24 @@ export default function EventsPage() {
                   <span className="inline-flex items-center gap-1.5">
                     <CalendarCheck className="w-4 h-4 text-[#3B8A6E]" />
                     {isRTL
-                      ? `${upcoming.length} ${upcoming.length <= 2 ? 'فعاليّة قادمة' : upcoming.length <= 10 ? 'فعاليّاتٍ قادمة' : 'فعاليّةً قادمة'}`
-                      : `${upcoming.length} upcoming event${upcoming.length !== 1 ? 's' : ''}`}
+                      ? `${upcoming.length} ${upcoming.length <= 2 ? 'مَوْعِدٌ مُؤَكَّد' : upcoming.length <= 10 ? 'مَواعيدُ مُؤَكَّدَة' : 'مَوْعِداً مُؤَكَّداً'}`
+                      : `${upcoming.length} confirmed date${upcoming.length !== 1 ? 's' : ''}`}
                   </span>
                 )}
                 {hasPulse && (
                   <span className="inline-flex items-center gap-1.5">
                     <Activity className="w-4 h-4 text-[#C8A97D]" />
                     {isRTL
-                      ? `${pulse.length} ${pulse.length <= 2 ? 'فكرة تنتظرُ' : pulse.length <= 10 ? 'أفكارٍ تنتظرُ' : 'فكرةً تنتظرُ'} صوتَك`
-                      : `${pulse.length} idea${pulse.length !== 1 ? 's' : ''} awaiting your voice`}
+                      ? `${pulse.length} ${pulse.length <= 2 ? 'فِكْرَةٌ مَفْتوحَة' : pulse.length <= 10 ? 'أَفْكارٌ مَفْتوحَة' : 'فِكْرَةً مَفْتوحَة'} لِلتَّصْويت`
+                      : `${pulse.length} idea${pulse.length !== 1 ? 's' : ''} open for your vote`}
+                  </span>
+                )}
+                {hasPast && (
+                  <span className="inline-flex items-center gap-1.5">
+                    <History className="w-4 h-4 text-[#B08B6E]" />
+                    {isRTL
+                      ? `${past.length} ${past.length <= 2 ? 'فَعاليَّةٌ مُنْعَقِدَة' : past.length <= 10 ? 'فَعاليّاتٌ مُنْعَقِدَة' : 'فَعاليَّةً مُنْعَقِدَة'}`
+                      : `${past.length} event${past.length !== 1 ? 's' : ''} already held`}
                   </span>
                 )}
               </div>
@@ -177,7 +189,7 @@ export default function EventsPage() {
       {/*  FILTERS — audience, format, price                              */}
       {/* ================================================================ */}
       {!loading && totalTopics > 3 && (
-        <section className={`pt-8 pb-2 ${profile.hasProfile ? 'bg-[#FAF7F2]' : 'bg-[#FAF7F2]'}`}>
+        <section className="sticky top-16 z-30 pt-3 pb-3 bg-[#FAF7F2]/92 backdrop-blur-md border-b border-[#F0E8D8]">
           <div className="container-main">
             <EventFilters
               filters={filters}
@@ -295,10 +307,24 @@ export default function EventsPage() {
       {/* ================================================================ */}
       {/*  SECTION 3: PAST EVENTS                                          */}
       {/* ================================================================ */}
-      {hasPast && (
+      {hasPast && (() => {
+        // Count series instances via seriesId (data-driven — adds new rounds automatically)
+        const seriesCounts = past.reduce<Record<string, number>>((acc, e) => {
+          if (e.seriesId) acc[e.seriesId] = (acc[e.seriesId] || 0) + 1;
+          return acc;
+        }, {});
+        const growWithMeCount = seriesCounts['grow-with-me'] || 0;
+
+        // Defensive: once we pass ~8 past events, trim the homepage section and show a "view all" link.
+        // Below 8, show everything (current behavior for 6 events).
+        const HOMEPAGE_LIMIT = 8;
+        const visiblePast = past.slice(0, HOMEPAGE_LIMIT);
+        const hiddenCount = Math.max(0, past.length - HOMEPAGE_LIMIT);
+
+        return (
         <section className="py-16 lg:py-24 bg-[#FAF7F2]">
           <div className="container-main">
-            <ScrollReveal className="mb-10">
+            <ScrollReveal className="mb-8">
               <div className="flex items-center gap-3 mb-2">
                 <History className="w-4 h-4 text-[#8E8E9F]" />
                 <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#8E8E9F]">
@@ -309,20 +335,69 @@ export default function EventsPage() {
                 className="text-2xl sm:text-3xl text-[#2D2A33]/70 leading-tight"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
-                {isRTL ? 'ما حدثَ من قبل' : "What We've Done Together"}
+                {isRTL ? 'لحظاتٌ جمعتـنا' : "What We've Done Together"}
               </h2>
+              <p className="mt-3 text-sm text-[#6B6580] max-w-xl">
+                {isRTL
+                  ? `${past.length} ${past.length <= 2 ? 'فَعاليَّةٌ عَقَدْناها' : 'فَعاليّاتٌ عَقَدْناها'} مع الأُمَّهاتِ وَالعائِلاتِ — مِنْ غُرْفَةِ الجُلوسِ إلى الحَديقَةِ إلى Google Meet.`
+                  : `${past.length} gatherings we've held with mothers and families — from the living room to the garden to Google Meet.`}
+              </p>
             </ScrollReveal>
 
-            <StaggerReveal className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {past.map((event) => (
-                <StaggerChild key={event.slug}>
-                  <PastEventCard event={event} locale={locale} />
-                </StaggerChild>
+            {/* Grow With Me series callout — activates once 2+ rounds exist */}
+            {growWithMeCount >= 2 && (
+              <ScrollReveal className="mb-8">
+                <div className="rounded-2xl p-5 sm:p-6 border border-[#6B9A5B]/20 bg-gradient-to-br from-[#EEF5E8] via-[#F5F9EE] to-[#FAFCF5] flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center flex-shrink-0 shadow-sm border border-[#6B9A5B]/20">
+                    <Sprout className="w-5 h-5 text-[#6B9A5B]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#6B9A5B]">
+                        {isRTL ? 'سِلْسِلَةٌ مُسْتَمِرَّة' : 'Ongoing Series'}
+                      </p>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-[9px] font-bold uppercase tracking-[0.1em] text-[#6B9A5B] border border-[#6B9A5B]/20">
+                        {growWithMeCount} {isRTL ? 'جَوْلات' : 'rounds'}
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-bold text-[#2D2A33] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                      {isRTL ? 'اِنْمو مَعي' : 'Grow With Me'}
+                    </h3>
+                    <p className="text-sm text-[#4A4A5C] leading-relaxed">
+                      {isRTL
+                        ? 'دَوْرَةٌ مَوْسِميَّةٌ مِنَ العِلاجِ بِالنَّباتِ اِفْتِراضيّاً. الأُمَّهاتُ وَالمُراهِقونَ يَزْرَعونَ مَعاً، وَيُسَمّونَ ما يَحْتاجُ إلى ماءٍ في حَياتِهِم. الجَوْلَةُ القادِمَةُ رَبيع ٢٠٢٦.'
+                        : "A seasonal virtual plant-therapy practice. Mothers and teens plant together, naming what in their lives needs water. Next round: spring 2026."}
+                    </p>
+                  </div>
+                </div>
+              </ScrollReveal>
+            )}
+
+            <MobileCarousel desktopGrid="md:grid-cols-2" gap={24} mobileWidth="85vw">
+              {visiblePast.map((event) => (
+                <PastEventCard key={event.slug} event={event} locale={locale} />
               ))}
-            </StaggerReveal>
+            </MobileCarousel>
+
+            {/* "View all" link — appears once past events exceed HOMEPAGE_LIMIT */}
+            {hiddenCount > 0 && (
+              <ScrollReveal className="mt-8 text-center">
+                <p className="text-[11px] text-[#8E8E9F] mb-3">
+                  {isRTL
+                    ? `يَظْهَرُ هُنا آخِرُ ${HOMEPAGE_LIMIT} فَعاليّات — لَدَيْنا ${past.length} إِجْمالاً.`
+                    : `Showing the most recent ${HOMEPAGE_LIMIT} of ${past.length} past gatherings.`}
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#7A3B5E] opacity-70">
+                  {isRTL
+                    ? `تَصَفَّحي الأَرْشيفَ الكامِل (${past.length}) — قريباً`
+                    : `Browse the full archive (${past.length}) — coming soon`}
+                </span>
+              </ScrollReveal>
+            )}
           </div>
         </section>
-      )}
+        );
+      })()}
 
       {/* ================================================================ */}
       {/*  REMINDER SIGNUP                                                 */}
@@ -346,8 +421,8 @@ export default function EventsPage() {
         descAr="لم تجدْ موضوعًا مناسبًا؟ دعنا نتحدّثْ عن الدّعمِ الأنسبِ لك."
         primaryTextEn="Book a Free Consultation"
         primaryTextAr="احجزْ استشارةً مجّانيّة"
-        secondaryTextEn="Chat on WhatsApp"
-        secondaryTextAr="تواصلْ عبر واتساب"
+        secondaryTextEn="Let's Talk"
+        secondaryTextAr="لنتحدّثْ"
       />
     </div>
   );

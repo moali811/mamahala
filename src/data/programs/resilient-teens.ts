@@ -301,6 +301,153 @@ The teenage brain is not a problem to be fixed. It is a work in progress that de
           ],
           estimatedReadTimeMinutes: 4,
           skillTags: ['Brain Development', 'Emotional Validation', 'Parenting Shift'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'tb-lead', tone: 'lead',
+              textEn: 'Your teen is not a broken adult. Their brain is a construction site — rapidly rewiring for autonomy, risk-taking, and deep social belonging. The prefrontal cortex (impulse control, long-term thinking) won\'t finish developing until age 25.',
+              textAr: 'مُراهِقُكِ لَيْسَ بالِغاً مَكْسوراً. دِماغُهُ وَرْشَةُ بِناء — يُعيدُ الأَسْلاكَ بِسُرْعَةٍ لِلاِسْتِقْلاليَّةِ والمُخاطَرَةِ والاِنْتِماءِ الاِجْتِماعِيّ. القِشْرَةُ الجَبْهيَّةُ الأَمامِيّة (ضَبْطُ الاِنْدِفاع، التَّفْكيرُ البَعيد) لا تَكْتَمِلُ قَبْلَ سِنِّ الـ 25.',
+            },
+            {
+              kind: 'journey', id: 'jr-teen-tuesday',
+              titleEn: "A Teen's Tuesday",
+              titleAr: 'يَوْمُ ثُلاثاءٍ لِمُراهِق',
+              subtitleEn: 'Behind the behavior: what their brain is actually doing',
+              subtitleAr: 'خَلْفَ السُّلوك: ما يَفْعَلُهُ دِماغُهُم فِعْلاً',
+              durationLabelEn: '~4 min total',
+              durationLabelAr: '~٤ دَقائِق',
+              steps: [
+                {
+                  id: 'jt1-welcome', icon: 'heart', isIntro: true,
+                  titleEn: 'Before You Judge the Behavior…', titleAr: 'قَبْلَ أَنْ تَحْكُمي على السُّلوك…',
+                  narrativeEn: "Meet five teens across a single Tuesday. What looks like defiance, drama, recklessness, or disconnection is often their brain doing exactly what it's designed to do at 15. Pause with us at three moments. Trust your intuition. Then we'll show you what the neuroscience says.",
+                  narrativeAr: 'سَتُقابِلينَ خَمْسَةَ مُراهِقينَ في يَوْمِ ثُلاثاءٍ واحِد. ما يَبْدو تَحَدّياً أَوْ دَراما أَوْ طَيْشاً أَوْ اِنْسِحاباً، غالِباً ما يَكونُ دِماغُهُم يَفْعَلُ بِالضَّبْطِ ما صُمِّمَ لَهُ في الخامِسَةَ عَشْرَة. تَوَقَّفي مَعَنا عِنْدَ ثَلاثِ لَحَظات. ثِقي بِحَدْسِك. ثُمَّ سَنُريكِ ما يَقولُهُ عِلْمُ الأَعْصاب.',
+                },
+                {
+                  id: 'jt2-wakeup', icon: 'moon',
+                  timeLabelEn: '6:45 AM', timeLabelAr: '٦:٤٥ صَباحاً',
+                  titleEn: 'The Wake-Up Battle', titleAr: 'مَعْرَكَةُ الاِسْتِيقاظ',
+                  narrativeEn: "Jake's mom has called his name three times. The fourth time she's standing in his doorway, voice rising. 'We leave in fifteen minutes!' Jake groans, rolls away, pulls the duvet over his head. He went to bed at midnight. His first class starts in forty-five minutes. He is, by every measure, exhausted.",
+                  narrativeAr: 'نادَتْ والِدَةُ جايْك اسْمَهُ ثَلاثَ مَرّات. في المَرَّةِ الرّابِعَة، تَقِفُ في مَدْخَلِ غُرْفَتِهِ بِصَوْتٍ مُرْتَفِع. "نَخْرُجُ بَعْدَ خَمْسَ عَشْرَةَ دَقيقَة!" يَئِنُّ جايْك، يَنْقَلِبُ بَعيداً، يَسْحَبُ اللِّحافَ فَوْقَ رَأْسِه. نامَ في مُنْتَصَفِ اللَّيْل. حِصَّتُهُ الأُولى بَعْدَ خَمْسٍ وأَرْبَعينَ دَقيقَة. هو، بِكُلِّ المَقاييس، مُنْهَك.',
+                  revealLabelEn: 'Circadian rhythm shift — not laziness', revealLabelAr: 'تَحَوُّلُ الإيقاعِ اليَوْميّ — لَيْسَ كَسَلاً',
+                  revealTextEn: "Puberty biologically shifts the sleep-wake cycle 2-3 hours later. Jake's body doesn't release melatonin until around 11 PM. His brain, at 7 AM, is still in its equivalent of 4 AM. He's not defying you — his biology is on a different clock.",
+                  revealTextAr: 'البُلوغُ يُزيحُ دَوْرَةَ النَّوْمِ بيولوجيّاً ٢-٣ ساعاتٍ لاحِقاً. جِسْمُ جايْك لا يُفْرِزُ الميلاتونينَ إلّا حَوالي الحادِيَةَ عَشْرَةَ لَيْلاً. دِماغُهُ، في السّابِعَةِ صَباحاً، لا يَزالُ في ما يُعادِلُ الرّابِعَةَ صَباحاً عِنْدَنا. هو لا يَتَحَدّاكِ — بيولوجِيَّتُهُ على ساعَةٍ مُخْتَلِفَة.',
+                  revealTone: 'insight',
+                  accentColor: '#5B8FA8',
+                },
+                {
+                  id: 'jt3-cafeteria', icon: 'star',
+                  timeLabelEn: '12:30 PM', timeLabelAr: '١٢:٣٠ ظُهْراً',
+                  titleEn: 'The Cafeteria', titleAr: 'الكافتيريا',
+                  narrativeEn: "Maya stands at the edge of the cafeteria, tray in hand. She's scanning. Her usual table has one empty seat — but someone new is sitting in her spot, laughing at something Maya wasn't there to hear. She considers the library. She considers leaving. Finally she walks to a table in the corner, alone, and pulls out her phone.",
+                  narrativeAr: 'تَقِفُ مايا على حافَّةِ الكافتيريا، الصَّحْنُ في يَدِها. تَتَفَحَّص. طاوِلَتُها المُعْتادَةُ فيها مَقْعَدٌ فارِغٌ — لَكِنَّ شَخْصاً جَديداً يَجْلِسُ في مَكانِها، يَضْحَكُ على شَيْءٍ لَمْ تَكُنْ مايا هُناكَ لِتَسْمَعَه. تُفَكِّرُ في المَكْتَبَة. تُفَكِّرُ في المُغادَرَة. أَخيراً تَمْشي إلى طاوِلَةٍ في الزّاوِيَة، وَحيدَة، وَتُخْرِجُ هاتِفَها.',
+                  revealLabelEn: 'Social belonging = biological survival', revealLabelAr: 'الاِنْتِماءُ الاِجْتِماعِيّ = بَقاءٌ بيولوجيّ',
+                  revealTextEn: "What looks like teen self-absorption is actually evolutionary wiring. Peer rejection activates the same brain regions as physical pain (the anterior cingulate cortex). For a 15-year-old, being socially excluded is a neurological emergency — the phone isn't avoidance, it's a lifeline.",
+                  revealTextAr: 'ما يَبْدو اِنْشِغالاً بِالذّاتِ عِنْدَ المُراهِقينَ هو في الحَقيقَةِ أَسْلاكٌ تَطَوُّرِيَّة. رَفْضُ الأَقْرانِ يُنَشِّطُ المَناطِقَ الدِّماغِيَّةَ نَفْسَها الّتي يُنَشِّطُها الأَلَمُ الجَسَدِيّ (القِشْرَةُ الحِزامِيَّةُ الأَمامِيَّة). لابِنَةِ الخامِسَةَ عَشْرَة، الاِسْتِبْعادُ الاِجْتِماعيّ طَوارِئُ عَصَبيَّة — الهاتِفُ لَيْسَ تَهَرُّباً، بَلْ طَوْقَ نَجاة.',
+                  revealTone: 'warmth',
+                  accentColor: '#C4878A',
+                  isPausePoint: true,
+                },
+                {
+                  id: 'jt4-skatepark', icon: 'flame',
+                  timeLabelEn: '4:15 PM', timeLabelAr: '٤:١٥ عَصْراً',
+                  titleEn: 'The Skate Park', titleAr: 'حَديقَةُ التَّزَحْلُق',
+                  narrativeEn: "Ethan is lining up a trick he's never landed. Four friends are filming. He's fallen twice already — his elbow is bleeding. He knows his mom asked him to wear his pads. He left them in his locker. He pushes off again.",
+                  narrativeAr: 'إيثان يَسْتَعِدُّ لِحَرَكَةٍ لَمْ يُتْقِنْها من قَبْل. أَرْبَعَةُ أَصْدِقاءٍ يُصَوِّرون. سَقَطَ مَرَّتَيْنِ بِالفِعْل — كوعُهُ يَنْزِف. يَعْرِفُ أَنَّ أُمَّهُ طَلَبَتْ مِنْهُ أَنْ يَرْتَدِيَ الواقِيات. تَرَكَها في خِزانَتِهِ. يَنْطَلِقُ مِنْ جَديد.',
+                  revealLabelEn: 'Dopamine + immature PFC = skewed risk math', revealLabelAr: 'دوبامين + قِشْرَةٌ غَيْرُ ناضِجَة = حِسابُ مُخاطَرَةٍ مائِل',
+                  revealTextEn: "The teen brain releases more dopamine in response to risk and peer witnessing than at any other point in life. Combined with a prefrontal cortex still years from maturity, Ethan isn't calculating 'injury risk vs. glory.' His brain is answering a different question: 'What will make me feel most alive?'",
+                  revealTextAr: 'دِماغُ المُراهِقِ يُفْرِزُ دوبامين أَكْثَرَ اسْتِجابَةً لِلمُخاطَرَةِ وَحُضورِ الأَقْرانِ أَكْثَرَ مِنْ أَيِّ مَرْحَلَةٍ أُخْرى. مَعَ قِشْرَةٍ أَمامِيَّةٍ ما زالَتْ بَعيدَةً عَنِ النُّضْج، إيثان لا يَحْسِبُ "خَطَرَ الإصابَةِ مُقابِلَ المَجْد". دِماغُهُ يُجيبُ على سُؤالٍ آخَر: "ما الَّذي سَيَجْعَلُني أَشْعُرُ بِالحَياةِ أَكْثَر؟"',
+                  revealTone: 'warning',
+                  accentColor: '#D4A84B',
+                },
+                {
+                  id: 'jt5-doorslam', icon: 'frown',
+                  timeLabelEn: '7:30 PM', timeLabelAr: '٧:٣٠ مَساءً',
+                  titleEn: 'The Door Slam', titleAr: 'صَفْعَةُ الباب',
+                  narrativeEn: "'I'M FINE, LEAVE ME ALONE!' Aisha shouts, voice cracking. Her dad had asked — gently — about the math test. She goes up the stairs, two at a time. The door slams. Fifteen minutes ago she was laughing at a TikTok. Five minutes from now she'll be crying. In thirty, she'll be fine. None of this is proportional.",
+                  narrativeAr: '"أَنا بِخَيْر، اُتْرُكوني وَحْدي!" تَصْرُخُ عائِشَة، صَوْتُها يَنْكَسِر. سَأَلَها والِدُها — بِلُطْفٍ — عَنْ اخْتِبارِ الرِّياضِيّات. تَصْعَدُ الدَّرَجَ، دَرَجَتَيْنِ في كُلِّ خَطْوَة. يُصْفَقُ البابُ. قَبْلَ رُبْعِ ساعَةٍ كانَتْ تَضْحَكُ على تيك توك. بَعْدَ خَمْسِ دَقائِقَ سَتَبْكي. بَعْدَ ثَلاثينَ سَتَكونُ بِخَيْر. لا شَيْءَ مِنْ هذا مُتَناسِب.',
+                  revealLabelEn: 'Limbic flood — prefrontal offline', revealLabelAr: 'فَيَضانٌ لِيمْبيّ — القِشْرَةُ الأَمامِيَّةُ مُغْلَقَة',
+                  revealTextEn: "The teen limbic system fires with adult-level intensity years before the prefrontal cortex can regulate it. In a peak emotional moment, Aisha is genuinely flooded — her reasoning brain is offline. The feeling isn't proportional to the trigger; it's proportional to her brain chemistry right now. Thirty minutes later, her PFC comes back online and she can talk.",
+                  revealTextAr: 'الجِهازُ اللّيمْبيّ عِنْدَ المُراهِقِ يَشْتَغِلُ بِحِدَّةٍ كَحِدَّةِ البالِغينَ سَنَواتٍ قَبْلَ أَنْ تَسْتَطيعَ القِشْرَةُ الأَمامِيَّةُ تَنْظيمَه. في لَحْظَةٍ عاطِفِيَّةٍ قُصْوى، عائِشَةُ فِعْلاً مَغْمورَة — دِماغُها المَنْطِقيُّ مُغْلَق. الشُّعورُ لَيْسَ مُتَناسِباً مَعَ المُحَفِّز؛ بَلْ مَعَ كيمْياءِ دِماغِها الآنَ. بَعْدَ ثَلاثينَ دَقيقَة، تَعودُ القِشْرَةُ الأَمامِيَّةُ إلى العَمَل وَتَسْتَطيعُ الحَديث.',
+                  revealTone: 'warmth',
+                  accentColor: '#C4878A',
+                  isPausePoint: true,
+                },
+                {
+                  id: 'jt6-phoneglow', icon: 'moon',
+                  timeLabelEn: '10:00 PM', timeLabelAr: '١٠:٠٠ مَساءً',
+                  titleEn: 'The Phone Glow', titleAr: 'ضَوْءُ الهاتِف',
+                  narrativeEn: "Noah is supposed to be asleep. His phone is under the pillow. Forty-seven unread texts in a group chat. One DM from a girl he likes that he's read eleven times. He knows he has a test tomorrow. He cannot put it down.",
+                  narrativeAr: 'نوح مَفْروضٌ أَنْ يَكونَ نائِماً. هاتِفُهُ تَحْتَ الوِسادَة. سَبْعَةٌ وَأَرْبَعونَ رِسالَةً غَيْرَ مَقْروءَةٍ في مَجْموعَة. رِسالَةٌ خاصَّةٌ مِنْ فَتاةٍ يُعْجَبُ بِها قَرَأَها إحْدى عَشْرَةَ مَرَّة. يَعْرِفُ أَنَّ لَدَيْهِ اخْتِباراً غَداً. لا يَسْتَطيعُ أَنْ يَتْرُكَه.',
+                  revealLabelEn: 'Attachment, not addiction', revealLabelAr: 'تَعَلُّق، لا إدْمان',
+                  revealTextEn: "Social stakes feel existential because, for an adolescent brain, social belonging IS survival. The phone isn't a distraction from 'real life' — at 15, this IS real life. Your teen's relationship to their phone is often a proxy for their relationship to peer acceptance. Connection over control works better here than restriction.",
+                  revealTextAr: 'المُخاطِرُ الاِجْتِماعِيَّةُ تَبْدو وُجوديَّةً لِأَنَّ الاِنْتِماءَ الاِجْتِماعِيّ، لِدِماغِ المُراهِق، هو البَقاء. الهاتِفُ لَيْسَ تَشَتُّتاً عَنِ "الحَياةِ الحَقيقيَّة" — في الخامِسَةَ عَشْرَة، هذِهِ هي الحَياةُ الحَقيقيَّة. عَلاقَةُ مُراهِقِكِ بِهاتِفِهِ غالِباً ما تَكونُ بَديلاً لِعَلاقَتِهِ بِقَبولِ الأَقْران. الاِتِّصالُ فَوْقَ التَّحَكُّمِ يَعْمَلُ هُنا أَفْضَلَ مِنَ التَّقْييد.',
+                  revealTone: 'insight',
+                  accentColor: '#5B8FA8',
+                },
+                {
+                  id: 'jt7-quietroom', icon: 'heart',
+                  timeLabelEn: '11:45 PM', timeLabelAr: '١١:٤٥ مَساءً',
+                  titleEn: 'The Quiet Room', titleAr: 'الغُرْفَةُ الهادِئَة',
+                  narrativeEn: "Aisha's mom sits on the hallway floor outside her daughter's closed door. She can hear breathing. She can hear a sniff. She doesn't knock. She doesn't speak. She's been there for ten minutes. Aisha knows she's there.",
+                  narrativeAr: 'والِدَةُ عائِشَةَ تَجْلِسُ على أَرْضِ المَمَرِّ خارِجَ بابِ ابْنَتِها المُغْلَق. تَسْتَطيعُ سَماعَ التَّنَفُّس. تَسْتَطيعُ سَماعَ شَهيق. لا تَطْرُق. لا تَتَكَلَّم. هي هُناكَ مُنْذُ عَشْرِ دَقائِق. عائِشَةُ تَعْرِفُ أَنَّها هُناك.',
+                  revealLabelEn: 'Presence without pressure', revealLabelAr: 'حُضورٌ بِلا ضَغْط',
+                  revealTextEn: "Teen attachment doesn't look like the cuddles of childhood. It looks like this: a parent who stays near the closed door, signaling 'I haven't left' without demanding entry. Research is clear — the parent-teen relationship remains the strongest protective factor in adolescent wellbeing. You are still the safety net. You just have to let them forget you're there, sometimes.",
+                  revealTextAr: 'تَعَلُّقُ المُراهِقِ لا يَبْدو كَاحْتِضانِ الطُّفولَة. يَبْدو هكَذا: وَلِيُّ أَمْرٍ يَبْقى قُرْبَ البابِ المُغْلَق، يُشيرُ "أَنا لَمْ أُغادِرْ" دونَ طَلَبِ الدُّخول. البَحْثُ واضِح — عَلاقَةُ الوالِدِ بِالمُراهِقِ تَبْقى أَقْوى عامِلٍ حِمائِيٍّ في رَفاهِ المُراهِق. أَنْتِ لا تَزالينَ شَبَكَةَ الأَمان. فَقَطْ عَلَيْكِ أَنْ تَدَعيهِمْ يَنْسَوْنَ أَنَّكِ هُناكَ، أَحْياناً.',
+                  revealTone: 'insight',
+                  accentColor: '#7A3B5E',
+                  isPausePoint: true,
+                },
+                {
+                  id: 'jt8-reframe', icon: 'sun', isOutro: true,
+                  titleEn: 'The Reframe', titleAr: 'إعادَةُ التَّأْطير',
+                  narrativeEn: "In one day: five brains under massive renovation. Jake's sleep biology. Maya's survival-level need to belong. Ethan's dopamine-driven risk math. Aisha's limbic flood. Noah's attachment masquerading as a phone. The behavior you saw wasn't character. It was construction. And construction needs a patient architect, not a frustrated critic.",
+                  narrativeAr: 'في يَوْمٍ واحِد: خَمْسَةُ أَدْمِغَةٍ تَحْتَ تَجْديدٍ ضَخْم. بيولوجِيَّةُ نَوْمِ جايْك. حاجَةُ مايا لِلاِنْتِماءِ على مُسْتَوى البَقاء. حِسابُ مُخاطَرَةِ إيثان المَدْفوعُ بِالدوبامين. فَيَضانُ عائِشَةَ اللّيمْبِيّ. تَعَلُّقُ نوح المُتَنَكِّرُ كَهاتِف. السُّلوكُ الَّذي رَأَيْتِهِ لَمْ يَكُنْ شَخْصيَّة. كانَ بِناءً. وَالبِناءُ يَحْتاجُ مُهَنْدِساً صَبوراً، لا ناقِداً مُحْبَطاً.',
+                },
+              ],
+            },
+            {
+              kind: 'callout', id: 'tb-science', variant: 'insight',
+              textEn: 'During adolescence, the limbic system (emotion + reward) fires LOUDER than the prefrontal cortex. It\'s a feature, not a bug — it drives the exploration teens need. Your job is to be the external prefrontal cortex until theirs is ready.',
+              textAr: 'خِلالَ المُراهَقَة، الجِهازُ اللّيمْبِيّ (المَشاعِرُ والمُكافَأَة) يُطْلِقُ أَعْلى من القِشْرَةِ الأَمامِيّة. إنَّها مَيزَة، لا عَيْب — تَدْفَعُ الاِسْتِكْشافَ الّذي يَحْتاجُهُ المُراهِقون. مَهَمَّتُكِ أَنْ تَكوني القِشْرَةَ الأَمامِيّةَ الخارِجيَّةَ حَتّى تَجْهَزَ قِشْرَتُهُم.',
+            },
+            {
+              kind: 'comparison', id: 'tb-cmp',
+              titleEn: 'What Looks Like Defiance vs What It Actually Is', titleAr: 'ما يَبْدو كَتَحَدٍّ مُقابِلَ ما هو فِعْلاً',
+              left: {
+                labelEn: 'What you see', labelAr: 'ما تَرَيْنَه',
+                pointsEn: ['"I don\'t care!"', 'Slams door, withdraws', 'Takes huge risks', 'Peers matter more than family'],
+                pointsAr: ['"لا يُهِمُّني!"', 'يُغْلِقُ البابَ ويَنْسَحِب', 'يَأْخُذُ مُخاطَراتٍ كَبيرَة', 'الأَقْرانُ يَهُمّونَ أَكْثَر من العائِلَة'],
+              },
+              right: {
+                labelEn: 'What\'s happening in the brain', labelAr: 'ما يَحْدُثُ في الدِّماغ',
+                pointsEn: ['Overwhelmed — needs space to process', 'Nervous system flooded, not rejecting you', 'Reward center seeking experience', 'Developmentally wired for peer bonds'],
+                pointsAr: ['مُثْقَل — يَحْتاجُ مَساحَةً لِلمُعالَجَة', 'جِهازٌ عَصَبِيٌّ غارِق، لا يَرْفُضُكِ', 'مَرْكَزُ المُكافَأَةِ يَبْحَثُ عَنْ تَجْرِبَة', 'مَبْرَمَجٌ نَمائِيّاً لِرَوابِطِ الأَقْران'],
+              },
+            },
+            {
+              kind: 'micro-quiz', id: 'tb-mq1',
+              question: {
+                textEn: 'Your 14-year-old rolls their eyes and says "Whatever." What\'s the brain doing?',
+                textAr: 'اِبْنُكِ ذو الـ 14 يَرْفَعُ عَيْنَيْهِ ويَقول "كَيْفَما كان". ماذا يَفْعَلُ الدِّماغ؟',
+                options: [
+                  { labelEn: 'Disrespecting you on purpose', labelAr: 'يَتَعَمَّدُ عَدَمَ الاِحْتِرام', correct: false, explanationEn: 'Rarely purposeful. Usually an overwhelmed system signaling it needs space.', explanationAr: 'نادِراً ما يَكونُ مُتَعَمَّداً. غالِباً جِهازٌ مُثْقَلٌ يُشيرُ لِلمَساحَة.' },
+                  { labelEn: 'Testing limits AND protecting independence', labelAr: 'يَخْتَبِرُ الحُدودَ ويَحْمي الاِسْتِقْلاليَّة', correct: true, explanationEn: 'Yes. Eye-rolling is how teen brains practice autonomy safely with someone who loves them.', explanationAr: 'نَعَم. رَفْعُ العَيْنَيْنِ طَريقَةُ دِماغِ المُراهِقِ لِمُمارَسَةِ الاِسْتِقْلاليَّةِ بِأَمانٍ مع من يُحِبُّه.' },
+                  { labelEn: 'Manipulating you', labelAr: 'يَتَلاعَبُ بِكِ', correct: false, explanationEn: 'Manipulation requires a fully developed prefrontal cortex they don\'t have yet.', explanationAr: 'التَّلاعُبُ يَتَطَلَّبُ قِشْرَةً أَمامِيَّةً مُكْتَمِلَةً لا يَمْلِكُها بَعْد.' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'tb-drhala', variant: 'dr-hala',
+              textEn: 'The parents I see succeed with teenagers are the ones who stopped interpreting everything personally. Your teen isn\'t rejecting YOU — they\'re rejecting dependence itself. That\'s healthy. Painful, but healthy.',
+              textAr: 'الآباءُ الّذينَ أَراهُم يَنْجَحونَ مع المُراهِقينَ هُم الّذينَ تَوَقَّفوا عَنْ تَفْسيرِ كُلِّ شَيْءٍ شَخْصيّاً. مُراهِقُكِ لا يَرْفُضُكِ — يَرْفُضُ الاِعْتِماد. هذا صِحِّيّ. مُؤْلِم، لَكِنَّهُ صِحِّيّ.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'tb-refl', minWords: 35,
+              promptEn: 'Think of a recent moment your teen "snapped" at you. Looking at it through the brain-development lens, what was actually happening underneath?',
+              promptAr: 'فَكِّري في لَحْظَةٍ حَديثَةٍ "اِنْفَعَلَ" فيها مُراهِقُكِ. بِعَدَسَةِ النَّمُوِّ الدِّماغِيّ، ماذا كانَ يَحْدُثُ فِعْلاً؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'triangle',
@@ -538,6 +685,69 @@ Finally, pay attention to what your teen communicates nonverbally. Their music, 
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Active Listening', 'Teen Communication', 'Conflict De-escalation'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'cb-lead', tone: 'lead',
+              textEn: 'Teens don\'t need you to fix their problems. They need to know they can TELL you their problems. Every conversation is a vote: am I someone safe to talk to?',
+              textAr: 'المُراهِقونَ لا يَحْتاجونَ أَنْ تُصْلِحي مَشاكِلَهُم. يَحْتاجونَ مَعْرِفَةَ أَنَّهُم يَسْتَطيعونَ إخْبارَكِ بِها. كُلُّ مُحادَثَةٍ تَصْويت: هل أَنا شَخْصٌ آمِنٌ لِلحَديثِ مَعَه؟',
+            },
+            { kind: 'heading', id: 'cb-h-rules', level: 2, textEn: '5 Rules of Teen Conversation', textAr: '5 قَواعِدَ لِلحَديثِ مع المُراهِقين' },
+            {
+              kind: 'checklist', id: 'cb-rules',
+              titleEn: 'Practice these until they\'re automatic', titleAr: 'مارِسيها حَتّى تَصيرَ تِلْقائيّة',
+              itemsEn: [
+                'Never interrogate — talk side-by-side (driving, walking, cooking)',
+                'Go 80% listening, 20% talking',
+                'Ask "what do you think?" before sharing your opinion',
+                'Accept "I don\'t know" as a real answer — come back later',
+                'No lectures. Ever. If it\'s over 2 sentences, it\'s a lecture',
+              ],
+              itemsAr: [
+                'لا تَسْتَجْوِبي — تَحَدَّثي جَنْباً إلى جَنْبٍ (قِيادَة، مَشْي، طَهْي)',
+                'اِذْهَبي 80% اسْتِماعاً، 20% كَلاماً',
+                'اِسْأَلي "ما رَأْيُك؟" قَبْلَ أَنْ تُشارِكي رَأْيَك',
+                'اِقْبَلي "لا أَعْرِف" كَإجابَةٍ حَقيقيّة — عودي لاحِقاً',
+                'لا مُحاضَرات. أَبَداً. إذا تَجاوَزَتْ جُمْلَتَيْن، فَهي مُحاضَرَة',
+              ],
+            },
+            {
+              kind: 'comparison', id: 'cb-cmp',
+              titleEn: 'Shutdown vs Opening Language', titleAr: 'لُغَةُ الإغْلاقِ مُقابِلَ لُغَةِ الفَتْح',
+              left: {
+                labelEn: 'Shuts them down', labelAr: 'تُغْلِقُه',
+                pointsEn: ['"Why did you do that?"', '"You should know better"', '"Back in my day..."', '"We need to talk"'],
+                pointsAr: ['"لِماذا فَعَلْتَ ذلِك؟"', '"كانَ يَجِبُ أَنْ تَعْرِف"', '"في أَيّامي..."', '"نَحْتاجُ لِلتَّحَدُّث"'],
+              },
+              right: {
+                labelEn: 'Opens them up', labelAr: 'تَفْتَحُه',
+                pointsEn: ['"Tell me more about that"', '"What made sense about it at the time?"', '"What do you wish I understood?"', '(in the car, casual) "Hey, something I\'m curious about..."'],
+                pointsAr: ['"أَخْبِرْني أَكْثَرَ عَنْ ذلِك"', '"ما الّذي بَدا مَنْطِقيّاً وَقْتَها؟"', '"ماذا تَتَمَنّى أَنْ أَفْهَم؟"', '(في السَّيّارَة، بِعَفَويَّة) "شَيْءٌ أَتَساءَلُ عَنْه..."'],
+              },
+            },
+            {
+              kind: 'micro-quiz', id: 'cb-mq1',
+              question: {
+                textEn: 'Your teen comes home upset about something at school. What\'s the FIRST thing to do?',
+                textAr: 'مُراهِقُكَ يَرْجِعُ غاضِباً من المَدْرَسَة. ما أَوَّلُ شَيْءٍ تَفْعَلينَه؟',
+                options: [
+                  { labelEn: '"What happened? Tell me everything"', labelAr: '"ماذا حَدَث؟ أَخْبِرْني كُلَّ شَيْء"', correct: false, explanationEn: 'Pressure. Their walls go up.', explanationAr: 'ضَغْط. جُدْرانُهُ تَرْتَفِع.' },
+                  { labelEn: 'Notice, name, make space: "Something\'s heavy. I\'m here when you want to talk."', labelAr: 'لاحِظي، سَمّي، اِصْنَعي مَساحَة: "شَيْءٌ ثَقيل. أَنا هُنا حينَ تُريدُ الكَلام."', correct: true, explanationEn: 'Perfect — acknowledge without interrogating. Give them the choice.', explanationAr: 'مُمْتاز — اِعْتِرافٌ بِلا اسْتِجْواب. اِمْنَحيهِ الخِيار.' },
+                  { labelEn: '"Don\'t let whatever happened ruin your whole day"', labelAr: '"لا تَجْعَلْ ما حَدَثَ يُفْسِدُ يَوْمَكَ كُلَّه"', correct: false, explanationEn: 'Dismissal closes the door.', explanationAr: 'الرَّفْضُ يُغْلِقُ الباب.' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'cb-drhala', variant: 'dr-hala',
+              textEn: 'The teenagers I see most connected to their parents share one thing: their parents didn\'t force conversations. They made themselves available — and teens came to them. Availability beats pursuit.',
+              textAr: 'المُراهِقونَ الأَكْثَرُ تَواصُلاً مع آبائِهِم لَدَيْهِم شَيْءٌ واحِدٌ مُشْتَرَك: آباؤُهُم لَمْ يَفْرِضوا المُحادَثات. جَعَلوا أَنْفُسَهُم مُتاحينَ — فَجاءَ المُراهِقونَ إلَيْهِم. الإتاحَةُ تَفوقُ المُلاحَقَة.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'cb-refl', minWords: 35,
+              promptEn: 'When was the last conversation your teen came TO you voluntarily? What made it safe enough for them to open the door?',
+              promptAr: 'مَتى كانَتْ آخِرُ مُحادَثَةٍ جاءَ فيها مُراهِقُكَ إلَيْكَ طَوْعيّاً؟ ما الّذي جَعَلَها آمِنَةً كَفايَةً لِيَفْتَحَ البابَ؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'spectrum',
@@ -786,6 +996,70 @@ The goal is not to create a screen-free teen -- that is neither realistic nor de
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Digital Wellness', 'Media Literacy', 'Collaborative Boundaries'],
+          format: 'cards',
+          blocks: [
+            {
+              kind: 'card', id: 'dw-intro', accentColor: '#7A3B5E',
+              titleEn: 'Phones aren\'t the enemy — algorithms are',
+              titleAr: 'الهَواتِفُ لَيْسَتِ العَدُوّ — الخَوارِزْمِيّاتُ هي',
+              bodyEn: 'Your teen\'s phone is their social nervous system, creative studio, AND infinite attention trap — all at once. The goal isn\'t to eliminate screens. It\'s to teach digital sovereignty.\n\nSwipe through 6 real phone-time conversations.',
+              bodyAr: 'هاتِفُ مُراهِقِكِ هو جِهازُهُ العَصَبِيُّ الاِجْتِماعِيّ، واسْتُوديو الإبْداعِ، وفَخُّ الاِنْتِباهِ اللّانِهائِيّ — مَعاً. الهَدَفُ لَيْسَ إلْغاءَ الشّاشات. بَلْ تَعْليمَ السِّيادَةِ الرَّقْميَّة.\n\nمَرِّري على 6 مُحادَثاتٍ حَقيقيّة.',
+            },
+            {
+              kind: 'card', id: 'dw-phone', accentColor: '#C4878A',
+              titleEn: '1. "Put Your Phone Down"',
+              titleAr: '1. "ضَعْ هاتِفَكَ"',
+              bodyEn: '✗ "You\'re always on that thing!"\n\n✓ "I miss you when you\'re scrolling. Would you put your phone in the basket during dinner? I\'ll do the same."\n\nMutual. Specific. No shame. You model what you ask.',
+              bodyAr: '✗ "أَنْتَ دائِماً عَلى ذلِكَ الشَّيْء!"\n\n✓ "أَفْتَقِدُكَ حينَ تَتَصَفَّح. هل تَضَعُ هاتِفَكَ في السَّلَّةِ أَثْناءَ العَشاء؟ سَأَفْعَلُ المِثْل."\n\nمُتَبادَل. مُحَدَّد. بِلا عار. كوني القُدْوَةَ لِما تَطْلُبين.',
+            },
+            {
+              kind: 'card', id: 'dw-bedtime', accentColor: '#5B8FA8',
+              titleEn: '2. Phones at Night',
+              titleAr: '2. الهَواتِفُ في اللَّيْل',
+              bodyEn: '✗ "Give me your phone at 9pm. End of discussion."\n\n✓ "Sleep researchers agree: screens delay sleep. Phones charge in the kitchen after 10pm — mine too. It\'s a family rule, not punishment."\n\nSame rule for everyone = fair.',
+              bodyAr: '✗ "أَعْطِني هاتِفَكَ السّاعَةَ 9. نِهايَةُ النِّقاش."\n\n✓ "باحِثو النَّوْمِ مُتَّفِقون: الشّاشاتُ تُؤَخِّرُ النَّوْم. الهَواتِفُ تُشْحَنُ في المَطْبَخِ بَعْدَ 10 — هاتِفي أَيْضاً. قاعِدَةٌ عائِلِيَّة، لا عُقوبَة."\n\nنَفْسُ القاعِدَةِ لِلجَميع = عَدْل.',
+            },
+            {
+              kind: 'micro-quiz', id: 'dw-mq1',
+              question: {
+                textEn: 'What\'s the biggest mistake parents make with teen phone limits?',
+                textAr: 'ما أَكْبَرُ خَطَأٍ يَرْتَكِبُهُ الآباءُ في حُدودِ الهاتِف؟',
+                options: [
+                  { labelEn: 'Not having rules', labelAr: 'عَدَمُ وُجودِ قَواعِد', correct: false, explanationEn: 'No rules = chaos. But rigid rules also fail.', explanationAr: 'بِلا قَواعِدَ = فَوْضى. لَكِنَّ القَواعِدَ الصّارِمَةَ تَفْشَلُ أَيْضاً.' },
+                  { labelEn: 'Not modeling what they preach', labelAr: 'عَدَمُ القُدْوَة', correct: true, explanationEn: 'Teens learn from hypocrisy detection. "Do as I say, not as I do" is a nuclear-level trust destroyer.', explanationAr: 'المُراهِقونَ يَتَعَلَّمونَ من كَشْفِ النِّفاق. "اِفْعَلْ كَما أَقول، لا كَما أَفْعَل" يُدَمِّرُ الثِّقَة.' },
+                  { labelEn: 'Setting rules too late', labelAr: 'وَضْعُ القَواعِدِ مُتَأَخِّرَة', correct: false, explanationEn: 'Timing matters, but modeling matters much more.', explanationAr: 'التَّوْقيتُ يَهُمّ، لَكِنَّ القُدْوَةَ تَهُمُّ أَكْثَرَ بِكَثير.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'dw-scroll', accentColor: '#C8A97D',
+              titleEn: '3. "But Everyone Has Instagram!"',
+              titleAr: '3. "كُلُّهُم يَمْلِكونَ إنْسْتَغْرام!"',
+              bodyEn: '✗ "No, and I don\'t care what everyone has!"\n\n✓ "I hear you — it\'s hard being the one without it. Let\'s make a deal: we\'ll open your account together, I follow you, and we check in about what you\'re seeing monthly. Deal?"\n\nAccess with scaffolding > access withheld.',
+              bodyAr: '✗ "لا، ولا يَهُمُّني ما يَمْلِكُهُ الجَميع!"\n\n✓ "أَسْمَعُك — صَعْبٌ أَنْ تَكونَ الوَحيدَ بِلا. فَلْنَعْقِدْ صَفْقَة: نَفْتَحُ حِسابَكَ مَعاً، أَتابِعُك، ونَتَحَدَّثُ شَهْريّاً. اِتَّفَقْنا؟"\n\nالوُصولُ مع السَّقالَةِ > الوُصولُ المَحْبوس.',
+            },
+            {
+              kind: 'card', id: 'dw-saw', accentColor: '#C4636A',
+              titleEn: '4. They Saw Something Disturbing',
+              titleAr: '4. شاهَدَ شَيْئاً مُضْطَرِباً',
+              bodyEn: '✗ "What were you even DOING on there?!"\n\n✓ "That must have been a lot to see. Tell me what landed. I\'m not mad — I\'m here."\n\nShame closes the door. Curiosity keeps it open for the next scary thing.',
+              bodyAr: '✗ "ماذا كُنْتَ تَفْعَلُ هُناكَ؟!"\n\n✓ "لا بُدَّ أَنَّ هذا كَثيرٌ لِرُؤْيَتِه. أَخْبِرْني ما وَصَل. لَسْتُ غاضِبَة — أَنا هُنا."\n\nالعارُ يُغْلِقُ الباب. الفُضولُ يُبْقيهِ مَفْتوحاً لِلشَّيْءِ المُخيفِ التّالي.',
+            },
+            {
+              kind: 'card', id: 'dw-addict', accentColor: '#9B3B42',
+              titleEn: '5. When Scrolling Looks Like Addiction',
+              titleAr: '5. حينَ يَبْدو التَّصَفُّحُ كَإدْمان',
+              bodyEn: '"I\'ve noticed you seem heavier after scrolling, not lighter. Can we experiment? One week, delete the app that feels worst. See how your body feels at the end. If nothing changes, you get it back."\n\nMake them the scientist, not the subject.',
+              bodyAr: '"لاحَظْتُ أَنَّكَ أَثْقَلُ بَعْدَ التَّصَفُّح، لا أَخَفّ. هل نُجَرِّب؟ أُسْبوعٌ واحِد، اِحْذِفِ التَّطْبيقَ الأَسْوَأ. اُنْظُرْ كَيْفَ يَشْعُرُ جَسَدُكَ. إذا لَمْ يَتَغَيَّرْ شَيْء، يَعودُ."\n\nاِجْعَليهِ العالِم، لا المَوْضوع.',
+            },
+            {
+              kind: 'card', id: 'dw-formula', accentColor: '#7A3B5E',
+              titleEn: 'The Teen Tech Formula',
+              titleAr: 'صيغَةُ تِقْنيَّةِ المُراهِق',
+              bodyEn: 'Collaboration > Control.\nModeling > Lecturing.\nCuriosity > Judgment.\n\nSave this card. Every phone fight boils down to these 3.',
+              bodyAr: 'التَّعاوُنُ > التَّحَكُّم.\nالقُدْوَةُ > المُحاضَرَة.\nالفُضولُ > الحُكْم.\n\nاِحْفَظي هذِهِ. كُلُّ شِجارِ هاتِفٍ يَعودُ لِهذِهِ الثَّلاث.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'quadrant',
@@ -1030,6 +1304,93 @@ Remember that identity is not a destination -- it is a journey that continues we
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Identity Support', 'Cultural Sensitivity', 'Unconditional Acceptance'],
+          format: 'story',
+          blocks: [
+            {
+              kind: 'story-beat', id: 'id-s1', characterEn: 'A father. His 16-year-old son.', characterAr: 'أَبٌ. اِبْنُهُ ذو الـ 16.',
+              textEn: 'The text comes on a Tuesday afternoon: "Baba, can we talk tonight? It\'s important."\n\nHe immediately imagines the worst. Grades? An accident? Something online? He takes a breath. "Yes habibi. After dinner. I love you."',
+              textAr: 'الرِّسالَةُ تَأْتي يَوْمَ الثُّلاثاءِ عَصْراً: "بابا، هل يُمْكِنُ أَنْ نَتَحَدَّثَ اللَّيْلَة؟ مُهِمّ."\n\nيَتَخَيَّلُ فَوْراً الأَسْوَأ. دَرَجات؟ حادِث؟ شَيْءٌ أونْلاين؟ يَأْخُذُ نَفَساً. "نَعَم حَبيبي. بَعْدَ العَشاء. أُحِبُّك."',
+            },
+            {
+              kind: 'story-beat', id: 'id-s2',
+              textEn: 'After dinner. His son sits across from him, twisting his hands.\n\n"Baba. I\'ve been thinking a lot. I don\'t know if I believe the same things our family believes. About religion. About everything. I\'ve been... questioning."\n\nSilence.',
+              textAr: 'بَعْدَ العَشاء. يَجْلِسُ اِبْنُهُ أَمامَهُ يَلْوي يَدَيْه.\n\n"بابا. فَكَّرْتُ كَثيراً. لا أَعْرِفُ إذا كُنْتُ أُؤْمِنُ بِما تُؤْمِنُ بِهِ عائِلَتُنا. عَنِ الدّين. عَنْ كُلِّ شَيْء. أَنا... أَتَساءَل."\n\nصَمْت.',
+            },
+            {
+              kind: 'story-choice', id: 'id-c1',
+              promptEn: 'What does the father say first?',
+              promptAr: 'ماذا يَقولُ الأَبُ أَوَّلاً؟',
+              choices: [
+                {
+                  labelEn: '"This is a phase. You\'ll come back to what we taught you."',
+                  labelAr: '"هذِهِ مَرْحَلَة. سَتَعودُ إلى ما عَلَّمْناك."',
+                  feedbackEn: 'The conversation just ended. His son heard: "I don\'t really want to know who you are becoming."',
+                  feedbackAr: 'اِنْتَهَتِ المُحادَثَة. سَمِعَ اِبْنُهُ: "لا أُريدُ حَقّاً مَعْرِفَةَ من تَصيرُ."',
+                  isRecommended: false,
+                },
+                {
+                  labelEn: '"Thank you for telling me. That took courage. Tell me more — I want to understand."',
+                  labelAr: '"شُكْراً أَنَّكَ أَخْبَرْتَني. تَطَلَّبَ ذلِكَ شَجاعَة. أَخْبِرْني أَكْثَر — أُريدُ أَنْ أَفْهَم."',
+                  feedbackEn: 'The door stays open. His son learns: even my hardest questions are safe here.',
+                  feedbackAr: 'البابُ يَبْقى مَفْتوحاً. يَتَعَلَّمُ اِبْنُهُ: حَتّى أَصْعَبُ أَسْئِلَتي آمِنَةٌ هُنا.',
+                  isRecommended: true,
+                },
+                {
+                  labelEn: '"I\'m disappointed. Your grandfather would be heartbroken."',
+                  labelAr: '"أَنا مُحْبَط. جَدُّكَ سَيَنْكَسِرُ قَلْبُه."',
+                  feedbackEn: 'Shame. He\'ll never tell this father anything real again.',
+                  feedbackAr: 'عار. لَنْ يُخْبِرَ هذا الأَبَ شَيْئاً حَقيقيّاً مَرَّةً أُخْرى.',
+                  isRecommended: false,
+                },
+              ],
+            },
+            {
+              kind: 'story-beat', id: 'id-s3',
+              textEn: 'His son exhales. "I don\'t know if I want to keep doing the things you do. I don\'t know what I believe yet. I just... I needed to tell you."',
+              textAr: 'يَزْفُرُ اِبْنُهُ. "لا أَعْرِفُ إذا كُنْتُ أُريدُ مُواصَلَةَ ما تَفْعَلُه. لا أَعْرِفُ ما أُؤْمِنُ بِهِ بَعْد. فَقَطْ... اِحْتَجْتُ أَنْ أُخْبِرَك."',
+            },
+            {
+              kind: 'story-choice', id: 'id-c2',
+              promptEn: 'What now?',
+              promptAr: 'ماذا الآن؟',
+              choices: [
+                {
+                  labelEn: '"In this house, we practice our faith. That\'s non-negotiable."',
+                  labelAr: '"في هذا البَيْت، نُمارِسُ ديناً. غَيْرُ قابِلٍ لِلتَّفاوُض."',
+                  feedbackEn: 'Power won, relationship lost. He\'ll comply — and leave the moment he can.',
+                  feedbackAr: 'السُّلْطَةُ انْتَصَرَت، العَلاقَةُ خَسِرَت. سَيَمْتَثِل — ويَغادِرُ بِمُجَرَّدِ أَنْ يَسْتَطيع.',
+                  isRecommended: false,
+                },
+                {
+                  labelEn: '"I believe what I believe. You\'re figuring out what YOU believe. Those are separate. I love you either way."',
+                  labelAr: '"أَنا أُؤْمِنُ بِما أُؤْمِن. أَنْتَ تَكْتَشِفُ ما تُؤْمِنُ بِهِ. كِلاهُما مُنْفَصِل. أُحِبُّكَ في كُلِّ الأَحْوال."',
+                  feedbackEn: 'This is what unconditional love looks like in practice. His son is free AND still held.',
+                  feedbackAr: 'هكَذا يَبْدو الحُبُّ غَيْرُ المَشْروطِ عَمَلِيّاً. اِبْنُهُ حُرٌّ ومَحْفوظٌ مَعاً.',
+                  isRecommended: true,
+                },
+              ],
+            },
+            {
+              kind: 'story-beat', id: 'id-s4',
+              textEn: 'His son\'s eyes fill. "I was scared to tell you."\n\n"I\'m glad you did. You\'re always welcome to ask questions here. Always."\n\nThey sit in silence. Then his son says: "Can you tell me why YOU believe what you believe? Not the rules. Just... why?"',
+              textAr: 'عَيْنا اِبْنِهِ تَمْتَلِئان. "كُنْتُ خائِفاً أَنْ أُخْبِرَك."\n\n"سَعيدٌ أَنَّكَ فَعَلْتَ. أَسْئِلَتُكَ مُرَحَّبٌ بِها دائِماً."\n\nيَجْلِسانِ في صَمْت. ثُمَّ يَقولُ اِبْنُهُ: "هل تُخْبِرُني لِماذا أَنْتَ تُؤْمِنُ؟ لا القَواعِد. فَقَط... لِماذا؟"',
+            },
+            {
+              kind: 'callout', id: 'id-lesson', variant: 'insight',
+              textEn: 'Identity formation is the central developmental task of adolescence. Teens who are told "what to be" rebel. Teens who are asked "who are you becoming?" come home to themselves — and to their family.',
+              textAr: 'تَشْكيلُ الهُوِيَّةِ هو المَهَمَّةُ النَّمائِيَّةُ المَرْكَزيَّةُ لِلمُراهَقَة. المُراهِقونَ الّذينَ يُخْبَرونَ "ماذا يَكونون" يَتَمَرَّدون. الّذينَ يُسْأَلون "من تَصير؟" يَعودونَ إلى أَنْفُسِهِم — وإلى عائِلاتِهِم.',
+            },
+            {
+              kind: 'callout', id: 'id-drhala', variant: 'dr-hala',
+              textEn: 'Unconditional love means: there is no identity, belief, question, or becoming that will make me love you less. It doesn\'t mean agreeing with everything. It means belonging is never on the line. Teens who have this grow into adults who know how to love.',
+              textAr: 'الحُبُّ غَيْرُ المَشْروطِ يَعْني: لا هُوِيَّةَ ولا اعْتِقادَ ولا سُؤالَ سَيَجْعَلُني أُحِبُّكَ أَقَلّ. لا يَعْني المُوافَقَةَ على كُلِّ شَيْء. يَعْني أَنَّ الاِنْتِماءَ لَيْسَ في المُقامَرَة. المُراهِقونَ الّذينَ يَمْلِكونَ هذا يَصيرونَ بالِغينَ يَعْرِفونَ كَيْفَ يُحِبّون.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'id-refl', minWords: 40,
+              promptEn: 'Is there something your teen is afraid to tell you? What signal are you giving them — do hard questions come with punishment or with presence? What would you want to change?',
+              promptAr: 'هل هُناكَ شَيْءٌ يَخافُ مُراهِقُكَ إخْبارَكَ بِه؟ ما الإشارَةُ الّتي تُعْطينَها — هل تَأْتي الأَسْئِلَةُ الصَّعْبَةُ بِعُقوبَةٍ أَمْ بِحُضور؟ ماذا تُريدينَ أَنْ تُغَيِّري؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'wheel',
@@ -1059,6 +1420,7 @@ Remember that identity is not a destination -- it is a journey that continues we
       descriptionEn: 'Equip your teen with practical tools for managing anxiety, navigating peer pressure, handling academic stress, and building authentic self-worth.',
       descriptionAr: 'زوّد ابنك المراهق بأدوات عملية لإدارة القلق والتعامل مع ضغط الأقران ومواجهة التوتر الأكاديمي وبناء تقدير ذات حقيقي.',
       isFree: false,
+      priceCAD: 19,
       modules: [
         // ── Module 2.1 ──
         {
@@ -1290,6 +1652,90 @@ If your teen's anxiety is severe, persistent, or involves panic attacks, self-ha
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Anxiety Management', 'Grounding Techniques', 'Cognitive Reframing'],
+          format: 'assessment',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'at-lead', tone: 'lead',
+              textEn: 'Teen anxiety rarely announces itself. It shows up as: "I don\'t want to go," stomachaches, procrastination, irritability, refusal to try new things. This self-check maps where it\'s showing up for YOUR teen.',
+              textAr: 'قَلَقُ المُراهِقِ نادِراً ما يُعْلِنُ نَفْسَه. يَظْهَرُ كَـ: "لا أُريدُ الذَّهاب"، أَلَمِ بَطْن، تَأْجيل، تَهَيُّج، رَفْضٍ لِلجَديد. هذا الفَحْصُ يُحَدِّدُ أَيْنَ يَظْهَرُ لِمُراهِقِكَ.',
+            },
+            {
+              kind: 'callout', id: 'at-science', variant: 'insight',
+              textEn: 'Anxiety in the teen brain = overactive amygdala + under-developed prefrontal regulation. Their alarm system is louder and their calm system is still wiring. This isn\'t character. It\'s biology — treatable with skills and time.',
+              textAr: 'القَلَقُ في دِماغِ المُراهِق = لَوْزَةٌ مُفْرِطَةُ النَّشاط + تَنْظيمٌ جَبْهِيٌّ غَيْرُ مُكْتَمِل. نِظامُ إنْذارِهِ أَعْلى ونِظامُ هُدوئِهِ لا يَزالُ يُرَكِّبُ الأَسْلاك. هذا لَيْسَ شَخْصيَّة. إنَّهُ بيولوجِيا — قابِلَةٌ لِلعِلاجِ بِمَهاراتٍ ووَقْت.',
+            },
+            {
+              kind: 'likert', id: 'at-lk1',
+              reflection: {
+                titleEn: 'Social Anxiety', titleAr: 'القَلَقُ الاِجْتِماعيّ',
+                statementEn: 'My teen avoids social situations (parties, speaking up, new groups) more than seems typical.',
+                statementAr: 'مُراهِقي يَتَجَنَّبُ المَواقِفَ الاِجْتِماعِيَّةَ (حَفَلات، كَلامٌ أَمامَ الآخَرين، مَجْموعاتٌ جَديدَة) أَكْثَرَ من المُعْتاد.',
+                scaleLabels: { lowEn: 'Rarely', lowAr: 'نادِراً', highEn: 'Very often', highAr: 'كَثيراً جِدّاً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Not a primary struggle', labelAr: 'لَيْسَ صِراعاً أَساسيّاً', feedbackEn: 'Social anxiety isn\'t the main thing here. Move to the next check.', feedbackAr: 'القَلَقُ الاِجْتِماعِيُّ لَيْسَ القَضيَّةَ الرَّئيسيَّة. اِنْتَقِلي.' },
+                  { min: 3, max: 5, labelEn: 'Showing up moderately', labelAr: 'يَظْهَرُ بِشَكْلٍ مُتَوَسِّط', feedbackEn: 'Worth naming. Practice small social "exposures" with safety — a friend\'s house before a party.', feedbackAr: 'يَسْتَحِقُّ التَّسْمِيَة. مارِسي "تَعْريضاً" اجْتِماعيّاً صَغيراً بِأَمان — بَيْتَ صَديقٍ قَبْلَ حَفْلَة.' },
+                  { min: 6, max: 7, labelEn: 'Significant impact', labelAr: 'أَثَرٌ كَبير', feedbackEn: 'If this is interfering with school/friendships for 4+ weeks, please consult a therapist.', feedbackAr: 'إذا أَعاقَ المَدْرَسَة/الصَّداقاتِ لِـ 4 أَسابيعَ فَأَكْثَر، يُرْجى اسْتِشارَةُ مُعالِج.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'at-lk2',
+              reflection: {
+                titleEn: 'Performance Anxiety', titleAr: 'قَلَقُ الأَداء',
+                statementEn: 'My teen freezes, over-prepares, or gets sick before tests, presentations, or competitions.',
+                statementAr: 'مُراهِقي يَتَجَمَّد، أَو يُفْرِطُ في التَّحْضير، أَو يَمْرَضُ قَبْلَ الاِخْتِبارات أَو العُروضِ أَو المُنافَسات.',
+                scaleLabels: { lowEn: 'Rarely', lowAr: 'نادِراً', highEn: 'Very often', highAr: 'كَثيراً جِدّاً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Healthy pressure only', labelAr: 'ضَغْطٌ صِحِّيٌّ فَقَط', feedbackEn: 'Normal nerves. Not an intervention target.', feedbackAr: 'تَوَتُّرٌ طَبيعِيّ. لَيْسَ هَدَفَ تَدَخُّل.' },
+                  { min: 3, max: 5, labelEn: 'Performance fear active', labelAr: 'خَوْفُ الأَداءِ نَشِط', feedbackEn: 'Teach the 4-4-6 breath (4 in, hold 4, out 6) before high-stakes moments. It works fast.', feedbackAr: 'عَلِّميهِ تَنَفُّسَ 4-4-6 (4 داخِل، حَبْسٌ 4، 6 خارِج) قَبْلَ اللَّحَظاتِ المُهِمَّة. يَعْمَلُ بِسُرْعَة.' },
+                  { min: 6, max: 7, labelEn: 'Paralyzing', labelAr: 'مُشِلّ', feedbackEn: 'Combine skills at home WITH professional support. Don\'t white-knuckle this.', feedbackAr: 'اِدْمِجي المَهاراتِ في البَيْتِ مع دَعْمٍ مِهَنِيّ. لا تَتَحَمَّلي وَحْدَكِ.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'at-lk3',
+              reflection: {
+                titleEn: 'Future-Focused Worry', titleAr: 'قَلَقُ المُسْتَقْبَل',
+                statementEn: 'My teen spirals with "what if" questions about the future (college, health, world events).',
+                statementAr: 'مُراهِقي يَغْرَقُ في أَسْئِلَةِ "ماذا لَوْ" عَنِ المُسْتَقْبَل (الجامِعَة، الصِّحَّة، أَحْداثُ العالَم).',
+                scaleLabels: { lowEn: 'Rarely', lowAr: 'نادِراً', highEn: 'Very often', highAr: 'كَثيراً جِدّاً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Present-focused', labelAr: 'مُرَكَّزٌ في الحاضِر', feedbackEn: 'Rare and healthy. Not a concern.', feedbackAr: 'نادِرٌ وصِحِّيّ. لَيْسَ مَصْدَرَ قَلَق.' },
+                  { min: 3, max: 5, labelEn: 'Catastrophizing sometimes', labelAr: 'يَتَخَيَّلُ الأَسْوَأَ أَحْياناً', feedbackEn: 'Teach the "worry window": 15 min daily where worries are allowed — outside it, they wait.', feedbackAr: 'عَلِّميهِ "نافِذَةَ القَلَق": 15 دَقيقَةً يَوْميّاً لِلقَلَقِ — خارِجَها، يَنْتَظِر.' },
+                  { min: 6, max: 7, labelEn: 'Chronic spiral', labelAr: 'دُوّامَةٌ مُزْمِنَة', feedbackEn: 'This often responds very well to CBT. Worth a professional assessment.', feedbackAr: 'غالِباً ما يَسْتَجيبُ لِلعِلاجِ السُّلوكِيّ المَعْرِفِيّ. يَسْتَحِقُّ تَقْييماً مِهَنيّاً.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'at-lk4',
+              reflection: {
+                titleEn: 'Body-Based Signals', titleAr: 'إشاراتُ الجَسَد',
+                statementEn: 'My teen reports physical anxiety (racing heart, stomach aches, trouble sleeping) that we can\'t link to illness.',
+                statementAr: 'مُراهِقي يَذْكُرُ قَلَقاً جَسَدِيّاً (قَلْبٌ يَتَسارَع، أَلَمُ بَطْن، صُعوبَةُ النَّوْم) لا يُمْكِنُ رَبْطُهُ بِمَرَض.',
+                scaleLabels: { lowEn: 'Rarely', lowAr: 'نادِراً', highEn: 'Very often', highAr: 'كَثيراً جِدّاً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Not somatic', labelAr: 'لَيْسَ جَسَديّاً', feedbackEn: 'Good. Keep monitoring.', feedbackAr: 'جَيِّد. واصِلي المُراقَبَة.' },
+                  { min: 3, max: 5, labelEn: 'Body is talking', labelAr: 'الجَسَدُ يَتَحَدَّث', feedbackEn: 'Body-based grounding works great: 5-4-3-2-1, cold water, bilateral movement (walking, stretching).', feedbackAr: 'التَّثْبيتُ الجَسَدِيُّ يَعْمَل: 5-4-3-2-1، ماءٌ بارِد، حَرَكَةٌ ثُنائيَّة (مَشْي، تَمْديد).' },
+                  { min: 6, max: 7, labelEn: 'Clearly somatic', labelAr: 'جَسَدِيٌّ واضِح', feedbackEn: 'Physical anxiety that frequent deserves a real assessment — both medical and psychological.', feedbackAr: 'القَلَقُ الجَسَدِيُّ المُتَكَرِّرُ يَسْتَحِقُّ تَقْييماً حَقيقيّاً — طِبِّيّاً ونَفْسيّاً.' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'at-drhala', variant: 'dr-hala',
+              textEn: 'Look at where you scored highest. That\'s where anxiety is loudest for your teen. Don\'t try to fix all four. Pick one. Practice the skill there for 30 days. Then look again.',
+              textAr: 'اُنْظُري أَيْنَ كانَتْ أَعْلى دَرَجَة. هُناكَ يَصيحُ القَلَقُ عِنْدَ مُراهِقِكِ. لا تُعالِجي الأَرْبَعَةَ مَعاً. اخْتاري واحِدَة. مارِسي المَهارَةَ 30 يَوْماً. ثُمَّ اُنْظُري.',
+            },
+            {
+              kind: 'callout', id: 'at-warn', variant: 'warning',
+              textEn: 'If your teen reports: self-harm, panic attacks, refusal to leave the house, persistent hopelessness, or thoughts of suicide — this is not a DIY situation. Reach a child psychologist this week.',
+              textAr: 'إذا ذَكَرَ مُراهِقُكِ: إيذاءَ نَفْس، نَوْباتِ هَلَع، رَفْضَ الخُروجِ من البَيْت، يَأْساً مُسْتَمِرّاً، أَفْكارَ اِنْتِحار — لَيْسَتْ حالَةً لِلعَمَلِ الذّاتيّ. اِتَّصِلي بِطَبيبِ نَفْسِ أَطْفالٍ هذا الأُسْبوع.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'at-refl', minWords: 40,
+              promptEn: 'Where does your teen\'s anxiety show up most? What have you tried that HASN\'T worked — and what\'s one new thing you\'ll try after this module?',
+              promptAr: 'أَيْنَ يَظْهَرُ قَلَقُ مُراهِقِكَ أَكْثَر؟ ماذا جَرَّبْتِ ولَمْ يَنْجَح — وما شَيْءٌ جَديدٌ سَتُجَرِّبينَهُ بَعْدَ هذِهِ الوِحْدَة؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'cycle',
@@ -1532,6 +1978,82 @@ Ultimately, navigating peer pressure is about developing the courage to be authe
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Peer Pressure Navigation', 'Values Building', 'Refusal Skills'],
+          format: 'cards',
+          blocks: [
+            {
+              kind: 'card', id: 'pp-intro', accentColor: '#7A3B5E',
+              titleEn: 'Refusal is a skill — not a personality',
+              titleAr: 'الرَّفْضُ مَهارَة — لَيْسَ شَخْصيَّة',
+              bodyEn: 'Your teen WILL face pressure. The question isn\'t if — it\'s whether they have the language ready. These 6 scripts are muscle memory for the moment it matters.\n\nRehearse them with your teen. Out loud. Before the moment.',
+              bodyAr: 'مُراهِقُكَ سَيُواجِهُ الضَّغْط. السُّؤالُ لَيْسَ هَلْ — بَلْ هل لَدَيْهِ اللُّغَةُ جاهِزَة. هذِهِ 6 سِينَاريوهات ذاكِرَةٌ عَضَلِيَّةٌ لِلَّحْظَةِ المُهِمَّة.\n\nمارِسيها مع مُراهِقِكَ. بِصَوْتٍ عالٍ. قَبْلَ اللَّحْظَة.',
+            },
+            {
+              kind: 'card', id: 'pp-vape', accentColor: '#C4636A',
+              titleEn: '1. Someone Offers a Vape',
+              titleAr: '1. أَحَدٌ يَعْرِضُ سيجارَةً إلِكْتْرونيّة',
+              bodyEn: 'Weak: "Umm, no thanks."\n\nStrong: "Nah, I\'m good. My parents drug-test me randomly, it\'s not worth it." OR "I\'m trying to keep my lungs clean for soccer."\n\nGive them a CAUSE to blame. Strangers won\'t argue with a cause.',
+              bodyAr: 'ضَعيف: "لا شُكْراً."\n\nقَوِيّ: "لا شُكْراً. والِداي يَفْحَصانِني عَشْوائيّاً، لا يَسْتَحِقّ." أَوْ "أُحافِظُ عَلى رِئَتَيَّ لِكُرَةِ القَدَم."\n\nاِمْنَحيهِ سَبَباً يَلومُه. الغُرَباءُ لا يُجادِلونَ سَبَباً.',
+            },
+            {
+              kind: 'card', id: 'pp-ride', accentColor: '#D4A84B',
+              titleEn: '2. Someone Offers a Ride (drunk)',
+              titleAr: '2. عَرْضُ تَوْصيلَةٍ (من شارِبِ كُحول)',
+              bodyEn: '"No way, I need a real ride. Let me text someone." THEN: text you. No shame. No debate.\n\nPromise: "If you ever need a pickup, ANY hour, no questions, no punishment — call me. Keyword: \'pizza.\' I come immediately."',
+              bodyAr: '"أَبَداً، أَحْتاجُ تَوْصيلَةً حَقيقيّة. دَعْني أُرْسِلُ رِسالَة." ثُمَّ: تُرْسِلُ لَكِ. بِلا عار. بِلا جِدال.\n\nوَعْد: "إذا احْتَجْتَ تَوْصيلَةً، أَيَّ ساعَة، بِلا أَسْئِلَة، بِلا عِقاب — اِتَّصِلْ بي. الكَلِمَةُ: \'بيتْزا\'. آتي فَوْراً."',
+            },
+            {
+              kind: 'micro-quiz', id: 'pp-mq1',
+              question: {
+                textEn: 'What\'s the ONE thing parents should tell every teen about pressure moments?',
+                textAr: 'ما الشَّيْءُ الواحِدُ الّذي يَجِبُ على الآباءِ قَوْلُهُ لِكُلِّ مُراهِقٍ عَنْ لَحَظاتِ الضَّغْط؟',
+                options: [
+                  { labelEn: '"Be brave and say no"', labelAr: '"كُنْ شُجاعاً وقُلْ لا"', correct: false, explanationEn: 'Vague and unhelpful. They need specific language AND an exit plan.', explanationAr: 'عامٌّ وغَيْرُ مُفيد. يَحْتاجونَ لُغَةً مُحَدَّدَةً وخُطَّةَ خُروج.' },
+                  { labelEn: '"Call me anytime, no questions, no punishment"', labelAr: '"اِتَّصِلْ بي أَيَّ وَقْت، بِلا أَسْئِلَة، بِلا عِقاب"', correct: true, explanationEn: 'This is the golden rule. Guarantee a rescue without consequences and they\'ll USE it.', explanationAr: 'هذِهِ القاعِدَةُ الذَّهَبيَّة. ضَمانُ إنْقاذٍ بِلا عَواقِب يَجْعَلُهُم يَسْتَخْدِمونَه.' },
+                  { labelEn: '"Choose better friends"', labelAr: '"اخْتَرْ أَصْدِقاءَ أَفْضَل"', correct: false, explanationEn: 'Judgment destroys the partnership you need.', explanationAr: 'الحُكْمُ يُدَمِّرُ الشَّراكَةَ الّتي تَحْتاجينَها.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'pp-pics', accentColor: '#C4878A',
+              titleEn: '3. Pressure to Send Photos',
+              titleAr: '3. ضَغْطٌ لِإرْسالِ صُوَر',
+              bodyEn: '"That\'s a no for me. If they really like me, they\'ll wait. If not, that tells me who they are."\n\nFrame it as a VALUE, not a rule. Values they own. Rules they rebel against.',
+              bodyAr: '"هذا لا. إذا كانَ يُحِبُّني حَقّاً، سَيَنْتَظِر. إذا لا، يُخْبِرُني من هو."\n\nاِجْعَليها قيمَة، لا قاعِدَة. القِيَمُ يَمْلِكونَها. القَواعِدُ يَتَمَرَّدونَ عَلَيْها.',
+            },
+            {
+              kind: 'card', id: 'pp-group', accentColor: '#5B8FA8',
+              titleEn: '4. The Group Doing Something Dumb',
+              titleAr: '4. المَجْموعَةُ تَفْعَلُ شَيْئاً غَبيّاً',
+              bodyEn: '"I\'m gonna bounce. See you tomorrow." Then leave. No explanation needed.\n\nExit lines: "My mom just texted, gotta go." "I\'m fried, heading home." Name your own exits in advance.',
+              bodyAr: '"سَأَذْهَب. أَراكُم غَداً." ثُمَّ يُغادِر. بِلا شَرْحٍ مَطْلوب.\n\nجُمَلُ الخُروج: "أُمّي أَرْسَلَت، يَجِبُ أَنْ أَذْهَب." "مُتْعَب، راجِعٌ لِلبَيْت." سَمّي خُروجاتِكَ مُقَدَّماً.',
+            },
+            {
+              kind: 'micro-quiz', id: 'pp-mq2',
+              question: {
+                textEn: 'Why rehearse refusal language out loud with your teen?',
+                textAr: 'لِماذا تَمْرينُ لُغَةِ الرَّفْضِ بِصَوْتٍ عالٍ مع مُراهِقِك؟',
+                options: [
+                  { labelEn: 'So they won\'t forget', labelAr: 'كَيْلا يَنْسى', correct: false, explanationEn: 'Not the main reason — under pressure, memory fails anyway.', explanationAr: 'لَيْسَ السَّبَبَ الرَّئيسِيّ — الذّاكِرَةُ تَفْشَلُ تَحْتَ الضَّغْطِ على أَيِّ حال.' },
+                  { labelEn: 'So their mouth has already moved through the words', labelAr: 'لِيَكونَ فَمُهُ قَدْ حَرَّكَ الكَلِماتِ مُسْبَقاً', correct: true, explanationEn: 'Exactly. Practiced words come out automatically. Unpracticed ones freeze.', explanationAr: 'تَماماً. الكَلِماتُ المُمَرَّنَةُ تَخْرُجُ تِلْقائيّاً. غَيْرُ المُمَرَّنَةِ تَتَجَمَّد.' },
+                  { labelEn: 'So you approve of the words', labelAr: 'لِتُوافِقي عَلى الكَلِمات', correct: false, explanationEn: 'They need to own the language, not repeat yours.', explanationAr: 'يَحْتاجُ أَنْ يَمْلِكَ اللُّغَة، لا أَنْ يُكَرِّرَ لُغَتَك.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'pp-left', accentColor: '#C8A97D',
+              titleEn: '5. Feeling Left Out',
+              titleAr: '5. الشُّعورُ بِالإقْصاء',
+              bodyEn: 'The saddest pressure is no pressure: "I\'m the only one not invited."\n\n✗ "You don\'t need them."\n\n✓ "That stings. Who are your true people, even if the group doesn\'t include them right now?"\n\nBuild their internal scaffolding, not external walls.',
+              bodyAr: 'أَحْزَنُ ضَغْطٍ هو انْعِدامُ الضَّغْط: "أَنا الوَحيدُ غَيْرُ المَدْعُوّ."\n\n✗ "لا تَحْتاجُهُم."\n\n✓ "هذا يُؤْلِم. من أَشْخاصُكَ الحَقيقيّونَ، حَتّى لَوْ لَمْ تَشْمَلْهُمُ المَجْموعَةُ الآن؟"\n\nاِبْني سَقالَتَهُ الدّاخِليَّة، لا جُدْراناً خارِجيَّة.',
+            },
+            {
+              kind: 'card', id: 'pp-values', accentColor: '#7A3B5E',
+              titleEn: 'The Values Anchor',
+              titleAr: 'مِرْساةُ القِيَم',
+              bodyEn: 'Before the pressure moment, ask your teen: "What are 3 things you\'d never do, no matter what your friends did?"\n\nWrite them down. When pressure comes, the answer is already inside them. Values they CHOSE beat rules they were given.',
+              bodyAr: 'قَبْلَ لَحْظَةِ الضَّغْط، اِسْأَلي مُراهِقَك: "ما 3 أَشْياءَ لا تَفْعَلُها أَبَداً، مَهْما فَعَلَ أَصْدِقاؤُك؟"\n\nاُكْتُبوها. حينَ يَأْتي الضَّغْط، الإجابَةُ داخِلَهُ. القِيَمُ الّتي اخْتارَها تَفوقُ القَواعِدَ الّتي أُعْطِيَها.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'iceberg',
@@ -1766,6 +2288,80 @@ If your teen is showing signs of burnout -- chronic fatigue, loss of interest in
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Academic Resilience', 'Growth Mindset', 'Time Management'],
+          format: 'challenge',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'as-lead', tone: 'lead',
+              textEn: 'Academic stress isn\'t solved with lectures or punishment. It\'s solved with tiny structural shifts practiced daily. This 7-day challenge rebuilds your teen\'s study relationship — from avoidance to agency.',
+              textAr: 'التَّوَتُّرُ الأَكادِيمِيُّ لا يُحَلُّ بِمُحاضَراتٍ أَو عِقاب. يُحَلُّ بِتَحَوُّلاتٍ بِنْيَويَّةٍ صَغيرَةٍ يَوْميّاً. هذا تَحَدّي 7 أَيّامٍ يُعيدُ بِناءَ عَلاقَةِ مُراهِقِكَ بِالدِّراسَة — من التَّجَنُّبِ إلى السَّيْطَرَة.',
+            },
+            {
+              kind: 'callout', id: 'as-intro', variant: 'insight',
+              textEn: 'Teens don\'t procrastinate because they\'re lazy. They procrastinate because studying feels overwhelming, unwinnable, or meaningless. These 7 practices make each day winnable.',
+              textAr: 'المُراهِقونَ لا يُؤَجِّلونَ لِأَنَّهُم كُسالى. يُؤَجِّلونَ لِأَنَّ الدِّراسَةَ تَبْدو مُثْقِلَةً أَو غَيْرَ قابِلَةٍ لِلرِّبْحِ أَوْ بِلا مَعْنى. هذِهِ المُمارَساتُ السَّبْعُ تَجْعَلُ كُلَّ يَوْمٍ قابِلاً لِلرِّبْح.',
+            },
+            {
+              kind: 'challenge-step', id: 'as-d1', dayLabel: 1,
+              titleEn: 'The Brain Dump', titleAr: 'تَفْريغُ الدِّماغ',
+              instructionEn: 'With your teen: write EVERY assignment, deadline, project, and worry on paper. All of it. Seeing the whole load externally reduces anxiety by 40% in studies.',
+              instructionAr: 'مع مُراهِقِك: اُكْتُبي كُلَّ واجِبٍ ومَوْعِدٍ ومَشْروعٍ وقَلَقٍ عَلى وَرَقَة. كُلَّه. رُؤْيَةُ الحِمْلِ كامِلاً خارِجِيّاً تُقَلِّلُ القَلَقَ 40% في الدِّراسات.',
+              checkInPromptEn: 'How long was the list? How did they react after seeing it?',
+              checkInPromptAr: 'كَمْ طالَتْ القائِمَة؟ كَيْفَ كانَ رَدُّ فِعْلِهِ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'as-d2', dayLabel: 2,
+              titleEn: 'The 25-Minute Rule', titleAr: 'قاعِدَةُ 25 دَقيقَة',
+              instructionEn: 'Today, 25 minutes focused study, phone in another room. Then 5 min break. Just one cycle. "Starting" is the whole battle.',
+              instructionAr: 'اليَوْم، 25 دَقيقَةً دِراسَةٌ مُرَكَّزَة، الهاتِفُ في غُرْفَةٍ أُخْرى. ثُمَّ اِسْتِراحَةُ 5. دَوْرَةٌ واحِدَةٌ فَقَط. "البِدايَةُ" هي المَعْرَكَةُ كُلُّها.',
+              checkInPromptEn: 'Did they do it? Did they want to keep going?',
+              checkInPromptAr: 'هل فَعَل؟ هل أَرادَ المُواصَلَة؟',
+            },
+            {
+              kind: 'challenge-step', id: 'as-d3', dayLabel: 3,
+              titleEn: 'Name the Hardest Thing', titleAr: 'سَمّي الأَصْعَب',
+              instructionEn: 'Ask: "Which subject/assignment feels impossible right now?" Do THAT first tomorrow, for 25 minutes. Starting with the hardest thing is counter-intuitive — and wildly effective.',
+              instructionAr: 'اِسْأَلي: "أَيَّ مادَّةٍ/واجِبٍ يَبْدو مُسْتَحيلاً الآن؟" اِفْعَلْ ذلِكَ أَوَّلاً غَداً، 25 دَقيقَة. البِدايَةُ بِالأَصْعَبِ عَكْسُ الحَدْس — وفَعّالَةٌ جِدّاً.',
+              checkInPromptEn: 'What was the hardest thing? How did they feel after starting?',
+              checkInPromptAr: 'ما كانَ الأَصْعَب؟ كَيْفَ شَعَرَ بَعْدَ البِدايَة؟',
+            },
+            {
+              kind: 'challenge-step', id: 'as-d4', dayLabel: 4,
+              titleEn: 'Ask for Help Once', titleAr: 'اِطْلُبِ المُساعَدَةَ مَرَّة',
+              instructionEn: 'Have them ask a teacher, friend, or you a SPECIFIC question about something confusing. Not "I don\'t get it" — "I don\'t understand step 3."',
+              instructionAr: 'اِجْعَليهِ يَسْأَلُ مُعَلِّماً أَو صَديقاً أَوْ أَنْتِ سُؤالاً مُحَدَّداً عَنْ شَيْءٍ مُرْبِك. لَيْسَ "لا أَفْهَم" — "لا أَفْهَمُ الخُطْوَةَ 3."',
+              checkInPromptEn: 'Who did they ask? What did they learn?',
+              checkInPromptAr: 'من سَأَل؟ ماذا تَعَلَّم؟',
+            },
+            {
+              kind: 'challenge-step', id: 'as-d5', dayLabel: 5,
+              titleEn: 'Sleep Before Study', titleAr: 'النَّوْمُ قَبْلَ الدِّراسَة',
+              instructionEn: 'Enforce bedtime tonight. Phones out of room. 8+ hours sleep. Teach: sleep IS study — the brain consolidates what you learned yesterday.',
+              instructionAr: 'اِفْرُضي وَقْتَ النَّوْمِ اللَّيْلَة. الهاتِفُ خارِجَ الغُرْفَة. 8+ ساعاتِ نَوْم. عَلِّميه: النَّوْمُ هو دِراسَة — الدِّماغُ يُثَبِّتُ ما تَعَلَّمَهُ أَمْس.',
+              checkInPromptEn: 'Did they sleep earlier? How did they feel the next morning?',
+              checkInPromptAr: 'هل نامَ أَبْكَر؟ كَيْفَ شَعَرَ الصَّباحَ التّالي؟',
+            },
+            {
+              kind: 'challenge-step', id: 'as-d6', dayLabel: 6,
+              titleEn: 'Celebrate One Win', titleAr: 'اِحْتَفي بِنَصْرٍ واحِد',
+              instructionEn: 'Point out ONE thing they did well academically this week. Specific. Not "good job." Say: "You started the math homework before being reminded. That\'s new."',
+              instructionAr: 'أَشيري إلى شَيْءٍ واحِدٍ فَعَلَهُ جَيِّداً أَكادِيميّاً هذا الأُسْبوع. مُحَدَّد. لَيْسَ "أَحْسَنْت". قولي: "بَدَأْتَ واجِبَ الرِّياضِيّاتِ قَبْلَ التَّذْكير. هذا جَديد."',
+              checkInPromptEn: 'What did you name? How did they respond?',
+              checkInPromptAr: 'ماذا سَمَّيْتِ؟ كَيْفَ اسْتَجاب؟',
+            },
+            {
+              kind: 'challenge-step', id: 'as-d7', dayLabel: 7,
+              titleEn: 'The Keep List', titleAr: 'قائِمَةُ الاِحْتِفاظ',
+              instructionEn: 'Look back. Which of the 6 practices worked best? Keep 2 for the next month. Drop the rest. Small and sustainable > ambitious and abandoned.',
+              instructionAr: 'اُنْظُري لِلخَلْف. أَيٌّ من السِّتَّةِ نَجَحَ أَكْثَر؟ اِحْتَفِظي بِـ 2 لِلشَّهْرِ التّالي. اُسْقُطي الباقي. صَغيرٌ ومُسْتَدامٌ > طَموحٌ ومَهْجور.',
+              checkInPromptEn: 'Which 2 will you keep?',
+              checkInPromptAr: 'أَيَّ 2 سَتَحْتَفِظين؟',
+            },
+            {
+              kind: 'callout', id: 'as-drhala', variant: 'dr-hala',
+              textEn: 'Your teen doesn\'t need a parent who pushes harder. They need a parent who structures smaller. The goal isn\'t academic perfection. It\'s a teen who knows how to start — again and again.',
+              textAr: 'مُراهِقُكِ لا يَحْتاجُ والِداً يَدْفَعُ أَقْوى. يَحْتاجُ والِداً يُبَنْي أَصْغَر. الهَدَفُ لَيْسَ الكَمالَ الأَكادِيميّ. إنَّهُ مُراهِقٌ يَعْرِفُ كَيْفَ يَبْدَأ — مَرَّةً بَعْدَ مَرَّة.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'quadrant',
@@ -2000,6 +2596,55 @@ Finally, connect self-worth to contribution. Teens who feel that they make a mea
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Self-Worth', 'Self-Compassion', 'Social Media Resilience'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'sw-lead', tone: 'lead',
+              textEn: 'Self-esteem fluctuates. Self-worth is the floor beneath it. Teens with healthy self-worth know: "I am worthy of love regardless of what I achieve, how I look, or what others think." Your words install or erode this floor.',
+              textAr: 'تَقْديرُ الذّاتِ يَتَقَلَّب. قيمَةُ الذّاتِ هي الأَرْضيَّةُ تَحْتَه. المُراهِقونَ بِقيمَةِ ذاتٍ صِحِّيَّةٍ يَعْرِفون: "أَسْتَحِقُّ الحُبَّ بِغَضِّ النَّظَرِ عَمّا أُحَقِّقُه، أَوْ كَيْفَ أَبْدو، أَوْ ما يَعْتَقِدُهُ الآخَرون." كَلِماتُكِ تُرَكِّبُ أَوْ تُآكِلُ هذِهِ الأَرْضيَّة.',
+            },
+            {
+              kind: 'comparison', id: 'sw-cmp',
+              titleEn: 'Praise That Builds vs Praise That Conditions', titleAr: 'مَدْحٌ يَبْني مُقابِلَ مَدْحٍ يَشْتَرِط',
+              left: {
+                labelEn: 'Conditional praise', labelAr: 'مَدْحٌ مَشْروط',
+                pointsEn: ['"You\'re so smart!" (only when they perform)', '"You\'re beautiful!" (only when they\'re groomed)', '"I\'m proud of you" (only tied to achievement)'],
+                pointsAr: ['"أَنْتَ ذَكِيٌّ جِدّاً!" (فَقَطْ عِنْدَ الأَداء)', '"أَنْتِ جَميلَة!" (فَقَطْ عِنْدَ التَّأَنُّق)', '"فَخورَةٌ بِك" (فَقَطْ مَعَ الإنْجاز)'],
+              },
+              right: {
+                labelEn: 'Unconditional affirmation', labelAr: 'تَأْكيدٌ غَيْرُ مَشْروط',
+                pointsEn: ['"I noticed you kept trying" (effort)', '"I love how you notice other people" (character)', '"I\'m glad you\'re my kid" (existence)'],
+                pointsAr: ['"لاحَظْتُ أَنَّكَ واصَلْتَ المُحاوَلَة" (مَجْهود)', '"أُحِبُّ كَيْفَ تَلْحَظُ الآخَرين" (شَخْصيَّة)', '"سَعيدَةٌ أَنَّكَ طِفْلي" (وُجود)'],
+              },
+            },
+            {
+              kind: 'callout', id: 'sw-social', variant: 'warning',
+              textEn: 'Social media teaches teens: your worth is measured in likes, followers, comparison. Counter-programming happens at home. Name the lie out loud: "Their feed isn\'t their life. Your life isn\'t your feed."',
+              textAr: 'وَسائِلُ التَّواصُلِ تُعَلِّمُ المُراهِقينَ: قيمَتُكَ تُقاسُ بِالإعْجاباتِ والمُتابِعينَ والمُقارَنات. البَرْمَجَةُ المُضادَّةُ تَحْدُثُ في البَيْت. سَمّي الكَذْبَةَ بِصَوْتٍ عالٍ: "تَغْذِيَتُها لَيْسَتْ حَياتَها. حَياتُكِ لَيْسَتْ تَغْذيَتَكِ."',
+            },
+            {
+              kind: 'micro-quiz', id: 'sw-mq1',
+              question: {
+                textEn: 'Which daily habit builds teen self-worth most?',
+                textAr: 'أَيُّ عادَةٍ يَوْميَّةٍ تَبْني قيمَةَ ذاتِ المُراهِقِ أَكْثَر؟',
+                options: [
+                  { labelEn: 'Telling them "you\'re the best" often', labelAr: 'إخْبارُهُ "أَنْتَ الأَفْضَل" كَثيراً', correct: false, explanationEn: 'Inflation, not foundation. They stop believing it.', explanationAr: 'تَضَخُّم، لا أَساس. يَتَوَقَّفونَ عَنْ تَصْديقِه.' },
+                  { labelEn: 'Naming one specific trait you admire (not achievement)', labelAr: 'تَسْمِيَةُ صِفَةٍ مُحَدَّدَةٍ تُعْجَبين بِها (لَيْسَ إنْجازاً)', correct: true, explanationEn: 'Yes. "I love how you stayed calm with your sister" teaches: I am seen for who I AM.', explanationAr: 'نَعَم. "أُحِبُّ كَيْفَ بَقيتَ هادِئاً مع أُخْتِكَ" تُعَلِّم: أَنا مَرْئِيٌّ لِمن أَنا.' },
+                  { labelEn: 'Pointing out when they fail, for realism', labelAr: 'الإشارَةُ لِلفَشَلِ، لِلواقِعيَّة', correct: false, explanationEn: 'They hear their own failures clearly already. Your job is to reflect what they miss: their strengths.', explanationAr: 'يَسْمَعونَ فَشَلَهُم بِوُضوح. مَهَمَّتُكِ عَكْسُ ما يَفوتُهُم: نِقاطُ قُوَّتِهِم.' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'sw-drhala', variant: 'dr-hala',
+              textEn: 'A teen who feels unconditionally valued in their own home walks through the world with a protected core. They can fail, be rejected, make mistakes — and come home to a place that didn\'t change. That\'s what self-worth actually is: a home inside yourself, built by homes outside yourself.',
+              textAr: 'المُراهِقُ الّذي يَشْعُرُ بِقيمَةٍ غَيْرِ مَشْروطَةٍ في بَيْتِهِ يَمْشي في العالَمِ بِنَواةٍ مَحْميَّة. يُمْكِنُهُ الفَشَل، الرَّفْض، الخَطَأ — ويَعودُ إلى مَكانٍ لَمْ يَتَغَيَّر. هذِهِ هي قيمَةُ الذّاتِ فِعْلاً: بَيْتٌ داخِلَكَ، بَناهُ بُيوتٌ خارِجَك.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'sw-refl', minWords: 40,
+              promptEn: 'What specific non-achievement trait have you told your teen you admire recently? If you can\'t remember, name one now and tell them today.',
+              promptAr: 'أَيَّ صِفَةٍ غَيْرِ إنْجازِيَّةٍ مُحَدَّدَةٍ أَخْبَرْتِ مُراهِقَكِ أَنَّكِ تُعْجَبينَ بِها مُؤَخَّراً؟ إذا لَمْ تَتَذَكَّري، سَمّي واحِدَةً الآنَ وأَخْبِريهِ اليَوْم.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'iceberg',
@@ -2028,6 +2673,7 @@ Finally, connect self-worth to contribution. Teens who feel that they make a mea
       descriptionEn: 'Prepare your teen for healthy independence while deepening the family bond through trust, goal-setting, and authentic partnership.',
       descriptionAr: 'حضّر ابنك المراهق لاستقلالية صحية مع تعميق الرابطة الأسرية من خلال الثقة وتحديد الأهداف والشراكة الحقيقية.',
       isFree: false,
+      priceCAD: 29,
       modules: [
         // ── Module 3.1 ──
         {
@@ -2250,6 +2896,80 @@ The transition to independence is emotional for parents too. Letting go of a rol
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Independence Skills', 'Scaffolded Autonomy', 'Life Skills'],
+          format: 'challenge',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'in-lead', tone: 'lead',
+              textEn: 'Independence isn\'t something you hand over at 18. It\'s transferred skill by skill, in scaffolded risk, over years. This 7-day challenge builds 7 concrete competencies your teen needs before leaving home.',
+              textAr: 'الاِسْتِقْلاليَّةُ لَيْسَتْ شَيْئاً تُسَلِّمينَهُ في الـ 18. تُنْقَلُ مَهارَةً بَعْدَ مَهارَة، بِمُخاطَرَةٍ مُتَدَرِّجَة، عَبْرَ سَنَوات. هذا تَحَدّي 7 أَيّامٍ يَبْني 7 كَفاءاتٍ مَلْموسَةٍ يَحْتاجُها مُراهِقُكَ قَبْلَ المُغادَرَة.',
+            },
+            {
+              kind: 'callout', id: 'in-why', variant: 'insight',
+              textEn: 'Teens who arrive at adulthood without practiced independence feel shame AND parents feel guilty. Solve BOTH now: practice one skill per day. Let them struggle. Let them succeed. Don\'t rescue.',
+              textAr: 'المُراهِقونَ الّذينَ يَصِلونَ البُلوغَ بِلا اسْتِقْلاليَّةٍ مُمارَسَةٍ يَشْعُرونَ بِالعار والآباءُ بِالذَّنْب. حُلّي كِلَيْهِما الآن: مَهارَةٌ واحِدَةٌ كُلَّ يَوْم. دَعيهُ يُكافِح. دَعيهُ يَنْجَح. لا تُنْقِذي.',
+            },
+            {
+              kind: 'challenge-step', id: 'in-d1', dayLabel: 1,
+              titleEn: 'Cook One Meal', titleAr: 'اِطْبُخْ وَجْبَةً واحِدَة',
+              instructionEn: 'Your teen cooks dinner tonight. From recipe. You can be nearby — but don\'t intervene. They burn it? They learn. They ask? Ask them what they think first.',
+              instructionAr: 'مُراهِقُكَ يَطْبُخُ العَشاءَ اللَّيْلَة. من وَصْفَة. يُمْكِنُكِ القُرْبَ — بِلا تَدَخُّل. أَحْرَقَها؟ يَتَعَلَّم. سَأَل؟ اِسْأَليهِ ما رَأْيُهُ أَوَّلاً.',
+              checkInPromptEn: 'What did they cook? What did you resist fixing?',
+              checkInPromptAr: 'ماذا طَبَخ؟ ماذا قاوَمْتِ إصْلاحَه؟',
+            },
+            {
+              kind: 'challenge-step', id: 'in-d2', dayLabel: 2,
+              titleEn: 'Handle a Real Call', titleAr: 'تَعامَلْ مع مُكالَمَةٍ حَقيقيّة',
+              instructionEn: 'Your teen makes a phone call they\'d normally delegate: doctor\'s office, customer service, school secretary. Watching them navigate is the lesson.',
+              instructionAr: 'مُراهِقُكَ يُجْري مُكالَمَةً كانَ سَيُفَوِّضُها: عِيادَةُ طَبيب، خِدْمَةُ عُمَلاء، سِكْريتيرَةُ المَدْرَسَة. مُشاهَدَتُهُ وهو يَتَعامَلُ هي الدَّرْس.',
+              checkInPromptEn: 'What call? What did they learn about themselves?',
+              checkInPromptAr: 'أَيَّ مُكالَمَة؟ ماذا تَعَلَّمَ عَنْ نَفْسِه؟',
+            },
+            {
+              kind: 'challenge-step', id: 'in-d3', dayLabel: 3,
+              titleEn: 'Manage $20', titleAr: 'أَدِرْ 20 دولاراً',
+              instructionEn: 'Give them $20. Their task: get 3 things the family needs from the store. Budget, price-compare, pay, get receipt back. Financial literacy starts small.',
+              instructionAr: 'أَعْطيهِ 20 دولاراً. مُهِمَّتُهُ: اِحْضِرْ 3 أَشْياءَ تَحْتاجُها العائِلَةُ من المَتْجَر. ميزانِيَّة، مُقارَنَةُ أَسْعار، دَفْع، إعادَةُ الإيصال. الثَّقافَةُ المالِيَّةُ تَبْدَأُ صَغيرَة.',
+              checkInPromptEn: 'What did they buy? Did they bring change back?',
+              checkInPromptAr: 'ماذا اشْتَرى؟ هل أَعادَ البَقِيَّة؟',
+            },
+            {
+              kind: 'challenge-step', id: 'in-d4', dayLabel: 4,
+              titleEn: 'Navigate Transportation', titleAr: 'تَنَقَّلْ بِنَفْسِك',
+              instructionEn: 'Your teen plans + executes ONE trip solo — bus, walk, bike, drive if age-appropriate. They figure out route, time, and backup plan. You\'re reachable but not directing.',
+              instructionAr: 'مُراهِقُكَ يُخَطِّطُ ويُنَفِّذُ رِحْلَةً مُنْفَرِداً — باصٌ، مَشْي، دَرّاجَة، قِيادَة. يَكْتَشِفُ الطَّريقَ والوَقْتَ وخُطَّةَ طَوارِئ. أَنْتِ مُتاحَةٌ بِلا تَوْجيه.',
+              checkInPromptEn: 'Where did they go? What went wrong? What did they solve?',
+              checkInPromptAr: 'إلى أَيْن؟ ما الخَطَأ؟ ماذا حَلّ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'in-d5', dayLabel: 5,
+              titleEn: 'Self-Advocacy', titleAr: 'الدِّفاعُ عَنِ النَّفْس',
+              instructionEn: 'They ask a teacher, boss, or coach for something THEY need: clarification, extension, help, a change. You don\'t interfere. Advocacy is a muscle.',
+              instructionAr: 'يَطْلُبُ من مُعَلِّمٍ أَوْ مُديرٍ أَوْ مُدَرِّبٍ شَيْئاً يَحْتاجُه: تَوْضيح، تَمْديد، مُساعَدَة، تَغْيير. بِلا تَدَخُّلٍ مِنْكِ. الدِّفاعُ عَضَلَة.',
+              checkInPromptEn: 'What did they ask for? What\'s the outcome?',
+              checkInPromptAr: 'ماذا طَلَب؟ ما النَّتيجَة؟',
+            },
+            {
+              kind: 'challenge-step', id: 'in-d6', dayLabel: 6,
+              titleEn: 'Manage a Setback', titleAr: 'تَعامَلْ مع انْتِكاسَة',
+              instructionEn: 'When something goes wrong today (lost item, missed deadline, argument with friend), resist your urge to fix it. Ask: "What\'s your plan?" and let them work it.',
+              instructionAr: 'حينَ يَفْشَلُ شَيْءٌ اليَوْم (فُقْدانُ شَيْء، مَوْعِدٌ فات، خِلافٌ مع صَديق)، قاوِمي دافِعَ الإصْلاح. اِسْأَلي: "ما خُطَّتُك؟" ودَعيهُ يَعْمَل.',
+              checkInPromptEn: 'What happened? Did they solve it? Differently than you would?',
+              checkInPromptAr: 'ماذا حَدَث؟ هل حَلَّها؟ بِطَريقَةٍ مُخْتَلِفَةٍ عَنْك؟',
+            },
+            {
+              kind: 'challenge-step', id: 'in-d7', dayLabel: 7,
+              titleEn: 'Reflect Together', titleAr: 'تَأَمَّلا مَعاً',
+              instructionEn: 'Sit with your teen. Ask: "What felt hardest this week? What surprised you about yourself?" Listen without advising. They\'re building the identity of a capable person.',
+              instructionAr: 'اِجْلِسي مع مُراهِقِك. اِسْأَلي: "ما الأَصْعَبُ هذا الأُسْبوع؟ ما المُفاجِئُ في نَفْسِك؟" اِسْتَمِعي بِلا نَصيحَة. يَبْني هُوِيَّةَ شَخْصٍ قادِر.',
+              checkInPromptEn: 'What did they discover about themselves?',
+              checkInPromptAr: 'ماذا اكْتَشَفَ عَنْ نَفْسِه؟',
+            },
+            {
+              kind: 'callout', id: 'in-drhala', variant: 'dr-hala',
+              textEn: 'The parents who hold on tightest produce teens who leave hardest. The ones who release progressively — skill by skill — produce adults who CHOOSE to come home. Your job is to work yourself out of a daily job. Slowly, intentionally.',
+              textAr: 'الآباءُ الّذينَ يَتَمَسَّكونَ بِشِدَّةٍ يُنْتِجونَ مُراهِقينَ يُغادِرونَ بِصُعوبَة. الّذينَ يُفْرِجونَ تَدْريجيّاً — مَهارَةً بَعْدَ مَهارَة — يُنْتِجونَ بالِغينَ يَخْتارونَ العَوْدَة. مَهَمَّتُكِ أَنْ تَعْمَلي خارِجَ مَهَمَّةٍ يَوْميَّةٍ. بِبُطْءٍ بِوَعْي.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'triangle',
@@ -2490,6 +3210,86 @@ Trust rebuilding is not just about restoring what was lost -- it is about buildi
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Trust Building', 'Conflict Repair', 'Honest Communication'],
+          format: 'story',
+          blocks: [
+            {
+              kind: 'story-beat', id: 'tr-s1', characterEn: 'A mother. Her 15-year-old daughter. 6 months after the lie.', characterAr: 'أُمّ. اِبْنَتُها ذاتُ الـ 15. بَعْدَ 6 أَشْهُرٍ من الكَذِبَة.',
+              textEn: 'Six months ago, her daughter lied about where she was. Not a small lie — she went to a party she was told not to. Someone posted a photo. Her mother saw it online.\n\nThe fight was brutal. Punishment followed. Then silence.\n\nNow, six months later, her daughter barely makes eye contact. Her mother texts her "I love you" and gets back "ok."',
+              textAr: 'قَبْلَ 6 أَشْهُر، كَذَبَتِ اِبْنَتُها عَنْ أَيْنَ كانَت. لَيْسَتْ كَذِبَةً صَغيرَة — ذَهَبَتْ لِحَفْلَةٍ مَمْنوعَة. نَشَرَ شَخْصٌ صورَةً. رَأَتْها الأُمُّ أونْلاين.\n\nالشِّجارُ كانَ وَحْشيّاً. العِقابُ تَبِعَه. ثُمَّ صَمْت.\n\nالآن، بَعْدَ 6 أَشْهُر، اِبْنَتُها بِالكادِ تَتَواصَلُ بِعَيْنَيْها. تُرْسِلُ الأُمّ "أُحِبُّكِ" وتَعودُ "حَسَناً".',
+            },
+            {
+              kind: 'story-beat', id: 'tr-s2',
+              textEn: 'The mother knows: the lie is old. What lives now is the rupture that never got repaired. The punishment happened. The reconnection never did.\n\nShe decides tonight is the night.',
+              textAr: 'الأُمُّ تَعْرِف: الكَذْبَةُ قَديمَة. ما يَعيشُ الآنَ هو القَطيعَةُ الّتي لَمْ تُصْلَحْ أَبَداً. العِقابُ حَدَث. العَوْدَةُ لَمْ تَحْدُث.\n\nتُقَرِّرُ اللَّيْلَةَ هي اللَّيْلَة.',
+            },
+            {
+              kind: 'story-choice', id: 'tr-c1',
+              promptEn: 'She sits on the edge of her daughter\'s bed. How does she open?',
+              promptAr: 'تَجْلِسُ على حافَّةِ سَريرِ اِبْنَتِها. كَيْفَ تَبْدَأ؟',
+              choices: [
+                {
+                  labelEn: '"We need to move past what happened last summer. I\'m tired of this distance."',
+                  labelAr: '"يَجِبُ أَنْ نَتَجاوَزَ ما حَدَثَ الصَّيْفَ الماضي. تَعِبْتُ من هذِهِ المَسافَة."',
+                  feedbackEn: 'This puts the daughter in charge of fixing what the parent needs. Dead end.',
+                  feedbackAr: 'هذا يَجْعَلُ الاِبْنَةَ مَسْؤولَةً عَنْ إصْلاحِ ما تَحْتاجُهُ الأُمّ. طَريقٌ مَسْدود.',
+                  isRecommended: false,
+                },
+                {
+                  labelEn: '"I\'ve been thinking about last summer. I reacted hard. I never came back to say: I\'m sorry for how I handled it."',
+                  labelAr: '"كُنْتُ أُفَكِّرُ في الصَّيْفِ الماضي. اِنْفَعَلْتُ بِشِدَّة. لَمْ أَعُدْ لِأَقول: آسِفَةٌ على كَيْفَ تَعامَلْتُ."',
+                  feedbackEn: 'Ownership without conditions. This opens the door her daughter\'s been waiting at.',
+                  feedbackAr: 'اِعْتِرافٌ بِلا شُروط. هذا يَفْتَحُ البابَ الّذي كانَتْ تَنْتَظِرُهُ اِبْنَتُها.',
+                  isRecommended: true,
+                },
+              ],
+            },
+            {
+              kind: 'story-beat', id: 'tr-s3',
+              textEn: 'Her daughter looks up. Slow. "You\'re apologizing to ME? I\'m the one who lied."\n\n"You lied. And I\'m scared of losing you every time you leave the house now. Both are true. But the way I handled it — the yelling, the silence after — that hurt us both. I own that part."',
+              textAr: 'تَنْظُرُ اِبْنَتُها لِلأَعْلى. بِبُطْء. "أَنْتِ تَعْتَذِرينَ لي؟ أَنا الّتي كَذَبَت."\n\n"كَذَبْتِ. وأَنا خائِفَةٌ من فُقْدانِكِ في كُلِّ مَرَّةٍ تَخْرُجين. كِلاهُما صَحيح. لَكِنْ كَيْفَ تَعامَلْتُ — الصُّراخ، الصَّمْتُ بَعْدَها — هذا جَرَحَنا كِلَيْنا. أَمْتَلِكُ هذا الجُزْء."',
+            },
+            {
+              kind: 'story-choice', id: 'tr-c2',
+              promptEn: 'Her daughter starts to cry quietly. "I didn\'t know how to come back to you after that fight." What does the mother do?',
+              promptAr: 'اِبْنَتُها تَبْدَأُ بِالبُكاءِ بِهُدوء. "لَمْ أَعْرِفْ كَيْفَ أَعودُ إلَيْكِ بَعْدَ ذلِكَ الشِّجار." ماذا تَفْعَلُ الأُمّ؟',
+              choices: [
+                {
+                  labelEn: '"You should have come to me sooner."',
+                  labelAr: '"كانَ يَجِبُ أَنْ تَأْتي أَبْكَر."',
+                  feedbackEn: 'Rupture re-opens. This makes the repair about HER again.',
+                  feedbackAr: 'القَطيعَةُ تَنْفَتِحُ ثانِيَة. يَجْعَلُ الإصْلاحَ عَنْها ثانِيَة.',
+                  isRecommended: false,
+                },
+                {
+                  labelEn: '"Neither of us knew how. That\'s the part I want us to learn together. Can I hug you?"',
+                  labelAr: '"كِلْتانا لَمْ نَعْرِف. هذا ما أُريدُ أَنْ نَتَعَلَّمَهُ مَعاً. هل أُعانِقُكِ؟"',
+                  feedbackEn: 'Shared responsibility, future orientation, consent. This is trust being rebuilt.',
+                  feedbackAr: 'مَسْؤوليَّةٌ مُشْتَرَكَة، تَوَجُّهٌ لِلمُسْتَقْبَل، إذْن. هذِهِ ثِقَةٌ تُبْنى.',
+                  isRecommended: true,
+                },
+              ],
+            },
+            {
+              kind: 'story-beat', id: 'tr-s4',
+              textEn: 'Her daughter nods. They hug. It\'s awkward at first. Then not.\n\nHer daughter whispers into her shoulder: "Can we make a deal? If I mess up again, I tell you first. Before you see it online. And you don\'t yell for 24 hours."\n\n"Deal."',
+              textAr: 'اِبْنَتُها تومِئ. يَتَعانَقان. مُحْرِجٌ أَوَّلاً. ثُمَّ لا.\n\nتَهْمِسُ اِبْنَتُها في كَتِفِها: "هل نَعْقِدُ صَفْقَة؟ إذا أَخْطَأْتُ ثانِيَةً، أُخْبِرُكِ أَوَّلاً. قَبْلَ أَنْ تَرَيْنَها أونْلاين. وأَنْتِ لا تَصْرُخينَ 24 ساعَة."\n\n"اِتَّفَقْنا."',
+            },
+            {
+              kind: 'callout', id: 'tr-lesson', variant: 'insight',
+              textEn: 'Trust isn\'t rebuilt by waiting for time to pass. It\'s rebuilt through intentional repair moments: owning your part, refusing to make it about yourself, and negotiating a new agreement for the future. Silence after conflict teaches teens: rupture is permanent. Repair teaches: love survives mistakes.',
+              textAr: 'الثِّقَةُ لا تُبْنى بِانْتِظارِ مُرورِ الوَقْت. تُبْنى بِلَحَظاتِ إصْلاحٍ مَقْصودَة: اِمْتِلاكُ جُزْئِك، رَفْضُ جَعْلِها عَنْكِ، والتَّفاوُضُ على اتِّفاقٍ جَديد. الصَّمْتُ بَعْدَ الصِّراعِ يُعَلِّمُ المُراهِقين: القَطيعَةُ دائِمَة. الإصْلاحُ يُعَلِّم: الحُبُّ يَبْقى رَغْمَ الخَطَأ.',
+            },
+            {
+              kind: 'callout', id: 'tr-drhala', variant: 'dr-hala',
+              textEn: 'Every family has ruptures waiting for repair. A fight never closed. A punishment that hurt more than it taught. A silence that got longer than anyone meant. The question isn\'t whether — it\'s which one will you repair first? Go there. It\'s never too late.',
+              textAr: 'كُلُّ عائِلَةٍ لَدَيْها قَطائِعُ تَنْتَظِرُ الإصْلاح. شِجارٌ لَمْ يُغْلَق. عِقابٌ جَرَحَ أَكْثَرَ مِمّا عَلَّم. صَمْتٌ طالَ أَكْثَرَ مِمّا أَرادَ أَحَد. السُّؤالُ لَيْسَ هَلْ — بَلْ أَيُّها سَتُصْلِحينَ أَوَّلاً؟ اِذْهَبي إلَيْه. لَيْسَ مُتَأَخِّراً أَبَداً.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'tr-refl', minWords: 40,
+              promptEn: 'What rupture with your teen is still unrepaired? What would owning YOUR part sound like? Write the first sentence.',
+              promptAr: 'أَيَّ قَطيعَةٍ مع مُراهِقِكَ لا تَزالُ غَيْرَ مُصْلَحَة؟ كَيْفَ سَتَبْدو اِمْتِلاكُ جُزْئِك؟ اُكْتُبي الجُمْلَةَ الأولى.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'cycle',
@@ -2731,6 +3531,66 @@ Finally, celebrate the journey, not just the destination. When your teen sets a 
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Goal Setting', 'Intrinsic Motivation', 'Self-Determination'],
+          format: 'assessment',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'gm-lead', tone: 'lead',
+              textEn: 'Teen motivation falls apart when goals are externally imposed. Research on self-determination theory is clear: autonomy, competence, and relatedness are the 3 ingredients. This assessment checks each — for your teen, through your eyes.',
+              textAr: 'دافِعيَّةُ المُراهِقِ تَنْهارُ حينَ تُفْرَضُ الأَهْدافُ خارِجيّاً. أَبْحاثُ نَظَريَّةِ تَقْريرِ المَصيرِ واضِحَة: الاِسْتِقْلاليَّةُ والكَفاءَةُ والاِرْتِباطُ هُم المُكَوِّناتُ الثَّلاثَة. هذا التَّقْييمُ يَفْحَصُ كُلَّ واحِدَةٍ — لِمُراهِقِكَ، من خِلالِ عَيْنَيْك.',
+            },
+            {
+              kind: 'likert', id: 'gm-lk1',
+              reflection: {
+                titleEn: 'Autonomy', titleAr: 'الاِسْتِقْلاليَّة',
+                statementEn: 'My teen chooses their own goals. I\'m a partner, not the director.',
+                statementAr: 'مُراهِقي يَخْتارُ أَهْدافَهُ. أَنا شَريكَة، لا مُخْرِجَة.',
+                scaleLabels: { lowEn: 'I direct everything', lowAr: 'أُوَجِّهُ كُلَّ شَيْء', highEn: 'They drive', highAr: 'هو القائِد' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'You\'re in the driver seat', labelAr: 'أَنْتِ في مَقْعَدِ القائِد', feedbackEn: 'Motivation dies when teens aren\'t driving. Shift one decision this week to them.', feedbackAr: 'الدّافِعيَّةُ تَموتُ حينَ لا يَقودُ المُراهِقون. حَوِّلي قَراراً واحِداً لَهُ هذا الأُسْبوع.' },
+                  { min: 3, max: 5, labelEn: 'Some shared control', labelAr: 'تَحَكُّمٌ مُشْتَرَكٌ جُزْئيّاً', feedbackEn: 'You negotiate. Notice where you still over-direct and release there.', feedbackAr: 'تَتَفاوَضين. لاحِظي أَيْنَ لا تَزالينَ تُوَجِّهينَ كَثيراً وأَفْرِجي هُناك.' },
+                  { min: 6, max: 7, labelEn: 'They own it', labelAr: 'يَمْلِكُها', feedbackEn: 'This is the engine of teen motivation. Keep trusting them.', feedbackAr: 'هذا مُحَرِّكُ دافِعيَّةِ المُراهِق. واصِلي الثِّقَةَ بِه.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'gm-lk2',
+              reflection: {
+                titleEn: 'Competence', titleAr: 'الكَفاءَة',
+                statementEn: 'My teen regularly experiences success at things they care about.',
+                statementAr: 'مُراهِقي يَخْتَبِرُ النَّجاحَ بِانْتِظامٍ في أَشْياءَ تَهُمُّه.',
+                scaleLabels: { lowEn: 'Rarely wins', lowAr: 'نادِراً ما يَفوز', highEn: 'Wins often', highAr: 'يَفوزُ كَثيراً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Starved of wins', labelAr: 'جائِعٌ لِلفَوْز', feedbackEn: 'Make wins SMALLER and more frequent. Mastery comes from stacked tiny wins, not rare huge ones.', feedbackAr: 'اِجْعَلي الفَوْزَ أَصْغَرَ وأَكْثَرَ تَكْراراً. الإتْقانُ من فَوْزٍ صَغيرٍ مُكَدَّس، لا نادِرٍ ضَخْم.' },
+                  { min: 3, max: 5, labelEn: 'Mixed experience', labelAr: 'تَجْرِبَةٌ مُخْتَلِطَة', feedbackEn: 'Notice where they\'re winning — and do MORE of that. Skip pushing their weak areas for now.', feedbackAr: 'لاحِظي أَيْنَ يَفوز — وافْعَلي أَكْثَر من ذلِك. اُتْركي مَواطِنَ الضَّعْفِ مُؤَقَّتاً.' },
+                  { min: 6, max: 7, labelEn: 'Winning often', labelAr: 'يَفوزُ كَثيراً', feedbackEn: 'Strong competence base. Now stretch gently to the next challenge.', feedbackAr: 'أَساسُ كَفاءَةٍ قَوِيّ. تَوَسَّعي بِلُطْفٍ لِلتَّحَدّي التّالي.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'gm-lk3',
+              reflection: {
+                titleEn: 'Relatedness', titleAr: 'الاِرْتِباط',
+                statementEn: 'My teen knows people around them believe in who they\'re becoming.',
+                statementAr: 'مُراهِقي يَعْرِفُ أَنَّ النّاسَ حَوْلَهُ يُؤْمِنونَ بِمن يَصيرُ.',
+                scaleLabels: { lowEn: 'Feels alone', lowAr: 'يَشْعُرُ بِالوَحْدَة', highEn: 'Deeply held', highAr: 'مَحْضونٌ بِعُمْق' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Isolation risk', labelAr: 'خَطَرُ العُزْلَة', feedbackEn: 'Find 1 adult (not you) who can champion them: coach, teacher, aunt, mentor. Teens need non-parent believers.', feedbackAr: 'اِبْحَثي عَنْ بالِغٍ واحِد (لَيْسَ أَنْتِ) يُشَجِّعُه: مُدَرِّب، مُعَلِّم، خالَة، مُرْشِد. يَحْتاجُ مُؤْمِنينَ غَيْرِ الأَهْل.' },
+                  { min: 3, max: 5, labelEn: 'Some support', labelAr: 'بَعْضُ الدَّعْم', feedbackEn: 'Ensure they have at least 3 "believers." Name them to your teen.', feedbackAr: 'تَأَكَّدي أَنَّ لَدَيْهِ عَلى الأَقَلِّ 3 "مُؤْمِنين". سَمّيهِم لَه.' },
+                  { min: 6, max: 7, labelEn: 'Deeply supported', labelAr: 'مَدْعومٌ بِعُمْق', feedbackEn: 'This is wealth. Named belief is oxygen for teens.', feedbackAr: 'هذِهِ ثَرْوَة. الإيمانُ المُسَمّى أُكْسِجينٌ لِلمُراهِقين.' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'gm-drhala', variant: 'dr-hala',
+              textEn: 'Teens aren\'t lazy. Teens are under-resourced in one of these three — autonomy, competence, or relatedness. Figure out which, fix that one, and motivation returns. It\'s not mysterious. It\'s solvable.',
+              textAr: 'المُراهِقونَ لَيْسوا كُسالى. المُراهِقونَ يَفْتَقِرونَ لِواحِدٍ من الثَّلاثَة — الاِسْتِقْلاليَّة، الكَفاءَة، الاِرْتِباط. اكْتَشِفي أَيّاً، أَصْلِحيهِ، وتَعودُ الدّافِعيَّة. لَيْسَتْ غامِضَة. قابِلَةٌ لِلحَلّ.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'gm-refl', minWords: 40,
+              promptEn: 'Which of the 3 is your teen lowest on? What\'s ONE concrete thing you could shift this week to raise it?',
+              promptAr: 'أَيَّ واحِدَةٍ من الثَّلاثَةِ أَقَلُّ عِنْدَ مُراهِقِك؟ ما شَيْءٌ مَلْموسٌ يُمْكِنُكِ تَغْييرُهُ هذا الأُسْبوعَ لِرَفْعِه؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'triangle',
@@ -2989,6 +3849,77 @@ Thank you for investing in this journey. The work you have done here does not ju
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Family Partnership', 'Collaborative Decision-Making', 'Relationship Evolution'],
+          format: 'cards',
+          blocks: [
+            {
+              kind: 'card', id: 'pa-intro', accentColor: '#7A3B5E',
+              titleEn: 'From boss to partner',
+              titleAr: 'من مُديرَةٍ إلى شَريكَة',
+              bodyEn: 'Your teen is becoming an adult. Your relationship must evolve from authority/dependent to partnership — OR it fractures. These 7 cards are phrases that shift the power dynamic without giving up your role.\n\nSave the ones that match your family.',
+              bodyAr: 'مُراهِقُكَ يَصيرُ بالِغاً. عَلاقَتُكَ يَجِبُ أَنْ تَتَطَوَّرَ من سُلْطَة/تابِع إلى شَراكَة — أَوْ تَتَكَسَّر. هذِهِ 7 بِطاقاتٍ عِباراتٌ تُحَوِّلُ ديناميكيَّةَ القُوَّةِ بِلا التَّخَلّي عَنْ دَوْرِك.\n\nاِحْفَظي الّتي تُناسِبُ عائِلَتَك.',
+            },
+            {
+              kind: 'card', id: 'pa-input', accentColor: '#C4878A',
+              titleEn: '1. Asking for Input',
+              titleAr: '1. طَلَبُ الرَّأْي',
+              bodyEn: 'Old: "Here\'s what we\'re doing."\n\nNew: "Before I decide this, what\'s your view? I\'ll make the final call, but I want to hear you first."\n\nAsking doesn\'t surrender authority. It grows their voice.',
+              bodyAr: 'قَديم: "إلَيْكَ ما سَنَفْعَلُه."\n\nجَديد: "قَبْلَ أَنْ أُقَرِّر، ما رَأْيُك؟ سَأَتَّخِذُ القَرارَ النِّهائِيّ، لَكِنّي أُريدُ سَماعَك."\n\nالسُّؤالُ لا يَسْتَسْلِمُ لِلسُّلْطَة. يَنْمو صَوْتَه.',
+            },
+            {
+              kind: 'card', id: 'pa-disagree', accentColor: '#5B8FA8',
+              titleEn: '2. Disagreeing Respectfully',
+              titleAr: '2. الاِخْتِلافُ بِاحْتِرام',
+              bodyEn: 'Old: "You\'re wrong and here\'s why."\n\nNew: "I see it really differently. Can I explain my view, and then you can explain yours again?"\n\nModeling disagreement IS teaching. Your teen learns from watching you.',
+              bodyAr: 'قَديم: "أَنْتَ مُخْطِئ وإلَيْكَ السَّبَب."\n\nجَديد: "أَراها مُخْتَلِفَةً جِدّاً. هل أَشْرَحُ رَأْيي، ثُمَّ تَشْرَحُ رَأْيَكَ ثانِيَةً؟"\n\nالقُدْوَةُ في الاِخْتِلافِ تَعْليم. مُراهِقُكَ يَتَعَلَّمُ بِالمُراقَبَة.',
+            },
+            {
+              kind: 'card', id: 'pa-mistake', accentColor: '#D4836A',
+              titleEn: '3. Admitting You Were Wrong',
+              titleAr: '3. الاِعْتِرافُ بِالخَطَأ',
+              bodyEn: '"I was wrong about that. You were right. I should have listened earlier."\n\nNothing grows a teen\'s trust faster than a parent who can say these three sentences. Partnership is impossible without it.',
+              bodyAr: '"كُنْتُ مُخْطِئَةً في ذلِك. أَنْتَ كُنْتَ مُحِقّاً. كانَ يَجِبُ أَنْ أَسْتَمِعَ أَبْكَر."\n\nلا شَيْءَ يَنْمو ثِقَةَ المُراهِقِ أَسْرَعَ من والِدٍ يَقولُ هذِهِ الجُمَلَ الثَّلاث. الشَّراكَةُ مُسْتَحيلَةٌ بِدونِها.',
+            },
+            {
+              kind: 'micro-quiz', id: 'pa-mq1',
+              question: {
+                textEn: 'Partnership with your teen requires MOST:',
+                textAr: 'الشَّراكَةُ مع مُراهِقِكَ تَتَطَلَّبُ الأَكْثَر:',
+                options: [
+                  { labelEn: 'Loosening all rules', labelAr: 'تَخْفيفَ كُلِّ القَواعِد', correct: false, explanationEn: 'That\'s abdication. Partnership keeps structure but shares power.', explanationAr: 'هذا تَخَلٍّ. الشَّراكَةُ تَحْتَفِظُ بِالبِنْيَةِ وتُشارِكُ القُوَّة.' },
+                  { labelEn: 'Treating their view as real input, even when you decide differently', labelAr: 'مُعامَلَةُ رَأْيِهِ كَمُدْخَلٍ حَقيقِيّ، حَتّى لَوْ قَرَّرْتِ مُخْتَلِفاً', correct: true, explanationEn: 'Yes. Respect precedes decision authority. They feel heard even when they don\'t get their way.', explanationAr: 'نَعَم. الاِحْتِرامُ يَسْبِقُ سُلْطَةَ القَرار. يَشْعُرونَ بِالسَّماعِ حَتّى لَوْ لَمْ يَحْصُلوا على ما أَرادوا.' },
+                  { labelEn: 'Agreeing with them more', labelAr: 'المُوافَقَةُ عَلَيْهِم أَكْثَر', correct: false, explanationEn: 'Partnership isn\'t agreement. It\'s mutual respect across disagreement.', explanationAr: 'الشَّراكَةُ لَيْسَتْ مُوافَقَة. إنَّها احْتِرامٌ مُتَبادَلٌ عَبْرَ الاِخْتِلاف.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'pa-respect', accentColor: '#3B8A6E',
+              titleEn: '4. Claiming Your Own Time',
+              titleAr: '4. المُطالَبَةُ بِوَقْتِكِ',
+              bodyEn: '"I need 20 minutes to myself before we talk about this. I want to be present for you, and I can\'t be right now."\n\nModel boundaries. Teens learn self-respect from watching yours.',
+              bodyAr: '"أَحْتاجُ 20 دَقيقَةً لِنَفْسي قَبْلَ أَنْ نَتَحَدَّث. أُريدُ أَنْ أَكونَ حاضِرَةً لَكَ، ولا أَسْتَطيعُ الآن."\n\nكوني قُدْوَةً لِلحُدود. المُراهِقونَ يَتَعَلَّمونَ احْتِرامَ الذّاتِ من رُؤْيَةِ احْتِرامِك.',
+            },
+            {
+              kind: 'card', id: 'pa-invest', accentColor: '#C8A97D',
+              titleEn: '5. Asking What They Need',
+              titleAr: '5. اِسْأَليهِ ماذا يَحْتاج',
+              bodyEn: '"I\'m wondering what you need from me right now. Am I giving you too little space? Too much? Tell me."\n\nChecking in evolves the relationship faster than guessing.',
+              bodyAr: '"أَتَساءَلُ ماذا تَحْتاجُ مِنّي الآن. هل أُعْطيكَ مَساحَةً قَليلَةً جِدّاً؟ كَثيرَةً جِدّاً؟ أَخْبِرْني."\n\nالاِطْمِئْنانُ يُطَوِّرُ العَلاقَةَ أَسْرَعَ من التَّخْمين.',
+            },
+            {
+              kind: 'card', id: 'pa-believe', accentColor: '#7A3B5E',
+              titleEn: '6. Speaking Belief Into Them',
+              titleAr: '6. قولي إيمانَكِ بِه',
+              bodyEn: '"I see who you\'re becoming, and it\'s someone I trust. I get to watch you grow up, and that\'s the privilege of my life."\n\nSay this once a month. It rewires their internal voice.',
+              bodyAr: '"أَرى من تَصير، وهو شَخْصٌ أَثِقُ بِه. أُشاهِدُكَ تَكْبَر، وهذا امْتِيازُ حَياتي."\n\nقوليها مَرَّةً شَهْريّاً. تُعيدُ تَرْكيبَ صَوْتِهِ الدّاخِليّ.',
+            },
+            {
+              kind: 'card', id: 'pa-formula', accentColor: '#C4878A',
+              titleEn: 'The Partnership Promise',
+              titleAr: 'وَعْدُ الشَّراكَة',
+              bodyEn: 'I will ask your opinion before deciding.\nI will admit when I\'m wrong.\nI will hold boundaries AND negotiate openly.\nI will believe out loud in who you\'re becoming.\n\nYour teen won\'t always appreciate it. One day, they will — deeply.',
+              bodyAr: 'سَأَسْأَلُ رَأْيَكَ قَبْلَ القَرار.\nسَأَعْتَرِفُ بِخَطَئي.\nسَأَحْفَظُ الحُدودَ وأَتَفاوَضُ بِانْفِتاح.\nسَأُؤْمِنُ بِصَوْتٍ عالٍ بِمن تَصير.\n\nمُراهِقُكَ لَنْ يُقَدِّرَها دائِماً. يَوْماً ما، سَيُقَدِّرُها — بِعُمْق.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'flowchart',

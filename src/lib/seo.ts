@@ -11,17 +11,22 @@ interface PageSEO {
   description: string;
   descriptionAr: string;
   path: string;
+  /** Optional per-page OG image (absolute path under /public, or full URL). */
+  ogImage?: string;
+  ogImageAr?: string;
 }
 
 const BASE_URL = 'https://mamahala.ca';
 const SITE_NAME = 'Mama Hala Consulting';
 const SITE_NAME_AR = 'ماما هالة للاستشارات';
+const DEFAULT_OG_IMAGE = '/images/logo-512.png';
 
 export function generatePageMetadata(locale: string, page: PageSEO): Metadata {
   const isAr = locale === 'ar';
   const title = isAr ? page.titleAr : page.title;
   const description = isAr ? page.descriptionAr : page.description;
   const url = `${BASE_URL}/${locale}${page.path}`;
+  const ogImage = (isAr ? page.ogImageAr : page.ogImage) || page.ogImage || DEFAULT_OG_IMAGE;
 
   return {
     title,
@@ -31,20 +36,31 @@ export function generatePageMetadata(locale: string, page: PageSEO): Metadata {
       languages: {
         en: `${BASE_URL}/en${page.path}`,
         ar: `${BASE_URL}/ar${page.path}`,
+        'x-default': `${BASE_URL}/en${page.path}`,
       },
     },
     openGraph: {
       title,
       description,
       url,
-      siteName: SITE_NAME,
+      siteName: isAr ? SITE_NAME_AR : SITE_NAME,
       locale: isAr ? 'ar_AE' : 'en_CA',
+      alternateLocale: isAr ? ['ar_SA', 'ar_EG', 'en_CA'] : ['ar_AE', 'ar_SA'],
       type: 'website',
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
+      images: [ogImage],
     },
   };
 }

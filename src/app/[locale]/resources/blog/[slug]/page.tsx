@@ -3,10 +3,9 @@
 import { useParams } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import BlogCoverImage from '@/components/ui/BlogCoverImage';
 import { motion } from 'framer-motion';
 import {
-  BookOpen,
   Clock,
   Calendar,
   User,
@@ -46,6 +45,26 @@ const ctaThemes: Record<string, { bg: string; accent: string; accentLight: strin
   adults: { bg: 'from-[#E8E0D0]/60 via-[#FAF5ED]/40 to-[#FAF7F2]', accent: '#C8A97D', accentLight: '#C8A97D15', icon: '#C8A97D' },
   couples: { bg: 'from-[#E8C4C0]/60 via-[#FAF0EC]/40 to-[#FAF7F2]', accent: '#C4878A', accentLight: '#C4878A15', icon: '#C4878A' },
 };
+
+/** Parse inline markdown: **bold** → <strong>, *italic* → <em> */
+function renderInline(text: string): React.ReactNode {
+  const regex = /\*\*(.+?)\*\*|\*(.+?)\*/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+    if (match[1] !== undefined) {
+      parts.push(<strong key={key++} className="font-semibold text-[#2D2A33]">{match[1]}</strong>);
+    } else if (match[2] !== undefined) {
+      parts.push(<em key={key++}>{match[2]}</em>);
+    }
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts.length > 1 ? <>{parts}</> : text;
+}
 
 function BlogNewsletterForm({ theme, messages, isRTL }: { theme: { accent: string }; messages: Record<string, any>; isRTL: boolean }) {
   const [email, setEmail] = useState('');
@@ -246,85 +265,97 @@ export default function BlogPostPage() {
               <article className="bg-white rounded-3xl p-8 lg:p-12 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#F3EFE8]">
                 <div className="space-y-5">
                   {content.map((block: string, index: number) => {
-                    // H2 headings
-                    if (block.startsWith('## ')) {
+                    const trimmed = block.trim();
+
+                    // ── HTML blocks (saved via CMS as raw HTML) ──────────────
+                    if (trimmed.startsWith('<')) {
+                      return (
+                        <div
+                          key={index}
+                          className={[
+                            '[&_h2]:text-2xl [&_h2]:lg:text-[26px] [&_h2]:font-bold [&_h2]:text-[#2D2A33] [&_h2]:mt-10 [&_h2]:mb-2 [&_h2]:[font-family:var(--font-heading)]',
+                            '[&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-[#2D2A33] [&_h3]:mt-8 [&_h3]:mb-1 [&_h3]:[font-family:var(--font-heading)]',
+                            '[&_p]:text-[#4A4A5C] [&_p]:leading-[1.8] [&_p]:text-[17px]',
+                            '[&_ul]:my-4 [&_ul]:space-y-2',
+                            '[&_ol]:my-4 [&_ol]:space-y-2',
+                            '[&_li]:text-[#4A4A5C] [&_li]:leading-[1.7] [&_li]:text-[15px] [&_li]:ml-5 [&_li]:list-disc',
+                            '[&_strong]:font-semibold [&_strong]:text-[#2D2A33]',
+                            '[&_em]:italic',
+                            '[&_blockquote]:border-l-4 [&_blockquote]:pl-5 [&_blockquote]:border-[#C8A97D] [&_blockquote]:bg-[#FAF7F2] [&_blockquote]:rounded-xl [&_blockquote]:p-5 [&_blockquote]:italic [&_blockquote]:text-[#6B6580] [&_blockquote]:leading-[1.8]',
+                            '[&_a]:text-[#7A3B5E] [&_a]:underline',
+                            isRTL ? 'text-right' : '',
+                          ].join(' ')}
+                          dangerouslySetInnerHTML={{ __html: trimmed }}
+                        />
+                      );
+                    }
+
+                    // ── H2 headings ──────────────────────────────────────────
+                    if (trimmed.startsWith('## ')) {
                       return (
                         <h2 key={index} className="text-2xl lg:text-[26px] font-bold text-[#2D2A33] mt-10 mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-                          {block.slice(3)}
+                          {renderInline(trimmed.slice(3))}
                         </h2>
                       );
                     }
-                    // H3 headings
-                    if (block.startsWith('### ')) {
+                    // ── H3 headings ──────────────────────────────────────────
+                    if (trimmed.startsWith('### ')) {
                       return (
                         <h3 key={index} className="text-xl font-bold text-[#2D2A33] mt-8 mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
-                          {block.slice(4)}
+                          {renderInline(trimmed.slice(4))}
                         </h3>
                       );
                     }
-                    // Bullet list items (collect consecutive bullets)
-                    if (block.startsWith('• ') || block.startsWith('- ')) {
-                      const items = block.split('\n').filter(Boolean);
+                    // ── Bullet list items ────────────────────────────────────
+                    if (trimmed.startsWith('• ') || trimmed.startsWith('- ')) {
+                      const items = trimmed.split('\n').filter(Boolean);
                       return (
                         <ul key={index} className="space-y-2.5 my-4">
                           {items.map((item, i) => {
                             const text = item.replace(/^[•\-]\s*/, '');
-                            // Support bold lead-in: **Bold:** rest of text
-                            const boldMatch = text.match(/^\*\*(.+?)\*\*[:\s]*(.*)/);
                             return (
                               <li key={i} className={`flex items-start gap-3 text-[#4A4A5C] leading-[1.7] text-[15px] ${isRTL ? 'text-right' : ''}`}>
                                 <span className="w-1.5 h-1.5 rounded-full bg-[#C8A97D] mt-2.5 flex-shrink-0" />
-                                <span>
-                                  {boldMatch
-                                    ? <><strong className="text-[#2D2A33] font-semibold">{boldMatch[1]}:</strong> {boldMatch[2]}</>
-                                    : text
-                                  }
-                                </span>
+                                <span>{renderInline(text)}</span>
                               </li>
                             );
                           })}
                         </ul>
                       );
                     }
-                    // Numbered items (1. 2. 3.)
-                    if (/^\d+\.\s/.test(block)) {
-                      const items = block.split('\n').filter(Boolean);
+                    // ── Numbered items (1. 2. 3.) ────────────────────────────
+                    if (/^\d+\.\s/.test(trimmed)) {
+                      const items = trimmed.split('\n').filter(Boolean);
                       return (
                         <ol key={index} className="space-y-3 my-4">
                           {items.map((item, i) => {
                             const text = item.replace(/^\d+\.\s*/, '');
-                            const boldMatch = text.match(/^\*\*(.+?)\*\*[:\s]*(.*)/);
                             return (
                               <li key={i} className={`flex items-start gap-3 text-[#4A4A5C] leading-[1.7] text-[15px] ${isRTL ? 'text-right' : ''}`}>
                                 <span className="w-6 h-6 rounded-full bg-[#7A3B5E]/10 text-[#7A3B5E] text-xs font-bold flex items-center justify-center mt-0.5 flex-shrink-0">{i + 1}</span>
-                                <span>
-                                  {boldMatch
-                                    ? <><strong className="text-[#2D2A33] font-semibold">{boldMatch[1]}</strong> {boldMatch[2]}</>
-                                    : text
-                                  }
-                                </span>
+                                <span>{renderInline(text)}</span>
                               </li>
                             );
                           })}
                         </ol>
                       );
                     }
-                    // Blockquote
-                    if (block.startsWith('> ')) {
+                    // ── Blockquote ───────────────────────────────────────────
+                    if (trimmed.startsWith('> ')) {
                       return (
                         <blockquote key={index} className={`${isRTL ? 'border-r-3 pr-5' : 'border-l-3 pl-5'} border-[#C8A97D] bg-[#FAF7F2] rounded-xl p-5 my-6 italic text-[#6B6580] leading-[1.8] text-[15px]`}>
-                          {block.slice(2)}
+                          {renderInline(trimmed.slice(2))}
                         </blockquote>
                       );
                     }
-                    // Regular paragraph
+                    // ── Regular paragraph ────────────────────────────────────
                     return (
                       <p
                         key={index}
                         className="text-[#4A4A5C] leading-[1.8] text-[16px] lg:text-[17px]"
                         style={index === 0 ? { fontSize: '18px', color: '#2D2A33', fontWeight: 500 } : undefined}
                       >
-                        {block}
+                        {renderInline(block)}
                       </p>
                     );
                   })}
@@ -457,19 +488,13 @@ export default function BlogPostPage() {
                         boxShadow: '0 12px 40px rgba(0,0,0,0.08)',
                       }}
                     >
-                      <div
-                        className={`relative h-44 ${related.coverImage ? '' : `bg-gradient-to-br ${gradientMap[related.category] || 'from-[#C4878A] to-[#B07578]'}`} flex items-center justify-center overflow-hidden`}
-                      >
-                        {related.coverImage ? (
-                          <Image
-                            src={related.coverImage}
-                            alt={isRTL ? related.titleAr : related.titleEn}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <BookOpen className="w-10 h-10 text-white/20" />
-                        )}
+                      <div className="relative h-44 overflow-hidden">
+                        <BlogCoverImage
+                          src={related.coverImage || ''}
+                          alt={isRTL ? related.titleAr : related.titleEn}
+                          gradient={gradientMap[related.category] || 'from-[#C4878A] to-[#B07578]'}
+                          iconSize="sm"
+                        />
                         <div className="absolute top-4 left-4">
                           <Badge
                             variant={badgeVariants[related.category] || 'sage'}

@@ -24,16 +24,20 @@ export const BUSINESS = {
   calUsername: 'mamahala',
   calBaseUrl: 'https://cal.com/mamahala',
 
-  // Academy Cal.com event slugs (per-module payment via Cal.com)
-  academyCalSlugs: {
-    'intentional-parent': 'academy-intentional-parent',
-    'resilient-teens': 'academy-resilient-teens',
-    'stronger-together': 'academy-stronger-together',
-    'inner-compass': 'academy-inner-compass',
-  } as Record<string, string>,
+  // Academy Stripe Payment Links (no API key needed — direct redirect)
+  academyPaymentLinks: {
+    growth: 'https://buy.stripe.com/bJecN424C8gd5g907Tawo08',   // $19 CAD — Level 2
+    mastery: 'https://buy.stripe.com/dRm5kC10y8gd0ZT07Tawo09',  // $29 CAD — Level 3
+    bundle: 'https://buy.stripe.com/4gM3cueRo7c97ohf2Nawo0a',   // $41 CAD — Full Access (15% off)
+  },
+  academyBundlePrice: 41,
+  academyBundleSavings: 15, // percentage
 
-  // Per-module price
+  // Per-module price (legacy — used as fallback only)
   academyModulePrice: 9,
+  // Default per-level prices (CAD). Override per-level via AcademyLevel.priceCAD
+  // Pricing strategy: lead magnet → 1:1 funnel. Low friction entry, real business is Dr. Hala's 1:1 practice.
+  academyLevelPrices: { growth: 19, mastery: 29 } as { growth: number; mastery: number },
 
   // Social
   social: {

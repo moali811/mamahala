@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { Resend } from 'resend';
 import { trackEvent } from '@/lib/analytics';
+import { isAdminEmail } from '@/lib/admin';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -36,6 +37,13 @@ export async function POST(request: NextRequest) {
         student.enrolledPrograms.push(programSlug);
       }
       student.lastActive = new Date().toISOString();
+
+      // Auto-unlock all paid levels for admin emails
+      if (isAdminEmail(normalizedEmail)) {
+        if (!student.unlockedLevels) student.unlockedLevels = {};
+        student.unlockedLevels[programSlug] = [1, 2, 3];
+        if (!student.unlockedModules) student.unlockedModules = {};
+      }
 
       await kv.set(studentKey, student);
 
@@ -84,7 +92,7 @@ export async function POST(request: NextRequest) {
       } catch { /* don't fail enrollment over email */ }
     }
 
-    return NextResponse.json({ success: true, enrolled: true });
+    return NextResponse.json({ success: true, enrolled: true, adminUnlocked: isAdminEmail(normalizedEmail) });
   } catch (err) {
     console.error('Enrollment error:', err);
     return NextResponse.json({ error: 'Enrollment failed' }, { status: 500 });

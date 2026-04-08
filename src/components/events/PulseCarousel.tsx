@@ -24,21 +24,31 @@ export default function PulseCarousel({
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [canScrollPrev, setCanScrollPrev] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(true);
+  const isRTL = locale === 'ar';
 
   const updateScrollState = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 10);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 10);
+    const maxScroll = el.scrollWidth - el.clientWidth;
+
+    if (isRTL) {
+      // RTL: scrollLeft is 0 at start (rightmost), negative toward end (leftward)
+      const absScroll = Math.abs(el.scrollLeft);
+      setCanScrollPrev(absScroll > 10);
+      setCanScrollNext(absScroll < maxScroll - 10);
+    } else {
+      setCanScrollPrev(el.scrollLeft > 10);
+      setCanScrollNext(el.scrollLeft < maxScroll - 10);
+    }
 
     // Determine active index from scroll position
     const cardWidth = el.querySelector('[data-pulse-card]')?.clientWidth || el.clientWidth;
     const gap = 24; // gap-6 = 24px
-    const idx = Math.round(el.scrollLeft / (cardWidth + gap));
+    const idx = Math.round(Math.abs(el.scrollLeft) / (cardWidth + gap));
     setActiveIndex(Math.min(idx, events.length - 1));
-  }, [events.length]);
+  }, [events.length, isRTL]);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -53,13 +63,15 @@ export default function PulseCarousel({
     };
   }, [updateScrollState]);
 
-  const scrollTo = (direction: 'left' | 'right') => {
+  const scrollLogical = (direction: 'prev' | 'next') => {
     const el = scrollRef.current;
     if (!el) return;
     const cardWidth = el.querySelector('[data-pulse-card]')?.clientWidth || el.clientWidth * 0.85;
     const gap = 24;
     const scrollAmount = cardWidth + gap;
-    el.scrollBy({ left: direction === 'right' ? scrollAmount : -scrollAmount, behavior: 'smooth' });
+    // In RTL, physical scroll direction is inverted
+    const forward = isRTL ? -scrollAmount : scrollAmount;
+    el.scrollBy({ left: direction === 'next' ? forward : -forward, behavior: 'smooth' });
   };
 
   const scrollToIndex = (idx: number) => {
@@ -74,22 +86,24 @@ export default function PulseCarousel({
   return (
     <div className="relative">
       {/* Arrow buttons — desktop only */}
-      {canScrollLeft && (
+      {/* Prev: left side in LTR, right side in RTL */}
+      {canScrollPrev && (
         <button
-          onClick={() => scrollTo('left')}
-          className="hidden lg:flex absolute -left-5 top-1/3 z-10 w-10 h-10 rounded-full bg-white/90 border border-[#F3EFE8] shadow-md items-center justify-center text-[#7A3B5E] hover:bg-white hover:shadow-lg transition-all"
+          onClick={() => scrollLogical('prev')}
+          className="hidden lg:flex absolute ltr:-left-5 rtl:-right-5 top-1/3 z-10 w-10 h-10 rounded-full bg-white/90 border border-[#F3EFE8] shadow-md items-center justify-center text-[#7A3B5E] hover:bg-white hover:shadow-lg transition-all"
           aria-label="Previous"
         >
-          <ChevronLeft className="w-5 h-5" />
+          {isRTL ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
         </button>
       )}
-      {canScrollRight && (
+      {/* Next: right side in LTR, left side in RTL */}
+      {canScrollNext && (
         <button
-          onClick={() => scrollTo('right')}
-          className="hidden lg:flex absolute -right-5 top-1/3 z-10 w-10 h-10 rounded-full bg-white/90 border border-[#F3EFE8] shadow-md items-center justify-center text-[#7A3B5E] hover:bg-white hover:shadow-lg transition-all"
+          onClick={() => scrollLogical('next')}
+          className="hidden lg:flex absolute ltr:-right-5 rtl:-left-5 top-1/3 z-10 w-10 h-10 rounded-full bg-white/90 border border-[#F3EFE8] shadow-md items-center justify-center text-[#7A3B5E] hover:bg-white hover:shadow-lg transition-all"
           aria-label="Next"
         >
-          <ChevronRight className="w-5 h-5" />
+          {isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
         </button>
       )}
 

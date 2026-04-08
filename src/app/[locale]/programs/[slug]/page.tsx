@@ -7,7 +7,7 @@ import {
   BookOpen, Clock, CheckCircle, Lock, ArrowRight, ArrowLeft,
   GraduationCap, Award, Layers, Users, Sparkles, ChevronDown,
   ChevronUp, Loader2, Heart, Sprout, HeartHandshake,
-  Compass, TreePine, Play, Star, Shield,
+  Compass, TreePine, Play, Star, Shield, Download,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import type { AcademyProgram, AcademyLevel } from '@/types';
@@ -19,7 +19,33 @@ import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
 import MyLearningButton from '@/components/academy/layout/MyLearningButton';
-import CalEmbedModal from '@/components/events/CalEmbedModal';
+// Stripe Checkout replaces Cal.com for level payments
+import SafetyNotice from '@/components/academy/layout/SafetyNotice';
+import LevelAssessment, { type LevelDimension } from '@/components/academy/layout/LevelAssessment';
+
+// Per-program, per-level assessment dimensions (fallback — override via program data later)
+const LEVEL_DIMENSIONS: Record<string, Record<number, LevelDimension[]>> = {
+  'intentional-parent': {
+    1: [
+      { labelEn: 'I can name what my child is feeling in the moment', labelAr: 'أَسْتَطيعُ تَسْمِيَةَ ما يَشْعُرُ بِهِ طِفْلي في اللَّحْظَة' },
+      { labelEn: 'I pause before reacting to big emotions', labelAr: 'أَتَوَقَّفُ قَبْلَ الرَّدِّ على المَشاعِرِ الكَبيرَة' },
+      { labelEn: 'I listen to understand, not to respond', labelAr: 'أَسْتَمِعُ لِأَفْهَم، لا لِأَرُدّ' },
+      { labelEn: 'I set limits while validating feelings', labelAr: 'أَضَعُ حُدوداً مع تَصْديقِ المَشاعِر' },
+    ],
+    2: [
+      { labelEn: 'I regulate my own reactions before guiding behavior', labelAr: 'أُنَظِّمُ رَدَّ فِعْلي قَبْلَ تَوْجيهِ السُّلوك' },
+      { labelEn: 'I repair after conflict with warmth, not guilt', labelAr: 'أُصْلِحُ بَعْدَ الخِلافِ بِالدِّفْءِ لا بِالذَّنْب' },
+      { labelEn: 'I build rituals of connection into daily life', labelAr: 'أَبْني طُقوسَ التَّواصُلِ في حَياتي اليَوْميّة' },
+      { labelEn: 'I respond to sibling conflict without taking sides', labelAr: 'أَسْتَجيبُ لِخِلافِ الإخْوَةِ دونَ الاِنْحِيازِ لِطَرَف' },
+    ],
+    3: [
+      { labelEn: 'I parent from values, not reactions', labelAr: 'أُرَبّي من القِيَمِ لا من رَدِّ الفِعْل' },
+      { labelEn: 'I honor my own needs while caring for my family', labelAr: 'أَحْتَرِمُ احْتِياجاتي وأَنا أَرْعى عائِلَتي' },
+      { labelEn: 'I weave culture and identity into daily parenting', labelAr: 'أَنْسُجُ الثَّقافَةَ والهُوِيَّةَ في تَرْبِيَتي اليَوْميّة' },
+      { labelEn: 'I model the emotional skills I want my child to have', labelAr: 'أَكونُ قُدْوَةً لِلمَهاراتِ العاطِفيّةِ الّتي أُريدُها لِطِفْلي' },
+    ],
+  },
+};
 import { BUSINESS } from '@/config/business';
 import { t, tArray } from '@/lib/academy-helpers';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
@@ -60,6 +86,8 @@ export default function ProgramOverviewPage() {
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   const [program, setProgram] = useState<AcademyProgram | null>(null);
+  const [certId, setCertId] = useState<string | null>(null);
+  const [programComplete, setProgramComplete] = useState(false);
   const [loading, setLoading] = useState(true);
   const [expandedLevel, setExpandedLevel] = useState<number>(1);
   const [enrollEmail, setEnrollEmail] = useState('');
@@ -67,16 +95,27 @@ export default function ProgramOverviewPage() {
   const [enrolling, setEnrolling] = useState(false);
   const [enrolled, setEnrolled] = useState(false);
   const [unlockedModules, setUnlockedModules] = useState<Set<string>>(new Set());
-  const [showCalModal, setShowCalModal] = useState(false);
-  const [unlockingModuleSlug, setUnlockingModuleSlug] = useState<string | null>(null);
+  const [unlockedLevels, setUnlockedLevels] = useState<Set<number>>(new Set());
+  const [completedModules, setCompletedModules] = useState<Set<string>>(new Set());
+  const [unlockingLevel, setUnlockingLevel] = useState<number | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => {
     loadProgram(slug).then(p => { setProgram(p); setLoading(false); });
   }, [slug]);
 
-  // Load per-module unlock state from localStorage
+  // Load unlock state from localStorage (both per-level and legacy per-module)
   useEffect(() => {
     if (typeof window !== 'undefined' && program) {
+      const levels = new Set<number>();
+      program.levels.forEach(lvl => {
+        if (localStorage.getItem(`academy:paid:${slug}:level-${lvl.level}`) === 'true') {
+          levels.add(lvl.level);
+        }
+      });
+      setUnlockedLevels(levels);
+
+      // Legacy per-module unlocks (kept for back-compat)
       const unlocked = new Set<string>();
       const allMods = program.levels.flatMap(l => l.modules);
       allMods.forEach(mod => {
@@ -84,81 +123,105 @@ export default function ProgramOverviewPage() {
           unlocked.add(mod.slug);
         }
       });
+      // Also mark all modules in an unlocked level as unlocked
+      program.levels.forEach(lvl => {
+        if (levels.has(lvl.level)) {
+          lvl.modules.forEach(m => unlocked.add(m.slug));
+        }
+      });
       setUnlockedModules(unlocked);
     }
   }, [slug, program]);
 
-  // Auto-open Cal.com if redirected with ?unlock=moduleSlug
+  // Handle return from Stripe Payment Link or legacy Checkout Session
   useEffect(() => {
-    if (typeof window !== 'undefined' && enrolled) {
-      const params = new URLSearchParams(window.location.search);
-      const unlockSlug = params.get('unlock');
-      if (unlockSlug) {
-        setUnlockingModuleSlug(unlockSlug);
-        setShowCalModal(true);
-        window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
-      }
-    }
-  }, [enrolled, slug, locale]);
+    if (typeof window === 'undefined' || !program) return;
+    const params = new URLSearchParams(window.location.search);
 
-  const handleUnlockModule = (moduleSlug: string) => {
-    setUnlockingModuleSlug(moduleSlug);
-    setShowCalModal(true);
-  };
-
-  const [verifyingPayment, setVerifyingPayment] = useState(false);
-
-  const handleCalModalClose = () => {
-    setShowCalModal(false);
-    if (!unlockingModuleSlug) return;
-
-    const moduleToUnlock = unlockingModuleSlug;
-    setVerifyingPayment(true);
-
-    // Poll server to check if webhook has confirmed the payment
-    const email = localStorage.getItem('academy_email');
-    if (!email) { setVerifyingPayment(false); setUnlockingModuleSlug(null); return; }
-
-    let attempts = 0;
-    const maxAttempts = 12; // 12 attempts × 5 seconds = 60 seconds max wait
-
-    const checkPayment = async () => {
-      attempts++;
-      try {
-        const res = await fetch(`/api/academy/access?email=${encodeURIComponent(email)}&programSlug=${slug}&moduleSlug=${moduleToUnlock}`);
-        const data = await res.json();
-
-        if (data.hasPaidAccess || (data.unlockedModules && data.unlockedModules.includes(moduleToUnlock))) {
-          // Payment confirmed by webhook!
-          localStorage.setItem(`academy:paid:${slug}:${moduleToUnlock}`, 'true');
-          setUnlockedModules(prev => new Set([...prev, moduleToUnlock]));
-          setVerifyingPayment(false);
-          setUnlockingModuleSlug(null);
-          return;
-        }
-      } catch { /* ignore */ }
-
-      if (attempts < maxAttempts) {
-        setTimeout(checkPayment, 5000); // Check every 5 seconds
+    // Stripe Payment Link return: ?paid=level-N or ?paid=bundle
+    const paidParam = params.get('paid');
+    if (paidParam) {
+      if (paidParam === 'bundle') {
+        // Unlock both Growth (2) and Mastery (3)
+        unlockLevelLocally(2);
+        unlockLevelLocally(3);
       } else {
-        // Timeout — fall back to manual confirmation
-        setVerifyingPayment(false);
-        const confirmed = window.confirm(
-          isRTL
-            ? 'لم نتمكن من التحقق تلقائياً. هل أتممت الدفع بنجاح؟'
-            : 'We couldn\'t verify automatically. Did you complete the payment?'
-        );
-        if (confirmed) {
-          localStorage.setItem(`academy:paid:${slug}:${moduleToUnlock}`, 'true');
-          setUnlockedModules(prev => new Set([...prev, moduleToUnlock]));
+        const levelMatch = paidParam.match(/^level-(\d+)$/);
+        if (levelMatch) {
+          unlockLevelLocally(Number(levelMatch[1]));
         }
-        setUnlockingModuleSlug(null);
       }
-    };
+      window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
+    }
 
-    // Start checking after 3 seconds (give webhook time to process)
-    setTimeout(checkPayment, 3000);
+    // Legacy Stripe Checkout Session return
+    const sessionId = params.get('session_id');
+    const paymentStatus = params.get('payment');
+    const levelParam = params.get('level');
+    if (paymentStatus === 'success' && sessionId) {
+      fetch(`/api/academy/checkout?session_id=${sessionId}`)
+        .then(r => r.json())
+        .then(data => {
+          if (data.paid && data.levelNumber) unlockLevelLocally(data.levelNumber);
+        })
+        .catch(() => {
+          if (levelParam) unlockLevelLocally(Number(levelParam));
+        })
+        .finally(() => {
+          window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
+        });
+    } else if (paymentStatus === 'cancelled') {
+      window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
+    }
+
+    // Legacy: ?unlock=level-N redirects to payment
+    const unlockParam = params.get('unlock');
+    if (unlockParam && enrolled) {
+      const levelMatch = unlockParam.match(/^level-(\d+)$/);
+      if (levelMatch) {
+        handleUnlockLevel(Number(levelMatch[1]));
+      }
+      window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
+    }
+  }, [program, enrolled, slug, locale]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleUnlockLevel = (levelNum: number) => {
+    if (checkoutLoading) return;
+    setCheckoutLoading(true);
+    setUnlockingLevel(levelNum);
+
+    // Direct redirect to Stripe Payment Link — no API key needed
+    const tier = levelNum === 2 ? 'growth' : 'mastery';
+    const paymentUrl = BUSINESS.academyPaymentLinks[tier as keyof typeof BUSINESS.academyPaymentLinks];
+    if (paymentUrl) {
+      // Append prefilled email if available
+      const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : '';
+      const url = new URL(paymentUrl);
+      if (email) url.searchParams.set('prefilled_email', email);
+      // Add client_reference_id for webhook tracking
+      url.searchParams.set('client_reference_id', `${slug}:level-${levelNum}:${email}`);
+      window.location.href = url.toString();
+    } else {
+      setCheckoutLoading(false);
+      setUnlockingLevel(null);
+    }
   };
+
+  const unlockLevelLocally = (levelNum: number) => {
+    if (!program) return;
+    localStorage.setItem(`academy:paid:${slug}:level-${levelNum}`, 'true');
+    setUnlockedLevels(prev => new Set([...prev, levelNum]));
+    const lvl = program.levels.find(l => l.level === levelNum);
+    if (lvl) {
+      setUnlockedModules(prev => {
+        const next = new Set(prev);
+        lvl.modules.forEach(m => next.add(m.slug));
+        return next;
+      });
+    }
+  };
+
+  // Stripe webhook handles KV persistence for cross-device sync.
 
   const handleEnroll = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
@@ -170,10 +233,16 @@ export default function ProgramOverviewPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: enrollEmail.trim(), name: enrollName.trim(), programSlug: slug }),
       });
+      const data = await res.json();
       if (res.ok) {
         setEnrolled(true);
         localStorage.setItem(`academy_email`, enrollEmail.trim());
         localStorage.setItem(`academy_enrolled_${slug}`, 'true');
+        // Admin auto-unlock: set all paid levels in localStorage
+        if (data.adminUnlocked) {
+          unlockLevelLocally(2);
+          unlockLevelLocally(3);
+        }
         // Auto-scroll to curriculum after a beat
         setTimeout(() => {
           document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -189,6 +258,41 @@ export default function ProgramOverviewPage() {
       if (isEnrolled) setEnrolled(true);
     }
   }, [slug]);
+
+  // Track completed modules (for progress rings + checkmarks)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !program) return;
+    const completed = new Set<string>();
+    for (const lvl of program.levels) {
+      for (const mod of lvl.modules) {
+        if (localStorage.getItem(`academy:quiz-passed:${slug}:${mod.slug}`) === 'true') {
+          completed.add(mod.slug);
+        }
+      }
+    }
+    setCompletedModules(completed);
+  }, [slug, program]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+
+      // Check program completion + fetch/create certificate
+      if (program) {
+        const allModules = program.levels.flatMap(l => l.modules);
+        const allPassed = allModules.every(m => localStorage.getItem(`academy:quiz-passed:${slug}:${m.slug}`) === 'true');
+        setProgramComplete(allPassed);
+        if (allPassed) {
+          const email = localStorage.getItem('academy_email');
+          if (email) {
+            fetch(`/api/academy/certificate?email=${encodeURIComponent(email)}&program=${slug}`)
+              .then(r => r.json())
+              .then(data => { if (data.certificate?.certId) setCertId(data.certificate.certId); })
+              .catch(() => {});
+          }
+        }
+      }
+    }
+  }, [slug, program]);
 
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2]"><Loader2 className="w-8 h-8 animate-spin text-[#7A3B5E]" /></div>;
@@ -244,7 +348,25 @@ export default function ProgramOverviewPage() {
             </div>
 
             <h1 className="text-4xl sm:text-5xl font-bold text-[#2D2A33] leading-[1.1]" style={{ fontFamily: 'var(--font-heading)' }}>{title}</h1>
-            <p className="mt-5 text-lg text-[#4A4A5C] max-w-2xl leading-relaxed">{longDesc}</p>
+            {/* Apple-style staggered sentence reveal */}
+            <div className="mt-6 max-w-2xl space-y-1">
+              {longDesc.split(/(?<=\.)\s+/).map((sentence, i) => {
+                const words = sentence.split(' ');
+                const hookEnd = Math.min(words.length, isRTL ? 3 : 4);
+                const hook = words.slice(0, hookEnd).join(' ');
+                const rest = words.slice(hookEnd).join(' ');
+                return (
+                  <p
+                    key={i}
+                    className="text-xl sm:text-2xl font-light text-[#4A4A5C] leading-[1.65] tracking-[-0.01em] animate-[fadeSlideUp_0.8s_ease_both]"
+                    style={{ animationDelay: `${0.6 + i * 0.18}s` }}
+                  >
+                    <span className="font-semibold bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(135deg, ${program.color}, #2D2A33)` }}>{hook}</span>
+                    {rest && <> {rest}</>}
+                  </p>
+                );
+              })}
+            </div>
 
             {/* Methodology badges */}
             {program.researchFoundation?.theoreticalBases && (
@@ -262,7 +384,11 @@ export default function ProgramOverviewPage() {
 
             <div className="flex flex-wrap items-center gap-4 mt-6">
               <Badge variant={program.isFree ? 'success' : 'sand'} size="md">
-                {program.isFree ? (isRTL ? 'مجاني' : 'Free') : `CAD $${program.priceCAD}`}
+                {program.isFree
+                  ? (isRTL ? 'مجاني' : 'Free')
+                  : (isRTL
+                      ? `ابْدَئي مَجّاناً · مِنْ $${BUSINESS.academyLevelPrices.growth}/مُسْتَوى`
+                      : `Start free · from $${BUSINESS.academyLevelPrices.growth}/level`)}
               </Badge>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {program.totalModules} {isRTL ? 'وحدة' : 'modules'}</span>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Clock className="w-4 h-4" /> {program.totalDurationHours}h</span>
@@ -370,7 +496,76 @@ export default function ProgramOverviewPage() {
             <h2 className="text-3xl sm:text-4xl text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
               {isRTL ? 'من الأساس إلى الإتقان' : 'From Foundation to Mastery'}
             </h2>
+            {enrolled && completedModules.size > 0 && (
+              <div className="max-w-xl mx-auto mt-6">
+                <div className="flex items-center justify-between text-xs text-[#8E8E9F] mb-2">
+                  <span className="font-semibold uppercase tracking-wider">
+                    {isRTL ? 'تَقَدُّمُكِ' : 'Your progress'}
+                  </span>
+                  <span className="font-bold" style={{ color: program.color }}>
+                    {completedModules.size} / {program.totalModules} · {Math.round((completedModules.size / program.totalModules) * 100)}%
+                  </span>
+                </div>
+                <div className="h-2 bg-[#F3EFE8] rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(completedModules.size / program.totalModules) * 100}%` }}
+                    transition={{ duration: 0.8, ease }}
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: program.color }}
+                  />
+                </div>
+              </div>
+            )}
           </ScrollReveal>
+
+          {/* Bundle offer — show when enrolled and at least one paid level is still locked */}
+          {enrolled && !program.isFree && !(unlockedLevels.has(2) && unlockedLevels.has(3)) && (
+            <ScrollReveal className="max-w-3xl mx-auto mb-8">
+              <div
+                className="relative rounded-2xl border-2 overflow-hidden"
+                style={{ borderColor: `${program.color}40`, background: `linear-gradient(135deg, ${program.color}06, ${program.color}03)` }}
+              >
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-5 sm:p-6">
+                  <div className="flex-1 text-center sm:text-start">
+                    <div className="inline-flex items-center gap-2 mb-2">
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white" style={{ backgroundColor: '#3B8A6E' }}>
+                        {isRTL ? `وفّر ${BUSINESS.academyBundleSavings}%` : `Save ${BUSINESS.academyBundleSavings}%`}
+                      </span>
+                    </div>
+                    <h3 className="text-lg font-bold text-[#2D2A33] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                      {isRTL ? 'احصلي على الوصول الكامل' : 'Get Full Access'}
+                    </h3>
+                    <p className="text-sm text-[#6B6580]">
+                      {isRTL
+                        ? 'افتحي مستويَي النّموّ والإتقان معاً بسعرٍ مخفَّض — وصولٌ مدى الحياة.'
+                        : 'Unlock both Growth and Mastery levels together at a discount — lifetime access.'}
+                    </p>
+                  </div>
+                  <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-sm text-[#8E8E9F] line-through">${BUSINESS.academyLevelPrices.growth + BUSINESS.academyLevelPrices.mastery}</span>
+                      <span className="text-2xl font-bold" style={{ color: program.color }}>${BUSINESS.academyBundlePrice}</span>
+                      <span className="text-xs text-[#8E8E9F]">CAD</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : '';
+                        const url = new URL(BUSINESS.academyPaymentLinks.bundle);
+                        if (email) url.searchParams.set('prefilled_email', email);
+                        url.searchParams.set('client_reference_id', `${slug}:bundle:${email}`);
+                        window.location.href = url.toString();
+                      }}
+                      className="px-6 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg"
+                      style={{ backgroundColor: program.color }}
+                    >
+                      {isRTL ? 'احصلي على الحزمة' : 'Get the Bundle'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </ScrollReveal>
+          )}
 
           <div className="max-w-3xl mx-auto relative">
             {/* Animated vertical timeline */}
@@ -401,14 +596,37 @@ export default function ProgramOverviewPage() {
                             </h3>
                             {level.isFree ? (
                               <Badge variant="success" size="sm">{isRTL ? 'مجاني' : 'Free'}</Badge>
+                            ) : unlockedLevels.has(level.level) ? (
+                              <Badge variant="success" size="sm">{isRTL ? 'مفتوح' : 'Unlocked'}</Badge>
                             ) : (
-                              <Badge variant="neutral" size="sm"><Lock className="w-3 h-3 mr-1" /> {isRTL ? 'مدفوع' : 'Premium'}</Badge>
+                              <Badge variant="neutral" size="sm">
+                                <Lock className="w-3 h-3 mr-1" /> CAD ${level.priceCAD ?? (level.level === 2 ? BUSINESS.academyLevelPrices.growth : BUSINESS.academyLevelPrices.mastery)}
+                              </Badge>
                             )}
                           </div>
                           {levelSubtitle && <p className="text-sm text-[#8E8E9F] mt-0.5">{levelSubtitle}</p>}
-                          <p className="text-xs text-[#B0B0C0] mt-1">{moduleCount} {isRTL ? 'وحدات' : 'modules'}</p>
+                          {(() => {
+                            const done = level.modules.filter(m => completedModules.has(m.slug)).length;
+                            return (
+                              <p className="text-xs text-[#B0B0C0] mt-1">
+                                {done > 0 ? (
+                                  <>
+                                    <span className="font-semibold" style={{ color: program.color }}>{done}/{moduleCount}</span>
+                                    {' · '}
+                                    {isRTL ? 'مُكْتَمِل' : 'complete'}
+                                  </>
+                                ) : (
+                                  <>{moduleCount} {isRTL ? 'وحدات' : 'modules'}</>
+                                )}
+                              </p>
+                            );
+                          })()}
                         </div>
-                        <ProgressRing value={0} size={36} strokeWidth={3} color={program.color} showLabel={false} />
+                        {(() => {
+                          const done = level.modules.filter(m => completedModules.has(m.slug)).length;
+                          const pct = moduleCount > 0 ? Math.round((done / moduleCount) * 100) : 0;
+                          return <ProgressRing value={pct} size={36} strokeWidth={3} color={program.color} showLabel={false} />;
+                        })()}
                         {isExpanded ? <ChevronUp className="w-5 h-5 text-[#8E8E9F]" /> : <ChevronDown className="w-5 h-5 text-[#8E8E9F]" />}
                       </button>
 
@@ -422,24 +640,72 @@ export default function ProgramOverviewPage() {
                             className="overflow-hidden"
                           >
                             <div className="px-6 pb-5 pt-2 border-t border-[#F3EFE8] space-y-1">
-                              {level.modules.map((mod) => {
+                              {/* Per-level pre/post self-assessment — only for enrolled users with access */}
+                              {enrolled && (level.isFree || program.isFree || unlockedLevels.has(level.level)) && LEVEL_DIMENSIONS[slug]?.[level.level] && (
+                                <LevelAssessment
+                                  programSlug={slug}
+                                  levelNumber={level.level}
+                                  dimensions={LEVEL_DIMENSIONS[slug][level.level]}
+                                  isRTL={isRTL}
+                                  color={program.color}
+                                  levelComplete={level.modules.every(m => typeof window !== 'undefined' && localStorage.getItem(`academy:quiz-passed:${slug}:${m.slug}`) === 'true')}
+                                />
+                              )}
+                              {/* Level unlock CTA — shown when enrolled, level is paid, and not yet unlocked */}
+                              {enrolled && !level.isFree && !program.isFree && !unlockedLevels.has(level.level) && (
+                                <div className="mt-3 mb-4 rounded-xl border p-4 flex items-center gap-3" style={{ borderColor: `${program.color}30`, background: `linear-gradient(135deg, ${program.color}08, ${program.color}02)` }}>
+                                  <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${program.color}15`, color: program.color }}>
+                                    <Lock className="w-4 h-4" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-semibold text-[#2D2A33]">
+                                      {isRTL ? `اِفْتَحي ${level.modules.length} وِحْدات` : `Unlock all ${level.modules.length} modules`}
+                                    </p>
+                                    <p className="text-[11px] text-[#8E8E9F]">
+                                      {isRTL ? 'دَفْعةٌ واحِدَةٌ — وُصولٌ دائِم' : 'One-time payment · lifetime access'}
+                                    </p>
+                                  </div>
+                                  <button
+                                    onClick={() => handleUnlockLevel(level.level)}
+                                    className="px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all hover:shadow-md flex-shrink-0"
+                                    style={{ backgroundColor: program.color }}
+                                  >
+                                    CAD ${level.priceCAD ?? (level.level === 2 ? BUSINESS.academyLevelPrices.growth : BUSINESS.academyLevelPrices.mastery)}
+                                  </button>
+                                </div>
+                              )}
+                              {level.modules.map((mod, modIdxInLevel) => {
                                 moduleNumber++;
                                 const modTitle = t(mod.titleEn, mod.titleAr, isRTL);
                                 const canAccess = enrolled && (level.isFree || program.isFree || unlockedModules.has(mod.slug));
                                 const hasInteractive = !!(mod.scenarios?.length || mod.dragMatchExercises?.length || mod.likertReflections?.length);
+                                const isCompleted = completedModules.has(mod.slug);
+                                // "Next" = first non-completed accessible module in this level
+                                const isNext = canAccess && !isCompleted && level.modules.slice(0, modIdxInLevel).every(m => completedModules.has(m.slug));
 
                                 return (
                                   <div key={mod.slug}>
                                     {canAccess ? (
                                       <a
                                         href={`/${locale}/programs/${slug}/${mod.slug}`}
-                                        className="flex items-center gap-3 py-3 px-3 rounded-lg hover:bg-[#FAF7F2] transition-colors group"
+                                        className={`flex items-center gap-3 py-3 px-3 rounded-lg transition-colors group ${isNext ? 'bg-[color:var(--c)]/5 border border-[color:var(--c)]/20' : 'hover:bg-[#FAF7F2]'}`}
+                                        style={isNext ? { '--c': program.color } as React.CSSProperties : undefined}
                                       >
-                                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ backgroundColor: `${program.color}12`, color: program.color }}>
-                                          {moduleNumber}
+                                        <div
+                                          className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 relative"
+                                          style={{ backgroundColor: isCompleted ? program.color : `${program.color}12`, color: isCompleted ? 'white' : program.color }}
+                                        >
+                                          {isCompleted ? <CheckCircle className="w-4 h-4" /> : moduleNumber}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                          <span className="text-sm text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors font-medium block truncate">{modTitle}</span>
+                                          <span className={`text-sm transition-colors font-medium block truncate ${isCompleted ? 'text-[#8E8E9F] line-through' : 'text-[#2D2A33] group-hover:text-[#7A3B5E]'}`}>
+                                            {modTitle}
+                                          </span>
+                                          {isNext && (
+                                            <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: program.color }}>
+                                              {isRTL ? 'التّالي →' : 'Continue →'}
+                                            </span>
+                                          )}
                                           {/* Skill tags */}
                                           {mod.skillTags && (
                                             <div className="flex gap-1 mt-0.5">
@@ -452,6 +718,15 @@ export default function ProgramOverviewPage() {
                                         <div className="flex items-center gap-2 flex-shrink-0">
                                           {hasInteractive && <Sparkles className="w-3 h-3 text-[#C8A97D]" />}
                                           <span className="text-xs text-[#8E8E9F]">{mod.durationMinutes} min</span>
+                                          <a
+                                            href={`/api/academy/worksheet/${slug}/${mod.slug}?locale=${locale}`}
+                                            download
+                                            onClick={(e) => e.stopPropagation()}
+                                            title={locale === 'ar' ? 'تحميل ورقة العمل' : 'Download worksheet'}
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-[#8E8E9F] hover:text-[#7A3B5E]"
+                                          >
+                                            <Download className="w-3.5 h-3.5" />
+                                          </a>
                                           <Play className="w-3.5 h-3.5 text-[#C8A97D] opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </div>
                                       </a>
@@ -462,31 +737,7 @@ export default function ProgramOverviewPage() {
                                         </div>
                                         <span className="text-sm text-[#4A4A5C] flex-1">{modTitle}</span>
                                         <span className="text-xs text-[#8E8E9F]">{mod.durationMinutes} min</span>
-                                        {/* Show unlock button for the NEXT module in sequence, lock icon for others */}
-                                        {enrolled && !level.isFree && !program.isFree ? (
-                                          (() => {
-                                            // Check if this is the next unlockable module (all previous are completed or unlocked)
-                                            const allMods = program.levels.flatMap(l => l.modules);
-                                            const currentIdx = allMods.indexOf(mod);
-                                            const prevMod = currentIdx > 0 ? allMods[currentIdx - 1] : null;
-                                            const prevCompleted = !prevMod || localStorage.getItem(`academy:quiz-passed:${slug}:${prevMod.slug}`) === 'true';
-                                            const isNextUnlockable = prevCompleted && !unlockedModules.has(mod.slug);
-
-                                            return isNextUnlockable ? (
-                                              <button
-                                                onClick={() => handleUnlockModule(mod.slug)}
-                                                className="px-3 py-1.5 rounded-lg text-[10px] font-semibold text-white transition-all hover:shadow-sm flex items-center gap-1"
-                                                style={{ backgroundColor: program.color }}
-                                              >
-                                                ${BUSINESS.academyModulePrice}
-                                              </button>
-                                            ) : (
-                                              <Lock className="w-3.5 h-3.5 text-[#B0B0C0]" />
-                                            );
-                                          })()
-                                        ) : (
-                                          <Lock className="w-3.5 h-3.5 text-[#B0B0C0]" />
-                                        )}
+                                        <Lock className="w-3.5 h-3.5 text-[#B0B0C0]" />
                                       </div>
                                     )}
                                   </div>
@@ -527,26 +778,103 @@ export default function ProgramOverviewPage() {
               </div>
 
               <h2 className="text-3xl font-bold text-[#2D2A33] mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
-                {enrolled ? (isRTL ? 'أنت مسجل!' : "You're Enrolled!") : (isRTL ? 'ابدأ رحلتك اليوم' : 'Start Your Journey Today')}
+                {!enrolled
+                  ? (isRTL ? 'ابدأ رحلتك اليوم' : 'Start Your Journey Today')
+                  : completedModules.size > 0
+                    ? (isRTL ? 'أكملي رحلتكِ' : 'Keep Going!')
+                    : (isRTL ? 'أنت مسجل!' : "You're Enrolled!")}
               </h2>
 
               {enrolled ? (
                 <div>
-                  <div className="inline-flex items-center gap-2 text-[#3B8A6E] mb-4">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">{isRTL ? 'تم التسجيل بنجاح' : 'Successfully enrolled'}</span>
-                  </div>
-                  <p className="text-[#4A4A5C] mb-6">{isRTL ? 'أنت جاهز — ابدأ بالوحدة الأولى الآن.' : "You're all set — start with the first module now."}</p>
-                  {program.levels[0]?.modules[0] && (
-                    <a
-                      href={`/${locale}/programs/${slug}/${program.levels[0].modules[0].slug}`}
-                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg"
-                      style={{ backgroundColor: program.color }}
-                    >
-                      <Play className="w-4 h-4" />
-                      {isRTL ? 'ابدأ الوحدة الأولى' : 'Start Module 1'}
-                    </a>
-                  )}
+                  {(() => {
+                    const allModules = program.levels.flatMap(l => l.modules);
+                    const completedCount = completedModules.size;
+                    const totalCount = allModules.length;
+                    const nextModule = allModules.find(m => !completedModules.has(m.slug));
+                    const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+                    if (programComplete && certId) {
+                      return (
+                        <div className="mb-6">
+                          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C8A97D]/15 text-[#C8A97D] text-xs font-semibold uppercase tracking-wider mb-4">
+                            <Award className="w-3.5 h-3.5" />
+                            {isRTL ? 'أَكْمَلْتِ البَرْنامَج' : 'Program Complete'}
+                          </div>
+                          <p className="text-[#4A4A5C] mb-6">
+                            {isRTL
+                              ? 'شَهادَتُكِ جاهِزَة — مع رِسالَةٍ شَخْصيَّةٍ من الدّكتورة هالة، وخَريطَةِ نُمُوِّكِ، وكَلِماتِكِ أَنْتِ.'
+                              : 'Your certificate is ready — with a personal note from Dr. Hala, your growth map, and your own words.'}
+                          </p>
+                          <a
+                            href={`/${locale}/programs/certificate/${certId}`}
+                            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg"
+                            style={{ backgroundColor: '#C8A97D' }}
+                          >
+                            <Award className="w-4 h-4" />
+                            {isRTL ? 'اِعْرِضي شَهادَتي' : 'View My Certificate'}
+                          </a>
+                        </div>
+                      );
+                    }
+
+                    if (completedCount > 0 && nextModule) {
+                      // In progress — show encouraging message + continue button
+                      return (
+                        <>
+                          <div className="inline-flex items-center gap-2 text-[#C8A97D] mb-3">
+                            <Star className="w-5 h-5" />
+                            <span className="font-semibold text-sm">
+                              {isRTL ? `${completedCount} من ${totalCount} مكتمل — أحسنتِ!` : `${completedCount} of ${totalCount} complete — well done!`}
+                            </span>
+                          </div>
+                          <p className="text-[#4A4A5C] mb-6">
+                            {isRTL
+                              ? 'كلُّ خطوةٍ تقرّبكِ من النّسخةِ الأفضل. استمرّي — أنتِ على الطّريقِ الصّحيح.'
+                              : "Every step brings you closer to the version of yourself you're working toward. Keep going — you're on the right path."}
+                          </p>
+                          <div className="flex flex-wrap gap-3">
+                            <a
+                              href={`/${locale}/programs/${slug}/${nextModule.slug}`}
+                              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg"
+                              style={{ backgroundColor: program.color }}
+                            >
+                              <Play className="w-4 h-4" />
+                              {isRTL ? 'أكملي الرّحلة' : 'Continue Your Journey'}
+                            </a>
+                            <button
+                              onClick={() => document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border border-[#F3EFE8] text-sm font-semibold text-[#4A4A5C] hover:border-[#C8A97D]/30 transition-all"
+                            >
+                              <Layers className="w-4 h-4" />
+                              {isRTL ? 'خريطة الرّحلة' : 'View Journey Map'}
+                            </button>
+                          </div>
+                        </>
+                      );
+                    }
+
+                    // Fresh enrollment — no progress yet
+                    return (
+                      <>
+                        <div className="inline-flex items-center gap-2 text-[#3B8A6E] mb-4">
+                          <CheckCircle className="w-5 h-5" />
+                          <span className="font-medium">{isRTL ? 'تم التسجيل بنجاح' : 'Successfully enrolled'}</span>
+                        </div>
+                        <p className="text-[#4A4A5C] mb-6">{isRTL ? 'أنت جاهز — ابدأ بالوحدة الأولى الآن.' : "You're all set — start with the first module now."}</p>
+                        {program.levels[0]?.modules[0] && (
+                          <a
+                            href={`/${locale}/programs/${slug}/${program.levels[0].modules[0].slug}`}
+                            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg"
+                            style={{ backgroundColor: program.color }}
+                          >
+                            <Play className="w-4 h-4" />
+                            {isRTL ? 'ابدأ الوحدة الأولى' : 'Start Module 1'}
+                          </a>
+                        )}
+                      </>
+                    );
+                  })()}
                   <p className="text-xs text-[#8E8E9F] mt-4">
                     <a href={`/${locale}/dashboard`} className="text-[#7A3B5E] hover:underline">
                       {isRTL ? 'لوحة تحكّمك' : 'Your Dashboard'}
@@ -556,6 +884,9 @@ export default function ProgramOverviewPage() {
                 </div>
               ) : (
                 <>
+                  <div className="mb-6 text-start">
+                    <SafetyNotice isRTL={isRTL} color={program.color} />
+                  </div>
                   <p className="text-[#4A4A5C] mb-8">
                     {isRTL
                       ? 'أدخل بريدك الإلكتروني للتسجيل والبدء مع المستوى الأول مجاناً.'
@@ -572,7 +903,9 @@ export default function ProgramOverviewPage() {
                   </form>
                   {!program.isFree && (
                     <p className="text-xs text-[#8E8E9F] text-center mt-3">
-                      {isRTL ? `المستوى الأول مجاني · الوحدات المتقدمة $${BUSINESS.academyModulePrice} لكل وحدة` : `Level 1 is free · Advanced modules $${BUSINESS.academyModulePrice} each`}
+                      {isRTL
+                        ? `المُسْتَوى الأَوَّل مَجّاني · النّمو $${BUSINESS.academyLevelPrices.growth} · الإتْقان $${BUSINESS.academyLevelPrices.mastery}`
+                        : `Level 1 is free · Growth $${BUSINESS.academyLevelPrices.growth} · Mastery $${BUSINESS.academyLevelPrices.mastery}`}
                     </p>
                   )}
                 </>
@@ -589,34 +922,19 @@ export default function ProgramOverviewPage() {
         headingAr={<>مستعد <span className="text-[#7A3B5E] italic">للتحول؟</span></>}
       />
 
-      {/* Payment verification overlay */}
-      {verifyingPayment && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-2xl p-8 text-center max-w-sm mx-4 shadow-xl">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: program?.color || '#7A3B5E' }} />
-            <h3 className="text-lg font-bold text-[#2D2A33] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-              {isRTL ? 'جاري التحقق من الدفع...' : 'Verifying Payment...'}
-            </h3>
-            <p className="text-sm text-[#6B6580]">
-              {isRTL ? 'يرجى الانتظار بينما نؤكد عملية الدفع.' : 'Please wait while we confirm your payment.'}
-            </p>
-          </div>
-        </div>
-      )}
 
       <MyLearningButton locale={locale} color={program?.color || '#7A3B5E'} />
 
-      {/* Cal.com Payment Modal */}
-      {BUSINESS.academyCalSlugs[slug] && (
-        <CalEmbedModal
-          calSlug={BUSINESS.academyCalSlugs[slug]}
-          isOpen={showCalModal}
-          onClose={handleCalModalClose}
-          eventTitle={isRTL ? `فتح الوحدة التالية — ${program.titleAr}` : `Unlock Next Module — ${program.titleEn}`}
-          locale={locale}
-          prefillEmail={typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : ''}
-          prefillNotes={`Program: ${program.titleEn} | Module: ${unlockingModuleSlug || ''}`}
-        />
+      {/* Stripe Checkout loading overlay */}
+      {checkoutLoading && (
+        <div className="fixed inset-0 z-50 bg-[#2D2A33]/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-8 flex flex-col items-center gap-4 shadow-2xl">
+            <Loader2 className="w-8 h-8 animate-spin text-[#7A3B5E]" />
+            <p className="text-sm font-medium text-[#2D2A33]">
+              {isRTL ? 'جارٍ التحويل إلى صفحة الدفع...' : 'Redirecting to checkout...'}
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );

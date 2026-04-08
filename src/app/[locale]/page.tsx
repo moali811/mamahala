@@ -317,37 +317,54 @@ export default function HomePage() {
       {/* ================================================================ */}
       <section className="relative min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
         {/* Editorial image — soft fade via CSS mask */}
-        <div className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}>
+        <div
+          className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}
+          style={{ backgroundColor: '#E8D5D0' }}
+        >
           <Image
-            src="/images/hala-confident.webp"
+            src="/images/hala-confident.PNG"
             alt="Dr. Hala Ali - Mama Hala"
             fill
             priority
-            quality={90}
+            quality={100}
             sizes="(min-width: 1536px) 60vw, (min-width: 1024px) 55vw, 100vw"
             className="object-cover object-top"
+            placeholder="blur"
+            blurDataURL="data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQC2yCFT5/Pao6aUJLgAAP7v0f5OHzJdK1svIxQtw0N/HgyyhatKQOpClQv97LqE75+dnZ34eoB+RpYabT9AAAA="
           />
         </div>
 
-        {/* Mobile text readability gradient — lighter to preserve image richness */}
-        <div className="absolute inset-0 z-[5] bg-gradient-to-t from-[#FDF8F4] via-[#FDF8F4]/60 to-transparent lg:hidden" />
+        {/* Mobile text readability gradient — positioned lower so the photo shows through more */}
+        <div className="absolute inset-x-0 bottom-0 top-[45%] z-[5] bg-gradient-to-t from-[#FDF8F4] via-[#FDF8F4]/75 to-transparent lg:hidden" />
 
         {/* Content layer */}
         <div className="container-main relative z-10 flex flex-col justify-end lg:justify-center min-h-[80vh] lg:min-h-[75vh] pb-6 lg:pb-6 lg:pt-8">
           <div className={`max-w-xl ${isRTL ? 'lg:mr-0 lg:ml-auto text-right' : 'lg:ml-0 lg:mr-auto'}`}>
+            {/* Mobile: label as a pill that stays readable over the image */}
             <span
-              className={`text-sm font-semibold tracking-[0.2em] uppercase text-[#9A7340] block mb-4 ${isRTL ? 'text-right w-full pt-2' : ''}`}
+              className={`sm:hidden inline-flex items-center gap-2 px-3 py-1.5 mb-4 rounded-full bg-white/85 backdrop-blur-sm text-[11px] font-semibold tracking-[0.15em] uppercase text-[#9A7340] border border-white/60 ${isRTL ? 'self-end' : 'self-start'}`}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#C8A97D]" />
+              {messages.hero.badge}
+            </span>
+            {/* Desktop: label + gold accent line (original design) */}
+            <span
+              className={`hidden sm:block text-sm font-semibold tracking-[0.2em] uppercase text-[#9A7340] mb-4 ${isRTL ? 'text-right w-full pt-2' : ''}`}
               style={{ textShadow: '0 1px 8px rgba(255,255,255,0.8)' }}
             >
               {messages.hero.badge}
             </span>
 
-            {/* Gold editorial accent line */}
-            <div className={`w-12 h-[2px] bg-[#C8A97D] mb-6 ${isRTL ? 'ml-auto' : ''}`} />
+            {/* Gold editorial accent line — desktop only */}
+            <div className={`hidden sm:block w-12 h-[2px] bg-[#C8A97D] mb-6 ${isRTL ? 'ml-auto' : ''}`} />
 
             <h1
-              className={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.1] tracking-tight mb-4 ${isRTL ? 'text-right w-full' : ''}`}
-              style={{ fontFamily: 'var(--font-heading)', textShadow: '0 1px 12px rgba(253,248,244,0.6)' }}
+              className={`text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.05] tracking-tight mb-4 ${isRTL ? 'text-right w-full' : ''}`}
+              style={{
+                fontFamily: isRTL ? 'var(--font-arabic)' : 'var(--font-fraunces), Georgia, serif',
+                fontWeight: isRTL ? 700 : 600,
+                textShadow: '0 1px 12px rgba(253,248,244,0.6)',
+              }}
             >
               <span className="block text-[#2D2A33]">
                 {isRTL ? <>لحياةٍ مُفعَمةٍ</> : <>For a Life Full of</>}
@@ -383,7 +400,7 @@ export default function HomePage() {
                 icon={isRTL ? <ArrowLeft className="w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
                 className="!px-10 !py-4 !text-base"
               >
-                {isRTL ? 'احصلْ على الدّعم' : 'Get Support'}
+                {isRTL ? 'ابدأْ رحلتَك' : 'Start your journey'}
               </Button>
             </div>
           </div>

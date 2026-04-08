@@ -5,6 +5,8 @@ import { getProgramBySlug } from '@/data/programs';
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
 // GET: Generate or retrieve certificate
+//  - Lookup by certId:   ?email=verify&program={certId}
+//  - Lookup / generate by email:  ?email={email}&program={programSlug}
 export async function GET(request: NextRequest) {
   const email = request.nextUrl.searchParams.get('email');
   const programSlug = request.nextUrl.searchParams.get('program');
@@ -13,16 +15,29 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Email and program required' }, { status: 400 });
   }
 
+  if (!KV_AVAILABLE) {
+    return NextResponse.json({ error: 'Storage not available' }, { status: 500 });
+  }
+
+  // Verification-by-certId path
+  if (email === 'verify') {
+    try {
+      const certById = await kv.get(`academy:certificate:${programSlug}`);
+      if (certById) {
+        return NextResponse.json({ eligible: true, certificate: certById });
+      }
+      return NextResponse.json({ error: 'Certificate not found' }, { status: 404 });
+    } catch {
+      return NextResponse.json({ error: 'Lookup failed' }, { status: 500 });
+    }
+  }
+
   const program = getProgramBySlug(programSlug);
   if (!program) {
     return NextResponse.json({ error: 'Program not found' }, { status: 404 });
   }
 
   const normalizedEmail = email.toLowerCase().trim();
-
-  if (!KV_AVAILABLE) {
-    return NextResponse.json({ error: 'Storage not available' }, { status: 500 });
-  }
 
   try {
     // Check if student completed all modules
@@ -69,7 +84,7 @@ export async function GET(request: NextRequest) {
         signedBy: program.certificate.signedBy,
         completedAt: new Date().toISOString(),
         completedModules: completedCount,
-        verificationUrl: `https://mama-hala-website.vercel.app/en/programs/certificate/${certId}`,
+        verificationUrl: `https://mamahala.ca/en/programs/certificate/${certId}`,
       };
 
       // Store certificate

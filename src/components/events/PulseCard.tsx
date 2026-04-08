@@ -17,27 +17,45 @@ interface TypeAccent {
 }
 
 const typeAccent: Record<EventType, TypeAccent> = {
-  workshop:              { borderColor: 'rgba(200,169,125,0.2)', bgColor: '#FAF5ED', stripColor: '#C8A97D', scenarioBorderColor: 'rgba(200,169,125,0.4)', icon: <Palette className="w-4 h-4 text-[#C8A97D]" /> },
-  webinar:               { borderColor: 'rgba(122,59,94,0.15)',  bgColor: '#F8EEF3', stripColor: '#7A3B5E', scenarioBorderColor: 'rgba(122,59,94,0.3)',  icon: <Video className="w-4 h-4 text-[#7A3B5E]" /> },
-  'community-gathering': { borderColor: 'rgba(196,135,138,0.2)', bgColor: '#FAF0EC', stripColor: '#C4878A', scenarioBorderColor: 'rgba(196,135,138,0.4)', icon: <Users className="w-4 h-4 text-[#C4878A]" /> },
-  retreat:               { borderColor: 'rgba(59,138,110,0.15)', bgColor: '#EFF5F0', stripColor: '#3B8A6E', scenarioBorderColor: 'rgba(59,138,110,0.4)', icon: <TreePine className="w-4 h-4 text-[#3B8A6E]" /> },
-  'support-group':       { borderColor: 'rgba(212,131,106,0.15)', bgColor: '#FDF5F0', stripColor: '#D4836A', scenarioBorderColor: 'rgba(212,131,106,0.4)', icon: <HeartHandshake className="w-4 h-4 text-[#D4836A]" /> },
+  workshop:              { borderColor: 'rgba(200,169,125,0.25)', bgColor: '#FAF5ED', stripColor: '#C8A97D', scenarioBorderColor: 'rgba(200,169,125,0.4)', icon: <Palette className="w-4 h-4 text-[#C8A97D]" /> },
+  webinar:               { borderColor: 'rgba(122,59,94,0.18)',   bgColor: '#F8EEF3', stripColor: '#7A3B5E', scenarioBorderColor: 'rgba(122,59,94,0.35)', icon: <Video className="w-4 h-4 text-[#7A3B5E]" /> },
+  'community-gathering': { borderColor: 'rgba(59,138,110,0.18)',  bgColor: '#E8F5EE', stripColor: '#3B8A6E', scenarioBorderColor: 'rgba(59,138,110,0.4)',  icon: <Users className="w-4 h-4 text-[#3B8A6E]" /> },
+  retreat:               { borderColor: 'rgba(91,143,168,0.22)',  bgColor: '#E0EEF5', stripColor: '#5B8FA8', scenarioBorderColor: 'rgba(91,143,168,0.4)',  icon: <TreePine className="w-4 h-4 text-[#5B8FA8]" /> },
+  'support-group':       { borderColor: 'rgba(196,135,138,0.25)', bgColor: '#F5E8EC', stripColor: '#C4878A', scenarioBorderColor: 'rgba(196,135,138,0.4)', icon: <HeartHandshake className="w-4 h-4 text-[#C4878A]" /> },
 };
 
 /** Audience-based overrides for same-type differentiation */
 const audienceOverrides: Partial<Record<string, Partial<TypeAccent>>> = {
-  families: { borderColor: 'rgba(122,59,94,0.15)', bgColor: '#F8F0F5', stripColor: '#9B5E7A', scenarioBorderColor: 'rgba(122,59,94,0.3)' },
+  families: { borderColor: 'rgba(122,59,94,0.18)', bgColor: '#F8F0F5', stripColor: '#9B5E7A', scenarioBorderColor: 'rgba(122,59,94,0.3)' },
   couples:  { borderColor: 'rgba(212,131,106,0.2)', bgColor: '#FEF3EE', stripColor: '#D4836A', scenarioBorderColor: 'rgba(212,131,106,0.35)' },
-  youth:    { borderColor: 'rgba(59,138,110,0.15)', bgColor: '#EFF5F0', stripColor: '#4A9B7E', scenarioBorderColor: 'rgba(59,138,110,0.3)' },
+  youth:    { borderColor: 'rgba(59,138,110,0.18)', bgColor: '#EFF5F0', stripColor: '#4A9B7E', scenarioBorderColor: 'rgba(59,138,110,0.3)' },
+};
+
+/** Slug-specific overrides so individual events in the same (type, audience) bucket still look distinct. */
+const slugOverrides: Partial<Record<string, Partial<TypeAccent>>> = {
+  'bicultural-teen-identity':        { bgColor: '#F5EFDF', stripColor: '#C8A97D', borderColor: 'rgba(200,169,125,0.25)', scenarioBorderColor: 'rgba(200,169,125,0.4)' },  // Gold
+  'teen-anxiety-pressure-cooker':    { bgColor: '#E0EEF5', stripColor: '#5B8FA8', borderColor: 'rgba(91,143,168,0.22)', scenarioBorderColor: 'rgba(91,143,168,0.4)' },   // Slate blue
+  'comparison-trap-social-media':    { bgColor: '#F5E8EC', stripColor: '#C4878A', borderColor: 'rgba(196,135,138,0.25)', scenarioBorderColor: 'rgba(196,135,138,0.4)' }, // Warm rose
+  'family-expectations-personal-dreams': { bgColor: '#F0E8F2', stripColor: '#7A3B5E', borderColor: 'rgba(122,59,94,0.18)', scenarioBorderColor: 'rgba(122,59,94,0.35)' }, // Plum
+  'when-friendship-hurts':           { bgColor: '#EFF5F0', stripColor: '#4A9B7E', borderColor: 'rgba(74,155,126,0.22)', scenarioBorderColor: 'rgba(74,155,126,0.4)' },    // Sage green
+  // Past event palette (muted, archival warmth)
+  'living-room-mothers-circle-feb-2025':  { bgColor: '#F5EDE4', stripColor: '#B08B6E', borderColor: 'rgba(176,139,110,0.22)', scenarioBorderColor: 'rgba(176,139,110,0.4)' },  // Warm terracotta
+  'grow-with-me-plant-therapy-nov-2024':  { bgColor: '#E8F0E4', stripColor: '#6B9A5B', borderColor: 'rgba(107,154,91,0.22)', scenarioBorderColor: 'rgba(107,154,91,0.4)' },    // Leaf green
+  'ramadan-mothers-reflection-mar-2025':  { bgColor: '#F0E8DC', stripColor: '#8B6B4A', borderColor: 'rgba(139,107,74,0.22)', scenarioBorderColor: 'rgba(139,107,74,0.4)' },    // Deep sand
+  'rooted-garden-mindfulness-aug-2024':   { bgColor: '#EEF2E5', stripColor: '#85A063', borderColor: 'rgba(133,160,99,0.22)', scenarioBorderColor: 'rgba(133,160,99,0.4)' },    // Olive
+  'grow-with-me-winter-edition-jan-2025': { bgColor: '#E8EDF2', stripColor: '#6B85A0', borderColor: 'rgba(107,133,160,0.22)', scenarioBorderColor: 'rgba(107,133,160,0.4)' },  // Winter slate
 };
 
 function getAccent(event: SmartEvent): TypeAccent {
   const base = typeAccent[event.type] || typeAccent.workshop;
+  let merged = base;
   if ((event.type === 'workshop' || event.type === 'webinar') && event.audiences?.length) {
     const override = audienceOverrides[event.audiences[0]];
-    if (override) return { ...base, ...override };
+    if (override) merged = { ...merged, ...override };
   }
-  return base;
+  const slugOverride = slugOverrides[event.slug];
+  if (slugOverride) merged = { ...merged, ...slugOverride };
+  return merged;
 }
 
 interface Props {
@@ -322,7 +340,7 @@ export default function PulseCard({ event, locale, pulseCount, onResonate, isExp
                 {outcomes && outcomes.length > 0 && (
                   <div>
                     <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-[#C8A97D] mb-2.5">
-                      {isRTL ? 'ما ستخرجُ به' : 'What You\'ll Walk Away With'}
+                      {isRTL ? 'ثمرة حضورك' : 'What You\'ll Walk Away With'}
                     </h4>
                     <ul className="space-y-1.5">
                       {outcomes.map((item, idx) => (

@@ -267,8 +267,11 @@ export default function FrameworkVisualizer({
         {/* Nodes */}
         {diagram.nodes.map((node, i) => {
           const pct = node.position;
+          // Auto-shift nodes that sit too close to the waterline (y=40%) to avoid label collision
+          const rawY = pct.y;
+          const shiftedY = rawY >= 32 && rawY <= 48 ? (rawY < 40 ? 22 : 55) : rawY;
           const x = (pct.x / 100) * svgSize;
-          const y = (pct.y / 100) * svgSize;
+          const y = (shiftedY / 100) * svgSize;
           const isAbove = y < waterY;
           const isSelected = selectedNode === node.id;
           const nodeColor = node.color || (isAbove ? '#C8A97D' : color);
@@ -301,9 +304,9 @@ export default function FrameworkVisualizer({
           );
         })}
 
-        {/* Labels */}
-        <text x={10} y={waterY - 10} className="text-[9px] font-medium" fill="#C8A97D">Visible</text>
-        <text x={10} y={waterY + 18} className="text-[9px] font-medium" fill="#5B8AC4">Below the surface</text>
+        {/* Waterline labels — tucked into far edges to avoid overlapping node rects */}
+        <text x={svgSize - 8} y={waterY - 6} textAnchor="end" className="text-[9px] font-medium uppercase tracking-wider" fill="#C8A97D">Visible</text>
+        <text x={svgSize - 8} y={waterY + 14} textAnchor="end" className="text-[9px] font-medium uppercase tracking-wider" fill="#5B8AC4">Below surface</text>
       </svg>
     );
   };
@@ -369,6 +372,84 @@ export default function FrameworkVisualizer({
     );
   };
 
+  const renderFlowchart = () => {
+    // Vertical pill-shaped flowchart: wider rects + arrows between steps
+    const svgW = 320;
+    const svgH = 460;
+    const pillW = 200;
+    const pillH = 44;
+
+    return (
+      <svg viewBox={`0 0 ${svgW} ${svgH}`} className="w-full max-w-[340px] mx-auto">
+        <defs>
+          <marker id="flow-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill={`${color}60`} />
+          </marker>
+        </defs>
+
+        {/* Connection arrows */}
+        {diagram.connections?.map((conn, i) => {
+          const fromNode = diagram.nodes.find(n => n.id === conn.from);
+          const toNode = diagram.nodes.find(n => n.id === conn.to);
+          if (!fromNode || !toNode) return null;
+          const fromY = (fromNode.position.y / 100) * svgH + pillH / 2;
+          const toY = (toNode.position.y / 100) * svgH - pillH / 2 - 4;
+          const x = svgW / 2;
+          return (
+            <motion.line
+              key={i}
+              x1={x} y1={fromY} x2={x} y2={toY}
+              stroke={`${color}50`} strokeWidth={2}
+              markerEnd="url(#flow-arrow)"
+              variants={drawLine} initial="hidden" animate={isInView ? 'visible' : 'hidden'}
+              transition={{ delay: i * 0.12 }}
+            />
+          );
+        })}
+
+        {/* Pill nodes */}
+        {diagram.nodes.map((node, i) => {
+          const x = (node.position.x / 100) * svgW;
+          const y = (node.position.y / 100) * svgH;
+          const isSelected = selectedNode === node.id;
+          const nodeColor = node.color || color;
+          const label = t(node.labelEn, node.labelAr, isRTL);
+          const lines = wrapLabel(label, 22);
+          return (
+            <g key={node.id}>
+              <motion.rect
+                x={x - pillW / 2}
+                y={y - pillH / 2}
+                width={pillW}
+                height={pillH}
+                rx={pillH / 2}
+                fill={`${nodeColor}15`}
+                stroke={nodeColor}
+                strokeWidth={isSelected ? 2.5 : 1.5}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={isInView ? { scale: 1, opacity: 1 } : {}}
+                transition={{ duration: 0.4, delay: 0.2 + i * 0.12, ease }}
+                style={{ cursor: interactive ? 'pointer' : 'default' }}
+                onClick={() => interactive && setSelectedNode(isSelected ? null : node.id)}
+              />
+              <text
+                x={x} y={y}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="text-[11px] font-semibold pointer-events-none"
+                fill={nodeColor}
+              >
+                {lines.map((line, li) => (
+                  <tspan key={li} x={x} dy={li === 0 ? `${-(lines.length - 1) * 0.5}em` : '1.15em'}>{line}</tspan>
+                ))}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    );
+  };
+
   const renderDefault = () => {
     // Generic node-based layout using position percentages
     return (
@@ -422,7 +503,7 @@ export default function FrameworkVisualizer({
     iceberg: renderIceberg,
     cycle: renderWheel,
     spectrum: renderSpectrum,
-    flowchart: renderDefault,
+    flowchart: renderFlowchart,
   };
 
   const selectedNodeData = diagram.nodes.find(n => n.id === selectedNode);

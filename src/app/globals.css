@@ -141,6 +141,15 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-arabic) !important;
 }
 
+/* --- Action Pulse (guided learning nudge) --- */
+@keyframes action-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+  50% { box-shadow: 0 0 0 6px transparent; opacity: 0.8; }
+}
+.animate-action-pulse {
+  animation: action-pulse 2s ease-in-out infinite;
+}
+
 /* --- Focus Styles --- */
 *:focus-visible {
   outline: 2px solid var(--color-rose);
@@ -259,6 +268,11 @@ h1, h2, h3, h4, h5, h6 {
 /* Scroll progress bar */
 @keyframes scroll-progress {
   to { transform: scaleX(1); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Text balance for headings */

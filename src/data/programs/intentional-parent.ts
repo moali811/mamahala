@@ -180,10 +180,10 @@ Children do not need perfect parents. They need present parents. Parents who are
             },
           ],
           learningObjectives: [
-            { textEn: 'Identify the difference between surface behavior and underlying emotional needs in children', textAr: 'حدّد الفرق بين السلوك الظاهري والاحتياجات العاطفية الكامنة عند الأطفال' },
-            { textEn: 'Apply the iceberg model to decode common childhood behaviors', textAr: 'طبّق نموذج جبل الجليد لفهم سلوكيات الطفولة الشائعة' },
-            { textEn: 'Practice emotional coaching by naming emotions in daily interactions', textAr: 'مارس التدريب العاطفي من خلال تسمية المشاعر في التفاعلات اليومية' },
-            { textEn: 'Shift from reactive parenting to emotionally curious parenting', textAr: 'انتقل من التربية الانفعالية إلى التربية القائمة على الفضول العاطفي' },
+            { textEn: 'Identify the difference between surface behavior and underlying emotional needs in children', textAr: 'حدّد الفرق بين السلوك الظاهري والاحتياجات العاطفية الكامنة عند الأطفال', relatedBlockIds: ['intro-1', 'iv-intro', 'insight-valid', 'mq-iceberg'] },
+            { textEn: 'Apply the iceberg model to decode common childhood behaviors', textAr: 'طبّق نموذج جبل الجليد لفهم سلوكيات الطفولة الشائعة', relatedBlockIds: ['h-iceberg', 'fw-iceberg'] },
+            { textEn: 'Practice emotional coaching by naming emotions in daily interactions', textAr: 'مارس التدريب العاطفي من خلال تسمية المشاعر في التفاعلات اليومية', relatedBlockIds: ['mq-coaching', 'sc-grocery', 'act-checkin'] },
+            { textEn: 'Shift from reactive parenting to emotionally curious parenting', textAr: 'انتقل من التربية الانفعالية إلى التربية القائمة على الفضول العاطفي', relatedBlockIds: ['cmp-reactive', 'c-pause', 'lk-self-check', 'r-moment'] },
           ],
           researchCitations: [
             {
@@ -278,6 +278,244 @@ Children do not need perfect parents. They need present parents. Parents who are
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Emotional Coaching', 'Emotional Attunement', 'Self-Awareness'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'intro-1', tone: 'lead',
+              textEn: 'Every child is born with a rich inner emotional life — long before they have the words for it. One of the most powerful things you can do as a parent is learn to see and honor that world, even when it looks messy from the outside.',
+              textAr: 'يُولَدُ كُلُّ طِفْلٍ بِحَياةٍ عاطِفيّةٍ داخِليّةٍ غَنيّة — قَبْلَ أَنْ تَكونَ لَدَيْهِ الكَلِماتُ لَها بِوَقْتٍ طَويل. مِنْ أَقْوى ما يُمْكِنُكِ فِعْلُهُ كَأُمٍّ هو تَعَلُّمُ رُؤْيَةِ ذلِكَ العالَمِ وَاحْتِرامِه، حَتّى لَوْ بَدا فَوْضَويّاً من الخارِج.',
+            },
+            {
+              kind: 'journey', id: 'jr-childs-day',
+              titleEn: "A Child's Emotional Day",
+              titleAr: 'يَوْمٌ في مَشاعِرِ طِفْل',
+              subtitleEn: 'An intuition-building journey',
+              subtitleAr: 'جَوْلَةٌ لِبِناءِ الحَدْس',
+              durationLabelEn: '~3 min total',
+              durationLabelAr: '~٣ دَقائِق',
+              steps: [
+                {
+                  id: 'j1-welcome', icon: 'heart', isIntro: true,
+                  titleEn: 'Welcome', titleAr: 'أَهْلاً بِكِ',
+                  narrativeEn: "You're about to take a short journey through a child's emotional world. You'll meet kids in everyday moments — some joyful, some challenging. At the pause points, we'll ask: what do you think they're feeling? Trust your intuition.",
+                  narrativeAr: 'سَتَأْخُذينَ جَوْلَةً قَصيرَةً في عالَمِ طِفْلٍ العاطِفيّ. سَتُقابِلينَ أَطْفالاً في لَحَظاتٍ يَوْمِيَّة — بَعْضُها مُفْرِح، وَبَعْضُها صَعْب. عِنْدَ نُقاطِ التَّوَقُّف، سَنَسْأَلُكِ: بِرَأْيِكِ، ماذا يَشْعُرون؟ ثِقي بِحَدْسِك.',
+                },
+                {
+                  id: 'j2-backpack', icon: 'cloud-rain',
+                  timeLabelEn: '7:15 AM', timeLabelAr: '٧:١٥ صَباحاً',
+                  titleEn: 'The Backpack', titleAr: 'الحَقيبَة',
+                  narrativeEn: "Mia stands frozen by the door, staring at her backpack. Her mom calls from the kitchen: 'We need to leave in two minutes!' Mia doesn't move. Yesterday, she forgot her permission slip. Last week, her teacher announced a surprise quiz during morning circle.",
+                  narrativeAr: 'تَقِفُ ميا مُتَجَمِّدَةً عِنْدَ البابِ، تُحَدِّقُ في حَقيبَتِها. تُناديها أُمُّها مِنَ المَطْبَخ: "عَلَيْنا الذَّهابُ خِلالَ دَقيقَتَيْن!" ميا لا تَتَحَرَّك. بِالأَمْس، نَسِيَتْ ورَقَةَ الإذْن. الأُسْبوعَ الماضي، أَعْلَنَتْ مُعَلِّمَتُها عَنِ اخْتِبارٍ مُفاجِئٍ في حَلَقَةِ الصَّباح.',
+                  revealLabelEn: 'Anticipatory anxiety', revealLabelAr: 'قَلَقٌ تَوَقُّعِيّ',
+                  revealTextEn: "The backpack has become a symbol of all the things that might go wrong. It's not about being late — it's about the unknown day ahead.",
+                  revealTextAr: 'أَصْبَحَتِ الحَقيبَةُ رَمْزاً لِكُلِّ ما قَدْ يَسوءُ فِعْلاً. لَيْسَ الأَمْرُ عَنِ التَّأَخُّر — بَلْ عَنِ اليَوْمِ المَجْهولِ القادِم.',
+                  revealTone: 'warmth',
+                  accentColor: '#C4878A',
+                },
+                {
+                  id: 'j3-circle', icon: 'frown',
+                  timeLabelEn: '10:30 AM', timeLabelAr: '١٠:٣٠ صَباحاً',
+                  titleEn: 'The Circle', titleAr: 'الدّائِرَة',
+                  narrativeEn: "Recess. Four kids are drawing a chalk obstacle course. Marcus walks over: 'Can I play?' They glance at each other. 'We already started,' someone says. Marcus nods, turns away, and sits on the bench. He watches them for a while, then pulls out his library book.",
+                  narrativeAr: 'الاسْتِراحَة. أَرْبَعَةُ أَطْفالٍ يَرْسُمونَ مَسارَ عَقَباتٍ بِالطَّباشير. يَقْتَرِبُ مارْكَس: "هَلْ أَسْتَطيعُ اللَّعِب؟" يَنْظُرونَ إلى بَعْضِهِم. "لَقَدْ بَدَأْنا فِعْلاً،" يَقولُ أَحَدُهُم. يومِئُ مارْكَس، يَسْتَديرُ، وَيَجْلِسُ على المَقْعَد. يُراقِبُهُم لِبُرْهَة، ثُمَّ يُخْرِجُ كِتابَ المَكْتَبَة.',
+                  revealLabelEn: 'Rejection (wrapped in self-protection)', revealLabelAr: 'الرَّفْض (مُغَلَّفاً بِحِمايَةِ الذّات)',
+                  revealTextEn: "The book isn't really interesting to him — it's a shield. He's telling himself he wanted to read anyway. But his eyes keep drifting back to the chalk laughter.",
+                  revealTextAr: 'الكِتابُ لَيْسَ مُشَوِّقاً لَهُ فِعْلاً — إنَّهُ دِرْع. يُقْنِعُ نَفْسَهُ أَنَّهُ أَرادَ القِراءَةَ أَصْلاً. لَكِنَّ عَيْنَيْهِ تَعودانِ إلى ضَحِكِ الطَّباشير.',
+                  revealTone: 'insight',
+                  accentColor: '#7A3B5E',
+                  isPausePoint: true,
+                },
+                {
+                  id: 'j4-math', icon: 'flame',
+                  timeLabelEn: '3:45 PM', timeLabelAr: '٣:٤٥ ظُهْراً',
+                  titleEn: 'The Math Problem', titleAr: 'مَسْأَلَةُ الرِّياضيّات',
+                  narrativeEn: "At the kitchen table, Liam erases so hard the paper tears. 'I don't GET it!' he shouts, throwing his pencil. His dad picks it up calmly. 'Let's try again.' 'I already tried!' Liam's face is red. The worksheet is due tomorrow.",
+                  narrativeAr: 'على طاوِلَةِ المَطْبَخ، يَمْحو ليام بِقُوَّةٍ حَتّى تَتَمَزَّقَ الوَرَقَة. "أَنا لا أَفْهَمُ!" يَصْرُخ، رامِياً قَلَمَهُ. يَلْتَقِطُهُ والِدُهُ بِهُدوء. "لِنُحاوِلْ مَرَّةً أُخْرى." "لَقَدْ حاوَلْتُ بِالفِعْل!" وَجْهُ ليام أَحْمَرُ. الوَرَقَةُ مُسْتَحَقَّةٌ غَداً.',
+                  revealLabelEn: 'Frustration masking fear of inadequacy', revealLabelAr: 'إحْباطٌ يُغَطّي خَوْفاً مِنَ القُصور',
+                  revealTextEn: "The problem isn't hard math — it's the story he's telling himself: 'Everyone else understands this. I'm the only one who's stuck. I'm not smart enough.'",
+                  revealTextAr: 'المُشْكِلَةُ لَيْسَتْ في صُعوبَةِ الرِّياضِيّاتِ — بَلْ في القِصَّةِ الّتي يَرْويها لِنَفْسِه: "الجَميعُ يَفْهَمُ هذا. أَنا الوَحيدُ العالِق. لَسْتُ ذَكِيّاً كِفايَة."',
+                  revealTone: 'warning',
+                  accentColor: '#D4A84B',
+                },
+                {
+                  id: 'j5-fort', icon: 'star',
+                  timeLabelEn: '4:30 PM', timeLabelAr: '٤:٣٠ ظُهْراً',
+                  titleEn: 'The Fort', titleAr: 'الحِصْن',
+                  narrativeEn: "Emma drapes her favorite blanket over two chairs, creating a small cave. Inside, she arranges her stuffed animals in a circle. She's been in there for twenty minutes, narrating an elaborate story about a brave captain and her crew sailing to the Moon Island. No one else is in the room.",
+                  narrativeAr: 'تَفْرُشُ إيما بَطّانِيَّتَها المُفَضَّلَةَ على كُرْسِيَّيْن، فَتَخْلُقُ كَهْفاً صَغيراً. في الدّاخِل، تُرَتِّبُ دُماها المَحْشُوَّةَ في حَلْقَة. قَضَتْ هُناكَ عِشْرينَ دَقيقَة، تَحْكي قِصَّةً مُفَصَّلَةً عَنْ قائِدَةٍ شُجاعَةٍ وَطاقَمِها الّذي يُبْحِرُ إلى جَزيرَةِ القَمَر. لا أَحَدَ آخَرَ في الغُرْفَة.',
+                  revealLabelEn: 'Flow state (pure immersion)', revealLabelAr: 'حالَةُ التَّدَفُّق (اِنْغِماسٌ خالِص)',
+                  revealTextEn: "This isn't loneliness — it's creative absorption. Time has dissolved. She's simultaneously the storyteller, the captain, and the world itself. This is where children recharge their emotional batteries.",
+                  revealTextAr: 'هذِهِ لَيْسَتْ وَحْدَة — بَلْ اِنْغِماسٌ إبْداعيّ. ذابَ الزَّمَن. هي في الوَقْتِ نَفْسِهِ الرّاويَة، وَالقائِدَة، وَالعالَمُ كُلُّه. هُنا يُعيدُ الأَطْفالُ شَحْنَ بَطّارِيّاتِهِمِ العاطِفِيَّة.',
+                  revealTone: 'insight',
+                  accentColor: '#7A3B5E',
+                  isPausePoint: true,
+                },
+                {
+                  id: 'j6-conversation', icon: 'cloud-rain',
+                  timeLabelEn: '6:00 PM', timeLabelAr: '٦:٠٠ مَساءً',
+                  titleEn: 'The Conversation', titleAr: 'المُحادَثَة',
+                  narrativeEn: "At dinner, Sophia's mom asks about her day. 'Fine,' Sophia says, pushing rice around her plate. Her mom tries again: 'Did you play with Aisha?' Sophia's chest tightens. Today at lunch, Aisha sat with different friends. Sophia wanted to join but froze. 'Yeah,' she lies. 'We played.'",
+                  narrativeAr: 'على العَشاء، تَسْأَلُ والِدَةُ صوفيا عَنْ يَوْمِها. "بِخَيْر،" تَقولُ صوفيا، تُحَرِّكُ الأَرُزَّ في طَبَقِها. تُحاوِلُ أُمُّها مَرَّةً أُخْرى: "هَلْ لَعِبْتِ مَعَ عائِشَة؟" يَضيقُ صَدْرُ صوفيا. اليَوْمَ في الغَداء، جَلَسَتْ عائِشَةُ مَعَ أَصْدِقاءَ مُخْتَلِفين. أَرادَتْ صوفيا الاِنْضِمامَ لَكِنَّها تَجَمَّدَتْ. "نَعَم،" تَكْذِب. "لَعِبْنا."',
+                  revealLabelEn: "Shame (for feeling hurt about something 'small')", revealLabelAr: 'خَجَلٌ (لِلشُّعورِ بِالأَلَمِ مِنْ شَيْءٍ "صَغير")',
+                  revealTextEn: "She thinks: 'I'm being dramatic. It's not a big deal.' But her body knows: friendship shifts feel seismic when you're nine. The lie protects her from having to explain something she doesn't have words for yet.",
+                  revealTextAr: 'تُفَكِّر: "أَنا أُبالِغ. إنَّهُ لَيْسَ أَمْراً جَلَلاً." لَكِنَّ جِسْمَها يَعْلَم: تَحَوُّلاتُ الصَّداقَةِ تَهُزُّ كَالزَّلْزالِ حينَ تَكونينَ في التّاسِعَة. الكِذْبَةُ تَحْميها مِنْ أَنْ تَشْرَحَ شَيْئاً لا تَمْلِكُ كَلِماتٍ لَهُ بَعْد.',
+                  revealTone: 'warmth',
+                  accentColor: '#C4878A',
+                },
+                {
+                  id: 'j7-dark', icon: 'moon',
+                  timeLabelEn: '8:15 PM', timeLabelAr: '٨:١٥ مَساءً',
+                  titleEn: 'The Dark', titleAr: 'الظَّلام',
+                  narrativeEn: "Bedtime. Noah's dad kisses his forehead and turns off the light. 'Good night, buddy.' The door closes most of the way — just a crack of hallway light. Noah pulls the covers up to his chin. He hears his parents' voices downstairs, muffled. His closet door is slightly open. He stares at it. What if something comes out?",
+                  narrativeAr: 'وَقْتُ النَّوْم. يُقَبِّلُ والِدُ نوح جَبينَهُ وَيُطْفِئُ النّور. "تُصْبِحُ على خَيْر، صَديقي." يُغْلَقُ البابُ تَقْريباً — فَقَطْ شِقٌّ مِنْ نورِ المَمَرّ. يَسْحَبُ نوح الغِطاءَ إلى ذَقْنِه. يَسْمَعُ أَصْواتَ والِدَيْهِ في الأَسْفَلِ مَكْتومَة. بابُ خِزانَتِهِ مَفْتوحٌ قَليلاً. يُحَدِّقُ فيه. ماذا لَوْ خَرَجَ شَيْءٌ مِنْهُ؟',
+                  revealLabelEn: 'Existential vulnerability', revealLabelAr: 'هَشاشَةٌ وُجودِيَّة',
+                  revealTextEn: "It's not really about monsters. At night, without distraction, kids become aware of their smallness in a big, unpredictable world. The closet is a stand-in for all the things they can't control. The real comfort? Those muffled voices downstairs.",
+                  revealTextAr: 'الأَمْرُ لَيْسَ حَقّاً عَنِ الوُحوش. في اللَّيْل، بِلا تَشَتُّت، يَصيرُ الأَطْفالُ واعينَ لِصِغَرِهِم في عالَمٍ كَبيرٍ لا يُمْكِنُ التَّنَبُّؤُ بِه. الخِزانَةُ بَديلٌ لِكُلِّ ما لا يَسْتَطيعونَ التَّحَكُّمَ بِه. الرّاحَةُ الحَقيقيّة؟ تِلْكَ الأَصْواتُ المَكْتومَةُ في الأَسْفَل.',
+                  revealTone: 'insight',
+                  accentColor: '#5B8FA8',
+                  isPausePoint: true,
+                },
+                {
+                  id: 'j8-pattern', icon: 'sun', isOutro: true,
+                  titleEn: 'The Pattern', titleAr: 'النَّمَط',
+                  narrativeEn: "In a few minutes, you've witnessed anxiety, rejection, frustration, flow, shame, and vulnerability. These aren't exceptional days — this is Tuesday. Children cycle through more emotional terrain in one day than many adults acknowledge in a week. Your intuition recognized it. That recognition is everything.",
+                  narrativeAr: 'في دَقائِقَ قَليلَة، شَهِدْتِ القَلَقَ وَالرَّفْضَ وَالإحْباطَ وَالتَّدَفُّقَ وَالخَجَلَ وَالهَشاشَة. هذِهِ لَيْسَتْ أَيّاماً اسْتِثْنائِيَّة — هذا يَوْمُ ثُلاثاءٍ عادِيّ. يَتَنَقَّلُ الأَطْفالُ في تَضاريسَ عاطِفِيَّةٍ في يَوْمٍ واحِدٍ أَكْثَرَ مِمّا يَعْتَرِفُ بِهِ كَثيرٌ مِنَ البالِغينَ في أُسْبوع. حَدْسُكِ تَعَرَّفَ عَلَيْها. ذلِكَ التَّعَرُّفُ هو كُلُّ شَيْء.',
+                },
+              ],
+            },
+            {
+              kind: 'reflection-prompt', id: 'rp-journey',
+              promptEn: 'Which of these two moments felt most familiar to your own child? What did you notice in your body as you read it?',
+              promptAr: 'أَيُّ اللَّحْظَتَيْنِ كانَتْ أَكْثَرَ شَبَهاً بِطِفْلِكِ؟ ماذا لاحَظْتِ في جِسْمِكِ وَأَنْتِ تَقْرَئين؟',
+            },
+            {
+              kind: 'callout', id: 'insight-valid', variant: 'insight',
+              textEn: 'Acknowledging a feeling is NOT the same as accepting every behavior. When a toddler throws a toy in frustration, the behavior needs guidance — but the frustration itself is valid and deserves a name.',
+              textAr: 'الاعْتِرافُ بِالشُّعورِ لَيْسَ كَقَبولِ كُلِّ سُلوك. عِنْدَما يَرْمي الطِّفْلُ لُعْبَةً مِنَ الإحْباط، السُّلوكُ يَحْتاجُ تَوْجيهاً — لَكِنَّ الإحْباطَ نَفْسَهُ مَشْروعٌ وَيَسْتَحِقُّ اسْماً.',
+            },
+            {
+              kind: 'micro-quiz', id: 'mq-iceberg',
+              question: {
+                textEn: 'Before reading further — what do you think the "iceberg" metaphor represents about a child\'s behavior?',
+                textAr: 'قَبْلَ المُتابَعَة — ما رَأْيُكِ في ما يَرْمُزُ إلَيْهِ تَشْبيهُ "جَبَلِ الجَليد" عَنْ سُلوكِ الطِّفْل؟',
+                options: [
+                  { labelEn: 'Visible behavior is only a fraction of what\'s going on underneath', labelAr: 'السُّلوكُ المَرْئِيُّ لَيْسَ سِوى جُزْءٍ صَغيرٍ مِمّا يَحْدُثُ تَحْت', correct: true, explanationEn: 'Exactly. Tantrums and defiance sit on top of unmet needs, developmental struggles, sensory overload, and deep emotions.', explanationAr: 'تَماماً. نَوْباتُ الغَضَبِ والتَّحَدّي تَقَعُ فَوْقَ احْتِياجاتٍ غَيْرِ مُلَبّاةٍ وَصِراعاتٍ نَمائِيّةٍ وَإرْهاقٍ حِسّيٍّ وَمَشاعِرَ عَميقَة.' },
+                  { labelEn: 'Children should keep their emotions hidden', labelAr: 'يَجِبُ أَنْ يُخْفي الأَطْفالُ مَشاعِرَهُم', correct: false, explanationEn: 'The metaphor describes what IS — not what should be. Our job is to understand what\'s beneath.', explanationAr: 'التَّشْبيهُ يَصِفُ الواقِعَ — لا ما يَجِبُ أَنْ يَكون.' },
+                  { labelEn: 'Only the visible behavior matters', labelAr: 'السُّلوكُ المَرْئِيُّ وَحْدَهُ هو المُهِمّ', correct: false, explanationEn: 'Reacting only to the visible tip misses the real story.', explanationAr: 'التَّفاعُلُ مَعَ القِمَّةِ فَقَطْ يُضَيِّعُ القِصّةَ الحَقيقيّة.' },
+                ],
+              },
+            },
+            { kind: 'heading', id: 'h-iceberg', level: 2, textEn: 'The Iceberg of Behavior', textAr: 'جَبَلُ السُّلوكِ الجَليديّ' },
+            {
+              kind: 'paragraph', id: 'p-iceberg',
+              textEn: 'What you see — the tantrum, the defiance, the withdrawal — is the tip. Below sit unmet needs, developmental limits, sensory overload, and deep emotions. Respond only to the tip, and you miss the real story.',
+              textAr: 'ما تَرَيْنَهُ — نَوْبَةُ الغَضَب، التَّحَدّي، الاِنْسِحاب — هو القِمّة. تَحْتَها احْتِياجاتٌ غَيْرُ مُلَبّاةٍ وَحُدودٌ نَمائِيّةٌ وَإرْهاقٌ حِسّيٌّ وَمَشاعِرُ عَميقَة. إذا تَفاعَلْتِ مع القِمَّةِ فَقَطْ، فَقَدْتِ القِصّةَ الحَقيقيّة.',
+            },
+            {
+              kind: 'framework', id: 'fw-iceberg',
+              diagram: {
+                type: 'iceberg',
+                titleEn: 'The Emotional Iceberg', titleAr: 'جَبَلُ الجَليدِ العاطِفيّ',
+                nodes: [
+                  { id: 'visible', labelEn: 'Visible Behavior', labelAr: 'السُّلوكُ المَرْئيّ', descriptionEn: 'Tantrums, defiance, withdrawal', descriptionAr: 'نَوْباتُ الغَضَب، التَّحَدّي، الاِنْسِحاب', color: '#7A3B5E', position: { x: 50, y: 18 } },
+                  { id: 'needs', labelEn: 'Unmet Needs', labelAr: 'احْتِياجاتٌ غَيْرُ مُلَبّاة', descriptionEn: 'Connection, autonomy, safety', descriptionAr: 'تَواصُل، اسْتِقْلاليّة، أَمان', color: '#5B8FA8', position: { x: 30, y: 55 } },
+                  { id: 'dev', labelEn: 'Developmental Limits', labelAr: 'حُدودٌ نَمائِيّة', descriptionEn: 'Brain development, impulse control', descriptionAr: 'نُمُوُّ الدِّماغ، ضَبْطُ الاِنْدِفاع', color: '#5B8FA8', position: { x: 70, y: 55 } },
+                  { id: 'sensory', labelEn: 'Sensory Overload', labelAr: 'إرْهاقٌ حِسّيّ', descriptionEn: 'Noise, hunger, fatigue', descriptionAr: 'ضَوْضاء، جوع، تَعَب', color: '#5B8FA8', position: { x: 30, y: 78 } },
+                  { id: 'emotions', labelEn: 'Deep Emotions', labelAr: 'مَشاعِرُ عَميقَة', descriptionEn: 'Fear, sadness, frustration, loneliness', descriptionAr: 'خَوْف، حُزْن، إحْباط، وَحْدَة', color: '#5B8FA8', position: { x: 70, y: 78 } },
+                ],
+                connections: [
+                  { from: 'needs', to: 'visible' }, { from: 'dev', to: 'visible' },
+                  { from: 'sensory', to: 'visible' }, { from: 'emotions', to: 'visible' },
+                ],
+              },
+            },
+            {
+              kind: 'comparison', id: 'cmp-reactive',
+              titleEn: 'Two Ways to Respond', titleAr: 'طَريقَتانِ لِلاِسْتِجابَة',
+              left: {
+                labelEn: 'Reactive', labelAr: 'رَدُّ الفِعْل',
+                pointsEn: ['"Stop crying right now"', 'Judges the behavior instantly', 'Teaches: feelings are unwelcome'],
+                pointsAr: ['"تَوَقَّفْ عَنِ البُكاءِ الآن"', 'يَحْكُمُ على السُّلوكِ فَوْراً', 'يُعَلِّم: المَشاعِرُ غَيْرُ مُرَحَّبٍ بِها'],
+              },
+              right: {
+                labelEn: 'Emotionally Curious', labelAr: 'فُضولٌ عاطِفيّ',
+                pointsEn: ['"I can see you\'re really disappointed"', 'Pauses, names the feeling', 'Teaches: your inner world matters'],
+                pointsAr: ['"أَرى أَنَّكِ مُحْبَطةٌ حَقّاً"', 'يَتَوَقَّفُ، يُسَمّي الشُّعور', 'يُعَلِّم: عالَمُكِ الدّاخِلِيُّ مُهِمّ'],
+              },
+            },
+            {
+              kind: 'callout', id: 'c-pause', variant: 'dr-hala',
+              textEn: 'In my years working with families, the single most transformative shift a parent can make is learning to pause and wonder what their child is feeling. It\'s not about having the right answer — it\'s about being curious enough to ask the question.',
+              textAr: 'في سَنَواتِ عَمَلي مَع العائِلات، أَكْبَرُ تَحَوُّلٍ يُمْكِنُ لِأُمٍّ أَنْ تَقومَ بِهِ هو تَعَلُّمُ التَّوَقُّفِ والتَّساؤُلِ عَمّا يَشْعُرُ بِهِ طِفْلُها. الأَمْرُ لَيْسَ في امْتِلاكِ الإجابَةِ الصَّحيحَة — بَل في الفُضولِ الكافي لِطَرْحِ السُّؤال.',
+            },
+            {
+              kind: 'micro-quiz', id: 'mq-coaching',
+              question: {
+                textEn: 'What is "emotional coaching"?',
+                textAr: 'ما هو "التَّدْريبُ العاطِفيّ"؟',
+                options: [
+                  { labelEn: 'Sitting alongside children in big feelings and naming the emotion', labelAr: 'الجُلوسُ بِجانِبِ الطِّفْلِ في مَشاعِرِهِ الكَبيرَة وتَسْمِيَةُ الشُّعور', correct: true, explanationEn: 'Yes — calm presence + naming + validation. Behavior guidance can come after.', explanationAr: 'نَعَم — حُضورٌ هادِئ + تَسْمِيَةٌ + تَحَقُّق. تَوْجيهُ السُّلوكِ يَأْتي بَعْدَ ذلِك.' },
+                  { labelEn: 'Teaching children to suppress difficult emotions', labelAr: 'تَعْليمُ الأَطْفالِ كَبْتَ المَشاعِرِ الصَّعْبَة', correct: false, explanationEn: 'The opposite — coaching welcomes emotions rather than suppressing them.', explanationAr: 'العَكْس — التَّدْريبُ يُرَحِّبُ بِالمَشاعِرِ بَدَلاً مِنْ كَبْتِها.' },
+                  { labelEn: 'Ignoring tantrums until they stop', labelAr: 'تَجاهُلُ نَوْباتِ الغَضَبِ حَتّى تَتَوَقَّف', correct: false, explanationEn: 'Ignoring bypasses the emotion; coaching engages with it.', explanationAr: 'التَّجاهُلُ يَتَجَنَّبُ الشُّعور؛ التَّدْريبُ يَتَعامَلُ مَعَه.' },
+                ],
+              },
+            },
+            {
+              kind: 'scenario', id: 'sc-grocery',
+              scenario: {
+                titleEn: 'The Grocery Store Meltdown', titleAr: 'اِنْهِيارٌ في المَتْجَر',
+                contextEn: 'Your 4-year-old starts screaming in the grocery store because you said no to a toy. Other shoppers are staring.',
+                contextAr: 'طِفْلُكِ ذو الأَرْبَعِ سَنَواتٍ يَصْرُخُ في المَتْجَرِ لِأَنَّكِ رَفَضْتِ شِراءَ لُعْبَة. النّاسُ يَنْظُرون.',
+                steps: [
+                  {
+                    textEn: 'He throws himself on the floor crying loudly. What do you do first?',
+                    textAr: 'يَرْمي نَفْسَهُ عَلى الأَرْضِ باكِياً. ماذا تَفْعَلينَ أَوَّلاً؟',
+                    choices: [
+                      { labelEn: 'Kneel to his level: "I can see you\'re really disappointed."', labelAr: 'اِنْزِلي إلى مُسْتَواه: "أَرى أَنَّكَ مُحْبَطٌ حَقّاً"', feedbackEn: 'Great — getting on their level and naming the feeling shows you see them.', feedbackAr: 'رائِع — النُّزولُ إلى مُسْتَواهُ وتَسْمِيَةُ الشُّعورِ يُظْهِرانِ أَنَّكِ تَرَيْنَه.', isRecommended: true },
+                      { labelEn: '"Stop crying now or we\'re leaving."', labelAr: '"تَوَقَّفْ عَنِ البُكاءِ أَو سَنُغادِر"', feedbackEn: 'This stops the behavior but teaches the feeling is unwelcome.', feedbackAr: 'هذا يوقِفُ السُّلوك لَكِنَّهُ يُعَلِّمُ أَنَّ الشُّعورَ غَيْرُ مُرَحَّبٍ بِه.', isRecommended: false },
+                      { labelEn: 'Ignore the tantrum and keep shopping.', labelAr: 'تَجاهُلُ النَّوْبَةِ ومُتابَعَةُ التَّسَوُّق', feedbackEn: 'Not engaging the demand is fine — but ignoring HIM misses an acknowledgment.', feedbackAr: 'عَدَمُ الاِسْتِجابَةِ لِلْمَطْلَبِ مَقْبول — لَكِنَّ تَجاهُلَهُ هو فَواتُ فُرْصَة.', isRecommended: false },
+                    ],
+                  },
+                ],
+              },
+            },
+            { kind: 'heading', id: 'h-unlearn', level: 2, textEn: 'Unlearning Old Patterns', textAr: 'إعادَةُ كِتابَةِ الأَنْماطِ القَديمَة' },
+            {
+              kind: 'paragraph', id: 'p-unlearn', tone: 'warm',
+              textEn: 'This approach does not come naturally to everyone — especially if you grew up hearing "stop crying" or "there\'s nothing to be afraid of." Unlearning those phrases is a courageous act of love. You are choosing to build something new for your family.',
+              textAr: 'هذا النَّهْجُ لا يَأْتي طَبيعِيّاً لِلْجَميع — خاصَّةً إذا كُنْتِ قد نَشَأْتِ عَلى "تَوَقَّفْ عَنِ البُكاء" أو "لا شَيْءَ يُخيف". إعادَةُ كِتابَةِ تِلْكَ العِباراتِ عَمَلٌ شُجاعٌ مِن أَعْمالِ الحُبّ. أَنْتِ تَخْتارينَ بِناءَ شَيْءٍ جَديدٍ لِعائِلَتِك.',
+            },
+            {
+              kind: 'pullquote', id: 'pq-closing',
+              textEn: 'Children do not need perfect parents. They need present parents.',
+              textAr: 'الأَطْفالُ لا يَحْتاجونَ آباءً مُثالِيّين. إنَّهُم يَحْتاجونَ آباءً حاضِرين.',
+            },
+            {
+              kind: 'likert', id: 'lk-self-check',
+              reflection: {
+                titleEn: 'Emotional Curiosity Self-Check', titleAr: 'فَحْصُ الفُضولِ العاطِفِيِّ الذّاتيّ',
+                statementEn: 'When my child is upset, I pause to wonder what they might be feeling before I respond.',
+                statementAr: 'عِنْدَما يَكونُ طِفْلي مُنْزَعِجاً، أَتَوَقَّفُ لِأَتَساءَلَ عَمّا يَشْعُرُ بِهِ قَبْلَ أَنْ أَسْتَجيب.',
+                scaleLabels: { lowEn: 'Rarely', lowAr: 'نادِراً', highEn: 'Almost always', highAr: 'دائِماً تَقْريباً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Reactive mode', labelAr: 'وَضْعُ رَدِّ الفِعْل', feedbackEn: 'You tend to respond quickly. This module is about building the pause.', feedbackAr: 'تَمِيلينَ لِلرَّدِّ بِسُرْعَة. هذِهِ الوِحْدَةُ عَنْ بِناءِ التَّوَقُّف.' },
+                  { min: 3, max: 5, labelEn: 'Growing awareness', labelAr: 'وَعْيٌ يَنْمو', feedbackEn: 'You\'re developing curiosity. With practice, the pause becomes natural.', feedbackAr: 'تُطَوِّرينَ الفُضول. مَعَ المُمارَسَةِ يَصيرُ التَّوَقُّفُ طَبيعيّاً.' },
+                  { min: 6, max: 7, labelEn: 'Emotionally attuned', labelAr: 'مُتَناغِمَةٌ عاطِفيّاً', feedbackEn: 'You regularly practice curiosity. Keep modeling it for your child.', feedbackAr: 'تُمارِسينَ الفُضولَ بِانْتِظام. اِسْتَمِرّي في القُدْوَةِ لِطِفْلِك.' },
+                ],
+              },
+            },
+            {
+              kind: 'reflection-prompt', id: 'r-moment', minWords: 30,
+              promptEn: 'Think about a recent moment when your child was upset. How did you respond? If you could revisit that moment with emotional curiosity, what might you do differently?',
+              promptAr: 'فَكِّري في لَحْظَةٍ حَديثَةٍ كانَ فيها طِفْلُكِ مُنْزَعِجاً. كَيْفَ اسْتَجَبْتِ؟ لَوِ اسْتَطَعْتِ العَوْدَةَ بِفُضولٍ عاطِفيّ، ماذا كُنْتِ سَتَفْعَلينَ بِشَكْلٍ مُخْتَلِف؟',
+            },
+            {
+              kind: 'activity', id: 'act-checkin', durationMinutes: 15,
+              titleEn: 'The 3-Day Emotion Check-In', titleAr: 'تَسْجيلُ المَشاعِرِ لِثَلاثَةِ أَيّام',
+              descriptionEn: 'For the next three days, practice naming emotions out loud with your child. When you notice a feeling — happy, frustrated, sad, excited — gently name it: "It looks like you\'re feeling really happy right now!" Notice how they respond.',
+              descriptionAr: 'خِلالَ الأَيّامِ الثَّلاثَةِ القادِمَة، مارِسي تَسْمِيَةَ المَشاعِرِ بِصَوْتٍ عالٍ مع طِفْلِكِ. عِنْدَما تُلاحِظينَ شُعوراً — سَعادَة، إحْباط، حُزْن، حَماس — سَمِّيهِ بِلُطْف: "يَبْدو أَنَّكَ تَشْعُرُ بِسَعادَةٍ كَبيرَةٍ الآن!" لاحِظي كَيْفَ يَسْتَجيب.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'iceberg',
@@ -409,9 +647,9 @@ Remember, active listening is not about being a perfect listener every moment of
             },
           ],
           learningObjectives: [
-            { textEn: 'Distinguish between passive hearing and active listening in parent-child interactions', textAr: 'ميّز بين السمع السلبي والاستماع الفعّال في التفاعلات بين الوالد والطفل' },
-            { textEn: 'Practice reflective listening by paraphrasing your child\'s words back to them', textAr: 'مارس الاستماع الانعكاسي بإعادة صياغة كلمات طفلك له' },
-            { textEn: 'Use open-ended questions to deepen conversations with your child', textAr: 'استخدم الأسئلة المفتوحة لتعميق المحادثات مع طفلك' },
+            { textEn: 'Distinguish between passive hearing and active listening in parent-child interactions', textAr: 'ميّز بين السمع السلبي والاستماع الفعّال في التفاعلات بين الوالد والطفل', relatedBlockIds: ['al-intro', 'al-core', 'al-mq1'] },
+            { textEn: 'Practice reflective listening by paraphrasing your child\'s words back to them', textAr: 'مارس الاستماع الانعكاسي بإعادة صياغة كلمات طفلك له', relatedBlockIds: ['al-skills-list', 'al-cmp', 'al-mq2'] },
+            { textEn: 'Use open-ended questions to deepen conversations with your child', textAr: 'استخدم الأسئلة المفتوحة لتعميق المحادثات مع طفلك', relatedBlockIds: ['al-body', 'al-activity', 'al-reflect', 'al-likert'] },
           ],
           researchCitations: [
             {
@@ -505,6 +743,113 @@ Remember, active listening is not about being a perfect listener every moment of
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Communication', 'Emotional Attunement', 'Active Listening'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'al-intro', tone: 'lead',
+              textEn: 'Most of us listen with the intent to respond — we\'re already building an answer while our child is still speaking. Active listening asks us to slow down and listen with the intent to understand.',
+              textAr: 'مُعْظَمُنا يَسْتَمِعُ بِنِيّةِ الرَّدّ — نَحْنُ نَبْني الإجابَةَ بَيْنَما طِفْلُنا لا يَزالُ يَتَحَدَّث. الاِسْتِماعُ الفَعّالُ يَطْلُبُ مِنّا أَنْ نُبْطِئَ ونَسْتَمِعَ بِنِيّةِ الفَهْم.',
+            },
+            {
+              kind: 'callout', id: 'al-core', variant: 'insight',
+              textEn: 'When a child feels truly heard, they develop trust, emotional security, and the courage to share their inner world. Being heard is often all the help they need.',
+              textAr: 'عِنْدَما يَشْعُرُ الطِّفْلُ أَنَّهُ مَسْموعٌ حَقّاً، يُطَوِّرُ الثِّقَةَ والأَمانَ العاطِفِيَّ والجُرْأَةَ على مُشارَكَةِ عالَمِهِ الدّاخِلِيّ. أَحْياناً، أَنْ يُسْمَعَ هو كُلُّ المُساعَدَةِ الّتي يَحْتاجُها.',
+            },
+            {
+              kind: 'micro-quiz', id: 'al-mq1',
+              question: {
+                textEn: 'Active listening is primarily about:',
+                textAr: 'الاِسْتِماعُ الفَعّالُ يَتَعَلَّقُ أَساساً بِـ:',
+                options: [
+                  { labelEn: 'Giving the right advice quickly', labelAr: 'إعْطاءِ النَّصيحَةِ الصَّحيحَةِ بِسُرْعَة', correct: false, explanationEn: 'That\'s responding — not listening.', explanationAr: 'هذا رَدٌّ — لَيْسَ اسْتِماعاً.' },
+                  { labelEn: 'Understanding what they\'re experiencing', labelAr: 'فَهْمِ ما يَخْتَبِرُونَه', correct: true, explanationEn: 'Yes — understand first, respond second (if at all).', explanationAr: 'نَعَم — اِفْهَمي أَوَّلاً، ثُمَّ رُدّي (إنْ لَزِمَ).' },
+                  { labelEn: 'Correcting misunderstandings', labelAr: 'تَصْحيحِ سُوءِ الفَهْم', correct: false, explanationEn: 'Correction comes much later — if ever.', explanationAr: 'التَّصْحيحُ يَأْتي بَعْدَ ذلِكَ بِكَثير — إنْ جاءَ.' },
+                ],
+              },
+            },
+            { kind: 'heading', id: 'al-h-skills', level: 2, textEn: 'The Three Core Skills', textAr: 'المَهاراتُ الثَّلاثُ الأَساسِيّة' },
+            {
+              kind: 'checklist', id: 'al-skills-list',
+              titleEn: 'Practice these in order', titleAr: 'مارِسي هذِهِ بِالتَّرْتيب',
+              itemsEn: [
+                'Reflective listening: repeat what you heard in your own words',
+                'Open-ended questions: "What was the best part?" not "Was it good?"',
+                'Validate without fixing: "That sounds really tough" before any advice',
+              ],
+              itemsAr: [
+                'الاِسْتِماعُ الاِنْعِكاسِيّ: أَعيدي ما سَمِعْتِهِ بِكَلِماتِكِ',
+                'أَسْئِلَةٌ مَفْتوحَة: "ما أَفْضَلُ جُزْءٍ؟" لا "هل كانَ جَيِّداً؟"',
+                'التَّحَقُّقُ دونَ حَلّ: "هذا صَعْبٌ حَقّاً" قَبْلَ أَيِّ نَصيحَة',
+              ],
+            },
+            {
+              kind: 'comparison', id: 'al-cmp',
+              titleEn: 'Two Modes of Listening', titleAr: 'طَريقَتانِ لِلاِسْتِماع',
+              left: {
+                labelEn: 'Responding Mode', labelAr: 'وَضْعُ الرَّدّ',
+                pointsEn: ['"Did you have a good day?" (closed)', 'Jumps to solutions', 'Listens while scrolling phone', 'Fills every silence'],
+                pointsAr: ['"هل كانَ يَوْمُكَ جَيِّداً؟" (مُغْلَق)', 'يَقْفِزُ إلى الحُلول', 'يَسْتَمِعُ بَيْنَما يَتَصَفَّحُ الهاتِف', 'يَمْلَأُ كُلَّ صَمْت'],
+              },
+              right: {
+                labelEn: 'Understanding Mode', labelAr: 'وَضْعُ الفَهْم',
+                pointsEn: ['"Tell me about today" (open)', 'Reflects first, advises rarely', 'Eye contact at their level', 'Comfortable with silence'],
+                pointsAr: ['"حَدِّثْني عَنْ يَوْمِك" (مَفْتوح)', 'يَعْكِسُ أَوَّلاً، يَنْصَحُ نادِراً', 'تَواصُلٌ بَصَرِيٌّ على مُسْتَواه', 'مُرْتاحٌ مع الصَّمْت'],
+              },
+            },
+            {
+              kind: 'micro-quiz', id: 'al-mq2',
+              question: {
+                textEn: 'Your child says "Nobody wanted to play with me at recess." What\'s the BEST reflective response?',
+                textAr: 'طِفْلُكِ يَقول: "لَمْ يُرِدْ أَحَدٌ اللَّعِبَ مَعي في الاِسْتِراحَة." ما أَفْضَلُ رَدٍّ اِنْعِكاسِيّ؟',
+                options: [
+                  { labelEn: '"I\'m sure someone wanted to play. Did you ask?"', labelAr: '"أَكيدٌ أَنَّ أَحَداً أَرادَ اللَّعِب. هل سَأَلْتِ؟"', correct: false, explanationEn: 'That dismisses the feeling and shifts into problem-solving.', explanationAr: 'هذا يَرْفُضُ الشُّعورَ ويَنْتَقِلُ إلى حَلِّ المُشْكِلَة.' },
+                  { labelEn: '"It sounds like you felt really lonely today."', labelAr: '"يَبْدو أَنَّكَ شَعَرْتَ بِالوَحْدَةِ اليَوْم."', correct: true, explanationEn: 'Perfect — names the feeling and reflects their experience.', explanationAr: 'مُمْتاز — يُسَمّي الشُّعورَ ويَعْكِسُ تَجْرِبَتَه.' },
+                  { labelEn: '"Don\'t worry, tomorrow will be better!"', labelAr: '"لا تَقْلَق، غَداً سَيَكونُ أَفْضَل!"', correct: false, explanationEn: 'Reassurance skips over what they actually felt.', explanationAr: 'الطَّمْأَنَةُ تَتَخَطّى ما شَعَرُوا بِهِ فِعْلاً.' },
+                ],
+              },
+            },
+            { kind: 'heading', id: 'al-h-body', level: 2, textEn: 'Your Body Says Everything', textAr: 'جَسَدُكِ يَقولُ كُلَّ شَيْء' },
+            {
+              kind: 'paragraph', id: 'al-body',
+              textEn: 'Children are remarkably perceptive to nonverbal cues. Crossed arms, a glance at your watch, or scrolling while they speak — all tell them their words don\'t matter. Kneel to their level, nod, and hold warm eye contact: you\'ve just communicated safety without a single word.',
+              textAr: 'الأَطْفالُ حَسّاسونَ بِشَكْلٍ مَلْحوظٍ لِلإشاراتِ غَيْرِ اللَّفْظيّة. ذِراعانِ مُتَقاطِعَتانِ، نَظْرَةٌ إلى السّاعَة، أو التَّصَفُّحُ بَيْنَما يَتَحَدَّثون — كُلُّ ذلِكَ يُخْبِرُهُم أَنَّ كَلِماتِهِم لا تَهُمّ. اِنْزِلي إلى مُسْتَواه، أَومِئي، وحافِظي على تَواصُلٍ بَصَرِيٍّ دافِئ: تَكونينَ قد نَقَلْتِ الأَمانَ دونَ كَلِمَةٍ واحِدَة.',
+            },
+            {
+              kind: 'pullquote', id: 'al-pq',
+              textEn: 'Active listening is how we say "you matter" without using those words.',
+              textAr: 'الاِسْتِماعُ الفَعّالُ هو كَيْفَ نَقولُ "أَنْتَ مُهِمّ" دونَ اسْتِخْدامِ تِلْكَ الكَلِمات.',
+            },
+            {
+              kind: 'callout', id: 'al-drhala', variant: 'dr-hala',
+              textEn: 'Your child doesn\'t need you to fix everything. They need to know that when they speak, someone is truly there. That\'s the gift active listening gives.',
+              textAr: 'طِفْلُكِ لا يَحْتاجُ مِنْكِ أَنْ تُصْلِحي كُلَّ شَيْء. يَحْتاجُ أَنْ يَعْرِفَ أَنَّهُ حينَ يَتَحَدَّث، هُناكَ شَخْصٌ مَوْجودٌ حَقّاً. تِلْكَ هي الهَديّةُ الّتي يُقَدِّمُها الاِسْتِماعُ الفَعّال.',
+            },
+            {
+              kind: 'activity', id: 'al-activity', durationMinutes: 5,
+              titleEn: 'The 5-Minute Listening Window', titleAr: 'نافِذَةُ اسْتِماعٍ لِـ 5 دَقائِق',
+              descriptionEn: 'Pick a time each day this week — bedtime, after school, or during a meal — and commit to 5 minutes of pure listening. Phones away. Get on their level. Let them lead. Reflect back what you hear. Resist advising. Journal how it felt — for both of you.',
+              descriptionAr: 'اِخْتاري وَقْتاً كُلَّ يَوْمٍ هذا الأُسْبوع — النَّوْم أَو بَعْدَ المَدْرَسَةِ أَو أَثْناءَ الوَجْبَة — والْتَزِمي بِـ 5 دَقائِقَ من الاِسْتِماعِ الصّافي. الهَواتِفُ جانِباً. اِنْزِلي إلى مُسْتَواه. دَعيهِ يَقود. اِعْكِسي ما تَسْمَعين. قاوِمي النَّصيحَة. دَوِّني كَيْفَ شَعَرْتُما.',
+            },
+            {
+              kind: 'likert', id: 'al-likert',
+              reflection: {
+                titleEn: 'Listening Style Self-Check', titleAr: 'فَحْصُ أُسْلوبِ الاِسْتِماع',
+                statementEn: 'When my child speaks, I listen to understand — not to respond.',
+                statementAr: 'عِنْدَما يَتَحَدَّثُ طِفْلي، أَسْتَمِعُ لِأَفْهَم — لا لِأَرُدّ.',
+                scaleLabels: { lowEn: 'Rarely', lowAr: 'نادِراً', highEn: 'Almost always', highAr: 'دائِماً تَقْريباً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Responding mode', labelAr: 'وَضْعُ الرَّدّ', feedbackEn: 'You tend to jump to advice. This module is about building the pause — try the 5-minute window this week.', feedbackAr: 'تَمِيلينَ لِلْقَفْزِ إلى النَّصيحَة. هذِهِ الوِحْدَةُ عَنْ بِناءِ التَّوَقُّف — جَرِّبي نافِذَةَ الـ 5 دَقائِقَ هذا الأُسْبوع.' },
+                  { min: 3, max: 5, labelEn: 'Learning the pause', labelAr: 'تَتَعَلَّمينَ التَّوَقُّف', feedbackEn: 'You\'re building the skill. Reflective listening gets easier with practice.', feedbackAr: 'تَبْنينَ المَهارَة. الاِسْتِماعُ الاِنْعِكاسِيُّ يَصيرُ أَسْهَلَ مع المُمارَسَة.' },
+                  { min: 6, max: 7, labelEn: 'Deeply attuned listener', labelAr: 'مُسْتَمِعَةٌ مُتَناغِمَةٌ بِعُمْق', feedbackEn: 'You listen to understand. Keep modeling this — your child is watching.', feedbackAr: 'تَسْتَمِعينَ لِتَفْهَمي. اِسْتَمِرّي في القُدْوَة — طِفْلُكِ يُراقِب.' },
+                ],
+              },
+            },
+            {
+              kind: 'reflection-prompt', id: 'al-reflect', minWords: 25,
+              promptEn: 'When was the last time you gave your child 5 uninterrupted minutes of full attention? What did you notice in their response?',
+              promptAr: 'مَتى كانَتْ آخِرُ مَرَّةٍ مَنَحْتِ فيها طِفْلَكِ 5 دَقائِقَ غَيْرَ مُنْقَطِعَةٍ من الاِنْتِباهِ الكامِل؟ ما الّذي لاحَظْتِهِ في اسْتِجابَتِه؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'triangle',
@@ -631,10 +976,10 @@ Finally, remember that boundaries are an expression of love. When you hold a lim
             },
           ],
           learningObjectives: [
-            { textEn: 'Differentiate between authoritarian, permissive, and authoritative parenting styles', textAr: 'ميّز بين أساليب التربية السلطوية والمتساهلة والحازمة المتوازنة' },
-            { textEn: 'Use the empathy-first approach when delivering boundaries', textAr: 'استخدم نهج التعاطف أولاً عند إيصال الحدود' },
-            { textEn: 'Apply natural and logical consequences in age-appropriate ways', textAr: 'طبّق العواقب الطبيعية والمنطقية بطرق مناسبة للعمر' },
-            { textEn: 'Maintain calm consistency when boundaries are challenged', textAr: 'حافظ على الاتساق الهادئ عند تحدي الحدود' },
+            { textEn: 'Differentiate between authoritarian, permissive, and authoritative parenting styles', textAr: 'ميّز بين أساليب التربية السلطوية والمتساهلة والحازمة المتوازنة', relatedBlockIds: ['bw-intro', 'bw-mq1'] },
+            { textEn: 'Use the empathy-first approach when delivering boundaries', textAr: 'استخدم نهج التعاطف أولاً عند إيصال الحدود', relatedBlockIds: ['bw-screen', 'bw-sharing', 'bw-no'] },
+            { textEn: 'Apply natural and logical consequences in age-appropriate ways', textAr: 'طبّق العواقب الطبيعية والمنطقية بطرق مناسبة للعمر', relatedBlockIds: ['bw-hitting', 'bw-bedtime'] },
+            { textEn: 'Maintain calm consistency when boundaries are challenged', textAr: 'حافظ على الاتساق الهادئ عند تحدي الحدود', relatedBlockIds: ['bw-mq2', 'bw-public', 'bw-closing'] },
           ],
           researchCitations: [
             {
@@ -718,6 +1063,89 @@ Finally, remember that boundaries are an expression of love. When you hold a lim
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Boundary Setting', 'Discipline', 'Empathy'],
+          format: 'cards',
+          blocks: [
+            {
+              kind: 'card', id: 'bw-intro', accentColor: '#7A3B5E',
+              titleEn: 'Boundaries are teaching, not control',
+              titleAr: 'الحُدودُ تَعْليمٌ، لا تَحَكُّم',
+              bodyEn: 'Every limit you set is a lesson in structure, safety, and rhythm. The words you choose determine whether that lesson builds trust — or resentment.\n\nSwipe through 6 real scripts for the most common standoffs.',
+              bodyAr: 'كُلُّ حَدٍّ تَضَعينَهُ هو دَرْسٌ في البِنْيَةِ والأَمانِ والإيقاع. الكَلِماتُ الّتي تَخْتارينَها تُحَدِّدُ هل يَبْني الدَّرْسُ الثِّقَة — أَمْ الاِسْتِياء.\n\nمَرِّري على 6 سِينَارِيوهاتٍ حَقيقيّة.',
+            },
+            {
+              kind: 'card', id: 'bw-screen', accentColor: '#C4878A',
+              titleEn: '1. The Screen Standoff',
+              titleAr: '1. مَواجَهَةُ الشّاشَة',
+              bodyEn: '✗ "Turn it off NOW. I said now!"\n\n✓ "Two more minutes — I\'ll let you know when it\'s time. I know stopping is hard."\n\nThe warmth doesn\'t weaken the limit. It makes the limit receivable.',
+              bodyAr: '✗ "أَطْفِئْها الآن. قُلْتُ الآن!"\n\n✓ "دَقيقَتانِ بَعْد — سَأُخْبِرُكَ حينَ يَحينُ الوَقْت. أَعْرِفُ أَنَّ التَّوَقُّفَ صَعْب."\n\nالدِّفْءُ لا يُضْعِفُ الحَدّ. يَجْعَلُهُ قابِلاً لِلتَّلَقّي.',
+            },
+            {
+              kind: 'card', id: 'bw-sharing', accentColor: '#C8A97D',
+              titleEn: '2. The Sharing Fight',
+              titleAr: '2. شِجارُ المُشارَكَة',
+              bodyEn: '✗ "You have to share. Stop being selfish."\n\n✓ "She\'s using it right now. When she\'s done, it\'s your turn."\n\nChildren don\'t need to share on demand. They need to practice waiting — a different skill.',
+              bodyAr: '✗ "يَجِبُ أَنْ تُشارِك. كُفَّ عَنِ الأَنانيّة."\n\n✓ "إنَّها تَسْتَخْدِمُها الآن. عِنْدَما تَنْتَهي، يَأْتي دَوْرُك."\n\nالأَطْفالُ لا يَحْتاجونَ لِلْمُشارَكَةِ عَلى الطَّلَب. يَحْتاجونَ لِيُمارِسوا الاِنْتِظار.',
+            },
+            {
+              kind: 'micro-quiz', id: 'bw-mq1',
+              question: {
+                textEn: 'What do these warm scripts share in common?',
+                textAr: 'ما الّذي تَشْتَرِكُ فيهِ هذِهِ السِّينَاريوهاتُ الدّافِئَة؟',
+                options: [
+                  { labelEn: 'They soften the limit', labelAr: 'تُلَيِّنُ الحَدّ', correct: false, explanationEn: 'The limit stays firm — only the delivery changes.', explanationAr: 'الحَدُّ يَبْقى ثابِتاً — التَّوْصيلُ فَقَطْ يَتَغَيَّر.' },
+                  { labelEn: 'They name the feeling and hold the limit', labelAr: 'تُسَمّي الشُّعورَ وتَحْفَظُ الحَدّ', correct: true, explanationEn: 'Exactly — acknowledge the emotion, keep the boundary. Both at once.', explanationAr: 'تَماماً — اِعْتَرِفي بِالشُّعور، اِحْفَظي الحَدّ. مَعاً.' },
+                  { labelEn: 'They avoid saying "no"', labelAr: 'تَتَجَنَّبُ قَوْلَ "لا"', correct: false, explanationEn: 'Warm scripts can and do say no — kindly.', explanationAr: 'السِّينَاريوهاتُ الدّافِئَةُ تَقولُ "لا" — بِلُطْف.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'bw-hitting', accentColor: '#9B3B42',
+              titleEn: '3. When They Hit',
+              titleAr: '3. حينَ يَضْرِب',
+              bodyEn: '✗ "Don\'t you DARE hit! Go to your room!"\n\n✓ (Gently blocking the next hit) "I won\'t let you hit. You\'re so angry. Use words or stomp your feet."\n\nBlock the body, accept the feeling, offer a release.',
+              bodyAr: '✗ "إِيّاكَ أَنْ تَضْرِب! إلى غُرْفَتِك!"\n\n✓ (تَمْنَعينَ الضَّرْبَةَ بِلُطْف) "لَنْ أَدَعَكَ تَضْرِب. أَنْتَ غاضِبٌ جِدّاً. اِسْتَخْدِمِ الكَلِماتِ أَو دُسْ بِقَدَمَيْك."\n\nأَوْقِفي الجَسَد، اِقْبَلي الشُّعور، قَدِّمي مَنْفَذاً.',
+            },
+            {
+              kind: 'card', id: 'bw-no', accentColor: '#3B8A6E',
+              titleEn: '4. The "No" That Stays No',
+              titleAr: '4. "لا" الّتي تَبْقى لا',
+              bodyEn: '✗ "Ugh, fine, just this once. But don\'t ask again!"\n\n✓ "I know you really want it. The answer is still no. You can be sad about it — that\'s okay."\n\nEvery "fine" you give under pressure teaches them pressure works.',
+              bodyAr: '✗ "حَسَناً، مَرَّةً فَقَطْ. لَكِنْ لا تَطْلُبْ ثانِيَة!"\n\n✓ "أَعْرِفُ أَنَّكَ تُريدُها حَقّاً. الإجابَةُ لا تَزالُ لا. يُمْكِنُكَ أَنْ تَكونَ حَزيناً — هذا جَيِّد."\n\nكُلُّ "حَسَناً" تَحْتَ الضَّغْطِ تُعَلِّمُهُم أَنَّ الضَّغْطَ يَنْجَح.',
+            },
+            {
+              kind: 'micro-quiz', id: 'bw-mq2',
+              question: {
+                textEn: 'Why does giving in after pressure create more conflict later?',
+                textAr: 'لِماذا يُسَبِّبُ الرُّضوخُ بَعْدَ الضَّغْطِ صِراعاً أَكْبَرَ لاحِقاً؟',
+                options: [
+                  { labelEn: 'It teaches that pushing harder works', labelAr: 'يُعَلِّمُ أَنَّ الإلْحاحَ يَنْجَح', correct: true, explanationEn: 'Yes — kids learn strategies that work. If whining gets the answer flipped, whining continues.', explanationAr: 'نَعَم — الأَطْفالُ يَتَعَلَّمونَ ما يَنْجَح. إذا قَلَبَ التَّذَمُّرُ الإجابَة، يَسْتَمِرُّ التَّذَمُّر.' },
+                  { labelEn: 'It makes you look weak', labelAr: 'يَجْعَلُكِ تَبْدينَ ضَعيفَة', correct: false, explanationEn: 'This isn\'t about you looking strong. It\'s about teaching predictability.', explanationAr: 'هذا لَيْسَ عَنْ قُوَّةِ مَظْهَرِكِ. بَلْ عَنْ تَعْليمِ الثَّباتِ والتَّوَقُّع.' },
+                  { labelEn: 'Children need strict parents', labelAr: 'الأَطْفالُ يَحْتاجونَ آباءً صارِمين', correct: false, explanationEn: 'Firm and warm — not strict. Consistency is the real medicine.', explanationAr: 'ثابِتَةٌ ودافِئَة — لا صارِمَة. الاِتِّساقُ هو الدَّواءُ الحَقيقيّ.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'bw-bedtime', accentColor: '#5B8FA8',
+              titleEn: '5. Bedtime Protests',
+              titleAr: '5. اِحْتِجاجاتُ النَّوْم',
+              bodyEn: '✗ "Go to sleep! Why are you doing this to me?"\n\n✓ "It\'s bedtime. I\'ll sit with you for two minutes, then it\'s time to rest. I love you."\n\nConnection + limit + warm exit. Practice until it\'s muscle memory.',
+              bodyAr: '✗ "نَمْ! لِماذا تَفْعَلُ هذا بي؟"\n\n✓ "وَقْتُ النَّوْم. سَأَجْلِسُ مَعَكَ دَقيقَتَيْن، ثُمَّ تَسْتَريح. أُحِبُّك."\n\nتَواصُل + حَدّ + خُروجٌ دافِئ. كَرِّري حَتّى تَصيرَ عادَة.',
+            },
+            {
+              kind: 'card', id: 'bw-public', accentColor: '#7A3B5E',
+              titleEn: '6. The Public Meltdown',
+              titleAr: '6. الاِنْهِيارُ العَلَنيّ',
+              bodyEn: '✗ (Through gritted teeth) "Stop it. People are staring."\n\n✓ (Kneeling down) "You\'re having a big feeling. We\'re going to the car so we can feel it safely. Ready?"\n\nStrangers aren\'t your audience. Your child is.',
+              bodyAr: '✗ (بِأَسْنانٍ مَضْغوطَة) "تَوَقَّف. النّاسُ يَنْظُرون."\n\n✓ (تَنْزِلينَ) "لَدَيْكَ شُعورٌ كَبير. سَنَذْهَبُ إلى السَّيّارَةِ لِنَشْعُرَ بِهِ بِأَمان. مُسْتَعِدّ؟"\n\nالغُرَباءُ لَيْسوا جُمْهورَك. طِفْلُكِ هو.',
+            },
+            {
+              kind: 'card', id: 'bw-closing', accentColor: '#C8A97D',
+              titleEn: 'The Core Formula',
+              titleAr: 'الصّيغَةُ الجَوْهَريّة',
+              bodyEn: 'Name the feeling. Hold the limit. Offer warmth.\n\nSave this card. Practice one script this week. Notice what shifts.',
+              bodyAr: 'سَمّي الشُّعور. اِحْفَظي الحَدّ. قَدِّمي الدِّفْء.\n\nاِحْفَظي هذِهِ البِطاقَة. مارِسي سِينَاريو واحِداً هذا الأُسْبوع. لاحِظي ما يَتَغَيَّر.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'quadrant',
@@ -840,9 +1268,9 @@ Finally, be gentle with yourself when rituals are missed. Life is unpredictable.
             },
           ],
           learningObjectives: [
-            { textEn: 'Distinguish between routines (functional) and rituals (emotionally meaningful)', textAr: 'ميّز بين الروتين (الوظيفي) والطقوس (ذات المعنى العاطفي)' },
-            { textEn: 'Design at least one new family ritual for a transition moment', textAr: 'صمّم طقساً عائلياً جديداً واحداً على الأقل للحظة انتقالية' },
-            { textEn: 'Incorporate cultural heritage elements into daily family rituals', textAr: 'أدمج عناصر التراث الثقافي في طقوس الأسرة اليومية' },
+            { textEn: 'Distinguish between routines (functional) and rituals (emotionally meaningful)', textAr: 'ميّز بين الروتين (الوظيفي) والطقوس (ذات المعنى العاطفي)', relatedBlockIds: ['dr-intro', 'dr-why'] },
+            { textEn: 'Design at least one new family ritual for a transition moment', textAr: 'صمّم طقساً عائلياً جديداً واحداً على الأقل للحظة انتقالية', relatedBlockIds: ['dr-d1', 'dr-d2', 'dr-d7'] },
+            { textEn: 'Incorporate cultural heritage elements into daily family rituals', textAr: 'أدمج عناصر التراث الثقافي في طقوس الأسرة اليومية', relatedBlockIds: ['dr-d4', 'dr-d5', 'dr-d6'] },
           ],
           researchCitations: [
             {
@@ -925,6 +1353,85 @@ Finally, be gentle with yourself when rituals are missed. Life is unpredictable.
           ],
           estimatedReadTimeMinutes: 5,
           skillTags: ['Connection', 'Cultural Integration', 'Family Identity'],
+          format: 'challenge',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'dr-intro', tone: 'lead',
+              textEn: 'Routines happen TO your family. Rituals are made BY your family — tiny repeated moments charged with meaning. Over 50 years of research links them to resilience, identity, and belonging.',
+              textAr: 'الرُّوتينُ يَحْدُثُ لِعائِلَتِك. الطُّقوسُ تَصْنَعُها عائِلَتُك — لَحَظاتٌ صَغيرَةٌ مُتَكَرِّرَةٌ مَشْحونَةٌ بِالمَعْنى. أَبْحاثُ 50 سَنَةٍ تَرْبِطُها بِالمَرونَةِ والهُوِيَّةِ والاِنْتِماء.',
+            },
+            {
+              kind: 'callout', id: 'dr-why', variant: 'insight',
+              textEn: 'Rituals don\'t need to be elaborate. A 90-second "highs & lows" at dinner. A silly handshake before school. A bedtime blessing. These are the threads that weave belonging.',
+              textAr: 'الطُّقوسُ لا تَحْتاجُ لِلتَّعْقيد. 90 ثانِيَةً من "أَفْضَلُ وأَصْعَبُ جُزْء" عَلى العَشاء. مُصافَحَةٌ مُضْحِكَةٌ قَبْلَ المَدْرَسَة. دُعاءٌ قَبْلَ النَّوْم. هذِهِ خُيوطُ الاِنْتِماء.',
+            },
+            {
+              kind: 'paragraph', id: 'dr-how', tone: 'body',
+              textEn: 'This is a 7-day challenge. One small ritual per day. Check in each evening — journal what happened. By Day 7 you\'ll have 2-3 rituals that feel natural to your family. Keep the ones that stick.',
+              textAr: 'هذا تَحَدٍّ لِـ 7 أَيّام. طَقْسٌ صَغيرٌ كُلَّ يَوْم. سَجِّلي كُلَّ مَساء — دَوِّني ما حَدَث. بِحُلولِ اليَوْمِ السّابِع سَيَكونُ لَدَيْكِ 2-3 طُقوسٍ طَبيعيّةٍ لِعائِلَتِك. اِحْتَفِظي بِما يَتَرَسَّخ.',
+            },
+            {
+              kind: 'challenge-step', id: 'dr-d1', dayLabel: 1,
+              titleEn: 'The Morning Greeting', titleAr: 'تَحِيَّةُ الصَّباح',
+              instructionEn: 'Before screens, chores, or rushing — look your child in the eyes and say one warm sentence. "I\'m so glad to see you today." Do it every morning this week.',
+              instructionAr: 'قَبْلَ الشّاشاتِ والمَهامِّ والاِسْتِعْجال — اُنْظُري إلى عَيْنَيْ طِفْلِكِ وقولي جُمْلَةً دافِئَةً واحِدَة. "سَعيدَةٌ بِرُؤْيَتِكَ اليَوْم." كَرِّريها كُلَّ صَباحٍ هذا الأُسْبوع.',
+              checkInPromptEn: 'Did you do it? How did your child respond?',
+              checkInPromptAr: 'هل فَعَلْتِ؟ كَيْفَ اسْتَجابَ طِفْلُكِ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'dr-d2', dayLabel: 2,
+              titleEn: 'The 60-Second Reunion', titleAr: 'لَمُّ الشَّمْلِ في 60 ثانِيَة',
+              instructionEn: 'When you reunite after school/work, stop what you\'re doing. Kneel, hug, and give them 60 seconds of full attention before moving on to homework/dinner.',
+              instructionAr: 'عِنْدَ اللِّقاءِ بَعْدَ المَدْرَسَةِ/العَمَل، تَوَقَّفي. اِنْزِلي، اِحْتَضِنيه، واِمْنَحيهِ 60 ثانِيَةً من الاِهْتِمامِ الكامِلِ قَبْلَ الواجِباتِ/العَشاء.',
+              checkInPromptEn: 'Describe the reunion. Anything surprising?',
+              checkInPromptAr: 'صِفي اللِّقاء. أَيُّ شَيْءٍ مُفاجِئ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'dr-d3', dayLabel: 3,
+              titleEn: 'Highs & Lows at Dinner', titleAr: 'أَفْضَلُ وأَصْعَبُ جُزْءٍ عَلى العَشاء',
+              instructionEn: 'At the meal, each person shares: one high (best part of the day) and one low (hardest part). No fixing. Just listening. Adults go too.',
+              instructionAr: 'عَلى الوَجْبَة، كُلُّ فَرْدٍ يُشارِك: أَفْضَلَ جُزْءٍ من اليَوْمِ وأَصْعَبَه. بِلا حُلول. اِسْتِماعٌ فَقَط. الكِبارُ يُشارِكونَ أَيْضاً.',
+              checkInPromptEn: 'What did you learn about your child that surprised you?',
+              checkInPromptAr: 'ما الّذي عَرَفْتِهِ عَنْ طِفْلِكِ وفاجَأَكِ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'dr-d4', dayLabel: 4,
+              titleEn: 'The Silly Handshake', titleAr: 'المُصافَحَةُ المُضْحِكَة',
+              instructionEn: 'Invent a 3-move handshake with your child (fist bump → wiggle fingers → high five). Use it at drop-off / pickup today. Keep it as your signature.',
+              instructionAr: 'اِخْتَرِعي مُصافَحَةً من 3 حَرَكاتٍ مع طِفْلِك (لَكْمَةُ قَبْضَة ← تَحْريكُ أَصابِع ← رَبْتَةُ كَفٍّ). اِسْتَخْدِميها عِنْدَ التَّوْديعِ/الاِسْتِقْبالِ اليَوْم.',
+              checkInPromptEn: 'How did it feel? Did your child laugh?',
+              checkInPromptAr: 'كَيْفَ كانَ الشُّعور؟ هل ضَحِكَ طِفْلُكِ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'dr-d5', dayLabel: 5,
+              titleEn: 'Culture Thread', titleAr: 'خَيْطُ الثَّقافَة',
+              instructionEn: 'Share one thing from your heritage today — a word in your language, a song, a food memory, a story from your parents. Tiny. Conversational. Not a lecture.',
+              instructionAr: 'شارِكي شَيْئاً من تُراثِكِ اليَوْم — كَلِمَةً بِلُغَتِك، أُغْنِيَة، ذِكْرى طَعام، قِصَّةً من والِدَيْك. صَغير. حِوارِيّ. لَيْسَ مُحاضَرَة.',
+              checkInPromptEn: 'What did you share? Did they ask for more?',
+              checkInPromptAr: 'ماذا شارَكْتِ؟ هل طَلَبوا المَزيد؟',
+            },
+            {
+              kind: 'challenge-step', id: 'dr-d6', dayLabel: 6,
+              titleEn: 'The Bedtime Blessing', titleAr: 'دُعاءُ النَّوْم',
+              instructionEn: 'At lights-out, whisper one sentence of blessing or love. "I\'m so proud you\'re my kid." "Tomorrow is a new morning." Same or different each night — your choice.',
+              instructionAr: 'عِنْدَ إطْفاءِ الأَنْوار، اُهْمِسي جُمْلَةَ دُعاءٍ أَوْ حُبّ. "فَخورَةٌ أَنَّكَ طِفْلي." "الغَدُ صَباحٌ جَديد." نَفْسَها أَوْ مُخْتَلِفَةٌ كُلَّ لَيْلَة — اخْتِيارُك.',
+              checkInPromptEn: 'What blessing did you choose? How did they receive it?',
+              checkInPromptAr: 'أَيَّ دُعاءٍ اخْتَرْتِ؟ كَيْفَ تَلَقّاه؟',
+            },
+            {
+              kind: 'challenge-step', id: 'dr-d7', dayLabel: 7,
+              titleEn: 'Reflection Day', titleAr: 'يَوْمُ التَّأَمُّل',
+              instructionEn: 'Look back at your 6 days. Which ritual felt most natural? Which one did your child ask about? Keep 2-3. Let the rest go. Plan when you\'ll repeat them next week.',
+              instructionAr: 'اُنْظُري إلى أَيّامِكِ السِّتَّة. أَيُّ طَقْسٍ شَعَرَ طَبيعِيّاً؟ أَيُّهُ سَأَلَ عَنْهُ طِفْلُك؟ اِحْتَفِظي بـ 2-3. خَطِّطي لِتَكْرارِها.',
+              checkInPromptEn: 'Which rituals will you keep?',
+              checkInPromptAr: 'أَيُّ الطُّقوسِ سَتَحْتَفِظينَ بِها؟',
+            },
+            {
+              kind: 'callout', id: 'dr-drhala', variant: 'dr-hala',
+              textEn: 'The families with the strongest bonds aren\'t the ones doing the biggest things. They\'re the ones doing tiny things on repeat. That\'s what a child remembers.',
+              textAr: 'العائِلاتُ الأَقْوى رابِطَةً لَيْسَتِ الّتي تَفْعَلُ الأَشْياءَ الكَبيرَة. بَلْ الّتي تَفْعَلُ الأَشْياءَ الصَّغيرَةَ بِالتَّكْرار. هذا ما يَتَذَكَّرُهُ الطِّفْل.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'cycle',
@@ -1059,10 +1566,10 @@ Over time, the co-regulation you provide becomes the template for your child's s
             },
           ],
           learningObjectives: [
-            { textEn: 'Explain the neuroscience behind why children cannot self-regulate during emotional flooding', textAr: 'وضّح العلم العصبي وراء عدم قدرة الأطفال على التنظيم الذاتي أثناء الغمر العاطفي' },
-            { textEn: 'Practice co-regulation techniques including calm voice, gentle touch, and slow breathing', textAr: 'مارس تقنيات التنظيم المشترك بما في ذلك الصوت الهادئ واللمس اللطيف والتنفس البطيء' },
-            { textEn: 'Identify personal triggers that dysregulate your own nervous system', textAr: 'حدّد المحفزات الشخصية التي تُربك جهازك العصبي' },
-            { textEn: 'Distinguish between co-regulation and emotional absorption', textAr: 'ميّز بين التنظيم المشترك والامتصاص العاطفي' },
+            { textEn: 'Explain the neuroscience behind why children cannot self-regulate during emotional flooding', textAr: 'وضّح العلم العصبي وراء عدم قدرة الأطفال على التنظيم الذاتي أثناء الغمر العاطفي', relatedBlockIds: ['cr-intro', 'cr-science'] },
+            { textEn: 'Practice co-regulation techniques including calm voice, gentle touch, and slow breathing', textAr: 'مارس تقنيات التنظيم المشترك بما في ذلك الصوت الهادئ واللمس اللطيف والتنفس البطيء', relatedBlockIds: ['cr-lk4', 'cr-practice'] },
+            { textEn: 'Identify personal triggers that dysregulate your own nervous system', textAr: 'حدّد المحفزات الشخصية التي تُربك جهازك العصبي', relatedBlockIds: ['cr-lk1', 'cr-lk2'] },
+            { textEn: 'Distinguish between co-regulation and emotional absorption', textAr: 'ميّز بين التنظيم المشترك والامتصاص العاطفي', relatedBlockIds: ['cr-lk3', 'cr-drhala', 'cr-refl'] },
           ],
           researchCitations: [
             {
@@ -1154,6 +1661,91 @@ Over time, the co-regulation you provide becomes the template for your child's s
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Co-Regulation', 'Self-Regulation', 'Nervous System'],
+          format: 'assessment',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'cr-intro', tone: 'lead',
+              textEn: 'Co-regulation isn\'t a technique — it\'s a state. Your calm nervous system helps your child find their calm. You can\'t teach what you don\'t embody. So first, an honest look at YOU.',
+              textAr: 'التَّنْظيمُ المُشْتَرَكُ لَيْسَ تِقْنيَّة — إنَّهُ حالَة. جِهازُكِ العَصَبِيُّ الهادِئُ يُساعِدُ طِفْلَكِ في إيْجادِ هُدوئِه. لا تُعَلِّمينَ ما لا تَعيشينَه. لِذا أَوَّلاً، نَظْرَةٌ صادِقَةٌ إلَيْكِ.',
+            },
+            {
+              kind: 'callout', id: 'cr-science', variant: 'insight',
+              textEn: 'Neuroscience: a child\'s stressed nervous system automatically "borrows" regulation from the nearest calm adult nervous system. If yours is dysregulated, they have nothing to borrow.',
+              textAr: 'عِلْمُ الأَعْصاب: الجِهازُ العَصَبِيُّ المُجْهَدُ لِلطِّفْلِ "يَسْتَعيرُ" تِلْقائِيّاً التَّنْظيمَ من أَقْرَبِ جِهازٍ عَصَبِيٍّ هادِئ. إذا كانَ جِهازُكِ مُضْطَرِباً، لا شَيْءَ لَدَيْهِ لِيَسْتَعيرَهُ.',
+            },
+            {
+              kind: 'likert', id: 'cr-lk1',
+              reflection: {
+                titleEn: 'Your Regulation Baseline', titleAr: 'خَطُّ أَساسِ تَنْظيمِك',
+                statementEn: 'When my child melts down, I stay grounded — I don\'t escalate.',
+                statementAr: 'عِنْدَما يَنْهارُ طِفْلي، أَبْقى ثابِتَة — لا أَتَصاعَد.',
+                scaleLabels: { lowEn: 'Rarely', lowAr: 'نادِراً', highEn: 'Almost always', highAr: 'دائِماً تَقْريباً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'You escalate with them', labelAr: 'تَتَصاعَدينَ مَعَه', feedbackEn: 'Normal — most parents do. This module is about the pause that rewires this pattern.', feedbackAr: 'طَبيعيّ — مُعْظَمُ الآباءِ يَفْعَلون. هذِهِ الوِحْدَةُ عَنِ التَّوَقُّفِ الّذي يُعيدُ بِناءَ هذا النَّمَط.' },
+                  { min: 3, max: 5, labelEn: 'Mixed — depends on the day', labelAr: 'مُخْتَلِط — حَسَبَ اليَوْم', feedbackEn: 'Your own stress level is a bigger variable than you think. Let\'s measure it.', feedbackAr: 'مُسْتَوى تَوَتُّرِكِ مُتَغَيِّرٌ أَكْبَرُ مِمّا تَعْتَقِدين. فَلْنَقِسْه.' },
+                  { min: 6, max: 7, labelEn: 'Usually grounded', labelAr: 'عادَةً ثابِتَة', feedbackEn: 'Strong baseline. Let\'s sharpen the skill in harder moments.', feedbackAr: 'أَساسٌ قَوِيّ. لِنَصْقُلِ المَهارَةَ في اللَّحَظاتِ الأَصْعَب.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'cr-lk2',
+              reflection: {
+                titleEn: 'Your Own Stress Reservoir', titleAr: 'خَزّانُ تَوَتُّرِك',
+                statementEn: 'On an average day, my own stress tank is low — I have capacity for my child.',
+                statementAr: 'في يَوْمٍ عادِيّ، خَزّانُ تَوَتُّري مُنْخَفِض — لَدَيَّ طاقَةٌ لِطِفْلي.',
+                scaleLabels: { lowEn: 'Running on empty', lowAr: 'فارِغَةٌ تَماماً', highEn: 'Plenty of room', highAr: 'مَجالٌ واسِع' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'You\'re depleted', labelAr: 'مُسْتَنْزَفَة', feedbackEn: 'You can\'t co-regulate from empty. Your own care is the first intervention. Not optional.', feedbackAr: 'لا يُمْكِنُكِ تَنْظيمَ شَخْصٍ آخَرَ وأَنْتِ فارِغَة. رِعايَتُكِ لِنَفْسِكِ أَوَّلاً. لَيْسَتِ اخْتِياراً.' },
+                  { min: 3, max: 5, labelEn: 'Stretched thin', labelAr: 'مُرْهَقَة', feedbackEn: 'You\'re managing but close to the edge. Watch for signals and build in 2-minute resets.', feedbackAr: 'تَتَدَبَّرينَ لَكِنْ قَريبَةٌ من الحافَّة. راقِبي الإشاراتِ وابْني فَواصِلَ دَقيقَتَيْن.' },
+                  { min: 6, max: 7, labelEn: 'Spacious capacity', labelAr: 'طاقَةٌ واسِعَة', feedbackEn: 'This is the sweet spot for co-regulation. Protect this margin fiercely.', feedbackAr: 'هذِهِ بُقْعَةٌ مِثالِيَّةٌ لِلتَّنْظيمِ المُشْتَرَك. اِحْمي هذا الهامِشَ بِقُوَّة.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'cr-lk3',
+              reflection: {
+                titleEn: 'The Pause Muscle', titleAr: 'عَضَلَةُ التَّوَقُّف',
+                statementEn: 'Before I respond to hard moments, I take a breath — even 2 seconds.',
+                statementAr: 'قَبْلَ أَنْ أَسْتَجيبَ لِلَحَظاتٍ صَعْبَة، آخُذُ نَفَساً — حَتّى ثانِيَتَيْن.',
+                scaleLabels: { lowEn: 'Almost never', lowAr: 'أَبَداً تَقْريباً', highEn: 'It\'s automatic', highAr: 'تِلْقائيّ' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Reactive autopilot', labelAr: 'رَدُّ فِعْلٍ تِلْقائيّ', feedbackEn: 'Your nervous system is firing faster than your reflection. Tiny pauses, practiced daily, change this.', feedbackAr: 'جِهازُكِ العَصَبِيُّ يَعْمَلُ أَسْرَعَ من تَأَمُّلِك. تَوَقُّفاتٌ صَغيرَةٌ يَوْميّاً تُغَيِّرُ هذا.' },
+                  { min: 3, max: 5, labelEn: 'Sometimes, with awareness', labelAr: 'أَحْياناً بِوَعْي', feedbackEn: 'You\'ve got the skill in easier moments. The hard ones need more rehearsal.', feedbackAr: 'لَدَيْكِ المَهارَةُ في اللَّحَظاتِ الأَسْهَل. الصَّعْبَةُ تَحْتاجُ مَزيداً من التَّمْرين.' },
+                  { min: 6, max: 7, labelEn: 'Consistent pauser', labelAr: 'تَتَوَقَّفينَ بِانْتِظام', feedbackEn: 'This is the core muscle of co-regulation. Keep exercising it.', feedbackAr: 'هذِهِ العَضَلَةُ الجَوْهَريّةُ لِلتَّنْظيمِ المُشْتَرَك. اِسْتَمِرّي في تَمْرينِها.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'cr-lk4',
+              reflection: {
+                titleEn: 'Co-Regulation Signals', titleAr: 'إشاراتُ التَّنْظيمِ المُشْتَرَك',
+                statementEn: 'When my child is upset, I physically soften: voice drops, shoulders release, I get low.',
+                statementAr: 'عِنْدَما يَنْزَعِجُ طِفْلي، أَلينُ جَسَدِيّاً: صَوْتي يَهْدَأ، كَتِفايَ تَسْتَرْخِيان، أَنْزِل.',
+                scaleLabels: { lowEn: 'I tense up', lowAr: 'أَتَوَتَّر', highEn: 'Soft by default', highAr: 'لَيِّنَةٌ تِلْقائيّاً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Your body tightens', labelAr: 'جَسَدُكِ يَتَوَتَّر', feedbackEn: 'Children read your body first, words second. Physical softness is the signal.', feedbackAr: 'الأَطْفالُ يَقْرَؤونَ جَسَدَكِ أَوَّلاً، الكَلِماتِ ثانِياً. اللِّينُ الجَسَدِيُّ هو الإشارَة.' },
+                  { min: 3, max: 5, labelEn: 'Mixed signals', labelAr: 'إشاراتٌ مُخْتَلِطَة', feedbackEn: 'Notice the gap between your words and your body. Close it.', feedbackAr: 'لاحِظي الفَجْوَةَ بَيْنَ كَلِماتِكِ وجَسَدِك. أَغْلِقيها.' },
+                  { min: 6, max: 7, labelEn: 'Body communicates calm', labelAr: 'جَسَدُكِ يَنْقُلُ الهُدوء', feedbackEn: 'This is the fastest way children learn the nervous system has a floor.', feedbackAr: 'هذِهِ أَسْرَعُ طَريقَةٍ يَتَعَلَّمُ فيها الأَطْفالُ أَنَّ لِلْجِهازِ العَصَبِيِّ أَرْضِيَّة.' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'cr-drhala', variant: 'dr-hala',
+              textEn: 'Look at your 4 answers. They\'re not scores — they\'re a map. The lowest number is your growth edge. The highest is your anchor. You already know what to practice.',
+              textAr: 'اُنْظُري إلى إجاباتِكِ الأَرْبَع. لَيْسَتْ دَرَجات — بَلْ خَريطَة. أَقَلُّ رَقْمٍ هو حافَّةُ نُمُوِّك. الأَعْلى مِرْساتُك. أَنْتِ تَعْرِفينَ ما تُمارِسين.',
+            },
+            {
+              kind: 'activity', id: 'cr-practice', durationMinutes: 5,
+              titleEn: 'The 5-4-3-2-1 Ground', titleAr: 'التَّثْبيتُ 5-4-3-2-1',
+              descriptionEn: 'When you feel the reaction rising, name: 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste. It pulls your nervous system back to this room. Practice it daily — not just in crisis.',
+              descriptionAr: 'عِنْدَما تَشْعُرينَ بِرَدِّ الفِعْلِ يَرْتَفِع، سَمّي: 5 أَشْياءَ تَرَيْنَها، 4 تَلْمُسينَها، 3 تَسْمَعينَها، 2 تَشُمّينَها، 1 تَتَذَوَّقينَها. يَسْحَبُ جِهازَكِ العَصَبِيَّ إلى هذِهِ الغُرْفَة. مارِسيهِ يَوْميّاً — لَيْسَ فَقَطْ في الأَزَماتِ.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'cr-refl', minWords: 40,
+              promptEn: 'Where are you strongest in co-regulation? Where are you weakest? What would change for your family if your weakest dimension moved up just one point?',
+              promptAr: 'أَيْنَ أَنْتِ الأَقْوى في التَّنْظيمِ المُشْتَرَك؟ أَيْنَ الأَضْعَف؟ ما الّذي سَيَتَغَيَّرُ لِعائِلَتِكِ إذا تَحَرَّكَ بُعْدُكِ الأَضْعَفُ دَرَجَةً واحِدَة؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'cycle',
@@ -1189,6 +1781,7 @@ Over time, the co-regulation you provide becomes the template for your child's s
       descriptionEn: 'Tackle the real-world challenges of modern parenting with evidence-based strategies that honor your values and strengthen your family bond.',
       descriptionAr: 'تعامل مع التحديات الحقيقية للتربية الحديثة باستراتيجيات مبنية على الأدلة تحترم قيمك وتعزز رابطة عائلتك.',
       isFree: false,
+      priceCAD: 19,
       modules: [
         // ── Module 2.1 ──
         {
@@ -1383,6 +1976,82 @@ Remember: the goal of discipline is not a perfectly behaved child. It is a child
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Discipline', 'Boundary Setting', 'Repair'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'dwd-lead', tone: 'lead',
+              textEn: 'Discipline comes from the Latin *discipulus* — meaning "to teach." Not to punish. Not to humiliate. The goal is internalized values, not compliance through fear.',
+              textAr: 'كَلِمَةُ "تَأْديب" مَصْدَرُها مِنَ التَّعْليمِ — لا العِقاب. الهَدَفُ قِيَمٌ داخِلِيَّة، لا طاعَةٌ بِالخَوْف.',
+            },
+            {
+              kind: 'comparison', id: 'dwd-cmp',
+              titleEn: 'Punishment vs Discipline', titleAr: 'العِقابُ مُقابِلَ التَّأْديب',
+              left: {
+                labelEn: 'Punishment', labelAr: 'العِقاب',
+                pointsEn: ['Goal: control', 'Method: fear, shame, pain', 'Teaches: "I obey because I\'m afraid"', 'Long-term: lying, hiding, rebellion'],
+                pointsAr: ['الهَدَف: التَّحَكُّم', 'الوَسيلَة: الخَوْفُ والعارُ والأَلَم', 'يُعَلِّم: "أُطيعُ لِأَنّي خائِف"', 'النَّتيجَة: الكَذِبُ والتَّخَفّي والتَّمَرُّد'],
+              },
+              right: {
+                labelEn: 'Discipline', labelAr: 'التَّأْديب',
+                pointsEn: ['Goal: teaching', 'Method: natural consequences + connection', 'Teaches: "I choose because I understand"', 'Long-term: internalized values, self-regulation'],
+                pointsAr: ['الهَدَف: التَّعْليم', 'الوَسيلَة: عَواقِبُ طَبيعيّة + تَواصُل', 'يُعَلِّم: "أَخْتارُ لِأَنّي أَفْهَم"', 'النَّتيجَة: قِيَمٌ داخِلِيَّة، تَنْظيمٌ ذاتيّ'],
+              },
+            },
+            {
+              kind: 'micro-quiz', id: 'dwd-mq1',
+              question: {
+                textEn: 'A 6-year-old spills milk on purpose. What\'s discipline (not punishment)?',
+                textAr: 'طِفْلٌ 6 سَنَوات يَسْكُبُ الحَليبَ عَمْداً. ما هو التَّأْديب؟',
+                options: [
+                  { labelEn: 'Send them to their room', labelAr: 'أَرْسِليهِ إلى غُرْفَتِهِ', correct: false, explanationEn: 'Isolation doesn\'t teach. It creates disconnection.', explanationAr: 'العَزْلُ لا يُعَلِّم. يَخْلُقُ قَطيعَة.' },
+                  { labelEn: '"That was a choice. You clean it up. Let\'s do it together."', labelAr: '"هذا كانَ اخْتِياراً. أَنْتَ تُنَظِّفُهُ. سَنَفْعَلُها مَعاً."', correct: true, explanationEn: 'Natural consequence + connection + teaching — exactly the formula.', explanationAr: 'عاقِبَةٌ طَبيعيّة + تَواصُل + تَعْليم — بِالضَّبْطِ الصّيغَة.' },
+                  { labelEn: 'Give them a time-out for 6 minutes', labelAr: 'اِحْرِمْهُ 6 دَقائِق', correct: false, explanationEn: 'Time-outs skip the teaching. Try time-IN together instead.', explanationAr: 'العُقوبَةُ تَتَجاوَزُ التَّعْليم. جَرِّبي الوَقْتَ مَعاً بَدَلاً منها.' },
+                ],
+              },
+            },
+            {
+              kind: 'framework', id: 'dwd-framework',
+              diagram: {
+                type: 'flowchart',
+                titleEn: 'The Discipline Decision Flow', titleAr: 'مسار قرار التأديب',
+                nodes: [
+                  { id: 'behavior', labelEn: 'Child breaks a rule', labelAr: 'الطِّفْلُ يَكْسِرُ قاعِدَة', descriptionEn: 'A boundary crossed', descriptionAr: 'حَدٌّ تُجووِز', color: '#C4636A', position: { x: 50, y: 5 } },
+                  { id: 'pause', labelEn: 'Pause & breathe', labelAr: 'تَوَقَّفي وتَنَفَّسي', descriptionEn: 'Before reacting', descriptionAr: 'قَبْلَ الرَّدّ', color: '#D4A84B', position: { x: 50, y: 25 } },
+                  { id: 'state', labelEn: 'Name the rule calmly', labelAr: 'سَمّي القاعِدَةَ بِهُدوء', descriptionEn: 'Positive framing', descriptionAr: 'صِياغَةٌ إيجابيّة', color: '#5B8FA8', position: { x: 50, y: 45 } },
+                  { id: 'consequence', labelEn: 'Apply a natural consequence', labelAr: 'طَبِّقي عاقِبَةً طَبيعيّة', descriptionEn: 'Related to behavior', descriptionAr: 'مُرْتَبِطَةٌ بِالسُّلوك', color: '#3B8A6E', position: { x: 50, y: 65 } },
+                  { id: 'repair', labelEn: 'Reconnect with love', labelAr: 'أَعيدي التَّواصُلَ بِالحُبّ', descriptionEn: 'Always the closing', descriptionAr: 'دائِماً الخِتام', color: '#7A3B5E', position: { x: 50, y: 85 } },
+                ],
+                connections: [
+                  { from: 'behavior', to: 'pause' },
+                  { from: 'pause', to: 'state' },
+                  { from: 'state', to: 'consequence' },
+                  { from: 'consequence', to: 'repair' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'dwd-drhala', variant: 'dr-hala',
+              textEn: 'Every disciplinary moment is a fork in the road. One path leads to fear and disconnection. The other leads to learning and closeness. The path you choose shapes not just behavior — but your child\'s belief about whether the world is safe.',
+              textAr: 'كُلُّ لَحْظَةِ تَأْديبٍ مُفْتَرَقُ طُرُق. طَريقٌ يَقودُ لِلْخَوْفِ والاِنْفِصال. والآخَرُ لِلتَّعَلُّمِ والقُرْب. ما تَخْتارينَهُ يُشَكِّلُ لَيْسَ السُّلوكَ فَقَط — بَلْ اعْتِقادَ طِفْلِكِ بِأَنَّ العالَمَ آمِن.',
+            },
+            {
+              kind: 'micro-quiz', id: 'dwd-mq2',
+              question: {
+                textEn: 'Why close every discipline moment with repair & reconnection?',
+                textAr: 'لِماذا نَخْتِمُ كُلَّ لَحْظَةِ تَأْديبٍ بِإصْلاحٍ وإعادَةِ تَواصُل؟',
+                options: [
+                  { labelEn: 'So they don\'t stay mad at you', labelAr: 'لِئَلّا يَبْقى غاضِباً مِنْك', correct: false, explanationEn: 'Not about YOUR comfort. About the child\'s sense of belonging.', explanationAr: 'لَيْسَ لِراحَتِك. بَلْ لِشُعورِ الطِّفْلِ بِالاِنْتِماء.' },
+                  { labelEn: 'To teach: the relationship survives limits', labelAr: 'لِنُعَلِّم: العَلاقَةُ تَبْقى رَغْمَ الحُدود', correct: true, explanationEn: 'Yes — this is the core. Limits don\'t break us.', explanationAr: 'نَعَم — هذا الجَوْهَر. الحُدودُ لا تَكْسِرُنا.' },
+                  { labelEn: 'To reward them for obeying', labelAr: 'لِنُكافِئَهُ عَلى الطّاعَة', correct: false, explanationEn: 'Repair isn\'t a reward — it\'s the minimum guarantee.', explanationAr: 'الإصْلاحُ لَيْسَ مُكافَأَة — إنَّهُ الضَّمانُ الأَدْنى.' },
+                ],
+              },
+            },
+            {
+              kind: 'reflection-prompt', id: 'dwd-refl', minWords: 40,
+              promptEn: 'Think of your last disciplinary moment. Walk it through the 5-step flow. Where did you skip a step? What would you do differently?',
+              promptAr: 'فَكِّري في آخِرِ لَحْظَةِ تَأْديب. مَرِّريها على المَراحِلِ الخَمْس. أَيْنَ تَخَطَّيْتِ خُطْوَة؟ ماذا سَتَفْعَلينَ مُخْتَلِفاً؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'flowchart',
@@ -1592,6 +2261,89 @@ Above all, model the relationship with technology that you want your children to
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Digital Literacy', 'Boundary Setting', 'Modeling'],
+          format: 'cards',
+          blocks: [
+            {
+              kind: 'card', id: 'st-intro', accentColor: '#7A3B5E',
+              titleEn: 'Screens are tools — not the enemy',
+              titleAr: 'الشّاشاتُ أَداة — لَيْسَتْ عَدُوّاً',
+              bodyEn: 'The question isn\'t "screens: yes or no?" It\'s "what\'s the relationship between screens and the rest of our family life?"\n\nSwipe through 7 real screen-time moments with scripts you can use tonight.',
+              bodyAr: 'السُّؤالُ لَيْسَ "شاشات: نَعَم أَم لا؟" بَلْ "ما عَلاقَةُ الشّاشَةِ بِبَقِيَّةِ حَياتِنا العائِليَّة؟"\n\nمَرِّري على 7 مَواقِفَ حَقيقيّةٍ مع سِينَاريوهاتٍ تَسْتَخْدِمينَها اللَّيْلَة.',
+            },
+            {
+              kind: 'card', id: 'st-turnoff', accentColor: '#C4878A',
+              titleEn: '1. The Turn-Off Meltdown',
+              titleAr: '1. اِنْهِيارُ الإطْفاء',
+              bodyEn: '✗ "I said NOW. Give it to me."\n\n✓ (10 min before) "10 more minutes — I\'ll set a timer." (When timer rings) "Time\'s up. I know it\'s hard to stop."\n\nThe transition is the hard part. Warn before it arrives.',
+              bodyAr: '✗ "قُلْتُ الآن. أَعْطِنيه."\n\n✓ (قَبْلَ 10 دَقائِق) "10 دَقائِقَ بَعْد — سَأَضْبُطُ المُنَبِّه." (عِنْدَ الرَّنين) "اِنْتَهى الوَقْت. أَعْرِفُ أَنَّ التَّوَقُّفَ صَعْب."\n\nالاِنْتِقالُ هو الجُزْءُ الصَّعْب. حَذِّري قَبْلَ وُصولِه.',
+            },
+            {
+              kind: 'card', id: 'st-more', accentColor: '#C8A97D',
+              titleEn: '2. "Can I Watch More?"',
+              titleAr: '2. "هل يُمْكِنُني مُشاهَدَةُ المَزيد؟"',
+              bodyEn: '✗ "No. I said no means no."\n\n✓ "Not today. We\'ve reached our screen time. Want to read together or build something?"\n\nDon\'t just close a door. Open another one.',
+              bodyAr: '✗ "لا. قُلْتُ لا تَعْني لا."\n\n✓ "لَيْسَ اليَوْم. وَصَلْنا وَقْتَ الشّاشَة. هل تُريدُ القِراءَةَ مَعاً أَوْ بِناءَ شَيْء؟"\n\nلا تُغْلِقي باباً فَقَط. اِفْتَحي آخَر.',
+            },
+            {
+              kind: 'micro-quiz', id: 'st-mq1',
+              question: {
+                textEn: 'What makes a screen-time limit feel fair to a child?',
+                textAr: 'ما الّذي يَجْعَلُ حَدَّ الشّاشَةِ عادِلاً لِلطِّفْل؟',
+                options: [
+                  { labelEn: 'It\'s predictable (same every day)', labelAr: 'مُتَوَقَّعٌ (نَفْسُهُ كُلَّ يَوْم)', correct: true, explanationEn: 'Yes — predictability removes the fight. Surprises create resistance.', explanationAr: 'نَعَم — التَّوَقُّعُ يُزيلُ المَعْرَكَة. المُفاجَآتُ تَخْلُقُ مُقاوَمَة.' },
+                  { labelEn: 'It\'s strict (short and harsh)', labelAr: 'صارِمٌ (قَصيرٌ وقاسٍ)', correct: false, explanationEn: 'Strictness without predictability breeds resentment.', explanationAr: 'الصَّرامَةُ بِلا تَوَقُّعٍ تُوَلِّدُ الاِسْتِياء.' },
+                  { labelEn: 'It changes based on behavior', labelAr: 'يَتَغَيَّرُ حَسَبَ السُّلوك', correct: false, explanationEn: 'Linking screens to behavior turns screens into a weapon.', explanationAr: 'رَبْطُ الشّاشاتِ بِالسُّلوكِ يُحَوِّلُها إلى سِلاح.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'st-dinner', accentColor: '#3B8A6E',
+              titleEn: '3. Phones at Dinner',
+              titleAr: '3. الهَواتِفُ عَلى العَشاء',
+              bodyEn: '✗ "Put your phone away while we eat!" (while scrolling yours)\n\n✓ "Phones go in the basket during meals. Mine too. What was the best part of your day?"\n\nModeling beats lecturing. Every time.',
+              bodyAr: '✗ "أَبْعِدْ هاتِفَكَ ونَحْنُ نَأْكُل!" (وأَنْتِ تَتَصَفَّحينَ هاتِفَك)\n\n✓ "الهَواتِفُ في السَّلَّةِ أَثْناءَ الوَجْبات. وهاتِفي أَيْضاً. ما أَفْضَلُ جُزْءٍ من يَوْمِك؟"\n\nالقُدْوَةُ تَفوقُ المُحاضَرَة. دائِماً.',
+            },
+            {
+              kind: 'card', id: 'st-bedroom', accentColor: '#5B8FA8',
+              titleEn: '4. Screens in the Bedroom',
+              titleAr: '4. الشّاشاتُ في غُرْفَةِ النَّوْم',
+              bodyEn: '✗ "You\'re banned from your tablet forever!"\n\n✓ "Screens stay in the living room. Bedrooms are for sleep. Same rule for everyone — including parents."\n\nLocation rules > time rules. Much easier to enforce.',
+              bodyAr: '✗ "مَمْنوعٌ جِهازُكَ اللَّوْحيُّ لِلأَبَد!"\n\n✓ "الشّاشاتُ تَبْقى في غُرْفَةِ المَعيشَة. غُرَفُ النَّوْمِ لِلنَّوْم. نَفْسُ القاعِدَةِ لِلْجَميع — بِما في ذلِكَ الآباء."\n\nقَواعِدُ المَكانِ > قَواعِدُ الوَقْت. أَسْهَلُ بِكَثير.',
+            },
+            {
+              kind: 'card', id: 'st-scary', accentColor: '#C4636A',
+              titleEn: '5. They Saw Something Scary',
+              titleAr: '5. شاهَدَ شَيْئاً مُخيفاً',
+              bodyEn: '✗ "Why were you watching that?!"\n\n✓ "That must have scared you. Tell me what you saw. I\'m glad you told me."\n\nShame closes the conversation. Curiosity keeps it open — and keeps YOU in the loop next time.',
+              bodyAr: '✗ "لِماذا كُنْتَ تُشاهِدُ ذلِك؟!"\n\n✓ "لا بُدَّ أَنَّ ذلِكَ أَخافَك. أَخْبِرْني ماذا رَأَيْت. سَعيدَةٌ أَنَّكَ أَخْبَرْتَني."\n\nالعارُ يُغْلِقُ المُحادَثَة. الفُضولُ يُبْقيها مَفْتوحَة — ويُبْقيكِ في الصّورَةِ المَرَّةَ القادِمَة.',
+            },
+            {
+              kind: 'card', id: 'st-boring', accentColor: '#D4836A',
+              titleEn: '6. "I\'m Bored!"',
+              titleAr: '6. "أَنا مَلَلان!"',
+              bodyEn: '✗ "Here, take my phone."\n\n✓ "Boredom is where creativity starts. I\'m not your entertainment director. What could you make right now?"\n\nBoredom is a feature, not a bug. Let it breathe.',
+              bodyAr: '✗ "خُذ هاتِفي."\n\n✓ "المَلَلُ مَكانُ بِدايَةِ الإبْداع. لَسْتُ مُديرَةَ تَرْفيهِك. ماذا يُمْكِنُكَ صُنْعُهُ الآن؟"\n\nالمَلَلُ مُفيد، لَيْسَ عَيْباً. دَعيهِ يَتَنَفَّس.',
+            },
+            {
+              kind: 'micro-quiz', id: 'st-mq2',
+              question: {
+                textEn: 'Your teen is glued to their phone at dinner. Best move?',
+                textAr: 'مُراهِقُكِ مُلْتَصِقٌ بِهاتِفِهِ عَلى العَشاء. أَفْضَلُ خُطْوَة؟',
+                options: [
+                  { labelEn: 'Confiscate the phone', labelAr: 'اِسْحَبي الهاتِف', correct: false, explanationEn: 'Power struggle. You\'ll win the battle, lose the war.', explanationAr: 'صِراعُ قُوَّة. تَكْسَبينَ المَعْرَكَةَ وتَخْسَرينَ الحَرْب.' },
+                  { labelEn: 'Model the rule yourself + name it as a family norm', labelAr: 'كوني القُدْوَةَ + سَمّيها قاعِدَةً عائِليّة', correct: true, explanationEn: 'Teens watch what you do, not what you say. Be the change.', explanationAr: 'المُراهِقونَ يُراقِبونَ فِعْلَكِ، لا قَوْلَك. كوني التَّغْييرَ.' },
+                  { labelEn: 'Lecture about connection', labelAr: 'حاضِريهِ عَنِ التَّواصُل', correct: false, explanationEn: 'Lectures harden resistance. Rituals soften it.', explanationAr: 'المُحاضَراتُ تُقَوّي المُقاوَمَة. الطُّقوسُ تُلَيِّنُها.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'st-drhala', accentColor: '#7A3B5E',
+              titleEn: 'The Real Question',
+              titleAr: 'السُّؤالُ الحَقيقيّ',
+              bodyEn: 'Don\'t ask "how much screen time?" Ask:\n\n• Is it displacing sleep, play, or connection?\n• Are we modeling what we want?\n• Is my child lighter or heavier after screens?\n\nSave this card. It\'s the real framework.',
+              bodyAr: 'لا تَسْأَلي "كَمْ وَقْتَ شاشَة؟" اِسْأَلي:\n\n• هل يُزيحُ النَّوْمَ أو اللَّعِبَ أو التَّواصُل؟\n• هل نَكونُ قُدْوَةً لِما نُريد؟\n• هل طِفْلي أَخَفُّ أو أَثْقَلُ بَعْدَ الشّاشاتِ؟\n\nاِحْفَظي هذِهِ البِطاقَة. هذا هو الإطارُ الحَقيقيّ.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'spectrum',
@@ -1791,6 +2543,78 @@ Finally, nurture the sibling relationship itself. Create opportunities for sibli
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Conflict Resolution', 'Fairness', 'Communication'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'sib-lead', tone: 'lead',
+              textEn: 'Sibling conflict isn\'t a bug in your family — it\'s training ground. Every fight is a rehearsal for adult conflict: negotiation, boundaries, repair. Your job isn\'t to end every fight. It\'s to coach the skills.',
+              textAr: 'صِراعُ الإخْوَةِ لَيْسَ عَيْباً في عائِلَتِك — إنَّهُ ساحَةُ تَدْريب. كُلُّ شِجارٍ تَمْرينٌ لِصِراعِ الكِبار: التَّفاوُض، الحُدود، الإصْلاح. مَهَمَّتُكِ لَيْسَتْ إنْهاءَ كُلِّ شِجار. بَلْ تَدْريبَ المَهارات.',
+            },
+            {
+              kind: 'callout', id: 'sib-fairness', variant: 'insight',
+              textEn: 'Fair ≠ equal. What each child needs is different. Treating them identically to avoid favoritism actually ignores their unique needs. Instead: "We each get what we need."',
+              textAr: 'العَدالَةُ ≠ التَّساوي. ما يَحْتاجُهُ كُلُّ طِفْلٍ مُخْتَلِف. مُعامَلَتُهُم بِنَفْسِ الطَّريقَةِ لِتَجَنُّبِ المُحاباةِ تَتَجاهَلُ احْتِياجاتِهِم. بَدَلاً من ذلِك: "كُلٌّ يَحْصُلُ عَلى ما يَحْتاج."',
+            },
+            { kind: 'heading', id: 'sib-h-role', level: 2, textEn: 'Your Role: Coach, Not Referee', textAr: 'دَوْرُكِ: مُدَرِّبَة، لا حَكَم' },
+            {
+              kind: 'comparison', id: 'sib-cmp',
+              titleEn: 'Referee vs Coach', titleAr: 'الحَكَمُ مُقابِلَ المُدَرِّبَة',
+              left: {
+                labelEn: 'Referee', labelAr: 'الحَكَم',
+                pointsEn: ['Judges who\'s right', 'Assigns blame', 'Solves the fight FOR them', 'Takes sides'],
+                pointsAr: ['يَحْكُمُ من عَلى حَقّ', 'يُوَزِّعُ اللَّوْم', 'يَحُلُّ الشِّجارَ عَنْهُم', 'يَنْحازُ لِطَرَف'],
+              },
+              right: {
+                labelEn: 'Coach', labelAr: 'المُدَرِّبَة',
+                pointsEn: ['Names each child\'s feeling', 'Teaches listening turns', 'Coaches them to solve it', 'Neutral and curious'],
+                pointsAr: ['تُسَمّي شُعورَ كُلِّ طِفْل', 'تُعَلِّمُ الأَدْوارَ في الاِسْتِماع', 'تُدَرِّبُهُم عَلى الحَلّ', 'حِيادِيَّةٌ وفُضوليَّة'],
+              },
+            },
+            {
+              kind: 'micro-quiz', id: 'sib-mq1',
+              question: {
+                textEn: 'Two kids fighting over a toy. Best move?',
+                textAr: 'طِفْلانِ يَتَشاجَرانِ عَلى لُعْبَة. أَفْضَلُ خُطْوَة؟',
+                options: [
+                  { labelEn: 'Take the toy away — no one gets it', labelAr: 'خُذي اللُّعْبَةَ — لا أَحَد يَحْصُلُ عَلَيْها', correct: false, explanationEn: 'Punishing both removes the learning moment.', explanationAr: 'مُعاقَبَتُهُما تُلْغي لَحْظَةَ التَّعَلُّم.' },
+                  { labelEn: 'Decide who had it first', labelAr: 'قَرِّري من كانَ لَدَيْهِ أَوَّلاً', correct: false, explanationEn: 'You become the judge — they stop learning to negotiate.', explanationAr: 'تَصيرينَ القاضِيَة — يَتَوَقَّفونَ عَنْ تَعَلُّمِ التَّفاوُض.' },
+                  { labelEn: 'Name the conflict + coach them to propose solutions', labelAr: 'سَمّي الصِّراع + دَرِّبيهِم عَلى اقْتِراحِ الحُلول', correct: true, explanationEn: 'Yes — "You both want it. What ideas do you have?" — that\'s coaching.', explanationAr: 'نَعَم — "كِلاكُما تُريدانِها. ما أَفْكارُكُما؟" — هذا تَدْريب.' },
+                ],
+              },
+            },
+            { kind: 'heading', id: 'sib-h-favor', level: 2, textEn: 'The Favoritism Trap', textAr: 'فَخُّ المُحاباة' },
+            {
+              kind: 'paragraph', id: 'sib-favor',
+              textEn: 'Most parents secretly fear that they favor one child. Honest answer: you probably DO connect more easily with one. That\'s human. The work isn\'t eliminating the preference. It\'s ensuring each child feels uniquely SEEN.',
+              textAr: 'مُعْظَمُ الآباءِ يَخافونَ سِرّاً أَنَّهُم يُحابونَ طِفْلاً. الإجابَةُ الصّادِقَة: رُبَّما تَتَواصَلينَ أَسْهَلَ مع أَحَدِهِم. هذا إنْساني. العَمَلُ لَيْسَ إلْغاءَ التَّفْضيل. بَلْ ضَمانُ أَنَّ كُلَّ طِفْلٍ يَشْعُرُ بِأَنَّهُ مَرْئِيٌّ بِتَفَرُّد.',
+            },
+            {
+              kind: 'checklist', id: 'sib-rituals',
+              titleEn: 'Weekly connection rituals (try one)', titleAr: 'طُقوسُ تَواصُلٍ أُسْبوعيَّة (جَرِّبي واحِدَة)',
+              itemsEn: [
+                '15-minute 1:1 walk with each child — no siblings, no phones',
+                'Weekly "your pick" night — they choose dinner or activity',
+                'Bedtime solo talks — 3 minutes each, door closed',
+                'Birthday-of-the-other celebrations — they help plan',
+              ],
+              itemsAr: [
+                'مَشْيٌ فَرْدِيٌّ 15 دَقيقَةً مع كُلِّ طِفْل — بِلا إخْوَةٍ وبِلا هَواتِف',
+                'لَيْلَةٌ أُسْبوعيَّةٌ "مِن اخْتِيارِك" — يَخْتارُ العَشاءَ أَو النَّشاط',
+                'حَديثُ نَوْمٍ فَرْدِيّ — 3 دَقائِقَ لِكُلِّ واحِد، بابٌ مُغْلَق',
+                'اِحْتِفالُ عيدِ ميلادِ الآخَر — يُساعِدُ في التَّخْطيط',
+              ],
+            },
+            {
+              kind: 'callout', id: 'sib-drhala', variant: 'dr-hala',
+              textEn: 'The siblings who fight the hardest often love the deepest. Your job isn\'t to force harmony — it\'s to teach repair. Kids who learn to fight and reconnect become adults who stay in relationships through difficulty.',
+              textAr: 'الإخْوَةُ الّذينَ يَتَشاجَرونَ بِشِدَّةٍ غالِباً ما يُحِبّونَ بِعُمْق. مَهَمَّتُكِ لَيْسَتْ فَرْضَ الاِنْسِجام — بَلْ تَعْليمَ الإصْلاح. الأَطْفالُ الّذينَ يَتَعَلَّمونَ الشِّجارَ والعَوْدَة يَصيرونَ بالِغينَ يَبْقونَ في العَلاقاتِ خِلالَ الصُّعوبات.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'sib-refl', minWords: 40,
+              promptEn: 'Which of your children do you connect with more easily? What does the OTHER child need that you\'re missing? What would honest seeing look like this week?',
+              promptAr: 'مع أَيِّ أَطْفالِكِ تَتَواصَلينَ أَسْهَل؟ ما الّذي يَحْتاجُهُ الآخَرُ وتَفْوتينَه؟ كَيْفَ تَبْدو الرُّؤْيَةُ الصّادِقَةُ هذا الأُسْبوع؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'spectrum',
@@ -1994,6 +2818,81 @@ If your child's anxiety is significantly impacting their daily functioning, scho
           ],
           estimatedReadTimeMinutes: 7,
           skillTags: ['Anxiety Support', 'Coping Tools', 'Emotional Attunement'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'ax-lead', tone: 'lead',
+              textEn: 'Anxiety is not weakness — it\'s a smoke alarm. For anxious children, the alarm is too sensitive. Our job is not to silence it, but to teach them they\'re safe when it rings.',
+              textAr: 'القَلَقُ لَيْسَ ضَعْفاً — إنَّهُ جَرَسُ إنْذار. لِلأَطْفالِ القَلِقينَ، الجَرَسُ حَسّاسٌ جِدّاً. مَهَمَّتُنا لَيْسَتْ إسْكاتَه، بَلْ تَعْليمَهُم أَنَّهُم آمِنونَ حينَ يَرِنّ.',
+            },
+            {
+              kind: 'callout', id: 'ax-signs', variant: 'insight',
+              textEn: 'Childhood anxiety rarely says "I\'m anxious." It shows up as: stomach aches before school, clinginess, sudden refusal to try things, overthinking small decisions, anger outbursts, constant "what if" questions.',
+              textAr: 'قَلَقُ الطُّفولَةِ نادِراً ما يَقول "أَنا قَلِق". يَظْهَرُ كَـ: أَلَمِ بَطْنٍ قَبْلَ المَدْرَسَة، تَشَبُّثٍ، رَفْضٍ مُفاجِئٍ لِلمُحاوَلَة، تَفْكيرٍ زائِدٍ في قَراراتٍ صَغيرَة، نَوْباتِ غَضَب، أَسْئِلَةِ "ماذا لَوْ" مُسْتَمِرَّة.',
+            },
+            {
+              kind: 'framework', id: 'ax-iceberg',
+              diagram: {
+                type: 'iceberg',
+                titleEn: 'The Anxiety Iceberg', titleAr: 'جَبَلُ القَلَقِ الجَليديّ',
+                nodes: [
+                  { id: 'visible', labelEn: 'Visible Signs', labelAr: 'العَلاماتُ المَرْئيّة', descriptionEn: 'Stomach aches, clinginess, refusals, outbursts', descriptionAr: 'آلامُ بَطْنٍ، تَشَبُّث، رَفْض، نَوْبات', color: '#C4636A', position: { x: 50, y: 18 } },
+                  { id: 'thoughts', labelEn: 'Anxious Thoughts', labelAr: 'أَفْكارٌ قَلِقَة', descriptionEn: '"What if something bad happens?"', descriptionAr: '"ماذا لَوْ حَدَثَ شَيْءٌ سَيِّئ؟"', color: '#5B8FA8', position: { x: 30, y: 55 } },
+                  { id: 'body', labelEn: 'Body Sensations', labelAr: 'أَحاسيسُ الجَسَد', descriptionEn: 'Racing heart, tight chest, nausea', descriptionAr: 'قَلْبٌ يَتَسارَع، صَدْرٌ مَضْغوط، غَثَيان', color: '#5B8FA8', position: { x: 70, y: 55 } },
+                  { id: 'needs', labelEn: 'Underlying Needs', labelAr: 'احْتِياجاتٌ كامِنَة', descriptionEn: 'Safety, predictability, being understood', descriptionAr: 'أَمان، تَوَقُّع، أَنْ يُفْهَم', color: '#5B8FA8', position: { x: 50, y: 80 } },
+                ],
+                connections: [{ from: 'thoughts', to: 'visible' }, { from: 'body', to: 'visible' }, { from: 'needs', to: 'visible' }],
+              },
+            },
+            { kind: 'heading', id: 'ax-h-tools', level: 2, textEn: 'Three Tools That Work', textAr: 'ثَلاثُ أَدَواتٍ فَعّالَة' },
+            {
+              kind: 'checklist', id: 'ax-tools',
+              titleEn: 'Evidence-based coping tools', titleAr: 'أَدَواتٌ مَبْنيَّةٌ عَلى الأَدِلَّة',
+              itemsEn: [
+                'Belly breathing: 4 in, hold 4, 4 out — repeat 3 times (calms nervous system)',
+                '5-4-3-2-1 grounding: name 5 see, 4 touch, 3 hear, 2 smell, 1 taste',
+                '"Worry time": a daily 10-min worry window — outside of it, worries wait',
+              ],
+              itemsAr: [
+                'تَنَفُّسٌ بَطْنِيّ: 4 داخِل، حَبْسٌ 4، 4 خارِج — كَرِّري 3 مَرّات',
+                'التَّثْبيتُ 5-4-3-2-1: 5 تَرَيْن، 4 تَلْمُسين، 3 تَسْمَعين، 2 تَشُمّين، 1 تَتَذَوَّقين',
+                '"وَقْتُ القَلَق": نافِذَةُ 10 دَقائِقَ يَوْميّاً — خارِجَها، القَلَقُ يَنْتَظِر',
+              ],
+            },
+            {
+              kind: 'micro-quiz', id: 'ax-mq1',
+              question: {
+                textEn: 'Your child refuses to go to a birthday party. What\'s NOT helpful?',
+                textAr: 'طِفْلُكِ يَرْفُضُ الذَّهابَ إلى حَفْلَةِ ميلاد. ما الّذي لا يُساعِد؟',
+                options: [
+                  { labelEn: '"There\'s nothing to be afraid of!"', labelAr: '"لا شَيْءَ يُخيف!"', correct: true, explanationEn: 'Dismissing feelings makes them louder. Validate first.', explanationAr: 'رَفْضُ المَشاعِرِ يَجْعَلُها أَعْلى صَوْتاً. صادِقي أَوَّلاً.' },
+                  { labelEn: '"Your body feels nervous. Let\'s breathe together."', labelAr: '"جَسَدُكَ يَشْعُرُ بِالتَّوَتُّر. لِنَتَنَفَّسْ مَعاً."', correct: false, explanationEn: 'Perfect — name the body, offer a tool together.', explanationAr: 'مُمْتاز — سَمّي الجَسَدَ، قَدِّمي أَداةً مَعاً.' },
+                  { labelEn: '"What\'s the biggest worry? Let\'s look at it together."', labelAr: '"ما أَكْبَرُ قَلَق؟ لِنَنْظُرَ إلَيْهِ مَعاً."', correct: false, explanationEn: 'Good — curiosity is the antidote to avoidance.', explanationAr: 'جَيِّد — الفُضولُ تِرْياقُ التَّجَنُّب.' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'ax-drhala', variant: 'dr-hala',
+              textEn: 'One thing I wish every parent of an anxious child knew: your calm presence is more powerful than any technique. When your child sees that you\'re not afraid of their anxiety, they begin to believe they don\'t need to be afraid of it either.',
+              textAr: 'شَيْءٌ أَتَمَنّى أَنْ يَعْرِفَهُ كُلُّ والِدٍ لِطِفْلٍ قَلِق: حُضورُكِ الهادِئُ أَقْوى من أَيِّ تِقْنيَّة. حينَ يَرى طِفْلُكِ أَنَّكِ لَسْتِ خائِفَةً من قَلَقِه، يَبْدَأُ يُصَدِّقُ أَنَّهُ لا يَحْتاجُ لِلخَوْفِ مِنْهُ أَيْضاً.',
+            },
+            {
+              kind: 'callout', id: 'ax-warning', variant: 'warning',
+              textEn: 'If anxiety is interfering with school, friendships, sleep, or daily function for 4+ weeks — or if you see self-harm, panic attacks, or refusal to eat — please seek a child psychologist. These courses are support, not treatment.',
+              textAr: 'إذا كانَ القَلَقُ يُعيقُ المَدْرَسَةَ أَوِ الصَّداقاتِ أَوِ النَّوْمَ أَوِ الأَداءَ اليَوْمِيَّ لِأَكْثَرَ من 4 أَسابيع — أَوْ رَأَيْتِ إيذاءَ نَفْسٍ أَوْ نَوْباتِ هَلَعٍ أَوْ رَفْضَ طَعام — يُرْجى اِسْتِشارَةُ طَبيبِ نَفْسِ أَطْفال. هذِهِ الدَّوْراتُ دَعْم، لَيْسَ عِلاج.',
+            },
+            {
+              kind: 'activity', id: 'ax-activity', durationMinutes: 5,
+              titleEn: 'Build a Calm Kit', titleAr: 'اِبْني صُنْدوقَ الهُدوء',
+              descriptionEn: 'With your child, build a small box: a soft object to hold, a photo that makes them smile, a note from you, a simple coping card ("breathe 4-4"). When anxiety hits, they open the box.',
+              descriptionAr: 'مع طِفْلِكِ، اِبْنِيا صُنْدوقاً صَغيراً: شَيْءٌ ناعِمٌ يَحْمِلُه، صورَةٌ تُبْهِجُه، رِسالَةٌ مِنْكِ، بِطاقَةُ تَأَقْلُمٍ بَسيطَة ("تَنَفَّسْ 4-4"). حينَ يَأْتي القَلَق، يَفْتَحُ الصُّنْدوق.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'ax-refl', minWords: 35,
+              promptEn: 'Think of the last time your child was anxious. What was happening underneath (the iceberg below)? What did they need that you\'re now seeing differently?',
+              promptAr: 'فَكِّري في آخِرِ مَرَّةٍ كانَ طِفْلُكِ قَلِقاً. ماذا كانَ يَحْدُثُ تَحْت (الجَبَلُ الجَليدِيُّ السُّفْلِيّ)؟ ماذا احْتاجَ وتَرَيْنَهُ الآنَ بِشَكْلٍ مُخْتَلِف؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'iceberg',
@@ -2204,6 +3103,85 @@ Remember that the greatest gift you can give your children is a strong sense of 
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Cultural Integration', 'Identity', 'Communication'],
+          format: 'challenge',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'cu-lead', tone: 'lead',
+              textEn: 'If you\'re raising children between cultures, you\'re doing something your parents never had to do. Your kids need roots AND wings — deep cultural identity AND freedom to belong where they live now. Both. Not either.',
+              textAr: 'إذا كُنْتِ تُرَبّينَ أَطْفالاً بَيْنَ ثَقافَتَيْن، فَأَنْتِ تَفْعَلينَ شَيْئاً لَمْ يَفْعَلْهُ والِداكِ. أَطْفالُكِ يَحْتاجونَ جُذوراً وأَجْنِحَة — هُوِيَّةً ثَقافيَّةً عَميقَة وحُرِّيَّةَ الاِنْتِماءِ لِلمَكانِ الّذي يَعيشونَ فيهِ الآن. كِلاهُما. لا أَحَدٌ منهُما.',
+            },
+            {
+              kind: 'callout', id: 'cu-why', variant: 'culture',
+              textEn: 'Research is clear: kids with strong bicultural identity have higher self-esteem, better mental health, and stronger resilience than kids forced to choose. "Integration" beats assimilation AND isolation.',
+              textAr: 'الأَبْحاثُ واضِحَة: الأَطْفالُ بِهُوِيَّةٍ ثُنائيَّةِ الثَّقافَةِ القَوِيَّةِ لَدَيْهِم تَقْديرُ ذاتٍ أَعْلى، وصِحَّةٌ نَفْسيَّةٌ أَفْضَل، ومَرونَةٌ أَقْوى من الأَطْفالِ المُرْغَمينَ عَلى الاِخْتِيار. "التَّكامُل" يَفوقُ الاِنْدِماجَ والعَزْلَ.',
+            },
+            {
+              kind: 'paragraph', id: 'cu-how', tone: 'body',
+              textEn: 'Cultural transmission doesn\'t happen by lectures or forced attendance. It happens through small, repeated, lived moments. Here\'s a 7-day challenge to weave your culture gently into daily life.',
+              textAr: 'النَّقْلُ الثَّقافِيُّ لا يَحْدُثُ بِالمُحاضَراتِ أَوِ الحُضورِ القَسْرِيّ. يَحْدُثُ عَبْرَ لَحَظاتٍ صَغيرَةٍ مُتَكَرِّرَةٍ مَعيشَة. إلَيْكِ تَحَدّي 7 أَيّامٍ لِنَسْجِ ثَقافَتِكِ بِلُطْفٍ في الحَياةِ اليَوْميّة.',
+            },
+            {
+              kind: 'challenge-step', id: 'cu-d1', dayLabel: 1,
+              titleEn: 'A Word a Day', titleAr: 'كَلِمَةٌ كُلَّ يَوْم',
+              instructionEn: 'Teach one word in your heritage language at breakfast. Use it 3 times that day. Tomorrow, another one.',
+              instructionAr: 'عَلِّميهِ كَلِمَةً واحِدَةً بِلُغَةِ التُّراثِ على الإفْطار. اِسْتَخْدِميها 3 مَرّاتٍ في اليَوْم. غَداً، أُخْرى.',
+              checkInPromptEn: 'What word did you teach? Did they use it back?',
+              checkInPromptAr: 'أَيَّ كَلِمَةٍ عَلَّمْتِ؟ هل اسْتَخْدَمَها؟',
+            },
+            {
+              kind: 'challenge-step', id: 'cu-d2', dayLabel: 2,
+              titleEn: 'Food Memory', titleAr: 'ذاكِرَةُ الطَّعام',
+              instructionEn: 'Cook one dish from your childhood together. As you cook, tell the story: who made it, when, what it meant.',
+              instructionAr: 'اِطْبُخي طَبَقاً من طُفولَتِكِ مَعاً. وأَنْتِ تَطْبُخين، اِحْكي القِصَّة: من صَنَعَها، مَتى، ماذا عَنَتْ.',
+              checkInPromptEn: 'What dish? What story did you share?',
+              checkInPromptAr: 'أَيَّ طَبَق؟ أَيَّ قِصَّةٍ شارَكْتِ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'cu-d3', dayLabel: 3,
+              titleEn: 'A Song From Home', titleAr: 'أُغْنِيَةٌ من الوَطَن',
+              instructionEn: 'Play a song from your culture while driving or cooking. Sing along. Don\'t explain it. Let it land on its own.',
+              instructionAr: 'شَغِّلي أُغْنِيَةً من ثَقافَتِكِ أَثْناءَ القِيادَةِ أَوِ الطَّهْي. غَنّي. لا تَشْرَحي. دَعيها تَهْبِطُ لِوَحْدِها.',
+              checkInPromptEn: 'Which song? Did they move, sing, ask?',
+              checkInPromptAr: 'أَيَّ أُغْنِيَة؟ هل تَحَرَّك، غَنّى، سَأَل؟',
+            },
+            {
+              kind: 'challenge-step', id: 'cu-d4', dayLabel: 4,
+              titleEn: 'A Story from Your Parents', titleAr: 'قِصَّةٌ من والِدَيْكِ',
+              instructionEn: 'Share a story your own parents told you — about their childhood, a hardship, a celebration. Short. No moral lesson attached.',
+              instructionAr: 'شارِكي قِصَّةً رَواها والِداكِ لَكِ — عَنْ طُفولَتِهِما، مَصاعِبِهِما، اِحْتِفالاتِهِما. قَصيرَة. بِلا دَرْسٍ أَخْلاقِيّ.',
+              checkInPromptEn: 'What story? How did they react?',
+              checkInPromptAr: 'أَيَّ قِصَّة؟ كَيْفَ تَفاعَل؟',
+            },
+            {
+              kind: 'challenge-step', id: 'cu-d5', dayLabel: 5,
+              titleEn: 'A Tradition Reimagined', titleAr: 'تَقْليدٌ بِثَوْبٍ جَديد',
+              instructionEn: 'Pick one tradition from your culture and adapt it for your life NOW. Same spirit, new format. Do it together.',
+              instructionAr: 'اخْتاري تَقْليداً من ثَقافَتِكِ وكَيِّفيهِ لِحَياتِكِ الآن. نَفْسُ الرّوحِ، شَكْلٌ جَديد. اِفْعَلا ذلِكَ مَعاً.',
+              checkInPromptEn: 'Which tradition? How did you adapt it?',
+              checkInPromptAr: 'أَيَّ تَقْليد؟ كَيْفَ كَيَّفْتِه؟',
+            },
+            {
+              kind: 'challenge-step', id: 'cu-d6', dayLabel: 6,
+              titleEn: 'Their Questions', titleAr: 'أَسْئِلَتُه',
+              instructionEn: 'Ask: "Is there anything about where we come from you\'ve been curious about?" Don\'t over-explain. Just listen. Answer what they ask.',
+              instructionAr: 'اِسْأَليه: "هل هُناكَ شَيْءٌ عَنْ مَوْطِنِنا تُريدُ مَعْرِفَتَه؟" لا تَشْرَحي كَثيراً. اِسْتَمِعي. أَجيبي ما سَأَل.',
+              checkInPromptEn: 'What did they ask? How did it feel?',
+              checkInPromptAr: 'ماذا سَأَل؟ كَيْفَ كانَ الشُّعور؟',
+            },
+            {
+              kind: 'challenge-step', id: 'cu-d7', dayLabel: 7,
+              titleEn: 'Reflect & Keep', titleAr: 'تَأَمُّلٌ وحِفْظ',
+              instructionEn: 'Look back at the week. Which moment landed deepest? Pick 2 practices you\'ll repeat monthly. Culture is transmission through repetition, not perfection.',
+              instructionAr: 'اُنْظُري لِلْأُسْبوع. أَيُّ لَحْظَةٍ هَبَطَتْ أَعْمَق؟ اخْتاري مُمارَسَتَيْنِ تُكَرِّرينَهُما شَهْريّاً. الثَّقافَةُ نَقْلٌ بِالتَّكْرار، لَيْسَ بِالكَمال.',
+              checkInPromptEn: 'Which 2 practices will you keep?',
+              checkInPromptAr: 'أَيَّ مُمارَسَتَيْنِ سَتَحْتَفِظينَ بِهِما؟',
+            },
+            {
+              kind: 'callout', id: 'cu-drhala', variant: 'dr-hala',
+              textEn: 'Children absorb culture the way they absorb love — through daily presence, not formal lessons. Your job isn\'t to make them "fully" Arab/Egyptian/Lebanese/anything. It\'s to give them enough roots that when they\'re adults choosing who they are, they can choose from something, not nothing.',
+              textAr: 'الأَطْفالُ يَمْتَصّونَ الثَّقافَةَ كَما يَمْتَصّونَ الحُبّ — عَبْرَ الحُضورِ اليَوْمِيّ، لا الدُّروسِ الرَّسْميَّة. مَهَمَّتُكِ لَيْسَتْ جَعْلَهُم عَرَباً/مِصْرِيّينَ/لُبْنانِيّينَ "كامِلين". بَلْ مَنْحَهُم جُذوراً كافِيَةً حَتّى حينَ يَكْبُرونَ ويَخْتارونَ من هُمْ، يَخْتارونَ من شَيْءٍ، لا من لا شَيْء.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'quadrant',
@@ -2231,6 +3209,7 @@ Remember that the greatest gift you can give your children is a strong sense of 
       descriptionEn: 'Master the advanced skills of emotionally intelligent parenting that will shape your family legacy for generations to come.',
       descriptionAr: 'أتقن المهارات المتقدمة للتربية الذكية عاطفياً التي ستشكّل إرث عائلتك للأجيال القادمة.',
       isFree: false,
+      priceCAD: 29,
       modules: [
         // ── Module 3.1 ──
         {
@@ -2424,6 +3403,72 @@ Finally, celebrate emotional courage. When your child shares a difficult feeling
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Emotional Intelligence', 'Empathy', 'Communication'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'eq-lead', tone: 'lead',
+              textEn: 'Emotional intelligence (EQ) predicts life outcomes better than IQ: relationships, career success, mental health, resilience. And unlike IQ, EQ is teachable — mostly by being modeled.',
+              textAr: 'الذَّكاءُ العاطِفيُّ يَتَنَبَّأُ بِنَتائِجِ الحَياةِ أَفْضَلَ من الذَّكاءِ العَقْلِيّ: العَلاقات، النَّجاحُ المِهَنِيّ، الصِّحَّةُ النَّفْسيَّة، المَرونَة. وعَكْسَ الذَّكاءِ العَقْلِيّ، يُمْكِنُ تَعْليمُه — غالِباً بِالقُدْوَة.',
+            },
+            { kind: 'heading', id: 'eq-h-4', level: 2, textEn: 'The 4 Pillars of EQ', textAr: 'أَرْكانُ الذَّكاءِ العاطِفِيِّ الأَرْبَعَة' },
+            {
+              kind: 'checklist', id: 'eq-pillars',
+              titleEn: 'What you\'re building in your child', titleAr: 'ما تَبْنينَهُ في طِفْلِك',
+              itemsEn: [
+                'Self-awareness: naming their own emotions accurately',
+                'Self-management: pausing between feeling and action',
+                'Social awareness: reading others\' emotions',
+                'Relationship skills: repair, negotiation, empathy',
+              ],
+              itemsAr: [
+                'الوَعْيُ بِالذَّات: تَسْمِيَةُ مَشاعِرِهِمْ بِدِقَّة',
+                'إدارَةُ الذَّات: التَّوَقُّفُ بَيْنَ الشُّعورِ والفِعْل',
+                'الوَعْيُ الاِجْتِماعِيّ: قِراءَةُ مَشاعِرِ الآخَرين',
+                'مَهاراتُ العَلاقات: الإصْلاح، التَّفاوُض، التَّعاطُف',
+              ],
+            },
+            {
+              kind: 'callout', id: 'eq-insight', variant: 'insight',
+              textEn: 'You can\'t teach what you don\'t practice. Every module so far has been teaching YOU emotional intelligence. Your child learns EQ by watching you name YOUR feelings, manage YOUR reactions, repair after YOUR mistakes.',
+              textAr: 'لا تُعَلِّمينَ ما لا تُمارِسينَه. كُلُّ وِحْدَةٍ حَتّى الآنَ كانَتْ تُعَلِّمُكِ الذَّكاءَ العاطِفِيّ. طِفْلُكِ يَتَعَلَّمُهُ بِمُشاهَدَتِكِ وأَنْتِ تُسَمّينَ مَشاعِرَكِ، تُنَظِّمينَ رُدودَكِ، تُصْلِحينَ بَعْدَ أَخْطائِكِ.',
+            },
+            {
+              kind: 'micro-quiz', id: 'eq-mq1',
+              question: {
+                textEn: 'Which moment teaches EQ MOST powerfully?',
+                textAr: 'أَيُّ لَحْظَةٍ تُعَلِّمُ الذَّكاءَ العاطِفِيَّ بِقُوَّةٍ أَكْثَر؟',
+                options: [
+                  { labelEn: 'When you quiz them: "How do you think she feels?"', labelAr: 'حينَ تَمْتَحِنينَهُم: "كَيْفَ تَعْتَقِدُ أَنَّها تَشْعُر؟"', correct: false, explanationEn: 'Helpful, but asking-questions is much weaker than modeling.', explanationAr: 'مُفيد، لَكِنْ أَضْعَفُ بِكَثيرٍ من القُدْوَة.' },
+                  { labelEn: 'When you lose your temper, then repair with them', labelAr: 'حينَ تَفْقِدينَ أَعْصابَكِ ثُمَّ تُصْلِحينَ', correct: true, explanationEn: 'Yes — the repair is the masterclass. They see: "Feelings happen. We own them. We come back."', explanationAr: 'نَعَم — الإصْلاحُ هو الدَّرْسُ. يَرَوْن: "المَشاعِرُ تَحْدُث. نَمْلِكُها. نَعود."' },
+                  { labelEn: 'When you read emotion books together', labelAr: 'حينَ تَقْرَآنِ كُتُبَ مَشاعِرَ مَعاً', correct: false, explanationEn: 'Good, but books are theory. Real repair is the practice.', explanationAr: 'جَيِّد، لَكِنَّ الكُتُبَ نَظَرِيَّة. الإصْلاحُ الحَقيقِيُّ هو التَّطْبيق.' },
+                ],
+              },
+            },
+            {
+              kind: 'comparison', id: 'eq-cmp',
+              titleEn: 'Low-EQ vs High-EQ Parenting Language', titleAr: 'لُغَةُ الذَّكاءِ العاطِفِيِّ: مُنْخَفِضٌ مُقابِلَ عالٍ',
+              left: {
+                labelEn: 'Low-EQ', labelAr: 'مُنْخَفِض',
+                pointsEn: ['"Stop crying, you\'re fine"', '"Don\'t be a baby"', '"Because I said so"', '"Why would that upset you?"'],
+                pointsAr: ['"لا تَبْكِ، أَنْتَ بِخَيْر"', '"لا تَكُنْ طِفْلاً"', '"لِأَنّي قُلْتُ ذلِك"', '"لِماذا يُزْعِجُكَ ذلِك؟"'],
+              },
+              right: {
+                labelEn: 'High-EQ', labelAr: 'عالٍ',
+                pointsEn: ['"Something feels hard. Want to tell me?"', '"Your body knows this is big"', '"Here\'s why this matters to me"', '"That makes sense — walk me through it"'],
+                pointsAr: ['"شَيْءٌ صَعْب. تُريدُ أَنْ تُخْبِرَني؟"', '"جَسَدُكَ يَعْرِفُ أَنَّ هذا كَبير"', '"إلَيْكَ لِماذا يَهُمُّني هذا"', '"هذا مَنْطِقيّ — اِشْرَح لي"'],
+              },
+            },
+            {
+              kind: 'callout', id: 'eq-drhala', variant: 'dr-hala',
+              textEn: 'Emotional intelligence isn\'t a skill you install in your child. It\'s an atmosphere you create in your home. If emotions are welcome in your house, your child will welcome them in themselves — and in others.',
+              textAr: 'الذَّكاءُ العاطِفِيُّ لَيْسَ مَهارَةً تُرَكِّبينَها في طِفْلِك. إنَّهُ جَوٌّ تَخْلُقينَهُ في بَيْتِك. إذا كانَتِ المَشاعِرُ مُرَحَّباً بِها في بَيْتِك، سَيُرَحِّبُ بِها طِفْلُكِ في نَفْسِه — وفي الآخَرين.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'eq-refl', minWords: 40,
+              promptEn: 'Of the 4 EQ pillars, which do YOU model most strongly? Which is weakest? What would your child say if you asked them?',
+              promptAr: 'من أَرْكانِ الذَّكاءِ العاطِفِيِّ الأَرْبَعَة، أَيُّها تُجَسِّدينَهُ بِأَقْوى شَكْل؟ أَيُّها الأَضْعَف؟ ماذا سَيَقولُ طِفْلُكِ لَوْ سَأَلْتِهِ؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'wheel',
@@ -2629,6 +3674,88 @@ Be honest about your own feelings. Children are perceptive and will sense your s
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Resilience', 'Communication', 'Emotional Attunement'],
+          format: 'story',
+          blocks: [
+            {
+              kind: 'story-beat', id: 'tr-s1', characterEn: 'Sarah', characterAr: 'سارا',
+              textEn: 'The day her 7-year-old finds out about the move.\n\nThey\'re having dinner. Her husband says, "We have news — we\'re moving to a new city this summer." Her daughter\'s fork freezes mid-air.',
+              textAr: 'اليَوْمُ الّذي تَكْتَشِفُ فيهِ اِبْنَتُها ذاتُ السَّبْعِ سَنَواتٍ الاِنْتِقال.\n\nهُمْ عَلى العَشاء. يَقولُ زَوْجُها: "لَدَيْنا خَبَر — سَنَنْتَقِلُ إلى مَدينَةٍ جَديدَةٍ هذا الصَّيْف." شَوْكَةُ اِبْنَتِها تَتَجَمَّدُ في الهَواء.',
+            },
+            {
+              kind: 'story-choice', id: 'tr-c1',
+              promptEn: 'Her daughter\'s eyes fill with tears. What does Sarah do?',
+              promptAr: 'عَيْنا اِبْنَتِها تَمْتَلِئانِ بِالدُّموع. ماذا تَفْعَلُ سارا؟',
+              choices: [
+                {
+                  labelEn: '"Hey, it\'ll be exciting! You\'ll love the new school."',
+                  labelAr: '"سَيَكونُ مُمْتِعاً! سَتُحِبّينَ المَدْرَسَةَ الجَديدَة."',
+                  feedbackEn: 'That\'s rushing to the bright side. Her daughter\'s feelings aren\'t invited to the table first.',
+                  feedbackAr: 'هذا تَسَرُّعٌ نَحْوَ الجانِبِ المُشْرِق. مَشاعِرُ اِبْنَتِها لَمْ تُدْعَ إلى الطّاوِلَةِ أَوَّلاً.',
+                  isRecommended: false,
+                },
+                {
+                  labelEn: '(Reaches across the table) "That\'s a lot to hear. Tell me what just came up for you."',
+                  labelAr: '(تَمُدُّ يَدَها) "هذا كَثيرٌ لِسَماعِه. أَخْبِريني ماذا شَعَرْتِ الآن."',
+                  feedbackEn: 'Yes. Make space before making plans. Every transition starts with acknowledging the loss underneath.',
+                  feedbackAr: 'نَعَم. اِصْنَعي مَساحَةً قَبْلَ صُنْعِ الخُطَط. كُلُّ اِنْتِقالٍ يَبْدَأُ بِالاِعْتِرافِ بِالفَقْدِ تَحْتَه.',
+                  isRecommended: true,
+                },
+                {
+                  labelEn: '"Don\'t cry. We\'ll come back to visit your friends."',
+                  labelAr: '"لا تَبْكي. سَنَعودُ لِزِيارَةِ أَصْدِقائِكِ."',
+                  feedbackEn: '"Don\'t cry" teaches that tears are a problem. They\'re not — they\'re the healthy response.',
+                  feedbackAr: '"لا تَبْكي" تُعَلِّمُ أَنَّ الدُّموعَ مُشْكِلَة. لَيْسَتْ كَذلِك — إنَّها الاِسْتِجابَةُ الصِّحيَّة.',
+                  isRecommended: false,
+                },
+              ],
+            },
+            {
+              kind: 'story-beat', id: 'tr-s2',
+              textEn: 'Her daughter whispers: "But I don\'t WANT a new school. I like it here. My friends..."\n\nSarah notices her own chest tighten. She wants to fix this. She takes a breath instead.',
+              textAr: 'تَهْمِسُ اِبْنَتُها: "لَكِنّي لا أُريدُ مَدْرَسَةً جَديدَة. أُحِبُّ هُنا. أَصْدِقائي..."\n\nتُلاحِظُ سارا أَنَّ صَدْرَها يَضْغُط. تُريدُ إصْلاحَ هذا. تَأْخُذُ نَفَساً بَدَلاً منها.',
+            },
+            {
+              kind: 'story-choice', id: 'tr-c2',
+              promptEn: 'Her daughter is still sad. Sarah has a choice about what to say next.',
+              promptAr: 'اِبْنَتُها لا تَزالُ حَزينَة. لِسارا خِيارٌ فيما تَقولُهُ تالِياً.',
+              choices: [
+                {
+                  labelEn: '"I hear you. Leaving your friends is really hard. It\'s okay to be sad about this."',
+                  labelAr: '"أَسْمَعُكِ. تَرْكُ أَصْدِقائِكِ صَعْبٌ حَقّاً. لا بَأْسَ أَنْ تَحْزَني."',
+                  feedbackEn: 'Perfect validation. Naming the loss is the permission to grieve it.',
+                  feedbackAr: 'تَصْديقٌ مُمْتاز. تَسْمِيَةُ الفَقْدِ هي إذْنُ الحُزْنِ عَلَيْه.',
+                  isRecommended: true,
+                },
+                {
+                  labelEn: '"You\'ll make new friends. Kids are so flexible at your age."',
+                  labelAr: '"سَتُكَوِّنينَ أَصْدِقاءَ جُدُد. الأَطْفالُ في عُمْرِكِ مَرِنون."',
+                  feedbackEn: 'Fast-forwarding past the grief. She may make new friends — AND still needs to grieve the old ones.',
+                  feedbackAr: 'تَخَطٍّ لِلحُزْن. رُبَّما تُكَوِّنُ أَصْدِقاءَ جُدُد — ولا تَزالُ تَحْتاجُ أَنْ تَحْزَنَ عَلى القُدَماء.',
+                  isRecommended: false,
+                },
+              ],
+            },
+            {
+              kind: 'story-beat', id: 'tr-s3',
+              textEn: 'Over the next weeks, Sarah keeps making space. Her daughter cycles: angry, sad, excited, clingy. Sarah stops trying to fix each wave. She starts trusting it.\n\nOne night her daughter asks: "Can we take pictures of my friends before we go?"\n\n"Yes. Of course."',
+              textAr: 'عَلى مَدى الأَسابيعِ التّالِيَة، تُواصِلُ سارا صُنْعَ المَساحَة. اِبْنَتُها تَتَنَقَّل: غاضِبَة، حَزينَة، مُتَحَمِّسَة، مُتَعَلِّقَة. تَتَوَقَّفُ سارا عَنْ مُحاوَلَةِ إصْلاحِ كُلِّ مَوْجَة. تَبْدَأُ تَثِقُ بِها.\n\nفي لَيْلَةٍ تَسْأَلُ اِبْنَتُها: "هل يُمْكِنُنا الْتِقاطُ صُوَرٍ مع أَصْدِقائي قَبْلَ أَنْ نَذْهَب؟"\n\n"نَعَم. بِالتَّأْكيد."',
+            },
+            {
+              kind: 'callout', id: 'tr-lesson', variant: 'insight',
+              textEn: 'Transitions (moves, new school, new baby, divorce, illness, death) require TIME, not solutions. Children process in waves — grief, excitement, resistance, acceptance — in no particular order. Your job is to hold all of it without rushing.',
+              textAr: 'الاِنْتِقالات (اِنْتِقال، مَدْرَسَةٌ جَديدَة، مَوْلودٌ جَديد، طَلاق، مَرَض، مَوْت) تَحْتاجُ وَقْتاً، لا حُلولاً. الأَطْفالُ يَمْتَصّونَها في مَوْجات — حُزْن، حَماس، مُقاوَمَة، قُبول — بِلا تَرْتيب. مَهَمَّتُكِ أَنْ تَحْمِليها دونَ اسْتِعْجال.',
+            },
+            {
+              kind: 'callout', id: 'tr-drhala', variant: 'dr-hala',
+              textEn: 'In my practice, the families who navigate transitions best aren\'t the ones who minimize the change. They\'re the ones who honor it. "This is big. It\'s okay to feel everything. We\'ll move through it together."',
+              textAr: 'في عَمَلي، العائِلاتُ الأَفْضَلُ في الاِنْتِقالاتِ لَيْسَتْ الّتي تُقَلِّلُ من شَأْنِ التَّغْيير. بَلْ الّتي تُكَرِّمُهُ. "هذا كَبير. لا بَأْسَ بِكُلِّ شُعور. سَنَعْبُرُهُ مَعاً."',
+            },
+            {
+              kind: 'reflection-prompt', id: 'tr-refl', minWords: 40,
+              promptEn: 'What transition is your family navigating now (or recently)? Where did you rush the processing? What would "making more space" have looked like?',
+              promptAr: 'أَيَّ اِنْتِقالٍ تَمُرُّ بِهِ عائِلَتُكِ الآن (أَو مُؤَخَّراً)؟ أَيْنَ اسْتَعْجَلْتِ المُعالَجَة؟ كَيْفَ سَيَبْدو "صُنْعُ مَساحَةٍ أَكْثَر"؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'flowchart',
@@ -2837,6 +3964,85 @@ Finally, take care of the family's collective wellbeing. Prioritize rest, play, 
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Resilience', 'Family Identity', 'Communication'],
+          format: 'assessment',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'fr-lead', tone: 'lead',
+              textEn: 'Resilience isn\'t built on good times — it\'s built on how we navigate hard ones TOGETHER. Research on resilient families identifies 4 consistent traits. This assessment checks how you\'re doing on each.',
+              textAr: 'المَرونَةُ لا تُبْنى في الأَوْقاتِ الجَيِّدَة — تُبْنى في كَيْفَ نَعْبُرُ الصَّعْبَةَ مَعاً. الأَبْحاثُ عَلى العائِلاتِ المَرِنَةِ تُحَدِّدُ 4 سِماتٍ ثابِتَة. هذا التَّقْييمُ يَفْحَصُ كُلَّ واحِدَةٍ مِنْها.',
+            },
+            {
+              kind: 'callout', id: 'fr-traits', variant: 'insight',
+              textEn: 'The 4 traits of resilient families: shared meaning, flexible roles, open communication, and active repair. Your baseline matters more than your score — it shows you where to focus.',
+              textAr: 'السِّماتُ الأَرْبَعُ لِلعائِلاتِ المَرِنَة: مَعْنىً مُشْتَرَك، أَدْوارٌ مَرِنَة، تَواصُلٌ مَفْتوح، إصْلاحٌ فَعّال. خَطُّ أَساسِكِ أَهَمُّ من دَرَجَتِك — يُريكِ أَيْنَ تُرَكِّزين.',
+            },
+            {
+              kind: 'likert', id: 'fr-lk1',
+              reflection: {
+                titleEn: 'Shared Meaning', titleAr: 'مَعْنىً مُشْتَرَك',
+                statementEn: 'Our family has a clear sense of what we value, stand for, and belong to.',
+                statementAr: 'عائِلَتُنا لَدَيْها إحْساسٌ واضِحٌ بِما نُقَدِّرُه، ونُمَثِّلُه، ونَنْتَمي إلَيْه.',
+                scaleLabels: { lowEn: 'Unclear', lowAr: 'غَيْرُ واضِح', highEn: 'Crystal clear', highAr: 'واضِحٌ جِدّاً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Values unspoken', labelAr: 'قِيَمٌ غَيْرُ مَنْطوقَة', feedbackEn: 'Families need an explicit "we." Start: "What do we stand for?" at dinner once.', feedbackAr: 'العائِلاتُ تَحْتاجُ "نَحْن" صَريحَة. اِبْدَئي: "ماذا نُمَثِّل؟" عَلى العَشاءِ مَرَّة.' },
+                  { min: 3, max: 5, labelEn: 'Partially articulated', labelAr: 'مَنْطوقٌ جُزْئيّاً', feedbackEn: 'You sense it but haven\'t named it. Try writing a 3-line family manifesto together.', feedbackAr: 'تَشْعُرينَ بِهِ لَكِنْ لَمْ تُسَمّيهِ. اُكْتُبوا بَياناً عائِليّاً من 3 أَسْطُر.' },
+                  { min: 6, max: 7, labelEn: 'Strong shared meaning', labelAr: 'مَعْنىً مُشْتَرَكٌ قَوِيّ', feedbackEn: 'This is the foundation of resilience. Keep telling your kids WHY your family does what it does.', feedbackAr: 'هذِهِ أَرْضُ المَرونَة. واصِلي إخْبارَ أَطْفالِكِ لِماذا عائِلَتُكُم تَفْعَلُ ما تَفْعَل.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'fr-lk2',
+              reflection: {
+                titleEn: 'Flexible Roles', titleAr: 'أَدْوارٌ مَرِنَة',
+                statementEn: 'When one of us is struggling, others step up and adjust without being asked.',
+                statementAr: 'حينَ يُعاني أَحَدُنا، يَنْهَضُ الآخَرونَ ويَتَكَيَّفونَ دونَ طَلَب.',
+                scaleLabels: { lowEn: 'Rigid roles', lowAr: 'أَدْوارٌ صارِمَة', highEn: 'Dance together', highAr: 'رَقْصٌ مَعاً' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Stuck in roles', labelAr: 'عالِقونَ في أَدْوار', feedbackEn: 'One person is probably overloaded. Name it. Redistribute for a week and see.', feedbackAr: 'شَخْصٌ مُحَمَّلٌ بِثِقَل. سَمّيها. أَعيدوا التَّوْزيعَ لِأُسْبوعٍ وراقِبوا.' },
+                  { min: 3, max: 5, labelEn: 'Some flexibility', labelAr: 'بَعْضُ المَرونَة', feedbackEn: 'You adapt under crisis but not daily. The skill is adapting in ordinary times too.', feedbackAr: 'تَتَكَيَّفينَ في الأَزَمات لَكِنْ لَيْسَ يَوْميّاً. المَهارَةُ التَّكَيُّفُ في الأَوْقاتِ العاديَّةِ أَيْضاً.' },
+                  { min: 6, max: 7, labelEn: 'Fluid adaptation', labelAr: 'تَكَيُّفٌ سَلِس', feedbackEn: 'This is elite. Your family moves like a team that trusts each other.', feedbackAr: 'هذا مُمْتاز. عائِلَتُكِ تَتَحَرَّكُ كَفَريقٍ يَثِقُ بِبَعْضِه.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'fr-lk3',
+              reflection: {
+                titleEn: 'Open Communication', titleAr: 'تَواصُلٌ مَفْتوح',
+                statementEn: 'My child tells me hard things without fearing how I\'ll react.',
+                statementAr: 'طِفْلي يُخْبِرُني بِأُمورٍ صَعْبَةٍ دونَ أَنْ يَخافَ رَدَّ فِعْلي.',
+                scaleLabels: { lowEn: 'They hide things', lowAr: 'يُخْفي عَنّي', highEn: 'They tell me everything', highAr: 'يُخْبِرُني كُلَّ شَيْء' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'They\'re hiding', labelAr: 'يُخْفي', feedbackEn: 'Start with: "I want to be someone you can tell hard things to. What would make that easier?"', feedbackAr: 'اِبْدَئي بِـ: "أُريدُ أَنْ أَكونَ مَنْ تُخْبِرُهُ بِالصَّعْب. ما الّذي يَجْعَلُ ذلِكَ أَسْهَل؟"' },
+                  { min: 3, max: 5, labelEn: 'Selective sharing', labelAr: 'مُشارَكَةٌ اخْتِيارِيّة', feedbackEn: 'They share small things but filter big ones. Your reactions to small things are training them for big ones.', feedbackAr: 'يُشارِكُ الصَّغيرَ لَكِنْ يُصَفّي الكَبير. رُدودُكِ على الصَّغيرِ تُدَرِّبُهُ عَلى الكَبير.' },
+                  { min: 6, max: 7, labelEn: 'Deeply open', labelAr: 'مُنْفَتِحٌ بِعُمْق', feedbackEn: 'This is extraordinary. Your child feels safe. Protect this fiercely.', feedbackAr: 'هذا اسْتِثْنائيّ. طِفْلُكِ يَشْعُرُ بِالأَمان. اِحْمي هذا بِشِدَّة.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'fr-lk4',
+              reflection: {
+                titleEn: 'Active Repair', titleAr: 'إصْلاحٌ فَعّال',
+                statementEn: 'After conflict in our family, we actively reconnect — not just move on silently.',
+                statementAr: 'بَعْدَ الصِّراعِ في عائِلَتِنا، نُعيدُ التَّواصُلَ بِفاعِليَّة — لا نَمُرُّ بِصَمْت.',
+                scaleLabels: { lowEn: 'We move on silently', lowAr: 'نَمُرُّ بِصَمْت', highEn: 'Always repair', highAr: 'دائِماً نُصْلِح' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Silent rupture', labelAr: 'قَطيعَةٌ صامِتَة', feedbackEn: 'Unrepaired rupture becomes the family pattern. One conversation ("can we talk about earlier?") changes everything.', feedbackAr: 'القَطيعَةُ دونَ إصْلاحٍ تَصيرُ النَّمَطَ العائِليّ. مُحادَثَةٌ واحِدَة ("هل يُمْكِنُنا التَّحَدُّثُ؟") تُغَيِّرُ كُلَّ شَيْء.' },
+                  { min: 3, max: 5, labelEn: 'Sometimes repair', labelAr: 'إصْلاحٌ أَحْياناً', feedbackEn: 'You repair when conflicts feel big. Practice micro-repairs for smaller ruptures too.', feedbackAr: 'تُصْلِحينَ حينَ تَبْدو الصِّراعاتُ كَبيرَة. مارِسي الإصْلاحاتِ الصَّغيرَةَ أَيْضاً.' },
+                  { min: 6, max: 7, labelEn: 'Ritualized repair', labelAr: 'إصْلاحٌ مُعْتاد', feedbackEn: 'This is the crown jewel. Your kids will know: love survives rupture.', feedbackAr: 'هذِهِ تاجُ الجَواهِر. أَطْفالُكِ سَيَعْرِفونَ: الحُبُّ يَبْقى رَغْمَ القَطيعَة.' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'fr-drhala', variant: 'dr-hala',
+              textEn: 'Look at your lowest score. That\'s your family\'s growth edge. Don\'t try to fix all four at once. Pick one trait. Work on it for 90 days. Then look again. Resilience is built slowly, not in sprints.',
+              textAr: 'اُنْظُري إلى أَقَلِّ دَرَجَة. هذِهِ حافَّةُ نُمُوِّ عائِلَتِك. لا تُصْلِحي الأَرْبَعَ مَعاً. اخْتاري سِمَةً واحِدَة. اِعْمَلي عَلَيْها 90 يَوْماً. ثُمَّ اُنْظُري ثانِيَةً. المَرونَةُ تُبْنى بِبُطْء، لا في سِباقات.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'fr-refl', minWords: 50,
+              promptEn: 'Which trait is your family\'s biggest strength? Which is the weakest? What ONE specific practice would you commit to for 90 days to shift the weakest?',
+              promptAr: 'أَيُّ سِمَةٍ هي أَكْبَرُ قُوَّةٍ لِعائِلَتِك؟ أَيُّها الأَضْعَف؟ أَيَّ مُمارَسَةٍ مُحَدَّدَةٍ تَلْتَزِمينَ بِها 90 يَوْماً لِتَحْريكِ الأَضْعَف؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'wheel',
@@ -3050,6 +4256,96 @@ Remember: no parent gets it right every time. The goal is not perfection. The go
           ],
           estimatedReadTimeMinutes: 6,
           skillTags: ['Repair', 'Accountability', 'Connection'],
+          format: 'cards',
+          blocks: [
+            {
+              kind: 'card', id: 'rp-intro', accentColor: '#7A3B5E',
+              titleEn: 'The repair is the relationship',
+              titleAr: 'الإصْلاحُ هو العَلاقَة',
+              bodyEn: 'Perfect parents don\'t exist. Present parents do. The ones who repair after conflict teach their kids: love survives rupture. Without repair, every fight leaves a tiny wound. With repair, every fight strengthens trust.\n\nSwipe through 8 real repair moments and the scripts to handle them.',
+              bodyAr: 'الآباءُ المِثاليّونَ غَيْرُ مَوْجودين. الحاضِرونَ مَوْجودون. الّذينَ يُصْلِحونَ بَعْدَ الصِّراعِ يُعَلِّمونَ: الحُبُّ يَبْقى رَغْمَ القَطيعَة. بِلا إصْلاح، كُلُّ شِجارٍ يَتْرُكُ جُرْحاً صَغيراً. مع إصْلاح، كُلُّ شِجارٍ يُقَوّي الثِّقَة.\n\nمَرِّري عَلى 8 لَحَظاتِ إصْلاحٍ حَقيقيّة.',
+            },
+            {
+              kind: 'card', id: 'rp-yelled', accentColor: '#C4636A',
+              titleEn: '1. You Yelled',
+              titleAr: '1. صِحْتِ',
+              bodyEn: '(Later, when calm) Sit down. "I yelled at you earlier. I wasn\'t okay inside, and I took it out on you. That wasn\'t fair. I\'m sorry. Your job isn\'t to fix my mood — mine is."\n\nDon\'t over-explain. Own. Apologize. Move on.',
+              bodyAr: '(لاحِقاً حينَ تَهْدَئين) اِجْلِسي. "صِحْتُ عَلَيْكَ قَبْلَ قَليل. لَمْ أَكُنْ بِخَيْرٍ داخِلِيّاً، وصَبَبْتُ ذلِكَ عَلَيْك. هذا لَمْ يَكُنْ عادِلاً. أَنا آسِفَة. مَهَمَّتُكَ لَيْسَتْ إصْلاحَ مِزاجي — بَلْ مَهَمَّتي."\n\nلا تَشْرَحي كَثيراً. اِعْتَرِفي. اِعْتَذِري. اُمْضي.',
+            },
+            {
+              kind: 'card', id: 'rp-missed', accentColor: '#C8A97D',
+              titleEn: '2. You Missed Something Important',
+              titleAr: '2. فاتَكِ شَيْءٌ مُهِمّ',
+              bodyEn: '(When you realize) "I forgot to ask about your test today. That matters, and I missed it. Tell me now — how did it go?"\n\nAcknowledge. Circle back. Show that you remember they matter.',
+              bodyAr: '(حينَ تُدْرِكين) "نَسيتُ أَنْ أَسْأَلَكِ عَنِ اخْتِبارِكِ اليَوْم. هذا مُهِمّ، وفاتَني. أَخْبِريني الآن — كَيْفَ كان؟"\n\nاِعْتَرِفي. عودي. أَظْهِري أَنَّكِ تَتَذَكَّرينَ أَنَّها تَهُمّ.',
+            },
+            {
+              kind: 'card', id: 'rp-broken', accentColor: '#5B8FA8',
+              titleEn: '3. You Broke a Promise',
+              titleAr: '3. أَخْلَفْتِ وَعْداً',
+              bodyEn: '"I promised we\'d go to the park today and I didn\'t keep that promise. You have every right to be disappointed. When can we reschedule? You pick."\n\nLetting them pick the repair time gives them agency back.',
+              bodyAr: '"وَعَدْتُكَ أَنْ نَذْهَبَ لِلحَديقَةِ اليَوْمَ ولَمْ أَفِ بِذلِك. لَكَ كُلُّ الحَقِّ في أَنْ تَخيب. مَتى نُعيدُ الجَدْوَلَة؟ أَنْتَ تَخْتار."\n\nتَرْكُ اخْتِيارِ وَقْتِ الإصْلاحِ لَهُ يُعيدُ إلَيْهِ السَّيْطَرَة.',
+            },
+            {
+              kind: 'micro-quiz', id: 'rp-mq1',
+              question: {
+                textEn: 'What word should NEVER appear in a parent\'s apology?',
+                textAr: 'أَيُّ كَلِمَةٍ يَجِبُ أَلّا تَظْهَرَ أَبَداً في اعْتِذارِ أُمٍّ؟',
+                options: [
+                  { labelEn: '"Sorry"', labelAr: '"آسِفَة"', correct: false, explanationEn: 'Sorry is the core. Keep it.', explanationAr: '"آسِفَة" هي الجَوْهَر. اِحْتَفِظي بِها.' },
+                  { labelEn: '"But"', labelAr: '"لَكِنْ"', correct: true, explanationEn: 'Exactly. "Sorry BUT you were also..." erases the apology. Skip it.', explanationAr: 'تَماماً. "آسِفَة لَكِنَّكَ أَيْضاً..." تَمْحو الاِعْتِذار. اُتْركيها.' },
+                  { labelEn: '"I"', labelAr: '"أَنا"', correct: false, explanationEn: '"I" is essential — it\'s YOUR apology.', explanationAr: '"أَنا" أَساسيّ — هذا اعْتِذارُكِ.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'rp-compared', accentColor: '#D4836A',
+              titleEn: '4. You Compared Them to a Sibling',
+              titleAr: '4. قارَنْتِهِ بِأَخيه',
+              bodyEn: '"I compared you to your brother. That wasn\'t fair to either of you. You\'re not him. You\'re wholly yourself, and I love who YOU are. Let me tell you three things that only YOU do that amaze me."\n\nSpecific follow-up > generic apology.',
+              bodyAr: '"قارَنْتُكَ بِأَخيك. هذا لَمْ يَكُنْ عادِلاً لِكِلَيْكُما. أَنْتَ لَسْتَ هو. أَنْتَ نَفْسُكَ تَماماً، وأُحِبُّ من أَنْتَ. دَعْني أُخْبِرُكَ 3 أَشْياءَ تَفْعَلُها أَنْتَ وحْدَكَ وتُدْهِشُني."\n\nمُتابَعَةٌ مُحَدَّدَةٌ > اعْتِذارٌ عامّ.',
+            },
+            {
+              kind: 'card', id: 'rp-dismissed', accentColor: '#3B8A6E',
+              titleEn: '5. You Dismissed Their Feelings',
+              titleAr: '5. رَفَضْتِ مَشاعِرَه',
+              bodyEn: '"Earlier when I said \'you\'re fine\' — you weren\'t fine. I dismissed what you were feeling because I didn\'t know what to do. I\'m learning. Tell me again what was happening for you?"\n\nModel the repair you want them to give others.',
+              bodyAr: '"قَبْلَ قَليلٍ حينَ قُلْتُ \'أَنْتَ بِخَيْر\' — لَمْ تَكُنْ بِخَيْر. رَفَضْتُ ما شَعَرْتَ بِهِ لِأَنّي لَمْ أَعْرِفْ ماذا أَفْعَل. أَتَعَلَّم. أَخْبِرْني ثانِيَةً ماذا حَدَثَ مَعَك؟"\n\nكوني قُدْوَةَ الإصْلاحِ الّذي تُريدينَهُ لِلآخَرين.',
+            },
+            {
+              kind: 'card', id: 'rp-public', accentColor: '#9B3B42',
+              titleEn: '6. You Shamed Them in Public',
+              titleAr: '6. أَحْرَجْتِهِ أَمامَ النّاس',
+              bodyEn: '(As soon as you\'re alone) "I said something harsh in front of people. That wasn\'t okay. If I need to correct you, I\'ll do it privately next time. You deserved better from me just now."\n\nPublic shame requires a specific acknowledgment.',
+              bodyAr: '(بِمُجَرَّدِ أَنْ تَخْلوا) "قُلْتُ شَيْئاً قاسِياً أَمامَ النّاس. لَمْ يَكُنْ ذلِكَ جَيِّداً. إذا احْتَجْتُ لِتَصْحيحِكَ، سَأَفْعَلُها بَيْنَنا. كُنْتَ تَسْتَحِقُّ أَفْضَلَ مِنّي."\n\nالإحْراجُ العَلَنِيُّ يَحْتاجُ اعْتِرافاً مُحَدَّداً.',
+            },
+            {
+              kind: 'micro-quiz', id: 'rp-mq2',
+              question: {
+                textEn: 'Your child accepts the apology but seems distant. What now?',
+                textAr: 'طِفْلُكَ يَقْبَلُ الاِعْتِذارَ لَكِنَّهُ يَبْدو بَعيداً. ماذا الآن؟',
+                options: [
+                  { labelEn: 'Push for a hug to close it', labelAr: 'اِطْلُبي عِناقاً لِإغْلاقِ الأَمْر', correct: false, explanationEn: 'Forcing closeness is a 2nd rupture. Let them take the time they need.', explanationAr: 'فَرْضُ القُرْبِ قَطيعَةٌ ثانِيَة. دَعيهِ يَأْخُذُ الوَقْتَ الّذي يَحْتاجُه.' },
+                  { labelEn: 'Give them time. Come back in 20 min and check in.', labelAr: 'اِمْنَحيهِ وَقْتاً. عودي بَعْدَ 20 دَقيقَةً واطْمَئِنّي', correct: true, explanationEn: 'Yes — repair doesn\'t happen on your timeline. Be patient.', explanationAr: 'نَعَم — الإصْلاحُ لا يَحْدُثُ في وَقْتِكِ. كوني صَبورَة.' },
+                  { labelEn: 'Apologize again, more elaborately', labelAr: 'اِعْتَذِري ثانِيَةً بِتَفْصيلٍ أَكْثَر', correct: false, explanationEn: 'Over-apologizing makes it about you. One clean apology is enough.', explanationAr: 'الإفْراطُ في الاِعْتِذارِ يَجْعَلُها عَنْكِ. اعْتِذارٌ واحِدٌ نَظيفٌ كافٍ.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'rp-kids-fight', accentColor: '#C4878A',
+              titleEn: '7. After a Parent-Parent Fight (kids saw)',
+              titleAr: '7. بَعْدَ شِجارِ الوالِدَيْن (رَآهُ الأَطْفال)',
+              bodyEn: '"You saw Mom and Dad fighting earlier. I want you to know: we disagreed, we both said some hard things, and we\'re working it out. We love each other, and we love you. What did it feel like to see that?"\n\nNaming what they saw is the protection.',
+              bodyAr: '"رَأَيْتَ أَبي وأُمّي يَتَشاجَرانِ قَبْلَ قَليل. أُريدُكَ أَنْ تَعْرِف: اخْتَلَفْنا، قُلْنا أُموراً صَعْبَةً، ونُصْلِحُها. نُحِبُّ بَعْضَنا، ونُحِبُّك. ماذا شَعَرْتَ حينَ رَأَيْتَ ذلِك؟"\n\nتَسْمِيَةُ ما رَآهُ هي الحِمايَة.',
+            },
+            {
+              kind: 'card', id: 'rp-formula', accentColor: '#7A3B5E',
+              titleEn: 'The Repair Formula',
+              titleAr: 'صيغَةُ الإصْلاح',
+              bodyEn: 'Own it ("I said/did X").\nName the impact ("That hurt/dismissed/shamed you").\nApologize ("I\'m sorry").\nAsk to reconnect ("Can we start again?").\n\nSave this. It works at every age — including with your partner, your parents, yourself.',
+              bodyAr: 'اِمْلِكيها ("قُلْتُ/فَعَلْتُ كَذا").\nسَمّي الأَثَر ("هذا جَرَحَكَ/رَفَضَكَ/أَحْرَجَكَ").\nاِعْتَذِري ("أَنا آسِفَة").\nاطْلُبي العَوْدَة ("هل نَبْدَأُ من جَديد؟").\n\nاِحْفَظيها. تَعْمَلُ في كُلِّ عُمْر — مع شَريكِك، والِدَيْك، نَفْسِك.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'cycle',
@@ -3273,6 +4569,85 @@ The final truth about parenting legacy is this: it is never too late to start. W
           ],
           estimatedReadTimeMinutes: 7,
           skillTags: ['Legacy', 'Self-Awareness', 'Intergenerational Healing'],
+          format: 'challenge',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'lg-lead', tone: 'lead',
+              textEn: 'You are the hinge between two generations. What you carry forward from your parents — and what you choose to stop carrying — will shape your grandchildren. This is your legacy work.',
+              textAr: 'أَنْتِ المَفْصِلُ بَيْنَ جيلَيْن. ما تَحْمِلينَهُ مِنْ والِدَيْكِ إلى الأَمام — وما تَخْتارينَ أَنْ تَتَوَقَّفي عَنْ حَمْلِه — سَيُشَكِّلُ أَحْفادَك. هذا عَمَلُ إرْثِك.',
+            },
+            {
+              kind: 'callout', id: 'lg-intro', variant: 'insight',
+              textEn: 'This 7-day challenge isn\'t about performance. It\'s about seeing. Each day: one quiet question. Answer in writing. By Day 7 you\'ll have a map of the legacy you\'re actually building.',
+              textAr: 'تَحَدّي 7 أَيّامٍ لَيْسَ عَنْ أَداء. إنَّهُ عَنْ رُؤْيَة. كُلَّ يَوْمٍ: سُؤالٌ هادِئ. أَجيبي كِتابِيّاً. بِحُلولِ اليَوْمِ 7 سَيَكونُ لَدَيْكِ خَريطَةُ الإرْثِ الّذي تَبْنينَهُ فِعْلاً.',
+            },
+            {
+              kind: 'challenge-step', id: 'lg-d1', dayLabel: 1,
+              titleEn: 'What You Received', titleAr: 'ما تَلَقَّيْتِه',
+              instructionEn: 'Name 3 things your parents did that you want to carry forward. Tiny or big. Write them down. Tell your child one of them tonight.',
+              instructionAr: 'سَمّي 3 أَشْياءَ فَعَلَها والِداكِ تُريدينَ حَمْلَها إلى الأَمام. صَغيرَة أو كَبيرَة. اُكْتُبيها. أَخْبِري طِفْلَكِ إحْداها اللَّيْلَة.',
+              checkInPromptEn: 'What 3 things? Which one did you share?',
+              checkInPromptAr: 'أَيُّ 3 أَشْياء؟ أَيُّها شارَكْتِ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'lg-d2', dayLabel: 2,
+              titleEn: 'What You\'re Stopping', titleAr: 'ما تُوقِفينَه',
+              instructionEn: 'Name 1 pattern from your upbringing that you\'re consciously ending with you. Write it. No judgment of your parents — just clarity about what stops here.',
+              instructionAr: 'سَمّي نَمَطاً واحِداً من تَرْبِيَتِكِ تُنْهينَهُ بِكِ بِوَعْي. اُكْتُبيه. بِلا حُكْمٍ على والِدَيْك — فَقَطْ وُضوحٌ عَنْ ما يَتَوَقَّفُ هُنا.',
+              checkInPromptEn: 'What pattern? How is it showing up differently now?',
+              checkInPromptAr: 'أَيُّ نَمَط؟ كَيْفَ يَظْهَرُ مُخْتَلِفاً الآن؟',
+            },
+            {
+              kind: 'challenge-step', id: 'lg-d3', dayLabel: 3,
+              titleEn: 'What Your Child Says About You', titleAr: 'ما يَقولُهُ طِفْلُكِ عَنْك',
+              instructionEn: 'Ask your child: "What does Mom/Dad do that makes you feel loved?" Listen without interrupting. Write down their exact words afterward.',
+              instructionAr: 'اِسْأَلي طِفْلَك: "ماذا تَفْعَلُ أُمّي/أَبي وتَجْعَلُكَ تَشْعُرُ بِالحُبّ؟" اِسْتَمِعي دونَ مُقاطَعَة. اُكْتُبي كَلِماتِهِ بَعْدَها.',
+              checkInPromptEn: 'What did they say? Anything surprising?',
+              checkInPromptAr: 'ماذا قال؟ أَيُّ شَيْءٍ مُفاجِئ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'lg-d4', dayLabel: 4,
+              titleEn: 'Your Parenting North Star', titleAr: 'نَجْمُكِ الشِّمالِيُّ في التَّرْبِيَة',
+              instructionEn: 'Complete this sentence in writing: "If my child remembers ONE thing about how I parented, I want it to be ___." One sentence. That\'s your north star.',
+              instructionAr: 'أَكْمِلي هذِهِ الجُمْلَةَ كِتابِيّاً: "لَوْ تَذَكَّرَ طِفْلي شَيْئاً واحِداً عَنْ تَرْبِيَتي، أُريدُ أَنْ يَكونَ ___." جُمْلَةٌ واحِدَة. هذا نَجْمُكِ الشِّمالِيّ.',
+              checkInPromptEn: 'What did you write?',
+              checkInPromptAr: 'ماذا كَتَبْتِ؟',
+            },
+            {
+              kind: 'challenge-step', id: 'lg-d5', dayLabel: 5,
+              titleEn: 'The Repair Inventory', titleAr: 'جَرْدُ الإصْلاح',
+              instructionEn: 'Is there something unrepaired with your child? A moment you haven\'t owned yet? Write it down. Today or this week — repair it using the 4-step formula.',
+              instructionAr: 'هل هُناكَ شَيْءٌ غَيْرُ مُصْلَحٍ مع طِفْلِك؟ لَحْظَةٌ لَمْ تَمْتَلِكيها بَعْد؟ اُكْتُبيها. اليَوْمَ أَو هذا الأُسْبوع — أَصْلِحيها بِصيغَةِ الـ 4 خُطْوات.',
+              checkInPromptEn: 'What are you repairing? What will you say?',
+              checkInPromptAr: 'ماذا تُصْلِحين؟ ماذا سَتَقولين؟',
+            },
+            {
+              kind: 'challenge-step', id: 'lg-d6', dayLabel: 6,
+              titleEn: 'Letter to Your Future Self', titleAr: 'رِسالَةٌ إلى نَفْسِكِ المُسْتَقْبَليَّة',
+              instructionEn: 'Write a letter to yourself 20 years from now, when your child is grown. What do you want her to remember about this season of parenting? What do you hope you became?',
+              instructionAr: 'اُكْتُبي رِسالَةً إلى نَفْسِكِ بَعْدَ 20 سَنَةً، حينَ يَكْبُرُ طِفْلُك. ماذا تُريدينَها أَنْ تَتَذَكَّرَ عَنْ مَوْسِمِ التَّرْبِيَةِ هذا؟ ماذا تَأْمُلينَ أَنْ تَصيري؟',
+              checkInPromptEn: 'What did the letter say?',
+              checkInPromptAr: 'ماذا قالَتِ الرِّسالَة؟',
+            },
+            {
+              kind: 'challenge-step', id: 'lg-d7', dayLabel: 7,
+              titleEn: 'Your Legacy Statement', titleAr: 'بَيانُ إرْثِك',
+              instructionEn: 'Look back at days 1-6. Write a 4-sentence "parenting legacy statement": what I received, what I\'m stopping, what I\'m building, what I want my child to carry forward. Tape it somewhere you see daily.',
+              instructionAr: 'اُنْظُري لِلأَيّامِ 1-6. اُكْتُبي بَيانَ إرْثٍ من 4 جُمَل: ما تَلَقَّيْتُه، ما أُوقِفُه، ما أَبْنيه، ما أُريدُ طِفْلي أَنْ يَحْمِلَه. اِلْصَقيهِ في مَكانٍ تَرَيْنَهُ يَوْميّاً.',
+              checkInPromptEn: 'What\'s your legacy statement?',
+              checkInPromptAr: 'ما بَيانُ إرْثِك؟',
+            },
+            {
+              kind: 'pullquote', id: 'lg-quote',
+              textEn: 'You are not just raising a child. You are raising the parent your grandchildren will have.',
+              textAr: 'أَنْتِ لا تُرَبّينَ طِفْلاً فَقَط. أَنْتِ تُرَبّينَ الأُمَّ الّتي سَيَكونُ لِأَحْفادِكِ.',
+            },
+            {
+              kind: 'callout', id: 'lg-drhala', variant: 'dr-hala',
+              textEn: 'Every parent leaves a legacy. The question isn\'t whether — it\'s what. You\'re on the last module of this program because you chose to do the work. That itself is the legacy. Your child will one day say: "My mom/dad chose to learn. She chose to grow. Because of her, I learned how to."',
+              textAr: 'كُلُّ والِدٍ يَتْرُكُ إرْثاً. السُّؤالُ لَيْسَ هل — بَلْ ماذا. أَنْتِ في الوِحْدَةِ الأَخيرَةِ من البَرْنامَج لِأَنَّكِ اخْتَرْتِ أَنْ تَعْمَلي. هذا بِحَدِّ ذاتِهِ الإرْث. طِفْلُكِ سَيَقولُ يَوْماً: "أُمّي اخْتارَتْ أَنْ تَتَعَلَّم. اخْتارَتْ أَنْ تَنْمو. بِفَضْلِها، تَعَلَّمْتُ كَيْف."',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'triangle',

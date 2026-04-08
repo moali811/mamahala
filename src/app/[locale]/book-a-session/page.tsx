@@ -111,7 +111,7 @@ function BookASessionInner() {
 
       {/* ─── Section 1: Minimal Hero ─── */}
       <section className="relative bg-gradient-to-b from-[#FAF0EC] to-[#FAF7F2]">
-        <div className="container-main pt-24 pb-20 md:pt-28 md:pb-24 text-center">
+        <div className="container-main pt-20 pb-10 md:pt-28 md:pb-24 text-center">
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Breadcrumb
               locale={locale}
@@ -122,7 +122,7 @@ function BookASessionInner() {
             />
           </motion.div>
           <motion.h1
-            className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-[#2D2A33] mt-6 leading-tight"
+            className="text-2xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-[#2D2A33] mt-4 sm:mt-6 leading-tight"
             style={{ fontFamily: 'var(--font-heading)' }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -130,59 +130,61 @@ function BookASessionInner() {
           >
             {messages.booking.pageTitle}
           </motion.h1>
-          <motion.p
-            className="text-lg text-[#4A4A5C] max-w-xl mx-auto mt-4 leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-          >
-            {messages.booking.subtitle}
-          </motion.p>
-          <motion.div
-            className="w-24 h-1 bg-[#C8A97D] mx-auto mt-6 rounded-full"
-            initial={{ scaleX: 0 }}
-            animate={{ scaleX: 1 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
-          />
+          <div className="hidden sm:block">
+            <motion.p
+              className="text-lg text-[#4A4A5C] max-w-xl mx-auto mt-4 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              {messages.booking.subtitle}
+            </motion.p>
+            <motion.div
+              className="w-24 h-1 bg-[#C8A97D] mx-auto mt-6 rounded-full"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            />
+          </div>
         </div>
         <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
       {/* ─── Section 2: The Fork ─── */}
-      <section className="py-16 lg:py-20">
+      <section className="py-8 md:py-16 lg:py-20">
         <div className="container-main max-w-4xl mx-auto">
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-2 gap-3 md:gap-6">
             {/* Card A: New Client */}
             <ScrollReveal direction="up" delay={0.1}>
               <button
                 onClick={handleNewClient}
-                className={`w-full h-full flex flex-col text-start bg-white rounded-2xl border p-8 md:p-10 transition-all duration-300 group ${isRTL ? 'text-right' : ''} ${
+                className={`w-full h-full flex flex-col text-start bg-white rounded-2xl border p-4 sm:p-8 md:p-10 transition-all duration-300 group ${isRTL ? 'text-right' : ''} ${
                   userPath === 'new'
                     ? 'border-[#C8A97D] ring-2 ring-[#C8A97D]/20 shadow-[0_12px_40px_rgba(0,0,0,0.08)]'
                     : 'border-[#F3EFE8] hover:border-[#C8A97D]/30 hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]'
                 }`}
               >
-                <div className="w-12 h-12 rounded-2xl bg-[#C8A97D]/10 flex items-center justify-center mb-5">
-                  <Sparkles className="w-6 h-6 text-[#C8A97D]" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#C8A97D]/10 flex items-center justify-center mb-3 sm:mb-5">
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-[#C8A97D]" />
                 </div>
                 <h3
-                  className="text-xl font-bold text-[#2D2A33] mb-2"
+                  className="text-base sm:text-xl font-bold text-[#2D2A33] mb-1 sm:mb-2"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
                   {messages.booking.newClient}
                 </h3>
-                <p className="text-sm text-[#6B6580] leading-relaxed mb-5 flex-grow">
+                <p className="text-xs sm:text-sm text-[#6B6580] leading-relaxed mb-3 sm:mb-5 flex-grow">
                   {messages.booking.newClientDesc}
                 </p>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-2">
                   <Badge variant="sage" size="sm" className="!bg-[#25D366]/10 !text-[#25D366]">
                     <Clock className={`w-3 h-3 ${isRTL ? 'ml-1' : 'mr-1'}`} />
                     {isRTL ? 'مجّانيّة · 30 دقيقة' : 'Free · 30 min'}
                   </Badge>
-                  <span className={`text-sm font-semibold text-[#C8A97D] transition-transform inline-flex items-center gap-1 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
+                  <span className={`text-xs sm:text-sm font-semibold text-[#C8A97D] transition-transform inline-flex items-center gap-1 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
                     {messages.booking.bookFreeConsultation}
-                    <ArrowIcon className="w-4 h-4" />
+                    <ArrowIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </span>
                 </div>
               </button>
@@ -192,28 +194,28 @@ function BookASessionInner() {
             <ScrollReveal direction="up" delay={0.2}>
               <button
                 onClick={handleReturningClient}
-                className={`w-full h-full flex flex-col text-start bg-white rounded-2xl border p-8 md:p-10 transition-all duration-300 group ${isRTL ? 'text-right' : ''} ${
+                className={`w-full h-full flex flex-col text-start bg-white rounded-2xl border p-4 sm:p-8 md:p-10 transition-all duration-300 group ${isRTL ? 'text-right' : ''} ${
                   userPath === 'returning'
                     ? 'border-[#7A3B5E] ring-2 ring-[#7A3B5E]/20 shadow-[0_12px_40px_rgba(0,0,0,0.08)]'
                     : 'border-[#F3EFE8] hover:border-[#7A3B5E]/20 hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)]'
                 }`}
               >
-                <div className="w-12 h-12 rounded-2xl bg-[#7A3B5E]/10 flex items-center justify-center mb-5">
-                  <Heart className="w-6 h-6 text-[#7A3B5E]" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#7A3B5E]/10 flex items-center justify-center mb-3 sm:mb-5">
+                  <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-[#7A3B5E]" />
                 </div>
                 <h3
-                  className="text-xl font-bold text-[#2D2A33] mb-2"
+                  className="text-base sm:text-xl font-bold text-[#2D2A33] mb-1 sm:mb-2"
                   style={{ fontFamily: 'var(--font-heading)' }}
                 >
                   {messages.booking.returningClient}
                 </h3>
-                <p className="text-sm text-[#6B6580] leading-relaxed mb-5 flex-grow">
+                <p className="text-xs sm:text-sm text-[#6B6580] leading-relaxed mb-3 sm:mb-5 flex-grow">
                   {messages.booking.returningClientDesc}
                 </p>
                 <div className={`flex items-center ${isRTL ? 'justify-start' : 'justify-end'}`}>
-                  <span className={`text-sm font-semibold text-[#7A3B5E] transition-transform inline-flex items-center gap-1 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
+                  <span className={`text-xs sm:text-sm font-semibold text-[#7A3B5E] transition-transform inline-flex items-center gap-1 ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`}>
                     {messages.booking.chooseService}
-                    <ArrowIcon className="w-4 h-4" />
+                    <ArrowIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </span>
                 </div>
               </button>
@@ -376,38 +378,47 @@ function BookASessionInner() {
       </AnimatePresence>
 
       {/* ─── WhatsApp + Policy Footer Band ─── */}
-      <section className="py-10 border-t border-[#F3EFE8] bg-[#FAF7F2]">
-        <div className="container-main max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className={`flex items-center gap-3 ${isRTL ? 'text-right' : ''}`}>
-            <div className="w-10 h-10 rounded-full bg-[#25D366]/10 flex items-center justify-center">
-              <MessageCircle className="w-5 h-5 text-[#25D366]" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-[#2D2A33]">{messages.booking.preferToChat}</p>
+      <section className="py-10 sm:py-16 pb-16 sm:pb-24 bg-[#FAF7F2]">
+        <div className="container-main max-w-3xl mx-auto">
+          <div className="relative rounded-2xl sm:rounded-3xl border border-[#F3EFE8] bg-white/60 backdrop-blur-sm p-6 sm:p-10 text-center shadow-[0_4px_24px_rgba(0,0,0,0.03)]">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#25D366]/10 flex items-center justify-center">
+                <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 text-[#25D366]" />
+              </div>
+              <div>
+                <p className="text-base sm:text-lg font-semibold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
+                  {messages.booking.preferToChat}
+                </p>
+                <p className="text-sm text-[#6B6580] mt-1">
+                  {isRTL ? 'راسلنا مباشرة وسنساعدك في الحجز' : 'Message us directly and we\'ll help you book'}
+                </p>
+              </div>
               <a
                 href={BUSINESS.whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sm text-[#25D366] font-medium hover:underline"
+                className="inline-flex items-center gap-2 rounded-full bg-[#25D366] px-6 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#1EBE5D] hover:shadow-lg active:scale-[0.98]"
               >
-                WhatsApp
+                <MessageCircle className="w-4 h-4" />
+                {isRTL ? 'تواصل عبر واتساب' : 'Chat on WhatsApp'}
               </a>
             </div>
-          </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm text-[#8E8E9F]">
-            <span>{isRTL ? 'الاستشارة الأولى مجّانيّة' : 'Free first consultation'}</span>
-            <span className="text-[#D4D4D4]">·</span>
-            <span>{isRTL ? 'إشعار إلغاء 24 ساعة' : '24h cancellation notice'}</span>
-            <span className="text-[#D4D4D4]">·</span>
-            <Link
-              href={`/${locale}/booking-policy`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[#7A3B5E] font-semibold hover:underline"
-            >
-              {isRTL ? 'سياسة الحجز الكاملة' : 'View Booking Policy'}
-              <ArrowIcon className="w-3.5 h-3.5" />
-            </Link>
+
+            <div className="mt-6 pt-5 border-t border-[#F3EFE8] flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs sm:text-sm text-[#8E8E9F]">
+              <span>{isRTL ? 'الاستشارة الأولى مجّانيّة' : 'Free first consultation'}</span>
+              <span className="text-[#D4D4D4]">·</span>
+              <span>{isRTL ? 'إشعار إلغاء 24 ساعة' : '24h cancellation notice'}</span>
+              <span className="text-[#D4D4D4]">·</span>
+              <Link
+                href={`/${locale}/booking-policy`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-[#7A3B5E] font-semibold hover:underline"
+              >
+                {isRTL ? 'سياسة الحجز' : 'Booking Policy'}
+                <ArrowIcon className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>

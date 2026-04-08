@@ -231,6 +231,8 @@ export interface SelfAssessmentWheel {
 export interface LearningObjective {
   textEn: string;
   textAr: string;
+  // Optional — when all these blocks are completed, the objective auto-ticks.
+  relatedBlockIds?: string[];
 }
 
 export interface AcademyModule {
@@ -255,7 +257,48 @@ export interface AcademyModule {
   selfAssessment?: SelfAssessmentWheel;
   estimatedReadTimeMinutes?: number;
   skillTags?: string[];
+  // Block-based content (new modular format)
+  format?: ModuleFormat;
+  blocks?: LessonBlock[];
 }
+
+// Re-export block system types for convenience
+export type {
+  LessonBlock,
+  LessonBlockKind,
+  ModuleFormat,
+  CalloutVariant,
+  ParagraphBlock,
+  HeadingBlock,
+  CalloutBlock,
+  PullQuoteBlock,
+  StatBlock,
+  ComparisonBlock,
+  ChecklistBlock,
+  FrameworkBlock,
+  MicroQuizBlock,
+  ScenarioBlock,
+  DragMatchBlock,
+  LikertBlock,
+  ReflectionPromptBlock,
+  ActivityBlock,
+  RevealBlock,
+  TabsBlock,
+  TabBlock,
+  CardBlock,
+  StoryBeatBlock,
+  StoryChoiceBlock,
+  ChallengeStepBlock,
+  VideoBlock,
+  VideoProvider,
+  InteractiveVideoBlock,
+  VideoCheckpoint,
+  JourneyBlock,
+  JourneyStep,
+  JourneyIcon,
+} from './blocks';
+
+import type { LessonBlock, ModuleFormat } from './blocks';
 
 export interface AcademyLevel {
   level: 1 | 2 | 3;
@@ -266,6 +309,8 @@ export interface AcademyLevel {
   descriptionEn: string;
   descriptionAr: string;
   isFree: boolean;
+  /** CAD price per level. Used when isFree is false. Falls back to academyLevelPrice. */
+  priceCAD?: number;
   modules: AcademyModule[];
 }
 
@@ -414,6 +459,8 @@ export interface SmartEvent {
   galleryImages?: string[];
   highlightEn?: string;
   highlightAr?: string;
+  /** If this past event originated from a community pulse vote, record how many voices asked for it. */
+  pulseOriginVotes?: number;
 
   // Series grouping
   seriesId?: string;

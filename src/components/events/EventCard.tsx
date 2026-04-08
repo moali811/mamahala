@@ -44,11 +44,11 @@ interface Props {
 }
 
 const typeGradients: Record<EventType, string> = {
-  workshop: 'from-[#E8E0D0]/60 via-[#F0E8DC]/40 to-[#FAF5ED]',
-  webinar: 'from-[#E8D5E0]/60 via-[#F0DFE8]/40 to-[#F8EEF3]',
-  'community-gathering': 'from-[#C4878A]/15 via-[#F0D5CA]/25 to-[#FAF0EC]',
-  retreat: 'from-[#D4836A]/15 via-[#FAE8E0]/25 to-[#FDF5F0]',
-  'support-group': 'from-[#E8E4DE]/60 via-[#F0ECE6]/40 to-[#F8F5F0]',
+  workshop: 'from-[#C8A97D]/25 via-[#E8D5B0]/35 to-[#F5EDD8]',           // Gold/amber
+  webinar: 'from-[#7A3B5E]/20 via-[#C4878A]/25 to-[#F0DFE8]',            // Plum/rose
+  'community-gathering': 'from-[#3B8A6E]/18 via-[#A8D4C0]/25 to-[#E8F5EE]', // Sage/teal
+  retreat: 'from-[#5B8FA8]/20 via-[#A8C8DC]/25 to-[#E0EEF5]',            // Blue/slate
+  'support-group': 'from-[#C4878A]/22 via-[#E8C0C8]/28 to-[#F5E8EC]',    // Warm rose
 };
 
 const typeIcons: Record<EventType, React.ReactNode> = {

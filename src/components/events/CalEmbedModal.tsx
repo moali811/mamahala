@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Shield } from 'lucide-react';
 import { BUSINESS } from '@/config/business';
+import { useEffect } from 'react';
 
 interface Props {
   calSlug: string;
@@ -17,15 +18,39 @@ interface Props {
   prefillEmail?: string;
   /** Pre-fill notes field */
   prefillNotes?: string;
+  /** Fired only when Cal.com confirms the booking was actually created. */
+  onBookingSuccess?: () => void;
 }
 
-export default function CalEmbedModal({ calSlug, isOpen, onClose, eventTitle, locale, prefillName, prefillEmail, prefillNotes }: Props) {
+export default function CalEmbedModal({ calSlug, isOpen, onClose, eventTitle, locale, prefillName, prefillEmail, prefillNotes, onBookingSuccess }: Props) {
   const isRTL = locale === 'ar';
   const params = new URLSearchParams({ embed: 'true', theme: 'light', layout: 'month_view' });
   if (prefillName) params.set('name', prefillName);
   if (prefillEmail) params.set('email', prefillEmail);
   if (prefillNotes) params.set('notes', prefillNotes);
   const embedUrl = `${BUSINESS.calBaseUrl}/${calSlug}?${params.toString()}`;
+
+  // Listen for Cal.com booking success postMessage from the iframe
+  useEffect(() => {
+    if (!isOpen || !onBookingSuccess) return;
+    const handler = (e: MessageEvent) => {
+      // Cal.com posts events from its own origin; be liberal in matching since
+      // payload shapes have changed across embed versions.
+      if (typeof e.data !== 'object' || e.data == null) return;
+      const data = e.data as { type?: string; action?: string; event?: string };
+      const tag = (data.type || data.action || data.event || '').toLowerCase();
+      if (
+        tag.includes('booking_successful') ||
+        tag.includes('bookingsuccessful') ||
+        tag === 'cal:booking_successful' ||
+        tag === 'cal:booking_successful_v2'
+      ) {
+        onBookingSuccess();
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [isOpen, onBookingSuccess]);
 
   if (typeof document === 'undefined') return null;
 

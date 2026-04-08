@@ -31,12 +31,19 @@ function verifySignature(body: string, signature: string | null, secret: string)
 }
 
 // Map Cal.com event slugs back to program slugs
+// New: tier-based slugs (academy-growth, academy-mastery) — program extracted from notes
+// Legacy: per-program slugs kept for backward compatibility with existing bookings
 const CAL_SLUG_TO_PROGRAM: Record<string, string> = {
   'academy-intentional-parent': 'intentional-parent',
   'academy-resilient-teens': 'resilient-teens',
   'academy-stronger-together': 'stronger-together',
   'academy-inner-compass': 'inner-compass',
 };
+
+// All known program slugs for notes-based extraction
+const KNOWN_PROGRAMS = [
+  'intentional-parent', 'resilient-teens', 'stronger-together', 'inner-compass',
+];
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -86,7 +93,7 @@ export async function POST(req: NextRequest) {
 
   let programSlug: string | null = null;
 
-  // Try matching from event type slug
+  // Try matching from event type slug (legacy per-program slugs)
   for (const [calSlug, progSlug] of Object.entries(CAL_SLUG_TO_PROGRAM)) {
     if (eventTypeSlug.includes(calSlug) || eventTitle.toLowerCase().includes(calSlug)) {
       programSlug = progSlug;
@@ -94,12 +101,29 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Fallback: try extracting from booking notes (we prefill notes with program info)
+  // For tier-based slugs (academy-growth, academy-mastery) or as fallback,
+  // extract program from booking notes: "Program: The Intentional Parent | Level: 2 (growth)"
   if (!programSlug && bookingNotes) {
-    for (const [calSlug, progSlug] of Object.entries(CAL_SLUG_TO_PROGRAM)) {
-      if (bookingNotes.includes(progSlug)) {
-        programSlug = progSlug;
-        break;
+    // Try "Program: <title>" pattern — match against known program title keywords
+    const programMatch = bookingNotes.match(/Program:\s*(.+?)\s*\|/i);
+    if (programMatch) {
+      const titleSnippet = programMatch[1].toLowerCase();
+      for (const slug of KNOWN_PROGRAMS) {
+        // Match e.g. "intentional parent" in "The Intentional Parent"
+        const words = slug.replace(/-/g, ' ');
+        if (titleSnippet.includes(words)) {
+          programSlug = slug;
+          break;
+        }
+      }
+    }
+    // Fallback: try direct slug match in notes
+    if (!programSlug) {
+      for (const slug of KNOWN_PROGRAMS) {
+        if (bookingNotes.includes(slug)) {
+          programSlug = slug;
+          break;
+        }
       }
     }
   }
@@ -109,8 +133,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Could not determine program' }, { status: 400 });
   }
 
-  // Extract module slug from notes (we prefill: "Program: X | Module: Y")
+  // Extract level number or module slug from notes
+  // New format: "Program: X | Level: N"
+  // Legacy format: "Program: X | Module: Y"
   let moduleSlug: string | null = null;
+  let levelNumber: number | null = null;
+  const levelMatch = bookingNotes.match(/Level:\s*(\d+)/i);
+  if (levelMatch) {
+    levelNumber = Number(levelMatch[1]);
+  }
   const moduleMatch = bookingNotes.match(/Module:\s*([a-z0-9-]+)/i);
   if (moduleMatch) {
     moduleSlug = moduleMatch[1];
@@ -120,7 +151,15 @@ export async function POST(req: NextRequest) {
   try {
     const kvInstance = await getKV();
     if (kvInstance) {
-      // Store per-module unlock
+      if (levelNumber != null) {
+        const unlockKey = `academy:paid:${programSlug}:level-${levelNumber}:${studentEmail}`;
+        await kvInstance.set(unlockKey, {
+          paid: true,
+          paidAt: new Date().toISOString(),
+          amount: payload.price || payload.paymentAmount,
+          currency: payload.currency || 'cad',
+        });
+      }
       if (moduleSlug) {
         const unlockKey = `academy:paid:${programSlug}:${moduleSlug}:${studentEmail}`;
         await kvInstance.set(unlockKey, {
@@ -135,16 +174,25 @@ export async function POST(req: NextRequest) {
       const studentKey = `academy:student:${studentEmail}`;
       const student = await kvInstance.get(studentKey) as Record<string, unknown> | null;
       if (student) {
-        const unlockedModules = (student.unlockedModules as Record<string, string[]>) || {};
-        if (!unlockedModules[programSlug]) {
-          unlockedModules[programSlug] = [];
+        if (levelNumber != null) {
+          const unlockedLevels = (student.unlockedLevels as Record<string, number[]>) || {};
+          if (!unlockedLevels[programSlug]) unlockedLevels[programSlug] = [];
+          if (!unlockedLevels[programSlug].includes(levelNumber)) {
+            unlockedLevels[programSlug].push(levelNumber);
+          }
+          student.unlockedLevels = unlockedLevels;
         }
-        if (moduleSlug && !unlockedModules[programSlug].includes(moduleSlug)) {
-          unlockedModules[programSlug].push(moduleSlug);
+        if (moduleSlug) {
+          const unlockedModules = (student.unlockedModules as Record<string, string[]>) || {};
+          if (!unlockedModules[programSlug]) unlockedModules[programSlug] = [];
+          if (!unlockedModules[programSlug].includes(moduleSlug)) {
+            unlockedModules[programSlug].push(moduleSlug);
+          }
+          student.unlockedModules = unlockedModules;
         }
-        student.unlockedModules = unlockedModules;
         student.lastPayment = {
           programSlug,
+          levelNumber,
           moduleSlug,
           date: new Date().toISOString(),
         };
@@ -163,13 +211,13 @@ export async function POST(req: NextRequest) {
       await resend.emails.send({
         from: 'Mama Hala Academy <academy@mamahala.ca>',
         to: studentEmail,
-        subject: 'Module Unlocked — Payment Confirmed!',
+        subject: levelNumber != null ? `Level ${levelNumber} Unlocked — Payment Confirmed!` : 'Module Unlocked — Payment Confirmed!',
         html: `
           <div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 500px; margin: 0 auto; padding: 30px;">
-            <h1 style="color: #7A3B5E; font-size: 24px;">Module Unlocked!</h1>
-            <p style="color: #4A4A5C; line-height: 1.6;">Your payment of $9 CAD has been confirmed. Your next module is now unlocked and ready for you.</p>
+            <h1 style="color: #7A3B5E; font-size: 24px;">${levelNumber != null ? `Level ${levelNumber} Unlocked!` : 'Module Unlocked!'}</h1>
+            <p style="color: #4A4A5C; line-height: 1.6;">Your payment has been confirmed. ${levelNumber != null ? `All modules in Level ${levelNumber}` : 'Your next module'} are now unlocked and ready for you.</p>
             <p style="color: #4A4A5C; line-height: 1.6;">Log in with your email to continue learning.</p>
-            <a href="https://mama-hala-website.vercel.app/en/programs/${programSlug}" style="display: inline-block; background: #7A3B5E; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 16px;">Continue Learning</a>
+            <a href="https://mamahala.ca/en/programs/${programSlug}" style="display: inline-block; background: #7A3B5E; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 16px;">Continue Learning</a>
             <p style="color: #8E8E9F; font-size: 12px; margin-top: 30px;">— Dr. Hala & the Mama Hala Team</p>
           </div>
         `,
@@ -177,6 +225,6 @@ export async function POST(req: NextRequest) {
     } catch { /* email send failed, not critical */ }
   }
 
-  console.log(`Cal.com webhook: unlocked ${programSlug}/${moduleSlug} for ${studentEmail}`);
-  return NextResponse.json({ received: true, unlocked: true, programSlug, moduleSlug });
+  console.log(`Cal.com webhook: unlocked ${programSlug}/${levelNumber != null ? 'level-' + levelNumber : moduleSlug} for ${studentEmail}`);
+  return NextResponse.json({ received: true, unlocked: true, programSlug, levelNumber, moduleSlug });
 }

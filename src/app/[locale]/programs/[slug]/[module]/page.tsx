@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import {
   BookOpen, CheckCircle, ArrowRight, ArrowLeft, Loader2, Lock,
   GraduationCap, Lightbulb, PenLine, Activity, HelpCircle,
-  Award, Sparkles, MessageCircle, Zap, ChevronDown,
+  Award, Sparkles, MessageCircle, Zap, ChevronDown, Download,
 } from 'lucide-react';
 import type { AcademyProgram, AcademyModule } from '@/types';
 import Badge from '@/components/ui/Badge';
@@ -24,6 +24,7 @@ import ModuleSidebar, { getModuleSections } from '@/components/academy/layout/Mo
 import SectionDivider from '@/components/academy/layout/SectionDivider';
 import LearningObjectivesChecklist from '@/components/academy/layout/LearningObjectivesChecklist';
 import CompletionCelebration from '@/components/academy/layout/CompletionCelebration';
+import NextStepNudge from '@/components/academy/layout/NextStepNudge';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import QuizEnhanced from '@/components/academy/content/QuizEnhanced';
 import ResearchSpotlight from '@/components/academy/academic/ResearchSpotlight';
@@ -33,6 +34,10 @@ import ScenarioBrancher from '@/components/academy/interactive/ScenarioBrancher'
 import DragMatchGame from '@/components/academy/interactive/DragMatchGame';
 import LikertScale from '@/components/academy/interactive/LikertScale';
 import SelfAssessmentRadar from '@/components/academy/interactive/SelfAssessmentRadar';
+import ModuleRenderer from '@/components/academy/formats/ModuleRenderer';
+import AICompanionPanel from '@/components/academy/ai/AICompanionPanel';
+import ObjectivesRail from '@/components/academy/layout/ObjectivesRail';
+import type { StudentContext } from '@/lib/ai-companion/context';
 
 // Dynamic program loader
 async function loadProgram(slug: string): Promise<AcademyProgram | null> {
@@ -66,6 +71,7 @@ export default function ModuleLessonPage() {
 
   // Quiz gating — must pass quiz to complete module
   const [quizPassed, setQuizPassed] = useState(false);
+  const [quizJustPassed, setQuizJustPassed] = useState(false); // true only when passed in this session
 
   // Section tracking
   const [activeSection, setActiveSection] = useState('lesson');
@@ -92,16 +98,18 @@ export default function ModuleLessonPage() {
           const isEnrolled = localStorage.getItem(`academy_enrolled_${programSlug}`);
           const moduleLevel = p.levels.find(l => l.modules.some(m => m.slug === moduleSlug));
           const levelIsFree = moduleLevel?.isFree || p.isFree;
-          const moduleUnlocked = localStorage.getItem(`academy:paid:${programSlug}:${moduleSlug}`) === 'true';
+          const levelNum = moduleLevel?.level;
+          const levelUnlocked = levelNum != null && localStorage.getItem(`academy:paid:${programSlug}:level-${levelNum}`) === 'true';
+          const legacyModuleUnlocked = localStorage.getItem(`academy:paid:${programSlug}:${moduleSlug}`) === 'true';
 
           if (!isEnrolled) {
             router.replace(`/${locale}/programs/${programSlug}`);
             return;
           }
 
-          if (!levelIsFree && !moduleUnlocked) {
-            // This module requires payment — redirect to program page to pay
-            router.replace(`/${locale}/programs/${programSlug}?unlock=${moduleSlug}`);
+          if (!levelIsFree && !levelUnlocked && !legacyModuleUnlocked) {
+            // Level not unlocked — redirect to program page with level unlock flow
+            router.replace(`/${locale}/programs/${programSlug}?unlock=level-${levelNum}`);
             return;
           }
         }
@@ -188,6 +196,44 @@ export default function ModuleLessonPage() {
     }
   }, []);
 
+  // Assemble student context for the AI companion — read fresh each call.
+  const getStudentContext = useCallback((): StudentContext => {
+    if (typeof window === 'undefined' || !currentModule) return {};
+    const ctx: StudentContext = {};
+    try {
+      const refl = localStorage.getItem(`academy:reflection:${programSlug}:${moduleSlug}`);
+      if (refl) ctx.reflection = refl;
+
+      const likerts: { statementEn: string; value: number; labelEn?: string }[] = [];
+      (currentModule.likertReflections || []).forEach((lr, i) => {
+        const v = localStorage.getItem(`academy:likert:${programSlug}:${moduleSlug}:${i}`);
+        if (v != null) {
+          const n = Number(v);
+          if (!Number.isNaN(n)) likerts.push({ statementEn: lr.statementEn, value: n });
+        }
+      });
+      if (likerts.length) ctx.likertResponses = likerts;
+
+      if (currentModule.blocks) {
+        const mq: { blockId: string; correct: boolean }[] = [];
+        for (const b of currentModule.blocks) {
+          if (b.kind === 'micro-quiz') {
+            const raw = localStorage.getItem(`academy:microquiz:${programSlug}:${moduleSlug}:${b.id}`);
+            if (raw != null) {
+              const idx = Number(raw);
+              const opt = b.question.options[idx];
+              if (opt) mq.push({ blockId: b.id, correct: !!opt.correct });
+            }
+          }
+        }
+        if (mq.length) ctx.microQuizResults = mq;
+      }
+
+      ctx.completedBlockIds = completedSections;
+    } catch {}
+    return ctx;
+  }, [currentModule, programSlug, moduleSlug, completedSections]);
+
   const handleComplete = async () => {
     const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') : null;
     if (email) {
@@ -207,13 +253,16 @@ export default function ModuleLessonPage() {
         // Check if next module is in a paid level and not yet unlocked
         const nextLevel = program?.levels.find(l => l.modules.some(m => m.slug === nextMod.slug));
         const nextIsFree = nextLevel?.isFree || program?.isFree;
-        const nextIsUnlocked = localStorage.getItem(`academy:paid:${programSlug}:${nextMod.slug}`) === 'true';
+        const nextLevelUnlocked = nextLevel && localStorage.getItem(`academy:paid:${programSlug}:level-${nextLevel.level}`) === 'true';
+        const nextLegacyUnlocked = localStorage.getItem(`academy:paid:${programSlug}:${nextMod.slug}`) === 'true';
 
-        if (nextIsFree || nextIsUnlocked) {
+        if (nextIsFree || nextLevelUnlocked || nextLegacyUnlocked) {
           router.push(`/${locale}/programs/${programSlug}/${nextMod.slug}`);
+        } else if (nextLevel) {
+          // Next level is paid and locked — go to program page to pay
+          router.push(`/${locale}/programs/${programSlug}?unlock=level-${nextLevel.level}`);
         } else {
-          // Next module is paid and locked — go to program page to pay
-          router.push(`/${locale}/programs/${programSlug}?unlock=${nextMod.slug}`);
+          router.push(`/${locale}/programs/${programSlug}`);
         }
       } else {
         router.push(`/${locale}/programs/${programSlug}`);
@@ -256,15 +305,20 @@ export default function ModuleLessonPage() {
   const hasSelfAssessment = !!currentModule.selfAssessment;
   const hasExercises = hasScenarios || hasDragMatch || hasLikert || hasFrameworks || hasSelfAssessment;
   const totalWords = lessonContent.split(/\s+/).length;
+  const hasBlocks = !!currentModule.blocks?.length;
 
-  const sidebarSections = getModuleSections(isRTL, {
-    hasObjectives,
-    hasScenarios,
-    hasDragMatch,
-    hasLikert,
-    hasFramework: hasFrameworks,
-    hasDrNote: !!drNote,
-  });
+  const sidebarSections = hasBlocks
+    ? getModuleSections(isRTL, { hasObjectives: false, hasScenarios: false, hasDragMatch: false, hasLikert: false, hasFramework: false, hasDrNote: false })
+        .filter(s => s.id === 'lesson' || s.id === 'quiz' || s.id === 'faq')
+        .map(s => s.id === 'lesson' ? { ...s, label: isRTL ? 'المُحْتَوى' : 'Content' } : s)
+    : getModuleSections(isRTL, {
+        hasObjectives,
+        hasScenarios,
+        hasDragMatch,
+        hasLikert,
+        hasFramework: hasFrameworks,
+        hasDrNote: !!drNote,
+      });
 
   const setSectionRef = (id: string) => (el: HTMLElement | null) => {
     sectionRefs.current[id] = el;
@@ -278,13 +332,24 @@ export default function ModuleLessonPage() {
 
       {/* ─── TOP BAR ─── */}
       <header className="bg-white border-b border-[#F3EFE8] fixed top-16 left-0 right-0 z-20">
-        <div className="max-w-4xl mx-auto lg:ml-64 lg:mr-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div className={`lg:pl-72 ${hasBlocks && hasObjectives ? 'xl:pr-[320px]' : ''}`}>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <a href={`/${locale}/programs/${programSlug}`} className="text-sm text-[#8E8E9F] hover:text-[#7A3B5E] flex items-center gap-1.5 transition-colors">
             <ArrowLeft className="w-4 h-4" />
             <span className="hidden sm:inline">{t(program.titleEn, program.titleAr, isRTL)}</span>
           </a>
           <div className="flex items-center gap-3">
             <TimeRemaining totalWords={totalWords} isRTL={isRTL} />
+            <div className="w-px h-4 bg-[#F3EFE8]" />
+            <a
+              href={`/api/academy/worksheet/${programSlug}/${moduleSlug}?locale=${locale}`}
+              download
+              title={isRTL ? 'تحميل ورقة العمل' : 'Download worksheet'}
+              className="flex items-center gap-1 text-xs font-medium text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{isRTL ? 'ورقة العمل' : 'Worksheet'}</span>
+            </a>
             <div className="w-px h-4 bg-[#F3EFE8]" />
             <div className="flex items-center gap-2">
               <span className="text-xs text-[#8E8E9F]">{moduleIndex + 1} / {allModules.length}</span>
@@ -293,6 +358,7 @@ export default function ModuleLessonPage() {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </header>
 
@@ -311,7 +377,8 @@ export default function ModuleLessonPage() {
       />
 
       {/* ─── MAIN CONTENT ─── */}
-      <main className="max-w-3xl mx-auto lg:ml-72 lg:mr-auto px-4 sm:px-6 py-8 space-y-8">
+      <div className={`lg:pl-72 ${hasBlocks && hasObjectives ? 'xl:pr-[320px]' : ''}`}>
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-8">
 
         {/* ─── MODULE HEADER ─── */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
@@ -336,8 +403,8 @@ export default function ModuleLessonPage() {
           )}
         </motion.div>
 
-        {/* ─── LEARNING OBJECTIVES ─── */}
-        {hasObjectives && (
+        {/* ─── LEARNING OBJECTIVES (inline, legacy only) ─── */}
+        {hasObjectives && !hasBlocks && (
           <div ref={setSectionRef('objectives')} data-section-id="objectives">
             <LearningObjectivesChecklist
               objectives={currentModule.learningObjectives!}
@@ -352,32 +419,61 @@ export default function ModuleLessonPage() {
         <div ref={setSectionRef('lesson')} data-section-id="lesson">
           <SectionDivider icon={<BookOpen className="w-4 h-4" />} label={isRTL ? 'الدرس' : 'Lesson'} color="#C8A97D" />
 
-          <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
-            <div className="prose prose-sm max-w-none text-[#4A4A5C] leading-relaxed whitespace-pre-line">
-              {lessonContent}
-            </div>
+          {hasBlocks ? (
+            <ModuleRenderer
+              module={currentModule}
+              ctx={{
+                locale: locale as 'en' | 'ar',
+                isRTL,
+                color: program.color,
+                programSlug,
+                moduleSlug,
+                onBlockComplete: (blockId) => markSectionComplete(blockId),
+              }}
+            />
+          ) : (
+            <>
+              <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
+                <div className="prose prose-sm max-w-none text-[#4A4A5C] leading-relaxed whitespace-pre-line">
+                  {lessonContent}
+                </div>
 
-            {/* Research citations inline */}
-            {hasResearch && (
-              <div className="mt-6 pt-4 border-t border-[#F3EFE8]">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8E8E9F] mb-3">
-                  {isRTL ? 'الأبحاث المرجعية' : 'Research References'}
-                </p>
-                {currentModule.researchCitations!.map((citation, i) => (
-                  <ResearchSpotlight key={i} citation={citation} isRTL={isRTL} color={program.color} />
-                ))}
+                {/* Research citations inline */}
+                {hasResearch && (
+                  <div className="mt-6 pt-4 border-t border-[#F3EFE8]">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#8E8E9F] mb-3">
+                      {isRTL ? 'الأبحاث المرجعية' : 'Research References'}
+                    </p>
+                    {currentModule.researchCitations!.map((citation, i) => (
+                      <ResearchSpotlight key={i} citation={citation} isRTL={isRTL} color={program.color} />
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
 
-          {/* Framework diagrams */}
-          {hasFrameworks && currentModule.frameworkDiagrams!.map((diagram, i) => (
-            <FrameworkVisualizer key={i} diagram={diagram} isRTL={isRTL} color={program.color} />
-          ))}
+              {/* Framework diagrams */}
+              {hasFrameworks && currentModule.frameworkDiagrams!.map((diagram, i) => (
+                <FrameworkVisualizer key={i} diagram={diagram} isRTL={isRTL} color={program.color} />
+              ))}
+            </>
+          )}
         </div>
 
+        {/* Nudge: after lesson → go to quiz (only if quiz not yet passed) */}
+        <NextStepNudge
+          show={completedSections.includes('lesson') && !quizPassed}
+          messageEn="Great progress! Ready to test what you've learned?"
+          messageAr="تقدّمٌ رائع! مستعدّ لاختبار ما تعلّمته؟"
+          buttonEn="Take the Quiz"
+          buttonAr="ابدأ الاختبار"
+          isRTL={isRTL}
+          color={program.color}
+          icon="quiz"
+          onClick={() => document.querySelector('[data-section-id="quiz"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+        />
+
         {/* ─── DR. HALA'S NOTE ─── */}
-        {drNote && (
+        {!hasBlocks && drNote && (
           <div ref={setSectionRef('dr-hala-note')} data-section-id="dr-hala-note">
             <ScrollReveal direction="left">
               <div className="rounded-2xl border-l-4 p-6 sm:p-8 relative overflow-hidden" style={{ borderColor: program.color, backgroundColor: `${program.color}06` }}>
@@ -395,7 +491,7 @@ export default function ModuleLessonPage() {
         )}
 
         {/* ─── KEY TAKEAWAYS ─── */}
-        <div ref={setSectionRef('takeaways')} data-section-id="takeaways">
+        {!hasBlocks && <div ref={setSectionRef('takeaways')} data-section-id="takeaways">
           <SectionDivider icon={<Lightbulb className="w-4 h-4" />} label={isRTL ? 'النقاط الرئيسية' : 'Key Takeaways'} color="#C8A97D" />
 
           <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
@@ -410,10 +506,10 @@ export default function ModuleLessonPage() {
               ))}
             </StaggerReveal>
           </div>
-        </div>
+        </div>}
 
         {/* ─── INTERACTIVE EXERCISES ─── */}
-        {hasExercises && (
+        {!hasBlocks && hasExercises && (
           <div ref={setSectionRef('exercises')} data-section-id="exercises">
             <SectionDivider icon={<Zap className="w-4 h-4" />} label={isRTL ? 'تمارين تفاعلية' : 'Interactive Exercises'} color={program.color} />
 
@@ -458,7 +554,7 @@ export default function ModuleLessonPage() {
         )}
 
         {/* ─── REFLECTION ─── */}
-        <div ref={setSectionRef('reflection')} data-section-id="reflection">
+        {!hasBlocks && <div ref={setSectionRef('reflection')} data-section-id="reflection">
           <SectionDivider icon={<PenLine className="w-4 h-4" />} label={isRTL ? 'تأمّل' : 'Reflection'} color="#C4878A" />
 
           <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
@@ -479,17 +575,30 @@ export default function ModuleLessonPage() {
               </p>
             </div>
           </div>
-        </div>
+        </div>}
 
         {/* ─── PRACTICAL ACTIVITY ─── */}
-        <div ref={setSectionRef('activity')} data-section-id="activity">
+        {!hasBlocks && <div ref={setSectionRef('activity')} data-section-id="activity">
           <SectionDivider icon={<Activity className="w-4 h-4" />} label={isRTL ? 'نشاط عملي' : 'Practical Activity'} color="#D4836A" />
 
           <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 sm:p-8">
             <h3 className="font-bold text-[#2D2A33] mb-2">{activityTitle}</h3>
             <p className="text-[#4A4A5C] leading-relaxed">{activityDesc}</p>
           </div>
-        </div>
+
+          {/* Download Worksheet */}
+          <div className="mt-3 flex justify-end">
+            <a
+              href={`/api/academy/worksheet/${programSlug}/${moduleSlug}?locale=${locale}`}
+              download
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:shadow-md hover:opacity-90"
+              style={{ backgroundColor: program.color }}
+            >
+              <Download className="w-3.5 h-3.5" />
+              {isRTL ? 'تحميل ورقة العمل' : 'Download Worksheet'}
+            </a>
+          </div>
+        </div>}
 
         {/* ─── MODULE QUIZ ─── */}
         <div ref={setSectionRef('quiz')} data-section-id="quiz">
@@ -504,10 +613,24 @@ export default function ModuleLessonPage() {
             onPass={() => {
               markSectionComplete('quiz');
               setQuizPassed(true);
+              setQuizJustPassed(true);
               localStorage.setItem(`academy:quiz-passed:${programSlug}:${moduleSlug}`, 'true');
             }}
           />
         </div>
+
+        {/* Nudge: after quiz pass → complete module (only in current session) */}
+        <NextStepNudge
+          show={quizJustPassed}
+          messageEn="Amazing! You passed the quiz! Finish up to continue your journey."
+          messageAr="رائع! اجتزتِ الاختبار! أكملي الوحدة لمتابعة الرّحلة."
+          buttonEn="Complete This Module"
+          buttonAr="أكملي هذه الوحدة"
+          isRTL={isRTL}
+          color={program.color}
+          icon="complete"
+          onClick={() => document.getElementById('module-complete-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+        />
 
         {/* ─── AI FAQ ─── */}
         {currentModule.aiFaq && currentModule.aiFaq.length > 0 && (
@@ -578,10 +701,11 @@ export default function ModuleLessonPage() {
 
             <div className="flex flex-col items-end gap-2">
               <button
+                id="module-complete-btn"
                 onClick={handleComplete}
                 disabled={!quizPassed}
                 className={`px-8 py-3 rounded-xl text-white text-sm font-semibold transition-all flex items-center gap-2 ${
-                  quizPassed ? 'hover:shadow-md' : 'opacity-50 cursor-not-allowed'
+                  quizPassed ? 'hover:shadow-md animate-action-pulse' : 'opacity-50 cursor-not-allowed'
                 }`}
                 style={{ backgroundColor: program.color }}
               >
@@ -601,8 +725,27 @@ export default function ModuleLessonPage() {
           </div>
         </div>
       </main>
+      </div>
 
       <MyLearningButton locale={locale} color={program.color} />
+
+      {hasObjectives && hasBlocks && (
+        <ObjectivesRail
+          objectives={currentModule.learningObjectives!}
+          completedBlockIds={completedSections}
+          moduleSlug={moduleSlug}
+          isRTL={isRTL}
+          color={program.color}
+        />
+      )}
+
+      <AICompanionPanel
+        programSlug={programSlug}
+        moduleSlug={moduleSlug}
+        locale={(locale === 'ar' ? 'ar' : 'en') as 'en' | 'ar'}
+        color={program.color}
+        getStudentContext={getStudentContext}
+      />
     </div>
   );
 }

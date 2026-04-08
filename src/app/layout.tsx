@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Script from 'next/script';
-import { DM_Serif_Display, Plus_Jakarta_Sans, Tajawal } from 'next/font/google';
+import { GoogleAnalytics } from '@next/third-parties/google';
+import { DM_Serif_Display, Fraunces, Plus_Jakarta_Sans, Tajawal } from 'next/font/google';
+import LocaleSync from '@/components/LocaleSync';
 import '@/app/globals.css';
 
 const dmSerif = DM_Serif_Display({
@@ -8,6 +10,17 @@ const dmSerif = DM_Serif_Display({
   weight: '400',
   variable: '--font-dm-serif',
   display: 'swap',
+  preload: true,
+  fallback: ['Georgia', 'Times New Roman', 'serif'],
+});
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  variable: '--font-fraunces',
+  display: 'swap',
+  preload: true,
+  fallback: ['Georgia', 'Times New Roman', 'serif'],
 });
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -24,6 +37,7 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://mamahala.ca'),
   title: {
     default: 'Mama Hala Consulting | Dr. Hala Ali',
     template: '%s | Mama Hala Consulting',
@@ -38,9 +52,21 @@ export const metadata: Metadata = {
   authors: [{ name: 'Dr. Hala Ali' }],
   openGraph: {
     type: 'website',
-    locale: 'en_US',
-    alternateLocale: 'ar_AE',
-    siteName: 'mamahala.ca',
+    locale: 'en_CA',
+    alternateLocale: ['ar_AE', 'ar_SA', 'ar_EG'],
+    siteName: 'Mama Hala Consulting',
+    images: [
+      {
+        url: '/images/logo-512.png',
+        width: 512,
+        height: 512,
+        alt: 'Mama Hala Consulting — Dr. Hala Ali',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/images/logo-512.png'],
   },
 };
 
@@ -50,7 +76,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${dmSerif.variable} ${plusJakarta.variable} ${tajawal.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${dmSerif.variable} ${fraunces.variable} ${plusJakarta.variable} ${tajawal.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -59,8 +85,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-screen flex flex-col">
+        <LocaleSync />
         {children}
       </body>
+      <GoogleAnalytics gaId="G-8KQBP44Y5M" />
     </html>
   );
 }

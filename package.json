@@ -6,22 +6,33 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "remotion:studio": "remotion studio",
+    "remotion:render": "remotion render remotion/index.ts",
+    "remotion:upgrade": "remotion upgrade"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
+    "@next/third-parties": "^16.2.2",
+    "@remotion/player": "^4.0.446",
     "@vercel/blob": "^2.3.2",
     "@vercel/kv": "^3.0.0",
     "framer-motion": "^12.38.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
     "lucide-react": "^0.577.0",
     "next": "16.2.1",
     "next-intl": "^4.8.3",
     "qrcode": "^1.5.4",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "resend": "^6.9.4"
+    "remotion": "^4.0.446",
+    "resend": "^6.9.4",
+    "stripe": "^22.0.0"
   },
   "devDependencies": {
+    "@remotion/cli": "^4.0.446",
+    "@remotion/eslint-plugin": "^4.0.446",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",

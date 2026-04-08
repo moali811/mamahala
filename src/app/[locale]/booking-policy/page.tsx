@@ -348,7 +348,7 @@ export default function BookingPolicyPage() {
                     className="relative bg-white rounded-2xl border border-[#F3EFE8] shadow-[var(--shadow-subtle)] p-6 h-full"
                     whileHover={{ y: -4, transition: { duration: 0.3 } }}
                   >
-                    <span className="text-[40px] font-bold text-[#7A3B5E]/[0.07] absolute top-4 right-5 leading-none select-none" style={{ fontFamily: 'var(--font-heading)' }}>
+                    <span className="text-[40px] font-bold text-[#7A3B5E]/[0.07] absolute top-4 ltr:right-5 rtl:left-5 leading-none select-none" style={{ fontFamily: 'var(--font-heading)' }}>
                       {step.step}
                     </span>
                     <div className="w-12 h-12 rounded-xl bg-[#C4878A]/10 flex items-center justify-center mb-4">

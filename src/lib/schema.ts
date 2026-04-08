@@ -5,20 +5,36 @@
 
 import { BUSINESS } from '@/config/business';
 
+const BASE_URL = 'https://mamahala.ca';
+const ORG_ID = `${BASE_URL}/#organization`;
+const PERSON_ID = `${BASE_URL}/#founder`;
+
 export function getOrganizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
+    '@id': ORG_ID,
     name: BUSINESS.name,
     alternateName: BUSINESS.nameAr,
-    url: 'https://mamahala.ca',
-    logo: 'https://mamahala.ca/images/logo.png',
-    description: 'Professional counseling and guidance for individuals, couples, and families. Certified family counselor serving Dubai and Canada.',
+    url: BASE_URL,
+    logo: {
+      '@type': 'ImageObject',
+      url: `${BASE_URL}/images/logo-512.png`,
+      width: 512,
+      height: 512,
+    },
+    image: `${BASE_URL}/images/logo-512.png`,
+    description:
+      'Professional counseling and guidance for individuals, couples, and families. Certified family counselor serving Dubai and Canada.',
     founder: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: BUSINESS.founder,
+      alternateName: BUSINESS.founderAr,
       jobTitle: 'Certified Family Counselor',
       alumniOf: { '@type': 'CollegeOrUniversity', name: 'Yale University' },
+      knowsLanguage: ['en', 'ar'],
+      worksFor: { '@id': ORG_ID },
     },
     telephone: BUSINESS.phone,
     email: BUSINESS.email,
@@ -26,17 +42,20 @@ export function getOrganizationSchema() {
       {
         '@type': 'PostalAddress',
         addressLocality: 'Ottawa',
+        addressRegion: 'ON',
         addressCountry: 'CA',
       },
       {
         '@type': 'PostalAddress',
         addressLocality: 'Dubai',
+        addressRegion: 'Dubai',
         addressCountry: 'AE',
       },
     ],
     areaServed: [
       { '@type': 'Country', name: 'Canada' },
       { '@type': 'Country', name: 'United Arab Emirates' },
+      { '@type': 'Country', name: 'Saudi Arabia' },
     ],
     serviceType: [
       'Family Counseling',
@@ -50,8 +69,8 @@ export function getOrganizationSchema() {
     openingHours: 'Mo-Sa 09:00-20:00',
     sameAs: Object.values(BUSINESS.social),
     availableLanguage: [
-      { '@type': 'Language', name: 'English' },
-      { '@type': 'Language', name: 'Arabic' },
+      { '@type': 'Language', name: 'English', alternateName: 'en' },
+      { '@type': 'Language', name: 'Arabic', alternateName: 'ar' },
     ],
   };
 }
@@ -98,11 +117,13 @@ export function getEventSchema(event: {
       : { '@type': 'Place', name: event.location, address: event.location },
     organizer: {
       '@type': 'Organization',
+      '@id': ORG_ID,
       name: BUSINESS.name,
-      url: 'https://mamahala.ca',
+      url: BASE_URL,
     },
     performer: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: BUSINESS.founder,
     },
     ...(event.price != null && {
@@ -121,28 +142,45 @@ export function getBlogPostSchema(post: {
   title: string;
   description: string;
   datePublished: string;
+  dateModified?: string;
   author: string;
   url: string;
   image?: string;
+  inLanguage?: string;
+  keywords?: string[];
 }) {
+  const imageUrl = post.image
+    ? post.image.startsWith('http')
+      ? post.image
+      : `${BASE_URL}${post.image}`
+    : `${BASE_URL}/images/logo-512.png`;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.description,
     datePublished: post.datePublished,
+    dateModified: post.dateModified || post.datePublished,
     author: {
       '@type': 'Person',
+      '@id': PERSON_ID,
       name: post.author,
     },
     publisher: {
       '@type': 'Organization',
+      '@id': ORG_ID,
       name: BUSINESS.name,
-      logo: { '@type': 'ImageObject', url: 'https://mamahala.ca/images/logo.png' },
+      logo: {
+        '@type': 'ImageObject',
+        url: `${BASE_URL}/images/logo-512.png`,
+      },
     },
     url: post.url,
-    ...(post.image && { image: post.image }),
+    image: imageUrl,
     mainEntityOfPage: { '@type': 'WebPage', '@id': post.url },
+    ...(post.inLanguage && { inLanguage: post.inLanguage }),
+    ...(post.keywords?.length && { keywords: post.keywords.join(', ') }),
   };
 }
 
@@ -156,5 +194,52 @@ export function getBreadcrumbSchema(items: { name: string; url: string }[]) {
       name: item.name,
       item: item.url,
     })),
+  };
+}
+
+export function getServiceSchema(service: {
+  name: string;
+  description: string;
+  url: string;
+  category: string;
+  priceFrom: number;
+  currency: string;
+  image?: string;
+  inLanguage?: string;
+}) {
+  const imageUrl = service.image
+    ? service.image.startsWith('http')
+      ? service.image
+      : `${BASE_URL}${service.image}`
+    : `${BASE_URL}/images/logo-512.png`;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: service.name,
+    description: service.description,
+    url: service.url,
+    image: imageUrl,
+    serviceType: service.category,
+    category: service.category,
+    provider: {
+      '@type': 'ProfessionalService',
+      '@id': ORG_ID,
+      name: BUSINESS.name,
+      url: BASE_URL,
+    },
+    areaServed: [
+      { '@type': 'Country', name: 'Canada' },
+      { '@type': 'Country', name: 'United Arab Emirates' },
+    ],
+    availableLanguage: ['en', 'ar'],
+    offers: {
+      '@type': 'Offer',
+      price: service.priceFrom,
+      priceCurrency: service.currency,
+      availability: 'https://schema.org/InStock',
+      url: service.url,
+    },
+    ...(service.inLanguage && { inLanguage: service.inLanguage }),
   };
 }

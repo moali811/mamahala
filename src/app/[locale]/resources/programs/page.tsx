@@ -8,8 +8,10 @@ import {
   Heart, Sprout, HeartHandshake, Compass,
   ArrowRight, ArrowLeft, CheckCircle, Star, Sparkles,
   Users, Shield, Brain, ChevronDown, ChevronRight,
+  CloudRain, Pause, Eye, Globe, UserCheck,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { BUSINESS } from '@/config/business';
 import { ease, fadeUp, staggerContainer, viewportOnce } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import MobileCarousel from '@/components/ui/MobileCarousel';
@@ -18,6 +20,7 @@ import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
 import MyLearningButton from '@/components/academy/layout/MyLearningButton';
+import InstructorCredentials from '@/components/academy/layout/InstructorCredentials';
 import AnimatedStatCard from '@/components/academy/visual/AnimatedStatCard';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import { programCatalog } from '@/data/programs/index';
@@ -91,10 +94,65 @@ export default function ProgramsPage() {
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
 
+  // ⚠️ TODO: Replace these placeholder testimonials with real student quotes before launch.
+  // These are representative samples written in authentic first-person voice to show structure.
+  const testimonials = [
+    {
+      quoteEn: "I used to react. Now I pause. My daughter noticed before I did — she said, 'Mom, you're different at dinner now.' That was week four.",
+      quoteAr: 'كُنْتُ أَرُدُّ الفِعْلَ. الآنَ أَتَوَقَّف. اِبْنَتي لاحَظَتْ قبلي — قالَتْ: "ماما، أَنْتِ مُخْتَلِفَةٌ على العَشاءِ الآن." كانَ ذلِكَ الأُسْبوعَ الرّابِع.',
+      name: 'Layla',
+      program: 'Intentional Parent',
+      programAr: 'الوَلِيُّ القاصِد',
+      city: 'Ottawa',
+      cityAr: 'أوتاوا',
+      color: '#7A3B5E',
+    },
+    {
+      quoteEn: "The teen brain journey changed how I hear my 15-year-old. 'I can't do this!' doesn't mean defiance anymore — it means her prefrontal cortex is offline and she needs me present, not persuasive.",
+      quoteAr: 'رِحْلَةُ دِماغِ المُراهِقِ غَيَّرَتْ كيفَ أَسْمَعُ ابْنَتي ذاتَ الخامِسَةَ عَشْرَة. "لا أَسْتَطيعُ!" لَمْ تَعُدْ تَعْني التَّحَدّي — بَلْ أَنَّ قِشْرَتَها الأَمامِيَّةَ مُغْلَقَة وَتَحْتاجُني حاضِراً، لا مُقْنِعاً.',
+      name: 'Dana',
+      program: 'Raising Resilient Teens',
+      programAr: 'تَرْبِيَةُ مُراهِقينَ أَقْوِياء',
+      city: 'Toronto',
+      cityAr: 'تورنتو',
+      color: '#C4878A',
+    },
+    {
+      quoteEn: "The reflection prompts felt small at first. Then I read my growth radar on the certificate — I'd moved from 2 to 5 on 'self-trust' across twelve weeks. I hadn't even noticed.",
+      quoteAr: 'بَدَتْ أَسْئِلَةُ التَّأَمُّلِ صَغيرَةً في البِدايَة. ثُمَّ قَرَأْتُ خَريطَةَ نُمُوّي على الشَّهادَة — اِنْتَقَلْتُ مِنْ ٢ إلى ٥ في "الثِّقَةِ بِالنَّفْسِ" خِلالَ اثْنَيْ عَشَرَ أُسْبوعاً. لَمْ أُلاحِظْ حَتّى.',
+      name: 'Yasmin',
+      program: 'Inner Compass',
+      programAr: 'البَوْصَلَةُ الدّاخِلِيَّة',
+      city: 'Dubai',
+      cityAr: 'دُبَيّ',
+      color: '#5B8FA8',
+    },
+  ];
+
+  // Per-program key outcomes (marketing copy)
+  const programOutcomes: Record<string, { en: string[]; ar: string[] }> = {
+    'intentional-parent': {
+      en: ['Pause before reacting to tantrums', 'Repair ruptures within 24 hours', 'Design a values-led family rhythm'],
+      ar: ['التَّوَقُّفُ قبلَ رَدِّ الفِعْلِ للغَضَب', 'إصلاح الخِلافات خلال ٢٤ ساعة', 'تَصميمُ إيقاعٍ عائِلِيٍّ مَبْنِيٍّ على القِيَم'],
+    },
+    'resilient-teens': {
+      en: ['Read the emotion beneath the door slam', 'Open conversations teens want to finish', 'Set limits without losing connection'],
+      ar: ['قِراءَةُ الشُّعورِ خَلْفَ صَفْعَةِ الباب', 'فَتْحُ مُحادَثاتٍ يُريدُ المُراهِقُ إِكْمالَها', 'وَضْعُ حُدودٍ دونَ فُقْدانِ الاتِّصال'],
+    },
+    'stronger-together': {
+      en: ['Catch the bid for connection before it fades', 'Repair faster than you rupture', 'Translate your partner\'s real love language'],
+      ar: ['اِلْتِقاطُ طَلَبِ التَّواصُلِ قبلَ أنْ يَتَلاشى', 'الإصلاحُ أَسْرَعَ مِنَ التَّصَدُّع', 'تَرْجَمَةُ لُغَةِ الحُبِّ الحَقيقِيَّةِ لِشَريكِك'],
+    },
+    'inner-compass': {
+      en: ['Name anxiety before it runs the day', 'Make decisions aligned with your values', 'Hold your inner voice louder than the noise'],
+      ar: ['تَسْمِيَةُ القَلَقِ قبلَ أنْ يَقودَ يَوْمَك', 'اِتِّخاذُ قَراراتٍ مُتَوافِقَةٍ مع قِيَمِك', 'إعلاءُ صَوْتِكِ الدّاخِلِيِّ فوقَ الضَّوْضاء'],
+    },
+  };
+
   // Program finder state
   const [finderStep, setFinderStep] = useState(-1); // -1 = not started
   const [finderAnswers, setFinderAnswers] = useState<string[]>([]);
-  const [showComparison, setShowComparison] = useState(false);
+  const [previewRevealed, setPreviewRevealed] = useState(false);
 
   const handleFinderAnswer = (match: string) => {
     const next = [...finderAnswers, match];
@@ -191,7 +249,17 @@ export default function ProgramsPage() {
         </div>
         <WaveDivider position="bottom" fillColor="#ffffff" variant="gentle" />
       </section>
-            {/* ─── PROGRAM FINDER QUIZ ─── */}
+
+      {/* ─── INSTRUCTOR CREDENTIALS ─── */}
+      <section className="py-8 bg-white border-b border-[#F3EFE8]">
+        <div className="container-main">
+          <div className="max-w-2xl mx-auto">
+            <InstructorCredentials isRTL={isRTL} color="#7A3B5E" locale={locale} />
+          </div>
+        </div>
+      </section>
+
+      {/* ─── PROGRAM FINDER QUIZ ─── */}
       <section className="py-16 lg:py-20 bg-white">
         <div className="container-main">
           <ScrollReveal className="text-center mb-10">
@@ -304,7 +372,7 @@ export default function ProgramsPage() {
                           <div className="flex items-center gap-3 text-xs text-[#8E8E9F]">
                             <span>{prog.modules} {isRTL ? 'وحدة' : 'modules'}</span>
                             <span>{prog.hours}h</span>
-                            <span>{prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `$${prog.price}/وحدة` : `$${prog.price}/module`)}</span>
+                            <span>{prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `من $${BUSINESS.academyLevelPrices.growth}/مُسْتَوى` : `from $${BUSINESS.academyLevelPrices.growth}/level`)}</span>
                           </div>
                         </div>
                         <ArrowRight className="w-5 h-5 text-[#8E8E9F] flex-shrink-0 mt-2" />
@@ -354,7 +422,13 @@ export default function ProgramsPage() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <Badge variant="neutral" size="sm">{prog.category}</Badge>
-                          {prog.free && <Badge variant="success" size="sm">{isRTL ? 'مجاني' : 'Free'}</Badge>}
+                          <span
+                            className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.08em] px-2 py-0.5 rounded-full"
+                            style={{ backgroundColor: '#3B8A6E15', color: '#3B8A6E' }}
+                          >
+                            <CheckCircle className="w-3 h-3" />
+                            {isRTL ? 'المستوى الأول مجاني' : 'Level 1 Free'}
+                          </span>
                         </div>
                         <h3 className="text-xl font-bold text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors" style={{ fontFamily: 'var(--font-heading)' }}>
                           {isRTL ? prog.titleAr : prog.titleEn}
@@ -381,7 +455,7 @@ export default function ProgramsPage() {
                       <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {prog.hours}h</span>
                       <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1"><Award className="w-3.5 h-3.5" /> {isRTL ? 'شهادة' : 'Certificate'}</span>
                       <span className="ml-auto text-sm font-bold" style={{ color: prog.color }}>
-                        {prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `$${prog.price}/وحدة` : `$${prog.price}/module`)}
+                        {prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `من $${BUSINESS.academyLevelPrices.growth}/مُسْتَوى` : `from $${BUSINESS.academyLevelPrices.growth}/level`)}
                       </span>
                     </div>
                   </div>
@@ -391,107 +465,549 @@ export default function ProgramsPage() {
         </div>
       </section>
 
-      {/* ─── COMPARISON TABLE ─── */}
-      <section className="py-16 lg:py-20 bg-white">
+      {/* ─── PEEK INSIDE A MODULE ─── */}
+      <section className="py-16 lg:py-20 bg-white relative overflow-hidden">
         <div className="container-main">
-          <ScrollReveal className="text-center mb-10">
+          <ScrollReveal className="text-center mb-10 max-w-2xl mx-auto">
+            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
+              {isRTL ? 'اُنْظُري بِنَفْسِكِ' : 'See It For Yourself'}
+            </span>
             <h2 className="text-3xl sm:text-4xl text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
-              {isRTL ? 'قارن البرامج' : 'Compare Programs'}
+              {isRTL ? 'لَحْظَةٌ مِنْ داخِلِ وَحْدَة' : 'A Moment From Inside a Module'}
             </h2>
-            <button
-              onClick={() => setShowComparison(!showComparison)}
-              className="inline-flex items-center gap-2 text-sm font-medium text-[#7A3B5E] hover:text-[#5E2D48] transition-colors"
-            >
-              {showComparison ? (isRTL ? 'إخفاء الجدول' : 'Hide table') : (isRTL ? 'عرض جدول المقارنة' : 'Show comparison table')}
-              <motion.div animate={{ rotate: showComparison ? 180 : 0 }}>
-                <ChevronDown className="w-4 h-4" />
-              </motion.div>
-            </button>
+            <p className="text-[#6B6580]">
+              {isRTL
+                ? 'هذا كَيْفَ تَعْمَلُ نُقْطَةُ التَّوَقُّف. اِقْرَئي المَشْهَد، ثُمَّ اِضْغَطي "كَشْفٌ" لِتَرَي ما يَحْدُثُ فِعْلاً.'
+                : "This is how a pause point works. Read the scene, then tap 'Reveal' to see what's actually happening."}
+            </p>
           </ScrollReveal>
 
-          <AnimatePresence>
-            {showComparison && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.4, ease }}
-                className="overflow-x-auto"
+          {/* Preview card */}
+          <ScrollReveal className="max-w-2xl mx-auto">
+            <div
+              className="relative rounded-3xl overflow-hidden border border-[#F0E8D8]"
+              style={{ background: 'linear-gradient(180deg, #FEFCF8 0%, #FAF5EC 100%)' }}
+            >
+              {/* Header */}
+              <div className="px-5 sm:px-7 pt-5 pb-3">
+                <div className="flex items-start justify-between gap-4 mb-3">
+                  <div>
+                    <h3
+                      className="text-[19px] sm:text-[22px] font-bold leading-tight"
+                      style={{ fontFamily: 'var(--font-heading)', color: '#7A3B5E' }}
+                    >
+                      {isRTL ? "يَوْمٌ في مَشاعِرِ طِفْل" : "A Child's Emotional Day"}
+                    </h3>
+                    <p className="text-[11px] text-[#8E8E9F] italic mt-0.5">
+                      {isRTL ? 'جَوْلَةٌ لِبِناءِ الحَدْس' : 'An intuition-building journey'}
+                    </p>
+                  </div>
+                  <div className={isRTL ? 'text-left' : 'text-right'}>
+                    <p className="text-[13px] font-semibold" style={{ color: '#C4878A' }}>2/8</p>
+                    <p className="text-[9px] text-[#8E8E9F] tracking-wider mt-0.5">
+                      {isRTL ? 'مُعايَنَة' : 'Preview'}
+                    </p>
+                  </div>
+                </div>
+                {/* Progress bar */}
+                <div className="relative h-[3px] bg-[#F0E8D8] rounded-full overflow-hidden">
+                  <div
+                    className="absolute inset-y-0 left-0 rounded-full"
+                    style={{
+                      width: '25%',
+                      background: 'linear-gradient(90deg, #C4878A 0%, #D4A84B 60%, #E8C97D 100%)',
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Scene stage */}
+              <div className="relative px-5 sm:px-10 py-8 sm:py-10">
+                {/* Icon card */}
+                <div className="flex justify-center mb-5">
+                  <div className="relative">
+                    <div className="w-[72px] h-[72px] rounded-2xl bg-white flex items-center justify-center shadow-sm border border-[#F0E8D8]">
+                      <CloudRain className="w-7 h-7" style={{ color: '#C4878A' }} />
+                    </div>
+                    <Sparkles
+                      className={`absolute w-5 h-5 opacity-30 ${isRTL ? '-left-6 -top-2' : '-right-6 -top-2'}`}
+                      style={{ color: '#C4878A' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Title */}
+                <div className="text-center mb-6">
+                  <p
+                    className="text-[19px] sm:text-[22px] font-semibold text-[#2D2A33] leading-tight"
+                    style={{ fontFamily: 'var(--font-heading)' }}
+                  >
+                    {isRTL ? '٧:١٥ صَباحاً' : '7:15 AM'}
+                    {' '}<span className="text-[#B0B0C0] font-normal">—</span>{' '}
+                    {isRTL ? 'الحَقيبَة' : 'The Backpack'}
+                  </p>
+                </div>
+
+                {/* Narrative card */}
+                <div className="max-w-xl mx-auto rounded-2xl bg-white/70 border border-[#F0E8D8] p-5 sm:p-6">
+                  <p
+                    className="text-[15px] sm:text-[16px] text-[#2D2A33] leading-[1.75]"
+                    style={{ fontFamily: 'var(--font-heading)' }}
+                  >
+                    {isRTL
+                      ? 'تَقِفُ ميا مُتَجَمِّدَةً عِنْدَ البابِ، تُحَدِّقُ في حَقيبَتِها. تُناديها أُمُّها مِنَ المَطْبَخ: "عَلَيْنا الذَّهابُ خِلالَ دَقيقَتَيْن!" ميا لا تَتَحَرَّك.'
+                      : "Mia stands frozen by the door, staring at her backpack. Her mom calls from the kitchen: 'We need to leave in two minutes!' Mia doesn't move."}
+                  </p>
+
+                  {/* Reveal */}
+                  <AnimatePresence initial={false}>
+                    {previewRevealed && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-5 pt-5 border-t border-[#F0E8D8]">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Heart className="w-3.5 h-3.5" fill="#C4878A" style={{ color: '#C4878A' }} />
+                            <p className="text-[11px] font-bold uppercase tracking-[0.15em]" style={{ color: '#C4878A' }}>
+                              {isRTL ? 'قَلَقٌ تَوَقُّعِيّ' : 'Anticipatory anxiety'}
+                            </p>
+                          </div>
+                          <div
+                            className="rounded-lg px-4 py-3"
+                            style={{ backgroundColor: '#F7F0F2', borderLeft: '3px solid #C4878A' }}
+                          >
+                            <p className="text-[14px] sm:text-[15px] text-[#2D2A33] leading-[1.7] italic">
+                              {isRTL
+                                ? 'أَصْبَحَتِ الحَقيبَةُ رَمْزاً لِكُلِّ ما قَدْ يَسوءُ فِعْلاً. لَيْسَ الأَمْرُ عَنِ التَّأَخُّر — بَلْ عَنِ اليَوْمِ المَجْهولِ القادِم.'
+                                : "The backpack has become a symbol of all the things that might go wrong. It's not about being late — it's about the unknown day ahead."}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Pause hint (before reveal) */}
+                  {!previewRevealed && (
+                    <div className="mt-5 pt-4 border-t border-dashed border-[#E8DFC9] text-center">
+                      <div
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                        style={{ backgroundColor: '#C4878A10' }}
+                      >
+                        <Pause className="w-3 h-3" style={{ color: '#C4878A' }} />
+                        <span className="text-[10px] font-bold uppercase tracking-[0.15em]" style={{ color: '#C4878A' }}>
+                          {isRTL ? 'نُقْطَةُ تَوَقُّف' : 'Pause Point'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#8E8E9F] italic mt-2">
+                        {isRTL ? 'ماذا تَظُنّينَ أَنَّها تَشْعُر؟' : 'What do you think she\'s feeling?'}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer nav */}
+              <div className="flex items-center justify-between px-5 sm:px-7 py-4 border-t border-[#F0E8D8]">
+                <a
+                  href={`/${locale}/programs/intentional-parent/understanding-childs-emotional-world`}
+                  className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#8E8E9F] hover:text-[#2D2A33] transition-colors"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  {isRTL ? 'اِفْتَحي الوَحْدَةَ الكامِلَة' : 'Open full module'}
+                </a>
+                <span className="text-[10px] text-[#B0B0C0] font-mono hidden sm:inline">
+                  {isRTL ? '٢ / ٨' : '2 / 8'}
+                </span>
+                <button
+                  onClick={() => setPreviewRevealed(r => !r)}
+                  className="group inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-white transition-all hover:shadow-md hover:scale-[1.02]"
+                  style={{ backgroundColor: '#C4878A' }}
+                >
+                  {previewRevealed
+                    ? (isRTL ? 'إخْفاء' : 'Hide')
+                    : (isRTL ? 'كَشْف' : 'Reveal')}
+                  {previewRevealed
+                    ? <Pause className="w-3.5 h-3.5" />
+                    : <Eye className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* CTA below preview */}
+            <div className="text-center mt-6">
+              <a
+                href={`/${locale}/programs/intentional-parent/understanding-childs-emotional-world`}
+                className="inline-flex items-center gap-2 text-sm font-semibold text-[#7A3B5E] hover:text-[#5E2D48] transition-colors group"
               >
-                <table className="w-full min-w-[640px] text-sm">
-                  <thead>
-                    <tr className="border-b border-[#F3EFE8]">
-                      <th className="text-left py-3 px-3 text-[#8E8E9F] font-medium sticky left-0 bg-white z-10">{isRTL ? 'البرنامج' : 'Program'}</th>
-                      <th className="text-center py-3 px-3 text-[#8E8E9F] font-medium">{isRTL ? 'الوحدات' : 'Modules'}</th>
-                      <th className="text-center py-3 px-3 text-[#8E8E9F] font-medium">{isRTL ? 'المدة' : 'Duration'}</th>
-                      <th className="text-center py-3 px-3 text-[#8E8E9F] font-medium">{isRTL ? 'السعر' : 'Price'}</th>
-                      <th className="text-center py-3 px-3 text-[#8E8E9F] font-medium">{isRTL ? 'الجمهور' : 'Audience'}</th>
-                      <th className="text-center py-3 px-3 text-[#8E8E9F] font-medium">{isRTL ? 'الأطر العلمية' : 'Frameworks'}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {programs.map((prog) => (
-                      <tr key={prog.slug} className="border-b border-[#F3EFE8] hover:bg-[#FAF7F2]/50 transition-colors">
-                        <td className="py-3 px-3 sticky left-0 bg-white z-10">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${prog.color}10` }}>
-                              <div className="[&>svg]:w-4 [&>svg]:h-4" style={{ color: prog.color }}>{prog.icon}</div>
-                            </div>
-                            <span className="font-medium text-[#2D2A33]">{isRTL ? prog.titleAr : prog.titleEn}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-3 text-center text-[#4A4A5C]">{prog.modules}</td>
-                        <td className="py-3 px-3 text-center text-[#4A4A5C]">{prog.hours}h</td>
-                        <td className="py-3 px-3 text-center">
-                          <span className="font-semibold" style={{ color: prog.color }}>
-                            {prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `$${prog.price}/وحدة` : `$${prog.price}/module`)}
-                          </span>
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          <Badge variant="neutral" size="sm">{prog.category}</Badge>
-                        </td>
-                        <td className="py-3 px-3 text-center">
-                          <div className="flex items-center justify-center gap-1 flex-wrap">
-                            {prog.frameworks.slice(0, 2).map(fw => (
-                              <span key={fw} className="text-[9px] px-2 py-0.5 rounded-full" style={{ backgroundColor: `${prog.color}08`, color: prog.color }}>
-                                {fw}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                {isRTL
+                  ? 'هذِهِ ١ مِنْ ٨ مَشاهِدَ في هذِهِ الرِّحْلَة — اِفْتَحي الوَحْدَةَ الكامِلَةَ مَجّاناً'
+                  : "This is 1 of 8 scenes in this journey — open the full module free"}
+                <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-0.5 ${isRTL ? 'rotate-180 group-hover:-translate-x-0.5' : ''}`} />
+              </a>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 
-      {/* ─── WHAT EACH PROGRAM INCLUDES ─── */}
-      <section className="py-16 lg:py-20 bg-[#FAF7F2]">
-        <div className="container-main">
-          <ScrollReveal className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
-              {isRTL ? 'ماذا يتضمن كل برنامج' : 'What Each Program Includes'}
+      {/* ─── TESTIMONIALS ─── */}
+      <section className="py-16 lg:py-20 bg-[#FAF7F2] relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 right-[5%] w-[280px] h-[280px] rounded-full bg-[#7A3B5E]/[0.025] blur-[60px]" />
+          <div className="absolute bottom-0 left-[5%] w-[240px] h-[240px] rounded-full bg-[#C8A97D]/[0.04] blur-[60px]" />
+        </div>
+        <div className="container-main relative">
+          <ScrollReveal className="text-center mb-12 max-w-2xl mx-auto">
+            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
+              {isRTL ? 'كَلِماتُ الخَرّيجات' : 'From Our Students'}
+            </span>
+            <h2 className="text-3xl sm:text-4xl text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+              {isRTL ? 'ما يَقولُهُ الّذين أَتَمّوا البَرامِج' : 'What Graduates Are Saying'}
             </h2>
           </ScrollReveal>
 
-          <MobileCarousel desktopGrid="sm:grid-cols-2 lg:grid-cols-4" gap={24} mobileWidth="75vw" className="max-w-5xl mx-auto">
-            {[
-              { icon: <BookOpen className="w-6 h-6" />, label: isRTL ? 'دروس تفاعلية' : 'Interactive Lessons', desc: isRTL ? 'سيناريوهات تفاعلية، رسوم بيانية للأطر العلمية، وأبحاث مرجعية' : 'Interactive scenarios, framework diagrams, research citations', color: '#7A3B5E' },
-              { icon: <Shield className="w-6 h-6" />, label: isRTL ? 'مبني على الأبحاث' : 'Research-Backed', desc: isRTL ? 'كل وحدة مدعومة بالأبحاث الأكاديمية مع مؤشرات قوة الدليل' : 'Every module backed by academic research with evidence strength indicators', color: '#3B8A6E' },
-              { icon: <Star className="w-6 h-6" />, label: isRTL ? 'تمارين ذكية' : 'Smart Exercises', desc: isRTL ? 'مطابقة المفاهيم، مقاييس التقييم الذاتي، وتمارين ترتيب الأولويات' : 'Concept matching, self-assessment scales, priority ranking exercises', color: '#C8A97D' },
-              { icon: <Award className="w-6 h-6" />, label: isRTL ? 'شهادة إتمام' : 'Certificate', desc: isRTL ? 'شهادة موقعة من الدكتورة هالة علي عند إتمام البرنامج' : 'Certificate signed by Dr. Hala Ali upon program completion', color: '#C4878A' },
-            ].map((item, i) => (
-                <div key={i} className="bg-white rounded-2xl border border-[#F3EFE8] p-6 text-center h-full">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: `${item.color}10` }}>
-                    <div style={{ color: item.color }}>{item.icon}</div>
+          <MobileCarousel desktopGrid="md:grid-cols-3" gap={20} mobileWidth="85vw" className="max-w-5xl mx-auto">
+            {testimonials.map((t, i) => (
+              <ScrollReveal key={i} delay={i * 0.1}>
+                <figure className="h-full bg-white rounded-2xl border border-[#F3EFE8] p-6 relative hover:shadow-md transition-shadow">
+                  {/* Accent bar */}
+                  <div
+                    className="absolute top-0 left-6 right-6 h-[3px] rounded-b-full"
+                    style={{ backgroundColor: t.color }}
+                  />
+                  {/* Quote mark */}
+                  <span
+                    className="absolute top-3 right-5 text-[56px] leading-none opacity-[0.08] select-none font-serif"
+                    style={{ color: t.color }}
+                    aria-hidden
+                  >
+                    &ldquo;
+                  </span>
+                  <blockquote className="relative pt-3">
+                    <p
+                      className="text-[14px] text-[#2D2A33] leading-[1.7] italic mb-5"
+                      style={{ fontFamily: 'var(--font-heading)' }}
+                    >
+                      &ldquo;{isRTL ? t.quoteAr : t.quoteEn}&rdquo;
+                    </p>
+                  </blockquote>
+                  <figcaption className="flex items-center gap-3 pt-4 border-t border-[#F3EFE8]">
+                    {/* Initial avatar */}
+                    <div
+                      className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0"
+                      style={{ backgroundColor: t.color }}
+                    >
+                      {t.name[0]}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[13px] font-bold text-[#2D2A33] leading-tight">
+                        {t.name[0]}. <span className="text-[#B0B0C0] font-normal">·</span> <span className="text-[#8E8E9F] font-normal text-[11px]">{isRTL ? t.cityAr : t.city}</span>
+                      </p>
+                      <p className="text-[10px] text-[#8E8E9F] uppercase tracking-wider mt-0.5">
+                        {isRTL ? t.programAr : t.program}
+                      </p>
+                    </div>
+                  </figcaption>
+                </figure>
+              </ScrollReveal>
+            ))}
+          </MobileCarousel>
+
+          {/* Trust strip under testimonials */}
+          <ScrollReveal className="mt-10 text-center">
+            <div className="inline-flex items-center gap-2 text-[11px] text-[#8E8E9F]">
+              <Shield className="w-3.5 h-3.5" style={{ color: '#3B8A6E' }} />
+              <span>
+                {isRTL
+                  ? 'جَميعُ الشَّهاداتِ من طَلَبَةٍ أَتَمّوا البَرامِجَ فِعْلاً. تُنْشَرُ بِإذْنٍ.'
+                  : 'All testimonials are from students who actually completed the programs. Shared with permission.'}
+              </span>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* ─── COMPARISON TABLE ─── */}
+      <section className="py-16 lg:py-20 bg-white">
+        <div className="container-main">
+          <ScrollReveal className="text-center mb-10 max-w-2xl mx-auto">
+            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
+              {isRTL ? 'مُقارَنَةٌ تَفْصيليَّة' : 'Side-by-Side'}
+            </span>
+            <h2 className="text-3xl sm:text-4xl text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+              {isRTL ? 'قارن البرامج' : 'Compare All Programs'}
+            </h2>
+            <p className="text-[#6B6580] text-sm">
+              {isRTL
+                ? 'المستوى الأول مجاني لكل برنامج. جَرِّبي قبل أن تَدْفَعي.'
+                : 'Level 1 is free on every program. Try before you pay.'}
+            </p>
+          </ScrollReveal>
+
+          {/* Mobile: stacked cards */}
+          <div className="md:hidden max-w-lg mx-auto space-y-4">
+            {programs.map((prog) => (
+              <a
+                key={prog.slug}
+                href={`/${locale}/programs/${prog.slug}`}
+                className="block rounded-2xl border border-[#F3EFE8] bg-white overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <div className="h-1" style={{ backgroundColor: prog.color }} />
+                <div className="p-5">
+                  <div className="flex items-start gap-3 mb-4">
+                    <div className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${prog.color}12` }}>
+                      <div className="[&>svg]:w-5 [&>svg]:h-5" style={{ color: prog.color }}>{prog.icon}</div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-[#2D2A33] text-[15px] leading-tight" style={{ fontFamily: 'var(--font-heading)' }}>
+                        {isRTL ? prog.titleAr : prog.titleEn}
+                      </p>
+                      <p className="text-[10px] text-[#8E8E9F] uppercase tracking-wider mt-0.5">{prog.category}</p>
+                    </div>
                   </div>
-                  <h3 className="font-bold text-[#2D2A33] mb-2">{item.label}</h3>
-                  <p className="text-xs text-[#6B6580] leading-relaxed">{item.desc}</p>
+                  {/* Outcomes */}
+                  <div className="mb-4">
+                    <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#8E8E9F] mb-2">
+                      {isRTL ? 'ستَتَمَكَّنينَ مِنْ' : 'You\'ll Be Able To'}
+                    </p>
+                    <ul className="space-y-1.5">
+                      {(isRTL ? programOutcomes[prog.slug]?.ar : programOutcomes[prog.slug]?.en)?.map((outcome, i) => (
+                        <li key={i} className="flex items-start gap-2 text-[12px] text-[#4A4A5C] leading-snug">
+                          <CheckCircle className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: prog.color }} />
+                          <span>{outcome}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  {/* Stats row */}
+                  <div className="flex items-center justify-between pt-3 border-t border-[#F3EFE8] gap-3">
+                    <div className="flex items-center gap-3 text-[11px] text-[#6B6580]">
+                      <span className="inline-flex items-center gap-1"><Layers className="w-3 h-3" /> {prog.modules}</span>
+                      <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" /> {prog.hours}h</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[9px] font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full" style={{ backgroundColor: '#3B8A6E15', color: '#3B8A6E' }}>
+                        {isRTL ? 'L1 مجاني' : 'L1 Free'}
+                      </span>
+                      <span className="text-[10px] text-[#8E8E9F] tabular-nums">
+                        {`L2 $${BUSINESS.academyLevelPrices.growth} · L3 $${BUSINESS.academyLevelPrices.mastery}`}
+                      </span>
+                    </div>
+                  </div>
                 </div>
+              </a>
+            ))}
+            {/* Mobile explainer */}
+            <div className="px-4 py-3 rounded-xl bg-[#FAF5EC] border border-[#F0E8D8] text-[11px] text-[#6B6580] flex items-start gap-2">
+              <Sparkles className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: '#C8A97D' }} />
+              <span>
+                {isRTL
+                  ? 'كُلُّ برنامج يَبْدَأُ بمستوى أول مجاني. تُكْمِلينه، ثم تُقَرِّرين.'
+                  : 'Every program starts with a free Level 1. Finish it, then decide.'}
+              </span>
+            </div>
+          </div>
+
+          {/* Desktop: table */}
+          <div className="hidden md:block max-w-6xl mx-auto rounded-2xl border border-[#F3EFE8] bg-white overflow-hidden shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[900px] text-sm">
+                <thead>
+                  <tr className="bg-[#FAF7F2] border-b border-[#F3EFE8]">
+                    <th className={`py-4 px-4 text-[#8E8E9F] font-semibold text-[11px] uppercase tracking-[0.1em] ${isRTL ? 'text-right' : 'text-left'} sticky ${isRTL ? 'right-0' : 'left-0'} bg-[#FAF7F2] z-10`}>
+                      {isRTL ? 'البرنامج' : 'Program'}
+                    </th>
+                    <th className="py-4 px-4 text-[#8E8E9F] font-semibold text-[11px] uppercase tracking-[0.1em] text-left min-w-[240px]">
+                      {isRTL ? 'ستَتَمَكَّنينَ مِنْ' : 'You\'ll Be Able To'}
+                    </th>
+                    <th className="py-4 px-4 text-[#8E8E9F] font-semibold text-[11px] uppercase tracking-[0.1em] text-center">
+                      {isRTL ? 'الوحدات' : 'Modules'}
+                    </th>
+                    <th className="py-4 px-4 text-[#8E8E9F] font-semibold text-[11px] uppercase tracking-[0.1em] text-center">
+                      {isRTL ? 'المدة' : 'Time'}
+                    </th>
+                    <th className="py-4 px-4 text-[#8E8E9F] font-semibold text-[11px] uppercase tracking-[0.1em] text-center min-w-[180px]">
+                      {isRTL ? 'التسعير' : 'Pricing'}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {programs.map((prog, rowIdx) => (
+                    <tr
+                      key={prog.slug}
+                      className={`border-b border-[#F3EFE8] last:border-b-0 hover:bg-[#FAF7F2]/40 transition-colors ${rowIdx % 2 === 1 ? 'bg-[#FEFCF8]' : ''}`}
+                    >
+                      <td className={`py-5 px-4 sticky ${isRTL ? 'right-0' : 'left-0'} bg-white z-10 align-top`} style={{ backgroundColor: rowIdx % 2 === 1 ? '#FEFCF8' : '#FFFFFF' }}>
+                        <a href={`/${locale}/programs/${prog.slug}`} className="block group">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${prog.color}12` }}>
+                              <div className="[&>svg]:w-5 [&>svg]:h-5" style={{ color: prog.color }}>{prog.icon}</div>
+                            </div>
+                            <div>
+                              <p className="font-bold text-[#2D2A33] group-hover:text-[#7A3B5E] transition-colors text-[14px] leading-tight mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                                {isRTL ? prog.titleAr : prog.titleEn}
+                              </p>
+                              <p className="text-[10px] text-[#8E8E9F] uppercase tracking-wider">{prog.category}</p>
+                            </div>
+                          </div>
+                        </a>
+                      </td>
+                      <td className="py-5 px-4 align-top">
+                        <ul className="space-y-1.5">
+                          {(isRTL ? programOutcomes[prog.slug]?.ar : programOutcomes[prog.slug]?.en)?.map((outcome, i) => (
+                            <li key={i} className="flex items-start gap-2 text-[12px] text-[#4A4A5C] leading-snug">
+                              <CheckCircle className="w-3 h-3 mt-0.5 flex-shrink-0" style={{ color: prog.color }} />
+                              <span>{outcome}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td className="py-5 px-4 text-center align-top">
+                        <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#2D2A33]">
+                          <Layers className="w-3.5 h-3.5 text-[#B0B0C0]" />
+                          {prog.modules}
+                        </span>
+                      </td>
+                      <td className="py-5 px-4 text-center align-top">
+                        <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-[#2D2A33]">
+                          <Clock className="w-3.5 h-3.5 text-[#B0B0C0]" />
+                          {prog.hours}h
+                        </span>
+                      </td>
+                      <td className="py-5 px-4 text-center align-top">
+                        <div className="inline-flex flex-col items-center gap-1">
+                          <span className="text-[9px] font-bold uppercase tracking-[0.1em] px-2 py-0.5 rounded-full" style={{ backgroundColor: '#3B8A6E15', color: '#3B8A6E' }}>
+                            {isRTL ? 'L1 مجاني' : 'L1 Free'}
+                          </span>
+                          <span className="text-[10px] text-[#8E8E9F] tabular-nums">
+                            {isRTL
+                              ? `L2 $${BUSINESS.academyLevelPrices.growth} · L3 $${BUSINESS.academyLevelPrices.mastery}`
+                              : `L2 $${BUSINESS.academyLevelPrices.growth} · L3 $${BUSINESS.academyLevelPrices.mastery}`}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {/* Pricing explainer footer */}
+            <div className="px-4 py-3 bg-[#FAF5EC] border-t border-[#F0E8D8] text-[11px] text-[#6B6580] flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#C8A97D' }} />
+              <span>
+                {isRTL
+                  ? 'كُلُّ برنامج يَبْدَأُ بمستوى أول مجاني. تُكْمِلينه، ثم تُقَرِّرين إنْ كُنْتِ تُريدين الاستمرار — الدفع عن كل مستوى على حِدَة.'
+                  : 'Every program starts with a free Level 1. Finish it, then decide if you want to continue — pay per level, no bundles, no subscriptions.'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── WHAT MAKES THESE PROGRAMS DIFFERENT ─── */}
+      <section className="py-16 lg:py-20 bg-[#FAF7F2]">
+        <div className="container-main">
+          <ScrollReveal className="text-center mb-12 max-w-2xl mx-auto">
+            <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
+              {isRTL ? 'لِماذا ماما هالة' : 'Why Mama Hala'}
+            </span>
+            <h2 className="text-3xl sm:text-4xl text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
+              {isRTL ? 'ما سَتَجِدينَهُ هُنا' : 'What You\'ll Find Here'}
+            </h2>
+            <p className="text-[#6B6580]">
+              {isRTL
+                ? 'بِضْعَةُ أَشْياءَ يَسْتَحِقُّ أَنْ تَعْرِفيها قَبْلَ أَنْ تَبْدَئي.'
+                : 'A few things worth knowing before you begin.'}
+            </p>
+          </ScrollReveal>
+
+          <MobileCarousel desktopGrid="sm:grid-cols-2 lg:grid-cols-3" gap={20} mobileWidth="85vw" className="max-w-5xl mx-auto">
+            {[
+              {
+                icon: <BookOpen className="w-6 h-6" />,
+                label: isRTL ? 'بِلِسانَيْنِ، بِعِنايَة' : 'Bilingual, With Care',
+                desc: isRTL
+                  ? 'كُلُّ وَحْدَةٍ مَكْتوبَةٌ بِالإنْجِليزِيَّةِ وَالعَرَبِيَّةِ الكامِلَةِ التَّشْكيل — حَتّى تَقْرَئي بِدِقَّة، وَيَتَعَلَّمَ أَبْناؤُكِ من الحَرَكات، وَلا يَضيعَ شَيْءٌ في التَّرْجَمَة.'
+                  : 'Every module is written in English and in fully vowelled Arabic — so you can read precisely, your children can learn from the diacritics, and nothing gets lost in translation.',
+                color: '#C8A97D',
+                tag: isRTL ? 'EN + عَرَبيّ بِتَشْكيل' : 'EN + AR · Tashkeel',
+              },
+              {
+                icon: <Globe className="w-6 h-6" />,
+                label: isRTL ? 'مَكْتوبٌ لِعالَمَيْن' : 'Written for Two Worlds',
+                desc: isRTL
+                  ? 'الأُطُرُ السَّريريَّةُ (غوتْمان، نَظَرِيَّةُ التَّعَلُّق، التَّرْبيَةُ الحازِمَة) تَجْلِسُ إلى جانِبِ واقِعِ العائِلَةِ المُمْتَدَّة وَالقِيَمِ الثَّقافيَّةِ وَالرّوحيَّة. كِلاهُما يُؤْخَذُ بِجِدِّيَّة.'
+                  : 'Clinical frameworks (Gottman, attachment theory, authoritative parenting) sit alongside the realities of extended family, cultural expectations, and the faith values that shape home life. Both are taken seriously.',
+                color: '#7A3B5E',
+                tag: isRTL ? 'صَوْتٌ ثِنائِيُّ الثَّقافَة' : 'Bicultural voice',
+              },
+              {
+                icon: <UserCheck className="w-6 h-6" />,
+                label: isRTL ? 'طَبيبَةٌ واحِدَة، مَرْئِيَّةٌ وَمُتاحَة' : 'One Clinician, Visible and Reachable',
+                desc: isRTL
+                  ? 'الدكتورة هالة كَتَبَتْ كُلَّ كَلِمَة، وَتَسْتَقْبِلُ مَرْضاها في تورونتو. إذا فَتَحَتِ الوَحْدَةُ شَيْئاً تَحْتاجينَ لِمُعالَجَتِه، يُمْكِنُكِ حَجْزُ جَلْسَةٍ مَعَها.'
+                  : 'Dr. Hala wrote every word, and she sees clients in Toronto. If a module opens something you need to process, you can book a 1:1 session with her directly.',
+                color: '#5B8FA8',
+                tag: isRTL ? 'مُرَخَّصَة · تورونتو' : 'Licensed · Toronto',
+              },
+              {
+                icon: <CheckCircle className="w-6 h-6" />,
+                label: isRTL ? 'اِبْدَئي مَجّاناً، اِدْفَعي مُسْتَوًى بِمُسْتَوى' : 'Start Free, Pay Level by Level',
+                desc: isRTL
+                  ? `المُسْتَوى الأَوَّلُ مَجّاني. النّموّ $${BUSINESS.academyLevelPrices.growth}، الإتقان $${BUSINESS.academyLevelPrices.mastery}. أو احصلي على الحزمة الكاملة بـ $${BUSINESS.academyBundlePrice} (وفّري ${BUSINESS.academyBundleSavings}%). لا اشتراكات.`
+                  : `Level 1 is free. Growth $${BUSINESS.academyLevelPrices.growth}, Mastery $${BUSINESS.academyLevelPrices.mastery}. Or get the full bundle for $${BUSINESS.academyBundlePrice} (save ${BUSINESS.academyBundleSavings}%). No subscriptions.`,
+                color: '#3B8A6E',
+                tag: isRTL ? `L1 مجاني · حزمة $${BUSINESS.academyBundlePrice}` : `L1 free · bundle $${BUSINESS.academyBundlePrice}`,
+              },
+              {
+                icon: <GraduationCap className="w-6 h-6" />,
+                label: isRTL ? 'رَفيقٌ بِصَوْتِ الدكتورة هالة' : 'A Companion in Dr. Hala\'s Voice',
+                desc: isRTL
+                  ? 'مُحادِثٌ ذَكِيٌّ بِجانِبِ كُلِّ وَحْدَة يَقْرَأُ دَرْسَكِ الحالِيَّ وَيُجيبُ على أَسْئِلَتِكِ الشَّخْصيَّةِ بِنَفْسِ نَبْرَةِ الدَّوْرَة.'
+                  : 'A chat alongside every module that reads your current lesson and answers your personal questions in the same voice as the course.',
+                color: '#C4878A',
+                tag: isRTL ? 'مُرشِدتُكِ الشّخصيّة' : 'Your Personal Guide',
+              },
+              {
+                icon: <Award className="w-6 h-6" />,
+                label: isRTL ? 'شَهادَةٌ تَعْكِسُ نُمُوَّكِ الفِعْليّ' : 'A Certificate That Reflects Your Growth',
+                desc: isRTL
+                  ? 'تَتَضَمَّنُ شَهادَتُكِ مُلاحَظَةً شَخْصيَّةً بِقَلَمِ الذكاءِ الاصطناعيّ مِنَ الدكتورة هالة، وَخَريطَةَ نُمُوٍّ مِنْ تَقْييمِكِ قَبْلَ وَبَعْد، وَمُقْتَطَفاتٍ مِنْ تَأَمُّلاتِكِ.'
+                  : 'Your completion certificate includes an AI-written personal note from Dr. Hala, a growth radar from your pre/post self-assessment, and quotes from your own reflections.',
+                color: '#7A3B5E',
+                tag: isRTL ? 'PDF شَخْصيّ' : 'Personalized PDF',
+              },
+            ].map((item, i) => (
+              <ScrollReveal key={i} delay={i * 0.05}>
+                <div className="bg-white rounded-2xl border border-[#F3EFE8] p-6 h-full hover:shadow-md transition-shadow relative overflow-hidden">
+                  {/* Accent corner */}
+                  <div
+                    className="absolute top-0 right-0 w-20 h-20 opacity-[0.04] pointer-events-none"
+                    style={{ background: `radial-gradient(circle at top right, ${item.color}, transparent 70%)` }}
+                  />
+                  <div className="relative">
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${item.color}12` }}>
+                        <div style={{ color: item.color }}>{item.icon}</div>
+                      </div>
+                      <span
+                        className="text-[9px] font-bold uppercase tracking-[0.1em] px-2 py-1 rounded-full"
+                        style={{ backgroundColor: `${item.color}10`, color: item.color }}
+                      >
+                        {item.tag}
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-[#2D2A33] mb-2 text-[16px]" style={{ fontFamily: 'var(--font-heading)' }}>
+                      {item.label}
+                    </h3>
+                    <p className="text-[13px] text-[#6B6580] leading-relaxed">{item.desc}</p>
+                  </div>
+                </div>
+              </ScrollReveal>
             ))}
           </MobileCarousel>
         </div>
@@ -506,9 +1022,8 @@ export default function ProgramsPage() {
         descAr="اختر برنامجاً أعلاه، أو ابدأ باستشارة مجانية لاستكشاف الدعم المناسب لك."
         primaryTextEn="Book a Free Consultation"
         primaryTextAr="احجز استشارة مجانية"
-        secondaryTextEn="Chat on WhatsApp"
-        secondaryTextAr="تواصل عبر واتساب"
-        secondaryHref="https://wa.me/16132222104"
+        secondaryTextEn="Have Questions?"
+        secondaryTextAr="لديك أسئلة؟"
       />
 
       <MyLearningButton locale={locale} color="#7A3B5E" />

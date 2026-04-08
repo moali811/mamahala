@@ -492,14 +492,14 @@ export default function ServiceCategoryPage() {
         locale={locale}
         fillColorAbove="#FAF7F2"
         headingEn={
-          category === 'youth' ? <>Every Child Deserves to <span className="text-[#7A3B5E] italic">Thrive</span></> :
+          category === 'youth' ? <>Helping Them Grow Into Their <span className="text-[#7A3B5E] italic">Dreams</span></> :
           category === 'families' ? <>Stronger Families Start <span className="text-[#7A3B5E] italic">Here</span></> :
           category === 'adults' ? <>Your Well-being <span className="text-[#7A3B5E] italic">Matters</span></> :
           category === 'couples' ? <>Love Deserves <span className="text-[#7A3B5E] italic">Effort</span></> :
           <>Experience Something <span className="text-[#7A3B5E] italic">Different</span></>
         }
         headingAr={
-          category === 'youth' ? <>كلُّ طفلٍ يستحقُّ أن <span className="text-[#7A3B5E] italic">يزدهِر</span></> :
+          category === 'youth' ? <>ليكونوا كباراً <span className="text-[#7A3B5E] italic">بأحلامهم</span></> :
           category === 'families' ? <>الأُسَرُ الأقوى تبدأُ من <span className="text-[#7A3B5E] italic">هنا</span></> :
           category === 'adults' ? <>عافيتُك <span className="text-[#7A3B5E] italic">تهمّ</span></> :
           category === 'couples' ? <>الحبُّ يستحقُّ <span className="text-[#7A3B5E] italic">الجهد</span></> :

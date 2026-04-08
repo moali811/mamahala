@@ -249,6 +249,70 @@ The goal is not to change who you are but to become bilingual in love. When both
           ],
           estimatedReadTimeMinutes: 12,
           skillTags: ['Communication', 'Emotional Bids', 'Trust Building'],
+          format: 'cards',
+          blocks: [
+            {
+              kind: 'card', id: 'll-intro', accentColor: '#7A3B5E',
+              titleEn: 'Love is spoken in 5 languages',
+              titleAr: 'الحُبُّ يُتَكَلَّمُ بِـ 5 لُغات',
+              bodyEn: 'You probably give love in YOUR language. Your partner probably receives it in a different one. That mismatch is why so many couples feel unseen despite loving each other deeply.\n\nSwipe through 5 languages + scripts to use in YOUR relationship this week.',
+              bodyAr: 'أَنْتِ غالِباً تُعْطينَ الحُبَّ بِلُغَتِكِ. شَريكُكِ غالِباً يَسْتَقْبِلُهُ بِلُغَةٍ أُخْرى. هذا الاِخْتِلافُ سَبَبُ شُعورِ الأَزْواجِ بِعَدَمِ الرُّؤْيَةِ رَغْمَ الحُبّ.\n\nمَرِّري على 5 لُغاتٍ + سِينَاريوهاتٍ لِعَلاقَتِكِ.',
+            },
+            {
+              kind: 'card', id: 'll-words', accentColor: '#C4878A',
+              titleEn: '1. Words of Affirmation',
+              titleAr: '1. كَلِماتُ التَّأْكيد',
+              bodyEn: 'For partners who hear love through words.\n\nTry this week:\n• "I noticed how you handled that with the kids today. That was skilled."\n• "I\'m grateful for the way you show up for us."\n• Send one specific appreciation text during the workday.',
+              bodyAr: 'لِشُرَكاءَ يَسْمَعونَ الحُبَّ بِالكَلِمات.\n\nجَرِّبي هذا الأُسْبوع:\n• "لاحَظْتُ كَيْفَ تَعامَلْتَ مع الأَوْلادِ اليَوْم. كانَ ماهِراً."\n• "مُمْتَنَّةٌ لِكَيْفَ تَحْضُرُ لَنا."\n• أَرْسِلي رِسالَةَ تَقْديرٍ مُحَدَّدَةً أَثْناءَ العَمَل.',
+            },
+            {
+              kind: 'card', id: 'll-time', accentColor: '#5B8FA8',
+              titleEn: '2. Quality Time',
+              titleAr: '2. الوَقْتُ النَّوْعيّ',
+              bodyEn: 'For partners who feel loved when given undivided presence.\n\nTry this week:\n• 15 minutes, phones in another room, one question: "What\'s on your mind lately?"\n• Saturday morning coffee — no kids, no screens, 30 min.\n• Walk around the block after dinner.',
+              bodyAr: 'لِشُرَكاءَ يَشْعُرونَ بِالحُبِّ مع الحُضورِ غَيْرِ المُشَتَّت.\n\nجَرِّبي:\n• 15 دَقيقَة، الهَواتِفُ في غُرْفَةٍ أُخْرى، سُؤالٌ واحِد: "ما الّذي في بالِكَ مُؤَخَّراً؟"\n• قَهْوَةُ صَباحِ السَّبْت — بِلا أَوْلاد، بِلا شاشات، 30 دَقيقَة.\n• مَشْيٌ حَوْلَ البَيْتِ بَعْدَ العَشاء.',
+            },
+            {
+              kind: 'card', id: 'll-gifts', accentColor: '#C8A97D',
+              titleEn: '3. Gifts',
+              titleAr: '3. الهَدايا',
+              bodyEn: 'Not expensive. Thoughtful. A small physical token that says: "I was thinking of you."\n\nTry this week:\n• Their favorite snack, left on the counter with a note.\n• A book you think would move them.\n• A flower from the grocery run.\n\nIt\'s not the object. It\'s the noticing.',
+              bodyAr: 'لَيْسَتْ غالِيَة. مَقْصودَة. رَمْزٌ صَغيرٌ يَقول: "كُنْتُ أُفَكِّرُ فيك."\n\nجَرِّبي:\n• وَجَبَتُهُ المُفَضَّلَة، مَتْروكَةٌ مع رِسالَة.\n• كِتابٌ تَعْتَقِدينَ أَنَّهُ سَيُحَرِّكُه.\n• زَهْرَةٌ من المَتْجَر.\n\nلَيْسَ الشَّيْء. إنَّها المُلاحَظَة.',
+            },
+            {
+              kind: 'card', id: 'll-acts', accentColor: '#3B8A6E',
+              titleEn: '4. Acts of Service',
+              titleAr: '4. أَعْمالُ الخِدْمَة',
+              bodyEn: 'For partners whose love language is: "You did that FOR me."\n\nTry this week:\n• Handle one task they usually dread, without being asked.\n• Fix something that\'s been bothering them for weeks.\n• Take the early-morning kid shift so they can sleep.',
+              bodyAr: 'لِشُرَكاءَ لُغَةُ حُبِّهِم: "فَعَلْتَ ذلِكَ لَأْجلي."\n\nجَرِّبي:\n• تَوَلّي مَهَمَّةً يَكْرَهُها، دونَ طَلَب.\n• أَصْلِحي شَيْئاً يُزْعِجُهُ مُنْذُ أَسابيع.\n• خُذي نَوْبَةَ صَباحِ الأَوْلادِ لِيَنامَ هو.',
+            },
+            {
+              kind: 'micro-quiz', id: 'll-mq1',
+              question: {
+                textEn: 'Why do many couples feel unloved despite both giving love?',
+                textAr: 'لِماذا يَشْعُرُ كَثيرٌ من الأَزْواجِ بِعَدَمِ الحُبِّ رَغْمَ أَنَّ كِلَيْهِما يُحِبّ؟',
+                options: [
+                  { labelEn: 'They don\'t give enough', labelAr: 'لا يُعْطونَ كَفايَة', correct: false, explanationEn: 'Often they give plenty — just in the wrong language for their partner.', explanationAr: 'غالِباً يُعْطونَ كَثيراً — لَكِنْ بِاللُّغَةِ الخَطَأِ لِشَريكِهِم.' },
+                  { labelEn: 'They love in their own language, not their partner\'s', labelAr: 'يُحِبّونَ بِلُغَتِهِم، لا بِلُغَةِ الشَّريك', correct: true, explanationEn: 'Yes. Translation is the work of long-term love.', explanationAr: 'نَعَم. التَّرْجَمَةُ عَمَلُ الحُبِّ الطَّويل.' },
+                  { labelEn: 'They stopped caring', labelAr: 'تَوَقَّفوا عَنِ الاِهْتِمام', correct: false, explanationEn: 'Much less common than language mismatch.', explanationAr: 'أَقَلُّ شُيوعاً من اخْتِلافِ اللُّغَة.' },
+                ],
+              },
+            },
+            {
+              kind: 'card', id: 'll-touch', accentColor: '#C4636A',
+              titleEn: '5. Physical Touch',
+              titleAr: '5. اللَّمْسُ الجَسَدِيّ',
+              bodyEn: 'For partners who feel closest through body-to-body connection.\n\nTry this week:\n• Hand on their back as you pass in the kitchen.\n• 10-second hug before bed — linger past the normal "squeeze-and-release."\n• Hold their hand during a difficult conversation.\n\nTouch doesn\'t have to be sexual to be intimate.',
+              bodyAr: 'لِشُرَكاءَ يَشْعُرونَ بِأَقْرَبِ اتِّصالٍ عَبْرَ الجَسَد.\n\nجَرِّبي:\n• يَدٌ على ظَهْرِهِ وأَنْتِ تَمُرّين.\n• عِناقٌ 10 ثَوانٍ قَبْلَ النَّوْم — أَطْوَلُ من "ضَغْطَةٍ وإفْلات".\n• اِمْسِكي يَدَهُ في مُحادَثَةٍ صَعْبَة.\n\nاللَّمْسُ لا يَحْتاجُ أَنْ يَكونَ جِنْسيّاً لِيَكونَ حَميماً.',
+            },
+            {
+              kind: 'card', id: 'll-discover', accentColor: '#7A3B5E',
+              titleEn: 'The Discovery Question',
+              titleAr: 'سُؤالُ الاِكْتِشاف',
+              bodyEn: 'Tonight, ask your partner: "When do you feel MOST loved by me?" Don\'t defend. Just listen.\n\nTheir answer is the language. Now speak it on purpose — every week, forever.',
+              bodyAr: 'اللَّيْلَة، اِسْأَلي شَريكَك: "مَتى تَشْعُرُ أَنَّكَ مَحْبوبٌ مِنّي أَكْثَر؟" لا تُدافِعي. اِسْتَمِعي.\n\nجَوابُهُ هو اللُّغَة. الآنَ تَكَلَّمي بِها بِقَصْد — كُلَّ أُسْبوع، لِلأَبَد.',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'wheel',
@@ -475,6 +539,73 @@ The art of listening is ultimately an act of love. When you truly listen to your
           ],
           estimatedReadTimeMinutes: 14,
           skillTags: ['Communication', 'Emotional Bids', 'Conflict Resolution'],
+          format: 'standard',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'al-lead', tone: 'lead',
+              textEn: 'Most couples don\'t have a communication problem. They have a LISTENING problem. One partner is speaking. The other is loading their response. Both are exhausted.',
+              textAr: 'مُعْظَمُ الأَزْواجِ لَيْسَ لَدَيْهِم مُشْكِلَةُ تَواصُل. لَدَيْهِم مُشْكِلَةُ اِسْتِماع. شَريكٌ يَتَكَلَّم. والآخَرُ يُحَضِّرُ رَدَّه. كِلاهُما مُتْعَبان.',
+            },
+            {
+              kind: 'callout', id: 'al-insight', variant: 'insight',
+              textEn: 'Gottman research: in failed relationships, partners interpret 50%+ of neutral statements as negative. In thriving ones, they interpret 90%+ as positive — even during conflict. Listening shapes meaning.',
+              textAr: 'بَحْثُ جوتْمان: في العَلاقاتِ الفاشِلَة، يُفَسِّرُ الشُّرَكاءُ 50%+ من العِبارات المُحايِدَة كَسَلْبيّة. في المُزْدَهِرَة، 90%+ كَإيجابيّة — حَتّى في الصِّراع. الاِسْتِماعُ يُشَكِّلُ المَعْنى.',
+            },
+            {
+              kind: 'comparison', id: 'al-cmp',
+              titleEn: 'Defensive Listening vs Curious Listening', titleAr: 'اسْتِماعٌ دِفاعِيّ مُقابِلَ فُضوليّ',
+              left: {
+                labelEn: 'Defensive', labelAr: 'دِفاعيّ',
+                pointsEn: ['"Here\'s why you\'re wrong..."', 'Interrupts mid-sentence', 'Makes it about themselves', 'Wants to win the moment'],
+                pointsAr: ['"إلَيْكَ لِماذا أَنْتَ مُخْطِئ..."', 'يُقاطِعُ في مُنْتَصَفِ الجُمْلَة', 'يَجْعَلُها عَنْ نَفْسِه', 'يُريدُ الفَوْزَ بِاللَّحْظَة'],
+              },
+              right: {
+                labelEn: 'Curious', labelAr: 'فُضوليّ',
+                pointsEn: ['"Tell me more about that"', 'Lets them finish', 'Stays focused on THEIR experience', 'Wants to understand them'],
+                pointsAr: ['"أَخْبِرْني أَكْثَرَ عَنْ ذلِك"', 'يَدَعُهُ يُنْهي', 'يَبْقى مُرَكَّزاً عَلى تَجْرِبَتِه', 'يُريدُ أَنْ يَفْهَمَه'],
+              },
+            },
+            {
+              kind: 'micro-quiz', id: 'al-mq1',
+              question: {
+                textEn: 'Your partner is venting about a work thing. They stop mid-sentence. What\'s the BEST next move?',
+                textAr: 'شَريكُكِ يَتَذَمَّرُ عَنْ شَيْءٍ في العَمَل. يَتَوَقَّفُ في مُنْتَصَفِ الجُمْلَة. ما أَفْضَلُ خُطْوَةٍ تالِيَة؟',
+                options: [
+                  { labelEn: 'Jump in with advice — they\'re looking for solutions', labelAr: 'اِقْفِزي بِنَصيحَة — إنَّهُ يَطْلُبُ حَلاً', correct: false, explanationEn: 'Most venting isn\'t solution-seeking. It\'s seeking to be heard.', explanationAr: 'مُعْظَمُ التَّذَمُّرِ لا يَطْلُبُ حَلاً. يَطْلُبُ الاِسْتِماع.' },
+                  { labelEn: 'Silence + eye contact — let them finish the thought', labelAr: 'صَمْت + تَواصُلٌ بَصَرِيّ — دَعيهِ يُنْهي الفِكْرَة', correct: true, explanationEn: 'Yes. The pause is often the MIDDLE, not the end.', explanationAr: 'نَعَم. الوَقْفَةُ غالِباً هي المُنْتَصَف، لَيْسَ النِّهايَة.' },
+                  { labelEn: 'Share your similar story', labelAr: 'شارِكي قِصَّتَكِ المُماثِلَة', correct: false, explanationEn: 'Makes it about you. Stay on THEIR moment.', explanationAr: 'تَجْعَليها عَنْكِ. اِبْقَي عَلى لَحْظَتِه.' },
+                ],
+              },
+            },
+            {
+              kind: 'checklist', id: 'al-checklist',
+              titleEn: '5 phrases that save conversations', titleAr: '5 عِباراتٍ تُنْقِذُ المُحادَثات',
+              itemsEn: [
+                '"Help me understand..."',
+                '"What\'s that like for you?"',
+                '"I want to hear more — don\'t rush."',
+                '"That makes sense. And then?"',
+                '"I hear you. You\'re saying ____ — is that right?"',
+              ],
+              itemsAr: [
+                '"ساعِدْني أَنْ أَفْهَم..."',
+                '"كَيْفَ ذلِكَ بِالنِّسْبَةِ لَك؟"',
+                '"أُريدُ أَنْ أَسْمَعَ أَكْثَر — لا تَسْتَعْجِل."',
+                '"هذا مَنْطِقيّ. ثُمَّ؟"',
+                '"أَسْمَعُك. تَقولُ إنَّ ____ — صَحيح؟"',
+              ],
+            },
+            {
+              kind: 'callout', id: 'al-drhala', variant: 'dr-hala',
+              textEn: 'In 20 years of couples work, one pattern: the relationships that lasted had partners who listened as if the other had something to teach them. They didn\'t — but the listening alone made it true.',
+              textAr: 'في 20 سَنَةً من عَمَلِ الأَزْواج، نَمَطٌ واحِد: العَلاقاتُ الّتي دامَتْ كانَ شُرَكاؤُها يَسْتَمِعونَ وكَأَنَّ الآخَرَ لَدَيْهِ ما يُعَلِّمُه. لَمْ يَكُنْ كَذلِك — لَكِنَّ الاِسْتِماعَ وَحْدَهُ جَعَلَهُ كَذلِك.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'al-refl', minWords: 40,
+              promptEn: 'When is the last time your partner walked away from a conversation feeling truly heard? What made it safe for them?',
+              promptAr: 'مَتى آخِرَ مَرَّةٍ غادَرَ شَريكُكِ مُحادَثَةً شاعِراً بِالسَّماعِ حَقّاً؟ ما الّذي جَعَلَها آمِنَةً لَه؟',
+            },
+          ],
         },
         {
           slug: 'conflict-as-connection',
@@ -695,6 +826,93 @@ Conflict, when handled with care, actually deepens intimacy. It shows both partn
           ],
           estimatedReadTimeMinutes: 15,
           skillTags: ['Conflict Resolution', 'Communication', 'Emotional Bids'],
+          format: 'story',
+          blocks: [
+            {
+              kind: 'story-beat', id: 'cc-s1', characterEn: 'A Wednesday evening. 7:42 PM.', characterAr: 'مَساءُ الأَرْبِعاء. 7:42 مَساءً.',
+              textEn: 'She walks in the door after a brutal day at work. Two meetings ran late. She hasn\'t eaten.\n\nHe\'s on the couch scrolling his phone. The dishes from lunch are still in the sink. She sees them first.\n\n"Seriously? You couldn\'t even do the DISHES?"',
+              textAr: 'تَدْخُلُ البابَ بَعْدَ يَوْمِ عَمَلٍ وَحْشِيّ. اجْتِماعانِ تَأَخَّرا. لَمْ تَأْكُلْ.\n\nهو على الأَريكَةِ يَتَصَفَّحُ الهاتِف. صُحونُ الغَداءِ لا تَزالُ في الحَوْض. تَراها أَوَّلاً.\n\n"جِدّاً؟ لَمْ تَسْتَطِعْ حَتّى غَسْلَ الصُّحون؟"',
+            },
+            {
+              kind: 'story-beat', id: 'cc-s2',
+              textEn: 'He looks up. He was about to do them. He had a call at 6pm that ran long. But her tone hits him wrong.\n\n"I just sat down 10 minutes ago. Back off."',
+              textAr: 'يَنْظُرُ لِلأَعْلى. كانَ عَلى وَشْكِ فِعْلِها. كانَ لَدَيْهِ مُكالَمَةٌ في السّاعَةِ 6 طالَتْ. لَكِنَّ نَبْرَتَها تَطْعَنُه.\n\n"جَلَسْتُ مُنْذُ 10 دَقائِقَ فَقَط. اِبْتَعِدي."',
+            },
+            {
+              kind: 'story-choice', id: 'cc-c1',
+              promptEn: 'This is the fork. What does SHE choose?',
+              promptAr: 'هذا المُفْتَرَق. ماذا تَخْتارُ هي؟',
+              choices: [
+                {
+                  labelEn: '"Back off? You\'re on your PHONE while I worked 11 hours!"',
+                  labelAr: '"أَبْتَعِد؟ أَنْتَ عَلى هاتِفِكَ وأَنا عَمِلْتُ 11 ساعَة!"',
+                  feedbackEn: 'This is the Gottman "harsh startup." The next 10 min are set — they\'ll both say things they regret.',
+                  feedbackAr: 'هذِهِ "البِدايَةُ القاسِيَة" عِنْدَ جوتْمان. الـ 10 دَقائِقَ القادِمَةُ مَحْسومَة — سَيَقولانِ ما يَنْدَمانِ عَلَيْه.',
+                  isRecommended: false,
+                },
+                {
+                  labelEn: '(Pause. Breath.) "Wait. Let me try that again. I had a hard day and the sink hit me wrong. Can we start over?"',
+                  labelAr: '(تَوَقُّف. نَفَس.) "لَحْظَة. دَعْني أُحاوِلُ ثانِيَة. كانَ يَوْمي صَعْباً والحَوْضُ طَعَنَني. هل نَبْدَأُ من جَديد؟"',
+                  feedbackEn: 'This is conflict-as-connection. Self-aware repair in real-time. The conflict becomes intimacy.',
+                  feedbackAr: 'هذا الصِّراعُ كَتَواصُل. إصْلاحٌ ذاتِيٌّ واعٍ لَحْظَةً بِلَحْظَة. الصِّراعُ يَصيرُ حَميميَّة.',
+                  isRecommended: true,
+                },
+                {
+                  labelEn: 'Storm off to the bedroom silently',
+                  labelAr: 'تُغادِرُ إلى غُرْفَةِ النَّوْمِ بِصَمْت',
+                  feedbackEn: 'Flooding is real. Sometimes space is right. But name it: "I need 15 min to calm down."',
+                  feedbackAr: 'الإغْراقُ حَقيقيّ. أَحْياناً المَساحَةُ صَحيحَة. لَكِنْ سَمّيها: "أَحْتاجُ 15 دَقيقَةً لِأَهْدَأ."',
+                  isRecommended: false,
+                },
+              ],
+            },
+            {
+              kind: 'story-beat', id: 'cc-s3',
+              textEn: 'She pauses. Takes a breath.\n\n"Wait. Let me try that again. I had a hard day and the sink hit me wrong. Can we start over?"\n\nHe exhales. "Yes. Please. Come here."',
+              textAr: 'تَتَوَقَّف. تَأْخُذُ نَفَساً.\n\n"لَحْظَة. دَعْني أُحاوِلُ ثانِيَة. كانَ يَوْمي صَعْباً والحَوْضُ طَعَنَني. هل نَبْدَأُ من جَديد؟"\n\nيَزْفُر. "نَعَم. رَجاءً. تَعالَي."',
+            },
+            {
+              kind: 'story-choice', id: 'cc-c2',
+              promptEn: 'What does HE choose now?',
+              promptAr: 'ماذا يَخْتارُ هو الآن؟',
+              choices: [
+                {
+                  labelEn: '"I should have done them. I got caught on that call and zoned out on my phone. I\'m sorry."',
+                  labelAr: '"كانَ يَجِبُ أَنْ أَفْعَلَها. عَلِقْتُ في المُكالَمَةِ وتَوَهْتُ عَلى الهاتِف. آسِف."',
+                  feedbackEn: 'Ownership without defensiveness. This is how trust gets rebuilt one small moment at a time.',
+                  feedbackAr: 'اِعْتِرافٌ بِلا دِفاع. هكَذا تُعادُ الثِّقَةُ لَحْظَةً بِلَحْظَة.',
+                  isRecommended: true,
+                },
+                {
+                  labelEn: '"I had a meeting. You always assume I\'m being lazy."',
+                  labelAr: '"كانَ لَدَيَّ اجْتِماع. تَفْتَرِضينَ دائِماً أَنَّني كَسول."',
+                  feedbackEn: 'Defensiveness. Even if true, it closes the door she just opened.',
+                  feedbackAr: 'دِفاع. حَتّى لَوْ صَحيحاً، يُغْلِقُ البابَ الّذي فَتَحَتْهُ.',
+                  isRecommended: false,
+                },
+              ],
+            },
+            {
+              kind: 'story-beat', id: 'cc-s4',
+              textEn: 'He stands, walks to the sink, starts the water. She leans against the counter. "Tell me about your day while I cook?"\n\nThis is what conflict-as-connection looks like. Not avoidance. Not winning. Two humans choosing to soften — again and again.',
+              textAr: 'يَنْهَض، يَمْشي لِلحَوْض، يَفْتَحُ الماء. تَتَّكِئُ على الطّاوِلَة. "حَدِّثْني عَنْ يَوْمِكَ وأَنا أَطْبُخ؟"\n\nهكَذا يَبْدو الصِّراعُ كَتَواصُل. لَيْسَ تَجَنُّباً. لَيْسَ فَوْزاً. إنْسانانِ يَخْتارانِ اللّينَ — مَرَّةً بَعْدَ مَرَّة.',
+            },
+            {
+              kind: 'callout', id: 'cc-lesson', variant: 'insight',
+              textEn: 'Gottman found: 69% of couple conflicts are perpetual (never fully resolved). The thriving couples don\'t solve them — they SOFTEN them, repeatedly, through small repair moments. Every fight is a chance to practice being the person you want to be married to.',
+              textAr: 'وَجَدَ جوتْمان: 69% من خِلافاتِ الأَزْواجِ دائِمَة (لا تُحَلُّ كامِلاً). الأَزْواجُ المُزْدَهِرونَ لا يَحُلّونَها — يُلَيِّنونَها، بِتَكْرار، بِلَحَظاتِ إصْلاحٍ صَغيرَة. كُلُّ شِجارٍ فُرْصَةٌ لِتَكوني الشَّخْصَ الّذي تُريدينَ الزَّواجَ مِنْه.',
+            },
+            {
+              kind: 'callout', id: 'cc-drhala', variant: 'dr-hala',
+              textEn: 'Couples who last aren\'t the ones who fight less. They\'re the ones who repair faster. Every harsh startup has a do-over available. Every defensive moment can become an apology. That\'s the skill. It\'s learnable. You just did it — right here, watching this story.',
+              textAr: 'الأَزْواجُ الّذينَ يَدومونَ لَيْسوا الّذينَ يَتَشاجَرونَ أَقَلّ. الّذينَ يُصْلِحونَ أَسْرَع. كُلُّ بِدايَةٍ قاسِيَةٍ لَها فُرْصَةٌ جَديدَة. كُلُّ لَحْظَةٍ دِفاعيَّةٍ يُمْكِنُها أَنْ تَصيرَ اعْتِذاراً. هذِهِ المَهارَة. قابِلَةٌ لِلتَّعَلُّم. فَعَلْتِها للتَّوّ — هُنا، تُشاهِدينَ هذِهِ القِصَّة.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'cc-refl', minWords: 40,
+              promptEn: 'When was your last harsh startup? What would a "do-over" have sounded like? Could you still call it a do-over tonight?',
+              promptAr: 'مَتى آخِرَ بِدايَةٍ قاسِيَةٍ لَكِ؟ كَيْفَ سَتَبْدو "فُرْصَةٌ جَديدَة"؟ هل يُمْكِنُكِ اسْتِدْعاؤُها اللَّيْلَة؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'quadrant',
@@ -921,6 +1139,85 @@ The most transformative skill you can develop as a couple is not learning to hav
           ],
           estimatedReadTimeMinutes: 13,
           skillTags: ['Emotional Bids', 'Communication', 'Trust Building'],
+          format: 'assessment',
+          blocks: [
+            {
+              kind: 'paragraph', id: 'eb-lead', tone: 'lead',
+              textEn: 'Gottman\'s most predictive research: couples make "bids" for connection 100+ times per day. Tiny things — "look at this bird," "ugh, long day," a touch. The partner either TURNS TOWARD, AWAY, or AGAINST. Couples who turned toward at 86%+ stayed married. Below 33%, divorce was near-certain.',
+              textAr: 'بَحْثُ جوتْمان الأَكْثَرُ تَنَبُّؤاً: الأَزْواجُ يَصْنَعونَ "نِداءاتٍ" لِلتَّواصُلِ 100+ مَرَّةً يَوْميّاً. أَشْياءُ صَغيرَة — "اُنْظُرْ لِهذا الطّائِر"، "أُفّ يَوْمٌ طَويل"، لَمْسَة. الشَّريكُ إمّا يَتَوَجَّهُ نَحْوَها، بَعيداً، أَوْ ضِدَّها. الأَزْواجُ الّذينَ تَوَجَّهوا نَحْوَها بِـ 86%+ بَقَوْا مَعاً. تَحْتَ 33%، كانَ الطَّلاقُ شِبْهَ مُؤَكَّد.',
+            },
+            {
+              kind: 'callout', id: 'eb-insight', variant: 'insight',
+              textEn: 'This assessment maps YOUR bid-response pattern. Answer honestly — the goal is awareness, not shame. Every couple misses bids. The best couples notice they missed them and come back.',
+              textAr: 'هذا التَّقْييمُ يُحَدِّدُ نَمَطَ نِداءاتِك. أَجيبي بِصِدْق — الهَدَفُ وَعْيٌ، لا عار. كُلُّ الأَزْواجِ يُفَوِّتونَ نِداءات. الأَفْضَلُ يُلاحِظونَ ويَعودون.',
+            },
+            {
+              kind: 'likert', id: 'eb-lk1',
+              reflection: {
+                titleEn: 'Noticing Bids', titleAr: 'مُلاحَظَةُ النِّداءات',
+                statementEn: 'I notice when my partner is reaching out to me — even in small ways.',
+                statementAr: 'أُلاحِظُ حينَ يَمُدُّ شَريكي يَدَهُ لي — حَتّى بِأَشْكالٍ صَغيرَة.',
+                scaleLabels: { lowEn: 'Miss most', lowAr: 'أَفَوِّتُ مُعْظَمَها', highEn: 'Catch most', highAr: 'أَلْتَقِطُ مُعْظَمَها' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Distracted awareness', labelAr: 'وَعْيٌ مُشَتَّت', feedbackEn: 'Phones, kids, exhaustion — they compete with your partner\'s bids. Try one thing: put your phone face-down when they enter the room.', feedbackAr: 'الهَواتِف، الأَوْلاد، الإرْهاق — تُنافِسُ نِداءاتِه. جَرِّبي شَيْئاً: ضَعي هاتِفَكِ مَقْلوباً حينَ يَدْخُل.' },
+                  { min: 3, max: 5, labelEn: 'Mixed tracking', labelAr: 'تَتَبُّعٌ مُخْتَلِط', feedbackEn: 'You catch some, miss some. Awareness alone will move this up — keep noticing.', feedbackAr: 'تَلْتَقِطينَ بَعْضاً وتَفَوِّتينَ بَعْضاً. الوَعْيُ وَحْدَهُ سَيَرْفَعُها — واصِلي المُلاحَظَة.' },
+                  { min: 6, max: 7, labelEn: 'Attuned', labelAr: 'مُتَناغِمَة', feedbackEn: 'You\'re seeing the bids. Keep turning toward them, not just noticing.', feedbackAr: 'تَرَيْنَ النِّداءات. واصِلي التَّوَجُّهَ نَحْوَها، لَيْسَ فَقَطْ المُلاحَظَة.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'eb-lk2',
+              reflection: {
+                titleEn: 'Turning Toward', titleAr: 'التَّوَجُّهُ نَحْوَ',
+                statementEn: 'When my partner makes a bid, I respond — even briefly — rather than ignoring it.',
+                statementAr: 'حينَ يَصْنَعُ شَريكي نِداءً، أَسْتَجيب — حَتّى بِإيجاز — بَدَلاً من التَّجاهُل.',
+                scaleLabels: { lowEn: 'Often miss', lowAr: 'غالِباً أُفَوِّت', highEn: 'Always respond', highAr: 'دائِماً أَسْتَجيب' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Turning away', labelAr: 'تَتَوَجَّهينَ بَعيداً', feedbackEn: 'This is where marriages erode quietly. Try: a simple "mm-hm" or eye contact when they speak — that counts.', feedbackAr: 'هُنا تَتَآكَلُ الزِّيجاتُ بِهُدوء. جَرِّبي: "مممم" أَوْ تَواصُلاً بَصَرِيّاً حينَ يَتَكَلَّم — هذا يَحْسَب.' },
+                  { min: 3, max: 5, labelEn: 'Inconsistent', labelAr: 'غَيْرُ ثابِتَة', feedbackEn: 'Practice micro-responses. Every acknowledgment is a deposit.', feedbackAr: 'مارِسي اسْتِجاباتٍ صَغيرَة. كُلُّ اعْتِرافٍ إيداع.' },
+                  { min: 6, max: 7, labelEn: 'Responsive', labelAr: 'مُسْتَجيبَة', feedbackEn: 'This is the foundation. Keep depositing.', feedbackAr: 'هذا الأَساس. واصِلي الإيداع.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'eb-lk3',
+              reflection: {
+                titleEn: 'Not Turning Against', titleAr: 'لا تَوَجُّهاً ضِدّ',
+                statementEn: 'When my partner makes a bid and I\'m annoyed, I don\'t snap at them for reaching out.',
+                statementAr: 'حينَ يَصْنَعُ شَريكي نِداءً وأَنا مُنْزَعِجَة، لا أَنْفَعِلُ عَلَيْهِ لِلتَّواصُل.',
+                scaleLabels: { lowEn: 'Snap often', lowAr: 'أَنْفَعِلُ كَثيراً', highEn: 'Stay kind', highAr: 'أَبْقى لَطيفَة' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Turning against', labelAr: 'تَوَجُّهٌ ضِدّ', feedbackEn: 'This is the most destructive pattern. When you can\'t turn toward, at least go neutral: "I need a minute" instead of snapping.', feedbackAr: 'هذا أَخْطَرُ الأَنْماط. حينَ لا تَسْتَطيعينَ التَّوَجُّهَ نَحْوَ، كوني مُحايِدَة: "أَحْتاجُ دَقيقَةً" بَدَلاً من الاِنْفِعال.' },
+                  { min: 3, max: 5, labelEn: 'Sometimes sharp', labelAr: 'حادَّةٌ أَحْياناً', feedbackEn: 'Awareness is already shifting this. Notice the cue — your body before your mouth.', feedbackAr: 'الوَعْيُ يُحَرِّكُ هذا. لاحِظي الإشارَة — جَسَدَكِ قَبْلَ فَمِك.' },
+                  { min: 6, max: 7, labelEn: 'Kind under stress', labelAr: 'لَطيفَةٌ تَحْتَ الضَّغْط', feedbackEn: 'Rare and precious. Your partner feels safe even when you\'re stressed.', feedbackAr: 'نادِرَةٌ وثَمينَة. شَريكُكِ يَشْعُرُ بِالأَمانِ حَتّى وأَنْتِ مُرْهَقَة.' },
+                ],
+              },
+            },
+            {
+              kind: 'likert', id: 'eb-lk4',
+              reflection: {
+                titleEn: 'Making Bids Yourself', titleAr: 'صُنْعُ النِّداءاتِ بِنَفْسِك',
+                statementEn: 'I reach out to my partner with small bids of my own — touches, questions, "watch this."',
+                statementAr: 'أَمُدُّ يَدي لِشَريكي بِنِداءاتٍ صَغيرَةٍ من عِنْدي — لَمْسات، أَسْئِلَة، "اُنْظُرْ لِهذا".',
+                scaleLabels: { lowEn: 'I wait for him', lowAr: 'أَنْتَظِرُه', highEn: 'I initiate freely', highAr: 'أُبادِرُ بِحُرِّيَّة' },
+                interpretations: [
+                  { min: 1, max: 2, labelEn: 'Stopped initiating', labelAr: 'تَوَقَّفْتِ عَنِ المُبادَرَة', feedbackEn: 'Maybe past rejections made you stop. Worth exploring: what did it cost you to stop?', feedbackAr: 'رُبَّما رَفَضاتٌ سابِقَةٌ أَوْقَفَتْك. تَسْتَحِقُّ الاِسْتِكْشاف: ماذا كَلَّفَكِ التَّوَقُّف؟' },
+                  { min: 3, max: 5, labelEn: 'Cautious bidding', labelAr: 'نِداءاتٌ حَذِرَة', feedbackEn: 'Safety is forming. Risk one extra bid this week.', feedbackAr: 'الأَمانُ يَتَشَكَّل. خاطِري بِنِداءٍ إضافِيٍّ هذا الأُسْبوع.' },
+                  { min: 6, max: 7, labelEn: 'Bidding freely', labelAr: 'نِداءاتٌ حُرَّة', feedbackEn: 'This is what intimate safety looks like. Keep going.', feedbackAr: 'هذا ما يَبْدو عَلَيْهِ الأَمانُ الحَميميّ. واصِلي.' },
+                ],
+              },
+            },
+            {
+              kind: 'callout', id: 'eb-drhala', variant: 'dr-hala',
+              textEn: 'Look at your lowest score. That\'s where your relationship leaks. The good news: every response is reversible. Starting today, 10 extra "turn toward" moments per day can flip a pattern in a month.',
+              textAr: 'اُنْظُري لِأَقَلِّ دَرَجَة. هُناكَ تَتَسَرَّبُ عَلاقَتُكِ. الخَبَرُ الجَيِّد: كُلُّ اسْتِجابَةٍ قابِلَةٌ لِلعَكْس. ابْتِداءً من اليَوْم، 10 لَحَظاتِ "تَوَجُّهٍ نَحْوَ" إضافيَّةٍ يَوْميّاً تَقْلِبُ النَّمَطَ في شَهْر.',
+            },
+            {
+              kind: 'reflection-prompt', id: 'eb-refl', minWords: 40,
+              promptEn: 'Where did you score lowest? What\'s ONE concrete bid you\'ve missed recently? What would turning toward it have looked like?',
+              promptAr: 'أَيْنَ كانَتْ أَقَلَّ دَرَجَة؟ ما نِداءٌ مُحَدَّدٌ فَوَّتِهِ مُؤَخَّراً؟ كَيْفَ سَيَبْدو التَّوَجُّهُ نَحْوَه؟',
+            },
+          ],
           frameworkDiagrams: [
             {
               type: 'cycle',
@@ -957,6 +1254,7 @@ The most transformative skill you can develop as a couple is not learning to hav
       descriptionEn: `Move beyond the basics into the real-life complexities that every couple faces — navigating differences, building financial harmony, nurturing intimacy in all its forms, and co-parenting as a united team.`,
       descriptionAr: `تجاوز الأساسيات نحو التعقيدات الحقيقية التي يواجهها كل زوجين — التعامل مع الاختلافات، وبناء الانسجام المالي، ورعاية العلاقة الحميمة بكل أشكالها، والتربية المشتركة كفريق موحد.`,
       isFree: false,
+      priceCAD: 19,
       modules: [
         {
           slug: 'navigating-differences',
@@ -1162,6 +1460,31 @@ Acceptance is the cornerstone of navigating differences. This does not mean resi
           ],
           estimatedReadTimeMinutes: 14,
           skillTags: ['Conflict Resolution', 'Communication', 'Trust Building'],
+          format: 'standard',
+          blocks: [
+            { kind: 'paragraph', id: 'nd-lead', tone: 'lead', textEn: 'You and your partner will never fully agree. That\'s not a problem to solve — it\'s a feature of two separate people choosing each other. The skill is HOW you hold those differences without them corroding the love.', textAr: 'أَنْتِ وشَريكُكِ لَنْ تَتَّفِقا كامِلاً أَبَداً. هذا لَيْسَ مُشْكِلَةً — إنَّها مَيزَةُ شَخْصَيْنِ مُنْفَصِلَيْنِ يَخْتارانِ بَعْضَهُما. المَهارَةُ في كَيْفَ تَحْمِلينَ الاِخْتِلافاتِ بِلا أَنْ تَأْكُلَ الحُبّ.' },
+            { kind: 'callout', id: 'nd-research', variant: 'insight', textEn: 'Gottman research: 69% of couple conflicts are PERPETUAL — differences in temperament, values, preferences that never resolve. Happy couples don\'t solve them. They dialogue about them with affection and humor.', textAr: 'بَحْثُ جوتْمان: 69% من خِلافاتِ الأَزْواجِ دائِمَة — اخْتِلافاتٌ لا تُحَلُّ أَبَداً. الأَزْواجُ السُّعَداءُ يَتَحاوَرونَ فيها بِمَحَبَّةٍ ودُعابَة.' },
+            {
+              kind: 'comparison', id: 'nd-cmp',
+              titleEn: 'Gridlocked vs Dialogued', titleAr: 'مَجْمودَة مُقابِلَ مَحْوورَة',
+              left: { labelEn: 'Gridlocked', labelAr: 'مَجْمودَة', pointsEn: ['Same fight, repeatedly', 'One tries to convert the other', 'Positions harden', 'Contempt creeps in'], pointsAr: ['نَفْسُ الشِّجار، بِتَكْرار', 'واحِدٌ يُحَوِّلُ الآخَر', 'المَواقِفُ تَتَصَلَّب', 'الاِزْدِراءُ يَدْخُل'] },
+              right: { labelEn: 'Dialogued', labelAr: 'مَحْوورَة', pointsEn: ['"Tell me why this matters to you"', 'Each names what\'s underneath', 'Curiosity about the other', 'Humor and affection stay'], pointsAr: ['"لِماذا يَهُمُّكَ هذا؟"', 'كُلٌّ يُسَمّي ما تَحْتَه', 'فُضولٌ عَنِ الآخَر', 'الدُّعابَةُ تَبْقى'] },
+            },
+            {
+              kind: 'micro-quiz', id: 'nd-mq1',
+              question: {
+                textEn: 'You and your partner fundamentally disagree on parenting strictness. What\'s the goal?',
+                textAr: 'تَخْتَلِفانِ جَوْهَريّاً في صَرامَةِ التَّرْبِيَة. ما الهَدَف؟',
+                options: [
+                  { labelEn: 'Get them to see your way', labelAr: 'اِجْعَليهِ يَرى طَريقَتَك', correct: false, explanationEn: 'Conversion rarely works.', explanationAr: 'التَّحْويلُ نادِراً ما يَنْجَح.' },
+                  { labelEn: 'Understand what the strictness REPRESENTS to each of you', labelAr: 'اِفْهَما ما تَعْنيهِ الصَّرامَةُ لِكُلٍّ مِنْكُما', correct: true, explanationEn: 'Yes. Usually it\'s about your own childhood or deeper values. Understand that, and the conflict softens.', explanationAr: 'نَعَم. عادَةً عَنْ طُفولَتِكُما أَوْ قيَمٍ أَعْمَق. اِفْهَما ذلِك، فَيَلينُ الصِّراع.' },
+                  { labelEn: 'Meet in the middle every time', labelAr: 'اِلْتَقِيا في المُنْتَصَفِ دائِماً', correct: false, explanationEn: 'Compromise without understanding breeds resentment.', explanationAr: 'التَّسْوِيَةُ بِلا فَهْمٍ تُوَلِّدُ الاِسْتِياء.' },
+                ],
+              },
+            },
+            { kind: 'callout', id: 'nd-drhala', variant: 'dr-hala', textEn: 'Every unresolved difference is an invitation to know your partner more deeply. Take the invitation.', textAr: 'كُلُّ اخْتِلافٍ غَيْرِ مَحْلولٍ دَعْوَةٌ لِمَعْرِفَةِ شَريكِكِ أَعْمَق. اِقْبَلي الدَّعْوَة.' },
+            { kind: 'reflection-prompt', id: 'nd-refl', minWords: 40, promptEn: 'What\'s the difference you and your partner fight about MOST? What might it represent to each of you beneath the surface?', promptAr: 'ما الاِخْتِلافُ الّذي تَتَشاجَرانِ فيهِ أَكْثَر؟ ماذا قد يَعْني لِكُلٍّ مِنْكُما تَحْتَ السَّطْح؟' },
+          ],
         },
         {
           slug: 'financial-harmony',
@@ -1369,6 +1692,17 @@ Financial harmony is not about having the same financial personality. It is abou
           ],
           estimatedReadTimeMinutes: 14,
           skillTags: ['Communication', 'Trust Building', 'Conflict Resolution'],
+          format: 'cards',
+          blocks: [
+            { kind: 'card', id: 'fh-intro', accentColor: '#7A3B5E', titleEn: 'Money fights are never really about money', titleAr: 'شِجاراتُ المالِ لَيْسَتْ عَنِ المالِ حَقّاً', bodyEn: 'They\'re about safety, power, fairness, trust, childhood wounds, and hidden values. These 6 scripts open the conversations couples avoid most — and the ones that matter most.', bodyAr: 'إنَّها عَنِ الأَمانِ والقُوَّةِ والعَدالَةِ والثِّقَةِ وجُروحِ الطُّفولَةِ والقِيَمِ الخَفيَّة. هذِهِ 6 سِينَاريوهاتٍ تَفْتَحُ المُحادَثاتِ الّتي يَتَجَنَّبُها الأَزْواجُ أَكْثَر.' },
+            { kind: 'card', id: 'fh-values', accentColor: '#C8A97D', titleEn: '1. Money Values Check', titleAr: '1. فَحْصُ القِيَمِ المالِيَّة', bodyEn: 'Ask each other, separately first:\n• "What does money MEAN to you?" (safety? freedom? status? love?)\n• "What did you learn about money growing up?"\n\nShare answers. Don\'t debate — just listen. You\'ll understand more than you have in years.', bodyAr: 'اسْأَلا بَعْضَكُما، مُنْفَرِدَيْنِ أَوَّلاً:\n• "ماذا يَعْني المالُ لَك؟" (أَمان؟ حُرِّيَّة؟ مَكانَة؟ حُبّ؟)\n• "ماذا تَعَلَّمْتَ عَنِ المالِ أَثْناءَ نَشْأَتِك؟"\n\nشارِكا الإجابات. لا تُجادِلا — اِسْتَمِعا.' },
+            { kind: 'card', id: 'fh-dream', accentColor: '#5B8FA8', titleEn: '2. The Dream Purchase', titleAr: '2. الشِّراءُ الحُلْم', bodyEn: '"If we had an extra $5000 this year, what would you spend it on?"\n\nThis reveals their priorities without judgment. You\'ll learn more from this question than a month of budget arguments.', bodyAr: '"لَوْ كانَ لَدَيْنا 5000 دولارٍ إضافيَّةٍ هذا العام، عَلى ماذا سَتَصْرُفُها؟"\n\nهذا يَكْشِفُ أَوْلَويّاتِهِ بِلا حُكْم. سَتَتَعَلَّمينَ من هذا السُّؤالِ أَكْثَرَ من شَهْرِ خِلافاتِ ميزانِيَّة.' },
+            { kind: 'card', id: 'fh-fear', accentColor: '#C4636A', titleEn: '3. The Money Fear', titleAr: '3. المَخاوِفُ المالِيَّة', bodyEn: '"What\'s your biggest fear about our finances right now?"\n\nFinancial anxiety is usually private and silent. Naming it with your partner is half the healing. The other half: making a plan together.', bodyAr: '"ما أَكْبَرُ مَخاوِفِكَ المالِيَّةِ الآن؟"\n\nالقَلَقُ المالِيُّ عادَةً شَخْصِيٌّ وصامِت. تَسْمِيَتُهُ مَعَ شَريكِكِ نِصْفُ الشِّفاء. النِّصْفُ الآخَر: خُطَّةٌ مَعاً.' },
+            { kind: 'micro-quiz', id: 'fh-mq1', question: { textEn: 'Why do couples fight the SAME money fight repeatedly?', textAr: 'لِماذا يَتَشاجَرُ الأَزْواجُ نَفْسَ شِجارِ المالِ بِتَكْرار؟', options: [ { labelEn: 'One person is wrong', labelAr: 'شَخْصٌ مُخْطِئ', correct: false, explanationEn: 'Rarely. Usually both have legitimate fears rooted in different histories.', explanationAr: 'نادِراً. عادَةً كِلاهُما لَهُ مَخاوِفُ مَشْروعَةٌ من تاريخٍ مُخْتَلِف.' }, { labelEn: 'The surface issue hides a deeper value', labelAr: 'القَضِيَّةُ السَّطْحيَّةُ تُخْفي قيمَةً أَعْمَق', correct: true, explanationEn: 'Yes. Find the value underneath and the surface fight softens.', explanationAr: 'نَعَم. اِبْحَثا عَنِ القيمَةِ تَحْتَ، فَيَلينُ الشِّجارُ السَّطْحيّ.' }, { labelEn: 'They need a bigger budget', labelAr: 'يَحْتاجانِ ميزانِيَّةً أَكْبَر', correct: false, explanationEn: 'More money rarely fixes what values fights.', explanationAr: 'المَزيدُ من المالِ نادِراً ما يُصْلِحُ ما تَكْسِرُهُ القِيَم.' }, ], }, },
+            { kind: 'card', id: 'fh-system', accentColor: '#3B8A6E', titleEn: '4. The System Decision', titleAr: '4. قَرارُ النِّظام', bodyEn: 'Choose ONE together, in writing:\n• Joint + separate accounts?\n• Who handles bills?\n• How often do we "meet" about money?\n\nSystems prevent fights. Guessing produces them.', bodyAr: 'اخْتارا واحِداً مَعاً، كِتابِيّاً:\n• حِسابٌ مُشْتَرَك + حِسابانِ مُنْفَصِلان؟\n• من يَتَعامَلُ مع الفَواتير؟\n• كَمْ مَرَّةً نَتَقابَلُ حَوْلَ المال؟\n\nالأَنْظِمَةُ تَمْنَعُ الشِّجار. التَّخْمينُ يُنْتِجُه.' },
+            { kind: 'card', id: 'fh-monthly', accentColor: '#D4836A', titleEn: '5. The Monthly Money Date', titleAr: '5. مَوْعِدُ المالِ الشَّهْرِيّ', bodyEn: '30 minutes, once a month, with coffee. Review: last month, next month, one big worry, one thing that went right.\n\nSmall and regular > big and reactive.', bodyAr: '30 دَقيقَةً، مَرَّةً شَهْريّاً، مع قَهْوَة. راجِعا: الشَّهْرَ الماضي، التّالي، قَلَقاً واحِداً، شَيْئاً ذَهَبَ بِشَكْلٍ جَيِّد.\n\nصَغيرٌ ومُنْتَظِم > كَبيرٌ ورَدُّ فِعْل.' },
+            { kind: 'card', id: 'fh-drhala', accentColor: '#7A3B5E', titleEn: 'The Financial Vow', titleAr: 'العَهْدُ المالِيّ', bodyEn: '"I won\'t hide money from you. I won\'t shame you about money. I\'ll tell you when I\'m afraid. I\'ll listen when you are."\n\nSay this to each other. Mean it. Revisit it.', bodyAr: '"لَنْ أُخْفي المالَ عَنْك. لَنْ أُخَجِّلَكَ بِالمال. سَأُخْبِرُكَ حينَ أَخاف. سَأَسْتَمِعُ حينَ تَخاف."\n\nقولاها لِبَعْضِكُما. اِقْصُداها. راجِعاها.' },
+          ],
         },
         {
           slug: 'intimacy-beyond-physical',
@@ -1590,6 +1924,15 @@ Cultural expectations can also shape intimacy patterns. In some traditions, emot
           ],
           estimatedReadTimeMinutes: 14,
           skillTags: ['Communication', 'Trust Building', 'Emotional Bids'],
+          format: 'standard',
+          blocks: [
+            { kind: 'paragraph', id: 'ib-lead', tone: 'lead', textEn: 'Physical intimacy is one layer — the most visible. Underneath are four deeper layers couples often neglect: emotional, intellectual, spiritual, experiential. Starving these quietly kills relationships.', textAr: 'الأُلْفَةُ الجَسَدِيَّةُ طَبَقَةٌ واحِدَة — الأَظْهَر. تَحْتَها 4 طَبَقاتٍ أَعْمَقُ يُهْمِلُها الأَزْواج: عاطِفيَّة، فِكْريَّة، روحِيَّة، تَجْريبيَّة. تَجْويعُها يَقْتُلُ العَلاقاتِ بِصَمْت.' },
+            { kind: 'checklist', id: 'ib-layers', titleEn: 'The 5 layers of intimacy', titleAr: 'طَبَقاتُ الأُلْفَةِ الخَمْس', itemsEn: [ 'Emotional: vulnerability without fear of judgment', 'Intellectual: sharing ideas, debates, curiosity', 'Spiritual: shared meaning, values, belief', 'Experiential: doing things together that become "us"', 'Physical: affection, touch, sexuality', ], itemsAr: [ 'عاطِفيَّة: ضَعْفٌ بِلا خَوْفٍ من حُكْم', 'فِكْريَّة: تَبادُلُ أَفْكارٍ، نِقاش، فُضول', 'روحيَّة: مَعْنىً مُشْتَرَك، قِيَم، إيمان', 'تَجْريبيَّة: فِعْلٌ مَعاً يَصيرُ "نَحْن"', 'جَسَديَّة: مَوَدَّة، لَمْس، جِنْسانيَّة', ], },
+            { kind: 'callout', id: 'ib-truth', variant: 'insight', textEn: 'Couples with physical intimacy problems usually have deficits in one or more of the OTHER four layers. Fix those first — physical intimacy often follows.', textAr: 'الأَزْواجُ الّذينَ يُعانونَ جَسَديّاً عادَةً لَدَيْهِم نَقْصٌ في طَبَقاتٍ أُخْرى. اِصْلَحيها أَوَّلاً — وتَتْبَعُ الجَسَديَّة.' },
+            { kind: 'micro-quiz', id: 'ib-mq1', question: { textEn: 'Your partner feels you\'ve "grown apart." What layer do you check FIRST?', textAr: 'شَريكُكَ يَشْعُرُ أَنَّكُما "ابْتَعَدْتُما". أَيَّ طَبَقَةٍ تَفْحَصينَ أَوَّلاً؟', options: [ { labelEn: 'Physical', labelAr: 'الجَسَديَّة', correct: false, explanationEn: 'Symptom, not cause. Check deeper.', explanationAr: 'عَرَض، لا سَبَب.' }, { labelEn: 'Emotional — when did we stop being vulnerable?', labelAr: 'العاطِفيَّة — مَتى تَوَقَّفْنا عَنِ الضَّعْف؟', correct: true, explanationEn: 'Yes. When emotional intimacy erodes, everything else slips.', explanationAr: 'نَعَم. حينَ تَتَآكَلُ العاطِفيَّة، يَنْزَلِقُ البَقيَّة.' }, { labelEn: 'Experiential — plan a vacation', labelAr: 'التَّجْريبيَّة — خَطِّطْ لِرِحْلَة', correct: false, explanationEn: 'Can\'t substitute for emotional closeness.', explanationAr: 'لا تَحُلُّ مَحَلَّ القُرْبِ العاطِفيّ.' }, ], }, },
+            { kind: 'callout', id: 'ib-drhala', variant: 'dr-hala', textEn: 'Couples who stay in love aren\'t the ones with perfect sex lives. They\'re the ones who tell each other the truth — the scary, embarrassing, hard truth. From that everything else flows.', textAr: 'الأَزْواجُ الّذينَ يَبْقونَ في الحُبّ لَيْسوا من لَدَيْهِم حَياةٌ مِثاليَّة. إنَّهُم الّذينَ يُخْبِرونَ بَعْضَهُمُ الحَقيقَةَ الصَّعْبَة.' },
+            { kind: 'reflection-prompt', id: 'ib-refl', minWords: 40, promptEn: 'Which layer is strongest in your relationship? Which is starved? What\'s one small thing you\'d do THIS week to feed the starved one?', promptAr: 'أَيُّ طَبَقَةٍ الأَقْوى؟ أَيُّها جائِعَة؟ شَيْءٌ صَغيرٌ تَفْعَلينَهُ هذا الأُسْبوع؟' },
+          ],
           frameworkDiagrams: [
             {
               type: 'iceberg',
@@ -1817,6 +2160,19 @@ When disagreements arise about parenting — and they will — return to the com
           ],
           estimatedReadTimeMinutes: 14,
           skillTags: ['Co-Parenting', 'Communication', 'Conflict Resolution'],
+          format: 'challenge',
+          blocks: [
+            { kind: 'paragraph', id: 'cp-lead', tone: 'lead', textEn: 'Your kids don\'t need a united front on EVERY decision. They need parents who coordinate on the big things, disagree respectfully about the small things, and never use them as weapons against each other.', textAr: 'أَطْفالُكِ لا يَحْتاجونَ جَبْهَةً مُوَحَّدَةً في كُلِّ قَرار. يَحْتاجونَ والِدَيْنِ يُنَسِّقانِ في الكَبير، ويَخْتَلِفانِ بِاحْتِرامٍ في الصَّغير، ولا يَسْتَخْدِمانِهِم سِلاحاً ضِدَّ بَعْضِهِما.' },
+            { kind: 'callout', id: 'cp-intro', variant: 'insight', textEn: 'This 7-day challenge rebuilds your co-parenting partnership — one micro-agreement at a time. No big talks. Just one small shared decision per day.', textAr: 'هذا تَحَدّي 7 أَيّامٍ يُعيدُ بِناءَ شَراكَتِكُما في التَّرْبِيَة — اتِّفاقٌ صَغيرٌ كُلَّ يَوْم. بِلا مُحادَثاتٍ كَبيرَة. قَرارٌ مُشْتَرَكٌ واحِدٌ يَوْميّاً.' },
+            { kind: 'challenge-step', id: 'cp-d1', dayLabel: 1, titleEn: 'The Non-Negotiables List', titleAr: 'قائِمَةُ غَيْرِ القابِلِ لِلتَّفاوُض', instructionEn: 'Each of you writes 3 "non-negotiables" — parenting values you will NOT bend on. Share. Overlap = your aligned core. Differences = dialogue topics.', instructionAr: 'كُلٌّ مِنْكُما يَكْتُبُ 3 "غَيْرِ قابِلٍ لِلتَّفاوُض" — قِيَمٌ تَرْبَويَّةٌ لَنْ تَتَنازَلا عَنْها. شارِكا. التَّقاطُعُ = نَواتُكُما. الاِخْتِلافاتُ = مَواضيعُ حِوار.', checkInPromptEn: 'What\'s on each list? What\'s the overlap?', checkInPromptAr: 'ماذا في كُلِّ قائِمَة؟ ما التَّقاطُع؟' },
+            { kind: 'challenge-step', id: 'cp-d2', dayLabel: 2, titleEn: 'The Weekly Sync', titleAr: 'التَّزامُنُ الأُسْبوعيّ', instructionEn: '15 minutes today to sync on the week: kids\' schedules, hot spots, who\'s covering what. Same time every week going forward.', instructionAr: '15 دَقيقَةً اليَوْمَ لِلتَّزامُنِ عَلى الأُسْبوع: جَداوِلُ الأَوْلاد، نِقاطٌ ساخِنَة، من يُغَطّي ماذا. نَفْسُ الوَقْتِ كُلَّ أُسْبوع.', checkInPromptEn: 'What did you sync on? Did it feel like teamwork?', checkInPromptAr: 'عَلى ماذا تَزامَنْتُما؟ هل شَعَرَ بِالفَريق؟' },
+            { kind: 'challenge-step', id: 'cp-d3', dayLabel: 3, titleEn: 'Publicly Back Your Partner', titleAr: 'اِدْعَمي شَريكَكِ عَلَناً', instructionEn: 'Today, in front of kids, explicitly back your partner\'s decision — even if you disagreed privately. "Mom decided. That\'s the answer. If you want to revisit it, come to BOTH of us together."', instructionAr: 'اليَوْم، أَمامَ الأَوْلاد، ادْعَمي قَرارَ شَريكِكِ صَراحَةً — حَتّى لَوِ اخْتَلَفْتِ. "ماما قَرَّرَتْ. هذا الجَواب. إذا أَرَدْتَ إعادَةَ النَّظَر، تَعالَ لِكِلَيْنا مَعاً."', checkInPromptEn: 'Did you back them publicly? How did the kids respond?', checkInPromptAr: 'هل دَعَمْتِهِ أَمامَ الأَوْلاد؟ كَيْفَ تَفاعَلوا؟' },
+            { kind: 'challenge-step', id: 'cp-d4', dayLabel: 4, titleEn: 'Disagree Privately', titleAr: 'اِخْتَلِفا عَلى انْفِراد', instructionEn: 'Tonight, after kids are asleep, raise ONE parenting disagreement you\'ve been swallowing. Not attack. Just: "I\'ve been wanting to talk about how we handle ___."', instructionAr: 'اللَّيْلَة، بَعْدَ نَوْمِ الأَوْلاد، اِرْفَعي خِلافاً تَرْبَوِيّاً تَبْتَلِعينَه. لا هُجوم. فَقَط: "كُنْتُ أُريدُ الحَديثَ حَوْلَ كَيْفَ نَتَعامَلُ مع ___."', checkInPromptEn: 'What did you raise? How did they respond?', checkInPromptAr: 'ماذا رَفَعْتِ؟ كَيْفَ اسْتَجاب؟' },
+            { kind: 'challenge-step', id: 'cp-d5', dayLabel: 5, titleEn: 'Appreciate One Strength', titleAr: 'قَدِّري قُوَّةً واحِدَة', instructionEn: 'Tell your partner ONE specific thing they do well as a parent. Specific. Detailed. Not generic. Watch what happens.', instructionAr: 'أَخْبِري شَريكَكِ شَيْئاً واحِداً يَفْعَلُهُ جَيِّداً كَوالِد. مُحَدَّد. مُفَصَّل. لَيْسَ عامّاً. راقِبي ما يَحْدُث.', checkInPromptEn: 'What did you say? How did they receive it?', checkInPromptAr: 'ماذا قُلْتِ؟ كَيْفَ اسْتَقْبَلَها؟' },
+            { kind: 'challenge-step', id: 'cp-d6', dayLabel: 6, titleEn: 'Ask for What You Need', titleAr: 'اِطْلُبي ما تَحْتاجين', instructionEn: 'Name ONE thing you need more of from your co-parent. Specific ask. "Can you be the one to handle bedtimes this week so I can decompress?"', instructionAr: 'سَمّي شَيْئاً واحِداً تَحْتاجينَهُ من شَريكِك. طَلَبٌ مُحَدَّد. "هل تَتَوَلّى وَقْتَ النَّوْمِ هذا الأُسْبوعَ لِأَرْتاح؟"', checkInPromptEn: 'What did you ask for? Did they say yes?', checkInPromptAr: 'ماذا طَلَبْتِ؟ هل وافَق؟' },
+            { kind: 'challenge-step', id: 'cp-d7', dayLabel: 7, titleEn: 'The Team Declaration', titleAr: 'إعْلانُ الفَريق', instructionEn: 'Together, write 3 sentences about who you are as a parenting team. Save it. Read it monthly. Update it yearly. This is the team your kids are watching.', instructionAr: 'مَعاً، اُكْتُبا 3 جُمَلٍ عَنْ من أَنْتُما كَفَريقٍ تَرْبَوِيّ. اِحْفَظاها. اِقْرَآها شَهْريّاً. عَدِّلاها سَنَوِيّاً. هذا الفَريقُ يُراقِبُهُ أَطْفالُكُما.', checkInPromptEn: 'What are your 3 sentences?', checkInPromptAr: 'ما جُمَلُكُما الثَّلاث؟' },
+            { kind: 'callout', id: 'cp-drhala', variant: 'dr-hala', textEn: 'Your children don\'t learn marriage from what you tell them. They learn it from watching you and your partner resolve disagreements — or refuse to. Co-parenting IS modeling the relationship skills they\'ll use all their lives.', textAr: 'أَطْفالُكِ لا يَتَعَلَّمونَ الزَّواجَ من ما تُخْبِرينَهُم. يَتَعَلَّمونَهُ من مُشاهَدَتِكُما تَحُلّانِ الاِخْتِلافات — أَوْ تَرْفُضان. التَّرْبيَةُ المُشْتَرَكَةُ هي تَعْليمُ مَهاراتِ العَلاقَةِ الّتي سَيَسْتَخْدِمونَها حَياتَهُم.' },
+          ],
         },
       ],
     },
@@ -1831,6 +2187,7 @@ When disagreements arise about parenting — and they will — return to the com
       descriptionEn: `Address the most profound challenges and aspirations in partnership — rebuilding trust after betrayal, growing through major life transitions, creating shared meaning, and designing the relationship legacy you want to leave behind.`,
       descriptionAr: `معالجة أعمق التحديات والطموحات في الشراكة — إعادة بناء الثقة بعد الخيانة، والنمو عبر التحولات الحياتية الكبرى، وخلق معنى مشترك، وتصميم إرث العلاقة الذي تريدان تركه.`,
       isFree: false,
+      priceCAD: 29,
       modules: [
         {
           slug: 'rebuilding-trust',
@@ -2052,6 +2409,16 @@ Rebuilding trust is not a linear process. There will be setbacks, triggers, and 
           ],
           estimatedReadTimeMinutes: 15,
           skillTags: ['Trust Building', 'Communication', 'Conflict Resolution'],
+          format: 'story',
+          blocks: [
+            { kind: 'story-beat', id: 'rt-s1', characterEn: 'A couple. 3 months after she found the messages.', characterAr: 'زَوْجان. بَعْدَ 3 أَشْهُرٍ من اكْتِشافِها الرَّسائِل.', textEn: 'Three months ago, she found messages on his phone. Not an affair — flirting. Long-term, with someone at work. He says it "never went anywhere." She says the damage is already done.\n\nThey\'re in my office for the first time. She\'s hollow. He\'s deflated. Neither knows where to start.', textAr: 'قَبْلَ 3 أَشْهُر، وَجَدَتْ رَسائِلَ على هاتِفِه. لَيْسَتْ خِيانَةً — تَلَطُّف. طَويلُ الأَمَد، مع شَخْصٍ في العَمَل. يَقول "لَمْ تَصِلْ لِشَيْء". تَقولُ الضَّرَرُ حَدَث.\n\nفي مَكْتَبي لِأَوَّلِ مَرَّة. هي مُجَوَّفَة. هو مُنْكَمِش. كِلاهُما لا يَعْرِفُ من أَيْنَ يَبْدَأ.' },
+            { kind: 'story-choice', id: 'rt-c1', promptEn: 'Who speaks first? What does HE need to say?', promptAr: 'من يَتَكَلَّمُ أَوَّلاً؟ ماذا يَجِبُ أَنْ يَقولَ هو؟', choices: [ { labelEn: '"I made a mistake. But I NEVER touched her. You\'re overreacting."', labelAr: '"أَخْطَأْتُ. لَكِنّي لَمْ أَلْمَسْها أَبَداً. أَنْتِ تُبالِغين."', feedbackEn: 'Defensiveness kills repair. She heard "your pain isn\'t real." Trust slips further.', feedbackAr: 'الدِّفاعُ يَقْتُلُ الإصْلاح. سَمِعَت "أَلَمُكِ لَيْسَ حَقيقِيّاً". الثِّقَةُ تَنْزَلِقُ أَكْثَر.', isRecommended: false }, { labelEn: '"I hid something from you that you had a right to know. It hurt you, and that\'s real. I\'m sorry. I want to understand how I got there."', labelAr: '"أَخْفَيْتُ عَنْكِ شَيْئاً كانَ حَقُّكِ مَعْرِفَتُه. هذا جَرَحَكِ، وهذا حَقيقِيّ. آسِف. أُريدُ أَنْ أَفْهَمَ كَيْفَ وَصَلْتُ هُناك."', feedbackEn: 'This is how trust rebuilds. Ownership + curiosity about oneself + no defense.', feedbackAr: 'هكَذا تُبْنى الثِّقَة. اِعْتِرافٌ + فُضولٌ عَنِ النَّفْسِ + لا دِفاع.', isRecommended: true } ] },
+            { kind: 'story-beat', id: 'rt-s2', textEn: 'She speaks next, through tears: "I don\'t know if I can trust my own perception anymore. I thought we were fine. Now I question EVERYTHING."\n\nHe waits. He doesn\'t defend.', textAr: 'تَتَكَلَّمُ هي تالياً، بِدُموع: "لا أَعْرِفُ إذا كُنْتُ أَثِقُ بِحَدْسي. ظَنَنْتُ أَنَّنا بِخَيْر. الآنَ أَشُكُّ بِكُلِّ شَيْء."\n\nيَنْتَظِرُ. لا يُدافِع.' },
+            { kind: 'story-choice', id: 'rt-c2', promptEn: 'What does HE do here?', promptAr: 'ماذا يَفْعَلُ هو هُنا؟', choices: [ { labelEn: 'Reassure quickly: "Your perception was right. I was wrong."', labelAr: 'يُطَمْئِنُها بِسُرْعَة: "حَدْسُكِ كانَ صَحيحاً. أَنا الخَطَأ."', feedbackEn: 'Too fast. She needs to sit IN the questioning, not be rushed out of it.', feedbackAr: 'سَريعٌ جِدّاً. تَحْتاجُ الجُلوسَ في الشَّكّ، لا الخُروجَ مِنْهُ بِاسْتِعْجال.', isRecommended: false }, { labelEn: 'Sit in the discomfort: "I hear you. I took that from you. That\'s one of the hardest things I\'ve done, and I didn\'t even know I was doing it."', labelAr: 'يَجْلِسُ في الاِضْطِراب: "أَسْمَعُكِ. أَخَذْتُ ذلِكَ مِنْكِ. هذا من أَصْعَبِ ما فَعَلْتُ، ولَمْ أَكُنْ حَتّى أَعْرِفُ أَنَّني أَفْعَلُه."', feedbackEn: 'This is the accountability that rebuilds. He stays WITH her pain without rushing to solve it.', feedbackAr: 'هذِهِ المَسْؤوليَّةُ الّتي تُعيدُ البِناء. يَبْقى مَعَ أَلَمِها بِلا اسْتِعْجالِ حَلّ.', isRecommended: true } ] },
+            { kind: 'callout', id: 'rt-lesson', variant: 'insight', textEn: 'Trust rebuilds in 3 phases: acknowledgment (what was done), accountability (why, without excuses), action (new patterns over months). Skip any phase, the foundation stays cracked.', textAr: 'الثِّقَةُ تُعادُ في 3 مَراحِل: اعْتِراف (ما حَدَث)، مَسْؤوليَّة (لِماذا، بِلا أَعْذار)، فِعْل (أَنْماطٌ جَديدَةٌ عَبْرَ أَشْهُر). تَخَطّي أَيَّةٍ يَبْقي الأَساسَ مُشَقَّقاً.' },
+            { kind: 'callout', id: 'rt-drhala', variant: 'dr-hala', textEn: 'I have watched couples rebuild trust from far worse. The ones who succeed share one trait: the partner who broke trust stopped defending themselves. Completely. They let their partner be angry for as long as they needed. They changed behavior before asking to be trusted again. That\'s the path.', textAr: 'شاهَدْتُ أَزْواجاً يُعيدونَ بِناءَ الثِّقَةِ من أَسْوَأ. النّاجِحونَ يَشْتَرِكونَ في سِمَة: الشَّريكُ الّذي كَسَرَ الثِّقَةَ تَوَقَّفَ عَنِ الدِّفاعِ عَنْ نَفْسِه. تَماماً. سَمَحَ لِشَريكِهِ بِالغَضَبِ ما شاء. غَيَّرَ السُّلوكَ قَبْلَ طَلَبِ الثِّقَة.' },
+            { kind: 'reflection-prompt', id: 'rt-refl', minWords: 40, promptEn: 'Is there a trust wound in your relationship — from either side — that hasn\'t been fully repaired? What phase is it stuck in: acknowledgment, accountability, or action?', promptAr: 'هل في عَلاقَتِكُما جُرْحُ ثِقَة — من أَيِّ طَرَف — لَمْ يُصْلَحْ كامِلاً؟ في أَيِّ مَرْحَلَةٍ عالِق: اعْتِراف، مَسْؤوليَّة، أَمْ فِعْل؟' },
+          ],
           frameworkDiagrams: [
             {
               type: 'cycle',
@@ -2273,6 +2640,15 @@ Through all changes, two anchors keep couples grounded. First, returning regular
           ],
           estimatedReadTimeMinutes: 14,
           skillTags: ['Trust Building', 'Communication', 'Emotional Bids'],
+          format: 'standard',
+          blocks: [
+            { kind: 'paragraph', id: 'gc-lead', tone: 'lead', textEn: 'Life will change your relationship whether you prepare for it or not. New baby, illness, lost job, empty nest, aging parents, moving country. Couples who thrive don\'t avoid change — they adapt deliberately, together.', textAr: 'الحَياةُ سَتُغَيِّرُ عَلاقَتَكُما سَواءٌ حَضَّرْتُما أَمْ لا. مَوْلودٌ جَديد، مَرَض، فُقْدانُ عَمَل، بَيْتٌ خالٍ، والِدانِ يَكْبَران، اِنْتِقالُ بَلَد. الأَزْواجُ المُزْدَهِرونَ لا يَتَجَنَّبونَ التَّغْيير — يَتَكَيَّفونَ بِقَصْدٍ مَعاً.' },
+            { kind: 'callout', id: 'gc-insight', variant: 'insight', textEn: 'Every major transition re-negotiates 3 things: roles (who does what), identity (who we are as a couple), and rhythm (how we spend our energy). Couples who name these explicitly during change fare far better.', textAr: 'كُلُّ انْتِقالٍ كَبيرٍ يُعيدُ التَّفاوُضَ على 3: الأَدْوارُ (من يَفْعَلُ ماذا)، الهُوِيَّةُ (من نَحْنُ كَزَوْجَيْن)، الإيقاع (كَيْفَ نُنْفِقُ طاقَتَنا). الأَزْواجُ الّذينَ يُسَمّونَها يَنْجونَ أَفْضَلَ بِكَثير.' },
+            { kind: 'comparison', id: 'gc-cmp', titleEn: 'Drifting Apart vs Growing Together', titleAr: 'اِبْتِعادٌ مُقابِلَ نُمُوٍّ مَعاً', left: { labelEn: 'Drifting', labelAr: 'اِبْتِعاد', pointsEn: ['Silence about the change', 'Each handles it alone', 'Assume partner is "fine"', 'Resentment accumulates'], pointsAr: ['صَمْتٌ عَنِ التَّغْيير', 'كُلٌّ يَتَعامَلُ وَحْدَه', 'يَفْتَرِضانِ "الآخَرُ بِخَيْر"', 'الاِسْتِياءُ يَتَراكَم'] }, right: { labelEn: 'Growing together', labelAr: 'نُمُوٌّ مَعاً', pointsEn: ['Explicit "this is hard" conversations', 'Share the adjustment', 'Ask directly: "How are you?"', 'Rituals that mark the transition'], pointsAr: ['مُحادَثاتٌ صَريحَة "هذا صَعْب"', 'مُشارَكَةُ التَّكَيُّف', 'سُؤالٌ مُباشِر: "كَيْفَ حالُك؟"', 'طُقوسٌ تُعَلِّمُ الاِنْتِقال'] } },
+            { kind: 'micro-quiz', id: 'gc-mq1', question: { textEn: 'You just had a baby. Intimacy has dropped. What\'s the MOST useful conversation?', textAr: 'رُزِقْتُما بِطِفْل. الأُلْفَةُ انْخَفَضَتْ. ما أَكْثَرُ مُحادَثَةٍ مُفيدَة؟', options: [ { labelEn: '"Why don\'t we have sex anymore?"', labelAr: '"لِماذا لَمْ نَعُدْ نَتَعاشَر؟"', correct: false, explanationEn: 'Accusatory framing. Closes the door.', explanationAr: 'صِياغَةٌ اِتِّهاميَّة. تُغْلِقُ الباب.' }, { labelEn: '"Our whole life reshaped. How are YOU in this?"', labelAr: '"حَياتُنا كُلُّها تَشَكَّلَتْ. كَيْفَ أَنْتَ في هذا؟"', correct: true, explanationEn: 'Yes. This opens the REAL conversation underneath.', explanationAr: 'نَعَم. هذا يَفْتَحُ المُحادَثَةَ الحَقيقيَّةَ تَحْت.' }, { labelEn: '"Let\'s schedule a date night"', labelAr: '"لِنُخَطِّطْ لِمَوْعِدٍ"', correct: false, explanationEn: 'Good action, but the conversation comes first.', explanationAr: 'فِعْلٌ جَيِّد، لَكِنَّ المُحادَثَةَ أَوَّلاً.' } ] } },
+            { kind: 'callout', id: 'gc-drhala', variant: 'dr-hala', textEn: 'Couples don\'t drift apart overnight. They drift apart through a thousand moments of "I should ask" that never became asking. The skill is: name the change out loud, together, while it\'s still small.', textAr: 'الأَزْواجُ لا يَبْتَعِدونَ في لَيْلَة. يَبْتَعِدونَ عَبْرَ أَلْفِ لَحْظَةٍ "يَجِبُ أَنْ أَسْأَل" لَمْ تَصِرْ سُؤالاً. المَهارَة: سَمِّيا التَّغْييرَ بِصَوْتٍ عالٍ، مَعاً، وهو صَغير.' },
+            { kind: 'reflection-prompt', id: 'gc-refl', minWords: 40, promptEn: 'What change is reshaping your relationship right now? Have you talked about it directly — or been navigating it silently?', promptAr: 'أَيُّ تَغْييرٍ يُشَكِّلُ عَلاقَتَكُما الآن؟ هل تَحَدَّثْتُما عَنْهُ مُباشَرَةً — أَمْ تَتَعامَلانِ مَعَهُ بِصَمْت؟' },
+          ],
         },
         {
           slug: 'creating-shared-meaning',
@@ -2483,6 +2859,16 @@ Creating shared meaning is not a one-time conversation. It is an ongoing, evolvi
           ],
           estimatedReadTimeMinutes: 14,
           skillTags: ['Communication', 'Trust Building', 'Emotional Bids'],
+          format: 'assessment',
+          blocks: [
+            { kind: 'paragraph', id: 'sm-lead', tone: 'lead', textEn: 'Long-lasting couples share more than love — they share MEANING. A sense of: who we are, what we stand for, what we\'re building together. This assessment maps the 4 pillars of shared meaning in your relationship.', textAr: 'الأَزْواجُ الّذينَ يَدومونَ يَتَشارَكونَ أَكْثَرَ من الحُبّ — يَتَشارَكونَ مَعْنىً. إحْساسٌ بِـ: من نَحْنُ، ماذا نُمَثِّل، ماذا نَبْني. هذا التَّقْييمُ يُحَدِّدُ 4 أَعْمِدَةٍ لِلمَعْنى المُشْتَرَك.' },
+            { kind: 'likert', id: 'sm-lk1', reflection: { titleEn: 'Shared Vision', titleAr: 'رُؤْيَةٌ مُشْتَرَكَة', statementEn: 'My partner and I have talked about what we want our life to look like in 10 years.', statementAr: 'أَنا وشَريكي تَحَدَّثْنا عَنْ ما نُريدُ لِحَياتِنا أَنْ تَكونَ بَعْدَ 10 سَنَوات.', scaleLabels: { lowEn: 'Never', lowAr: 'أَبَداً', highEn: 'Often', highAr: 'كَثيراً' }, interpretations: [ { min: 1, max: 2, labelEn: 'No shared vision', labelAr: 'بِلا رُؤْيَةٍ مُشْتَرَكَة', feedbackEn: 'Start this week: 20 minutes, coffee, "where do we want to be in 10 years?" No agenda.', feedbackAr: 'اِبْدَئا هذا الأُسْبوع: 20 دَقيقَة، قَهْوَة، "أَيْنَ نُريدُ بَعْدَ 10 سَنَوات؟" بِلا أَجِنْدَة.' }, { min: 3, max: 5, labelEn: 'Some vision', labelAr: 'بَعْضُ الرُّؤْيَة', feedbackEn: 'You have fragments. Make it explicit: write 3 shared 10-year goals.', feedbackAr: 'لَدَيْكُما أَجْزاء. اجْعَلاها صَريحَة: اُكْتُبا 3 أَهْدافٍ مُشْتَرَكَة.' }, { min: 6, max: 7, labelEn: 'Aligned vision', labelAr: 'رُؤْيَةٌ مُتَوافِقَة', feedbackEn: 'This is rare and powerful. Revisit it yearly.', feedbackAr: 'هذا نادِرٌ وقَوِيّ. راجِعاها سَنَوِيّاً.' } ] } },
+            { kind: 'likert', id: 'sm-lk2', reflection: { titleEn: 'Shared Values', titleAr: 'قِيَمٌ مُشْتَرَكَة', statementEn: 'We agree on our top 3 values as a family — what matters MOST to us.', statementAr: 'نَتَّفِقُ عَلى أَعْلى 3 قِيَمٍ كَعائِلَة — ما يَهُمُّنا أَكْثَر.', scaleLabels: { lowEn: 'Unaligned', lowAr: 'غَيْرُ مُتَوافِقَة', highEn: 'Aligned', highAr: 'مُتَوافِقَة' }, interpretations: [ { min: 1, max: 2, labelEn: 'Values divergence', labelAr: 'تَبايُنُ قِيَم', feedbackEn: 'You\'re sailing without a compass. Name your top 5 values each; discuss overlaps.', feedbackAr: 'تُبْحِرانِ بِلا بوصلَة. سَمّيا أَعْلى 5 قِيَمٍ لِكُلٍّ؛ ناقِشا التَّقاطُعات.' }, { min: 3, max: 5, labelEn: 'Some alignment', labelAr: 'تَوافُقٌ جُزْئيّ', feedbackEn: 'The core is there but not articulated. Write it down.', feedbackAr: 'النَّواةُ مَوْجودَةٌ لَكِنْ غَيْرُ مَنْطوقَة. اُكْتُباها.' }, { min: 6, max: 7, labelEn: 'Strong values alignment', labelAr: 'تَوافُقُ قِيَمٍ قَوِيّ', feedbackEn: 'Anchor. Keep referencing them in decisions.', feedbackAr: 'مِرْساة. راجِعاها في القَرارات.' } ] } },
+            { kind: 'likert', id: 'sm-lk3', reflection: { titleEn: 'Shared Rituals', titleAr: 'طُقوسٌ مُشْتَرَكَة', statementEn: 'We have rituals that are uniquely OURS — small repeated things that define us as a couple.', statementAr: 'لَدَيْنا طُقوسٌ خاصَّةٌ بِنا — أَشْياءُ صَغيرَةٌ مُتَكَرِّرَةٌ تُعَرِّفُنا كَزَوْجَيْن.', scaleLabels: { lowEn: 'None', lowAr: 'لا شَيْء', highEn: 'Many', highAr: 'كَثيرَة' }, interpretations: [ { min: 1, max: 2, labelEn: 'No rituals', labelAr: 'بِلا طُقوس', feedbackEn: 'Start one: Sunday morning coffee together, same place, no phones. In 3 months it\'s yours.', feedbackAr: 'اِبْدَآ واحِداً: قَهْوَةُ صَباحِ الأَحَد، نَفْسُ المَكان، بِلا هَواتِف. في 3 أَشْهُر تَصيرُ لَكُما.' }, { min: 3, max: 5, labelEn: 'Some rituals', labelAr: 'بَعْضُ الطُّقوس', feedbackEn: 'Name them. Protect them. Add one this month.', feedbackAr: 'سَمّياها. اِحْمياها. أَضيفا واحِداً هذا الشَّهْر.' }, { min: 6, max: 7, labelEn: 'Ritual-rich', labelAr: 'غَنيٌّ بِالطُّقوس', feedbackEn: 'This is the texture of a strong partnership.', feedbackAr: 'هذِهِ نَسيجُ شَراكَةٍ قَوِيَّة.' } ] } },
+            { kind: 'likert', id: 'sm-lk4', reflection: { titleEn: 'Shared Narrative', titleAr: 'سَرْديَّةٌ مُشْتَرَكَة', statementEn: 'We tell our relationship story with warmth — including the hard parts.', statementAr: 'نَرْوي قِصَّةَ عَلاقَتِنا بِدِفْءٍ — بِما فيها الأَجْزاءُ الصَّعْبَة.', scaleLabels: { lowEn: 'Cold or broken', lowAr: 'بارِدَةٌ أَوْ مَكْسورَة', highEn: 'Warm and whole', highAr: 'دافِئَةٌ وكامِلَة' }, interpretations: [ { min: 1, max: 2, labelEn: 'Narrative damaged', labelAr: 'سَرْديَّةٌ مُتَضَرِّرَة', feedbackEn: 'How you tell your story shapes how you live it. Unrepaired ruptures distort the narrative. Start there.', feedbackAr: 'كَيْفَ تَرْوينَ قِصَّتَكِ يُشَكِّلُ كَيْفَ تَعيشينَها. القَطائِعُ غَيْرُ المُصْلَحَةِ تُشَوِّهُ السَّرْديَّة. اِبْدَئا هُناك.' }, { min: 3, max: 5, labelEn: 'Mixed', labelAr: 'مُخْتَلِطَة', feedbackEn: 'Practice retelling the hard parts with warmth. It changes the story.', feedbackAr: 'مارِسا إعادَةَ رِوايَةِ الصَّعْبِ بِدِفْء. يُغَيِّرُ القِصَّة.' }, { min: 6, max: 7, labelEn: 'Strong narrative', labelAr: 'سَرْديَّةٌ قَوِيَّة', feedbackEn: 'You own your story together. That\'s deep intimacy.', feedbackAr: 'تَمْلِكانِ قِصَّتَكُما مَعاً. هذا عُمْقٌ حَميم.' } ] } },
+            { kind: 'callout', id: 'sm-drhala', variant: 'dr-hala', textEn: 'Meaning isn\'t an abstract concept. It\'s the answer to "why are WE?" Couples without meaning drift. Couples with meaning navigate even brutal seasons. Build yours intentionally — it won\'t arrive on its own.', textAr: 'المَعْنى لَيْسَ مَفْهوماً مُجَرَّداً. إنَّهُ جَوابُ "لِماذا نَحْن؟" الأَزْواجُ بِلا مَعْنى يَبْتَعِدون. مع مَعْنى يَعْبُرونَ أَقْسى المَواسِم. اِبْنِياهُ بِقَصْد — لَنْ يَأْتِيَ لِوَحْدِه.' },
+            { kind: 'reflection-prompt', id: 'sm-refl', minWords: 50, promptEn: 'Which pillar is weakest? What\'s ONE thing you\'ll do with your partner this week to strengthen it?', promptAr: 'أَيُّ عَمودٍ الأَضْعَف؟ ما شَيْءٌ تَفْعَلانِهِ مَعاً هذا الأُسْبوعَ لِتَقْوِيَتِه؟' },
+          ],
           frameworkDiagrams: [
             {
               type: 'quadrant',
@@ -2706,6 +3092,18 @@ Congratulations on completing Stronger Together. Dr. Hala and the entire Mama Ha
           ],
           estimatedReadTimeMinutes: 13,
           skillTags: ['Trust Building', 'Communication', 'Co-Parenting'],
+          format: 'challenge',
+          blocks: [
+            { kind: 'paragraph', id: 'rl-lead', tone: 'lead', textEn: 'Every couple leaves a legacy — whether they plan it or not. This 7-day practice helps you choose yours deliberately: what you\'ll pass down to children, how you\'ll be remembered, and what future YOU will thank present you for.', textAr: 'كُلُّ زَوْجَيْنِ يَتْرُكانِ إرْثاً — سَواءٌ خَطَّطا أَمْ لا. هذِهِ المُمارَسَةُ لِـ 7 أَيّامٍ تُساعِدُكُما عَلى اخْتِيارِ إرْثِكُما بِقَصْد: ما سَتُوَرِّثانِهِ، كَيْفَ سَتُذْكَرانِ، وما سَيَشْكُرُكُما مُسْتَقْبَلُكُما عَلَيْه.' },
+            { kind: 'challenge-step', id: 'rl-d1', dayLabel: 1, titleEn: 'Write Your Origin Story', titleAr: 'اُكْتُبا قِصَّةَ بِدايَتِكُما', instructionEn: 'Together, write 1 page about HOW you met and what drew you to each other. Revisit periodically. Stories shape identity.', instructionAr: 'مَعاً، اُكْتُبا صَفْحَةً عَنْ كَيْفَ الْتَقَيْتُما وما جَذَبَكُما. راجِعا دَوْرِيّاً. القِصَصُ تُشَكِّلُ الهُوِيَّة.', checkInPromptEn: 'What did you write? Any forgotten details?', checkInPromptAr: 'ماذا كَتَبْتُما؟ تَفاصيلُ مَنْسيَّة؟' },
+            { kind: 'challenge-step', id: 'rl-d2', dayLabel: 2, titleEn: 'Name 3 "Us" Traditions', titleAr: 'سَمِّيا 3 تَقاليدَ "لَنا"', instructionEn: 'What do you do that no other couple does exactly like you? Small or big. Name 3. These are legacy markers.', instructionAr: 'ما الّذي تَفْعَلانِهِ ولا يَفْعَلُهُ زَوْجانِ آخَرانِ بِنَفْسِ الطَّريقَة؟ سَمّيا 3. هذِهِ عَلاماتُ إرْث.', checkInPromptEn: 'What are your 3 traditions?', checkInPromptAr: 'ما تَقاليدُكُما الثَّلاث؟' },
+            { kind: 'challenge-step', id: 'rl-d3', dayLabel: 3, titleEn: 'The Lesson You\'re Teaching', titleAr: 'الدَّرْسُ الّذي تُعَلِّمانِه', instructionEn: 'If your kids learned ONE thing about marriage from watching you, what would you WANT it to be? What are they ACTUALLY learning? Honest answers.', instructionAr: 'لَوْ تَعَلَّمَ أَطْفالُكُما شَيْئاً واحِداً عَنِ الزَّواجِ بِمُشاهَدَتِكُما، ماذا تُريدانِهِ أَنْ يَكون؟ ماذا يَتَعَلَّمونَ فِعْلاً؟ إجاباتٌ صادِقَة.', checkInPromptEn: 'Gap between hoped-for and actual?', checkInPromptAr: 'فَجْوَةٌ بَيْنَ المَأْمولِ والواقِع؟' },
+            { kind: 'challenge-step', id: 'rl-d4', dayLabel: 4, titleEn: 'A Letter to Your Younger Selves', titleAr: 'رِسالَةٌ إلى أَنْفُسِكُما الأَصْغَر', instructionEn: 'Each of you write a short letter to who you were when you met. What do you wish they\'d known? Share letters.', instructionAr: 'كُلٌّ يَكْتُبُ رِسالَةً قَصيرَةً لِمن كانَ عِنْدَ اللِّقاء. ماذا تَتَمَنّى أَنْ كانَ يَعْرِف؟ شارِكا.', checkInPromptEn: 'What did you want them to know?', checkInPromptAr: 'ماذا أَرَدْتَ أَنْ يَعْرِف؟' },
+            { kind: 'challenge-step', id: 'rl-d5', dayLabel: 5, titleEn: 'The Repair You Owe', titleAr: 'الإصْلاحُ المَدين', instructionEn: 'Is there one unrepaired moment from your relationship that still lingers? Today, address it. A clean apology. A real acknowledgment.', instructionAr: 'هل في عَلاقَتِكُما لَحْظَةٌ غَيْرُ مُصْلَحَةٍ لا تَزالُ تَطوف؟ اليَوْم، تَعامَلا مَعَها. اعْتِذارٌ نَظيف. اعْتِرافٌ حَقيقيّ.', checkInPromptEn: 'Did you repair it? What shifted?', checkInPromptAr: 'هل أَصْلَحْتُماها؟ ماذا تَغَيَّر؟' },
+            { kind: 'challenge-step', id: 'rl-d6', dayLabel: 6, titleEn: 'The Future Vision', titleAr: 'رُؤْيَةُ المُسْتَقْبَل', instructionEn: 'Imagine your 80-year-old selves. What 3 things do they say: "We\'re so glad we did that together"? Write them. Plan toward them.', instructionAr: 'تَخَيَّلا نَفْسَيْكُما في الـ 80. ما 3 أَشْياءَ يَقولانِها: "نَحْنُ سَعيدانِ أَنَّنا فَعَلْنا ذلِكَ مَعاً"؟ اُكْتُباها. خَطِّطا لَها.', checkInPromptEn: 'What 3 things?', checkInPromptAr: 'ما الثَّلاثَة؟' },
+            { kind: 'challenge-step', id: 'rl-d7', dayLabel: 7, titleEn: 'The Legacy Statement', titleAr: 'بَيانُ الإرْث', instructionEn: 'Together, write 3 sentences describing the marriage you are BUILDING — not the one you have. Save it. Read it every anniversary. Edit it as you grow.', instructionAr: 'مَعاً، اُكْتُبا 3 جُمَلٍ تَصِفُ الزَّواجَ الّذي تَبْنِيانِه — لَيْسَ الّذي لَدَيْكُما. اِحْفَظاها. اِقْرَآها كُلَّ ذِكْرى. عَدِّلاها.', checkInPromptEn: 'What are your 3 sentences?', checkInPromptAr: 'ما جُمَلُكُما الثَّلاث؟' },
+            { kind: 'callout', id: 'rl-drhala', variant: 'dr-hala', textEn: 'The best marriages aren\'t found — they\'re built. One decision, one repair, one ritual at a time. Thirty years from now, what you\'ll be proudest of isn\'t the wedding. It\'s the thousand tiny moments you chose each other again.', textAr: 'أَفْضَلُ الزِّيجاتِ لا تُوجَد — تُبْنى. قَرارٌ واحِد، إصْلاحٌ واحِد، طَقْسٌ واحِد في كُلِّ مَرَّة. بَعْدَ 30 سَنَة، ما سَتَفْخَرانِ بِهِ لَيْسَ الزَّفاف. إنَّهُ أَلْفُ لَحْظَةٍ صَغيرَةٍ اخْتَرْتُما فيها بَعْضَكُما ثانِيَة.' },
+          ],
         },
       ],
     },
