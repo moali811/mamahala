@@ -23,7 +23,15 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Heart,
+  TrendingUp,
+  Clock,
+  BookMarked,
+  HelpCircle,
+  Users,
+  Globe,
 } from 'lucide-react';
+import Link from 'next/link';
 import { getMessages, type Locale } from '@/lib/i18n';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import MobileCarousel from '@/components/ui/MobileCarousel';
@@ -41,6 +49,8 @@ interface DownloadResource {
   category: 'families' | 'adults' | 'youth' | 'couples';
   audience?: 'teens' | 'university' | 'parents' | 'general';
   dateAdded?: string; // ISO date — shows "New" badge for 14 days
+  featured?: boolean; // Dr. Hala's Pick
+  popular?: boolean; // Most Popular
   price: number;
   isFree: boolean;
   isLeadMagnet: boolean;
@@ -67,6 +77,7 @@ const resources: DownloadResource[] = [
     },
     type: 'guide',
     category: 'families',
+    featured: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -99,6 +110,7 @@ const resources: DownloadResource[] = [
     },
     type: 'checklist',
     category: 'families',
+    popular: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -180,6 +192,8 @@ const resources: DownloadResource[] = [
     },
     type: 'ebook',
     category: 'adults',
+    featured: true,
+    popular: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -310,6 +324,7 @@ const resources: DownloadResource[] = [
     category: 'adults',
     audience: 'university',
     dateAdded: '2026-04-08',
+    popular: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -367,6 +382,43 @@ const resources: DownloadResource[] = [
     price: 0,
     isFree: true,
     isLeadMagnet: false,
+  },
+  // Couples toolkits
+  {
+    id: 'conflict-resolution-playbook',
+    title: {
+      en: 'The Conflict Resolution Playbook',
+      ar: 'دليلُ حلِّ النزاعات',
+    },
+    description: {
+      en: 'A practical guide to fighting fair: understand your conflict pattern, learn the 5 rules of fair fighting, and use the repair conversation template to grow closer through disagreement.',
+      ar: 'دليلٌ عمليٌّ للخلافِ البنّاء: افهَمْ نمطَ خلافِك، وتعلَّمْ قواعدَ الخلافِ العادلِ الخمس، واستخدِمْ قالبَ محادثةِ الإصلاحِ للتقاربِ من خلالِ الاختلاف.',
+    },
+    type: 'guide',
+    category: 'couples',
+    audience: 'general',
+    dateAdded: '2026-04-09',
+    price: 0,
+    isFree: true,
+    isLeadMagnet: true,
+  },
+  {
+    id: 'reconnection-rituals',
+    title: {
+      en: 'Reconnection Rituals: A Couples Activity Kit',
+      ar: 'طقوسُ إعادةِ التواصل: مجموعةُ أنشطةٍ للأزواج',
+    },
+    description: {
+      en: '10 evidence-based rituals to rebuild closeness — from the 6-second kiss to the monthly memory walk. No babysitter needed, no reservation required. Just two people choosing to turn toward each other.',
+      ar: '10 طقوسٍ مبنيّةٍ على أُسسٍ علميّة لإعادةِ بناءِ القُرب — من قُبلةِ الستِّ ثوانٍ إلى نزهةِ الذّكرياتِ الشهريّة. لا حاجةَ لجليسِ أطفال. فقط شخصان يختاران التوجُّهَ نحوَ بعضِهما.',
+    },
+    type: 'worksheet',
+    category: 'couples',
+    audience: 'general',
+    dateAdded: '2026-04-09',
+    price: 0,
+    isFree: true,
+    isLeadMagnet: true,
   },
 ];
 
@@ -468,7 +520,12 @@ export default function DownloadsPage() {
       if (typeFilter !== 'all' && r.type !== typeFilter) return false;
       return true;
     })
-    .sort((a, b) => (isNew(b.dateAdded) ? 1 : 0) - (isNew(a.dateAdded) ? 1 : 0));
+    .sort((a, b) => {
+      // Featured first, then popular, then new, then rest
+      const score = (r: DownloadResource) =>
+        (r.featured ? 8 : 0) + (r.popular ? 4 : 0) + (isNew(r.dateAdded) ? 2 : 0);
+      return score(b) - score(a);
+    });
 
   // Pagination
   const totalPages = Math.ceil(filteredResources.length / ITEMS_PER_PAGE);
@@ -580,13 +637,27 @@ export default function DownloadsPage() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {isRTL ? 'أدواتُك المجّانيّة' : 'Your Free Toolkit'}
+              {isRTL ? 'مكتبتُك المجّانيّة' : 'Your Free Resource Library'}
             </h1>
             <p className="mt-5 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed">
               {isRTL
-                ? 'أوراقُ عملٍ وأدلّةٌ وأدواتٌ عمليّةٌ لدعمِ مسيرتِك — ابدأْ اليوم.'
-                : 'Worksheets, guides, and practical tools to support your journey — start today.'}
+                ? 'أدواتٌ مبنيّةٌ على أُسسٍ علميّة، صمّمَتْها دكتورة هالة لدعمِ عائلتِك ومسيرتِك.'
+                : 'Evidence-based tools designed by Dr. Hala to support your family and your journey.'}
             </p>
+
+            {/* Stats row */}
+            <div className="flex flex-wrap items-center gap-4 mt-6">
+              {[
+                { icon: BookMarked, en: `${resources.length} Free Tools`, ar: `${resources.length} أداةً مجّانيّة` },
+                { icon: Users, en: '5 Audiences', ar: '5 فئات' },
+                { icon: Globe, en: 'Bilingual EN/AR', ar: 'ثنائيّةُ اللغة' },
+              ].map((stat, i) => (
+                <div key={i} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-sm text-sm text-[#4A4A5C] font-medium">
+                  <stat.icon className="w-4 h-4 text-[#7A3B5E]" />
+                  {isRTL ? stat.ar : stat.en}
+                </div>
+              ))}
+            </div>
           </motion.div>
         </div>
         <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
@@ -650,6 +721,29 @@ export default function DownloadsPage() {
             </ScrollReveal>
           )}
 
+          {/* Not sure where to start? */}
+          <ScrollReveal className="mb-10">
+            <Link
+              href={`/${locale}/quiz`}
+              className="group flex items-center justify-between gap-4 px-6 py-4 bg-white rounded-2xl border border-[#F3EFE8] hover:border-[#7A3B5E]/20 hover:shadow-md transition-all max-w-2xl mx-auto"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#7A3B5E]/8">
+                  <HelpCircle className="w-5 h-5 text-[#7A3B5E]" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[#2D2A33]">
+                    {isRTL ? 'لستَ متأكّدًا من أين تبدأ؟' : 'Not sure where to start?'}
+                  </p>
+                  <p className="text-xs text-[#8E8E9F]">
+                    {isRTL ? 'أجِبْ على اختبارٍ سريعٍ لنجدَ الأدواتَ المناسبةَ لك.' : 'Take our quick quiz to find the right tools for you.'}
+                  </p>
+                </div>
+              </div>
+              <ArrowRight className={`w-5 h-5 text-[#7A3B5E] group-hover:translate-x-1 transition-transform ${isRTL ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />
+            </Link>
+          </ScrollReveal>
+
           {/* Audience filter tabs */}
           <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
             {audienceFilters.map((filter) => (
@@ -706,7 +800,17 @@ export default function DownloadsPage() {
 
                       {/* Badges */}
                       <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
-                        {isNew(resource.dateAdded) && (
+                        {resource.featured && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-[#7A3B5E] to-[#5E2D48] shadow-sm">
+                            <Heart className="w-3 h-3" /> {isRTL ? 'اختيارُ د. هالة' : "Dr. Hala's Pick"}
+                          </span>
+                        )}
+                        {resource.popular && !resource.featured && (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-[#C8A97D] to-[#B08D57] shadow-sm">
+                            <TrendingUp className="w-3 h-3" /> {isRTL ? 'الأكثرُ شعبيّة' : 'Most Popular'}
+                          </span>
+                        )}
+                        {isNew(resource.dateAdded) && !resource.featured && !resource.popular && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] shadow-sm animate-pulse">
                             <Sparkles className="w-3 h-3" /> {isRTL ? 'جديد' : 'New'}
                           </span>
@@ -853,55 +957,31 @@ export default function DownloadsPage() {
         const resource = resources.find(r => r.id === previewId);
         if (!resource) return null;
         const title = isRTL ? resource.title.ar : resource.title.en;
+        const description = isRTL ? resource.description.ar : resource.description.en;
         const TypeIcon = typeIcons[resource.type] || FileText;
+        const typeLabel = isRTL ? typeLabels[resource.type].ar : typeLabels[resource.type].en;
 
-        // Simple markdown-to-JSX: split by lines and render headings, paragraphs, bold, italic
-        const renderPreview = (md: string) => {
-          const lines = md.split('\n');
-          const elements: React.ReactNode[] = [];
-          let wordCount = 0;
-          const MAX_WORDS = 400;
+        // Extract structured preview from markdown
+        const sections = previewContent
+          ? previewContent.split('\n').filter(l => l.startsWith('## ')).map(l => l.replace('## ', ''))
+          : [];
+        const totalWords = previewContent ? previewContent.split(/\s+/).length : 0;
+        const readTime = Math.max(1, Math.ceil(totalWords / 200));
 
-          for (let i = 0; i < lines.length && wordCount < MAX_WORDS; i++) {
-            const line = lines[i];
-            const lineWords = line.split(/\s+/).filter(Boolean).length;
-            wordCount += lineWords;
-
-            if (line.startsWith('# ')) {
-              // Skip the main title — we show it in the header
-              continue;
-            } else if (line.startsWith('## ')) {
-              elements.push(
-                <h3 key={i} className="text-lg font-bold text-[#2D2A33] mt-6 mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-                  {line.replace('## ', '')}
-                </h3>
-              );
-            } else if (line.startsWith('### ')) {
-              elements.push(
-                <h4 key={i} className="text-base font-semibold text-[#4A4A5C] mt-4 mb-1">
-                  {line.replace('### ', '')}
-                </h4>
-              );
-            } else if (line.startsWith('---')) {
-              elements.push(<hr key={i} className="border-[#F3EFE8] my-4" />);
-            } else if (line.startsWith('- ') || line.startsWith('* ')) {
-              elements.push(
-                <li key={i} className="text-sm text-[#4A4A5C] leading-relaxed ml-4 list-disc">
-                  {line.replace(/^[-*]\s/, '')}
-                </li>
-              );
-            } else if (line.trim()) {
-              // Render bold and italic inline
-              const formatted = line
-                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-                .replace(/\*(.+?)\*/g, '<em>$1</em>');
-              elements.push(
-                <p key={i} className="text-sm text-[#4A4A5C] leading-relaxed mb-2" dangerouslySetInnerHTML={{ __html: formatted }} />
-              );
-            }
-          }
-          return elements;
-        };
+        // Related toolkits: score by audience + category + type diversity
+        const relatedToolkits = resources
+          .filter(r => r.id !== resource.id)
+          .map(r => {
+            let score = 0;
+            const rAud = r.audience || ({ families: 'parents', adults: 'adults', youth: 'parents', couples: 'couples' }[r.category]);
+            const curAud = resource.audience || ({ families: 'parents', adults: 'adults', youth: 'parents', couples: 'couples' }[resource.category]);
+            if (rAud === curAud) score += 3;
+            if (r.category === resource.category) score += 2;
+            if (r.type !== resource.type) score += 1; // diversity bonus
+            return { resource: r, score };
+          })
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 3);
 
         return (
           <motion.div
@@ -911,10 +991,8 @@ export default function DownloadsPage() {
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             onClick={() => setPreviewId(null)}
           >
-            {/* Backdrop */}
             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" />
 
-            {/* Modal */}
             <motion.div
               initial={{ opacity: 0, y: 40, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -929,39 +1007,105 @@ export default function DownloadsPage() {
                   <TypeIcon className={`w-6 h-6 ${typeIconColors[resource.type] || 'text-[#7A3B5E]'}`} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-[#8E8E9F] uppercase tracking-wider mb-1">
-                    {isRTL ? 'نظرة سريعة' : 'Preview'}
-                  </p>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant="sage" size="sm">{typeLabel}</Badge>
+                    {resource.featured && (
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#7A3B5E]">
+                        <Heart className="w-3 h-3" /> {isRTL ? 'اختيارُ د. هالة' : "Dr. Hala's Pick"}
+                      </span>
+                    )}
+                  </div>
                   <h2 className="text-lg font-bold text-[#2D2A33] truncate" style={{ fontFamily: 'var(--font-heading)' }}>
                     {title}
                   </h2>
                 </div>
-                <button
-                  onClick={() => setPreviewId(null)}
-                  className="p-2 rounded-full hover:bg-white/50 transition-colors"
-                >
+                <button onClick={() => setPreviewId(null)} className="p-2 rounded-full hover:bg-white/50 transition-colors">
                   <X className="w-5 h-5 text-[#4A4A5C]" />
                 </button>
               </div>
 
-              {/* Content with fade */}
-              <div className="flex-1 overflow-y-auto relative">
-                <div className="p-6 pb-24">
+              {/* Structured content */}
+              <div className="flex-1 overflow-y-auto">
+                <div className="p-6">
+                  {/* Description */}
+                  <p className="text-sm text-[#4A4A5C] leading-relaxed mb-5">{description}</p>
+
+                  {/* Stats bar */}
+                  {!previewLoading && previewContent && (
+                    <div className="flex items-center gap-4 mb-6 pb-5 border-b border-[#F3EFE8]">
+                      <div className="flex items-center gap-1.5 text-xs text-[#8E8E9F]">
+                        <BookMarked className="w-3.5 h-3.5" />
+                        {isRTL ? `${sections.length} أقسام` : `${sections.length} sections`}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-[#8E8E9F]">
+                        <Clock className="w-3.5 h-3.5" />
+                        {isRTL ? `${readTime} دقائق قراءة` : `${readTime} min read`}
+                      </div>
+                      <Badge variant="success" size="sm">{messages.common.free}</Badge>
+                    </div>
+                  )}
+
+                  {/* What you'll learn — Table of Contents */}
                   {previewLoading ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="w-8 h-8 border-2 border-[#7A3B5E] border-t-transparent rounded-full animate-spin" />
                     </div>
-                  ) : previewContent ? (
-                    renderPreview(previewContent)
-                  ) : (
-                    <p className="text-sm text-[#8E8E9F] text-center py-12">
+                  ) : sections.length > 0 ? (
+                    <div className="mb-6">
+                      <h3 className="text-sm font-bold text-[#2D2A33] uppercase tracking-wider mb-3">
+                        {isRTL ? 'ماذا ستتعلّم' : "What You'll Learn"}
+                      </h3>
+                      <div className="space-y-2">
+                        {sections.map((section, i) => (
+                          <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF7F2] border border-[#F3EFE8]">
+                            <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-white text-xs font-bold text-[#7A3B5E] shadow-sm shrink-0 mt-0.5">
+                              {i + 1}
+                            </span>
+                            <span className="text-sm text-[#2D2A33] font-medium">{section}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : !previewContent ? (
+                    <p className="text-sm text-[#8E8E9F] text-center py-8">
                       {isRTL ? 'لا يمكن تحميل المعاينة' : 'Preview not available'}
                     </p>
+                  ) : null}
+
+                  {/* Related toolkits */}
+                  {relatedToolkits.length > 0 && (
+                    <div className="pt-5 border-t border-[#F3EFE8]">
+                      <h3 className="text-sm font-bold text-[#2D2A33] uppercase tracking-wider mb-3">
+                        {isRTL ? 'قد يعجبُك أيضًا' : 'You Might Also Like'}
+                      </h3>
+                      <div className="space-y-2">
+                        {relatedToolkits.map(({ resource: r }) => {
+                          const RIcon = typeIcons[r.type] || FileText;
+                          return (
+                            <button
+                              key={r.id}
+                              onClick={() => openPreview(r.id)}
+                              className={`w-full flex items-center gap-3 p-3 rounded-xl border border-[#F3EFE8] hover:bg-[#FAF7F2] transition-colors text-${isRTL ? 'right' : 'left'}`}
+                            >
+                              <div className={`flex items-center justify-center w-9 h-9 rounded-lg bg-gradient-to-br ${typeGradients[r.type] || 'from-[#F3EFE8] to-[#FAF7F2]'}`}>
+                                <RIcon className={`w-4 h-4 ${typeIconColors[r.type] || 'text-[#7A3B5E]'}`} />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-[#2D2A33] truncate">
+                                  {isRTL ? r.title.ar : r.title.en}
+                                </p>
+                                <p className="text-xs text-[#8E8E9F]">
+                                  {isRTL ? typeLabels[r.type].ar : typeLabels[r.type].en}
+                                </p>
+                              </div>
+                              <Eye className="w-4 h-4 text-[#8E8E9F] shrink-0" />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   )}
                 </div>
-
-                {/* Gradient fade overlay */}
-                <div className="sticky bottom-0 h-32 bg-gradient-to-t from-white via-white/95 to-transparent pointer-events-none" />
               </div>
 
               {/* CTA */}

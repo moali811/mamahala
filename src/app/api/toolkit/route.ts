@@ -1,6 +1,32 @@
 import { NextResponse } from 'next/server';
 import { trackEvent } from '@/lib/analytics';
 
+// Category mapping for related toolkit suggestions
+const toolkitCategory: Record<string, string> = {
+  'family-communication-toolkit': 'families', 'anger-management-worksheet': 'adults',
+  'calm-parent-checklist': 'families', 'understanding-your-teen': 'families',
+  'self-care-assessment': 'adults', 'complete-parenting-guide': 'families',
+  'couples-communication-workbook': 'couples', 'anxiety-recovery-journal': 'adults',
+  'social-media-survival-guide': 'teens', 'teen-anger-toolkit': 'teens',
+  'teen-identity-map': 'teens', 'friendship-flags-checklist': 'teens',
+  'exam-season-emergency-kit': 'teens', 'imposter-syndrome-playbook': 'university',
+  'adulting-emotional-edition': 'university', 'student-burnout-recovery': 'university',
+  'bicultural-student-guide': 'university', 'student-loneliness-toolkit': 'university',
+  'conflict-resolution-playbook': 'couples', 'reconnection-rituals': 'couples',
+};
+
+function getRelatedToolkits(toolkitId: string, isAr: boolean): { name: string; url: string }[] {
+  const cat = toolkitCategory[toolkitId];
+  const related = Object.entries(toolkitCategory)
+    .filter(([id, c]) => id !== toolkitId && c === cat)
+    .slice(0, 2)
+    .map(([id]) => ({
+      name: isAr ? (toolkitNames[id]?.ar || id) : (toolkitNames[id]?.en || id),
+      url: `https://mama-hala-website.vercel.app/toolkits/pdf/${isAr ? `ar/${id}` : id}.pdf`,
+    }));
+  return related;
+}
+
 const toolkitNames: Record<string, { en: string; ar: string }> = {
   'family-communication-toolkit': { en: 'Family Communication Toolkit', ar: 'مجموعة أدوات التواصل الأسري' },
   'anger-management-worksheet': { en: 'Anger Management Worksheet', ar: 'ورقة عمل إدارة الغضب' },
@@ -22,6 +48,8 @@ const toolkitNames: Record<string, { en: string; ar: string }> = {
   'student-burnout-recovery': { en: 'Burnout Is Not a Badge of Honor', ar: 'الإنهاك ليس وسام شرف' },
   'bicultural-student-guide': { en: "Caught Between Two Worlds: A Bicultural Student's Guide", ar: 'بين عالمين: دليل الطالب ثنائي الثقافة' },
   'student-loneliness-toolkit': { en: 'The Loneliness Toolkit', ar: 'أدوات التغلب على الوحدة' },
+  'conflict-resolution-playbook': { en: 'The Conflict Resolution Playbook', ar: 'دليل حل النزاعات' },
+  'reconnection-rituals': { en: 'Reconnection Rituals: A Couples Activity Kit', ar: 'طقوس إعادة التواصل' },
 };
 
 export async function POST(request: Request) {
@@ -96,6 +124,16 @@ export async function POST(request: Request) {
                     ${isAr ? 'تواصَلْ معنا' : 'Contact Us'}
                   </a>
                 </div>
+                ${(() => {
+                  const related = getRelatedToolkits(toolkitId, isAr);
+                  if (related.length === 0) return '';
+                  return `<div style="border-top:1px solid #F3EFE8;padding-top:20px;margin-top:24px;">
+                    <p style="color:#2D2A33;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin:0 0 12px;text-align:center;">
+                      ${isAr ? 'قد يعجبُك أيضًا' : 'YOU MIGHT ALSO LIKE'}
+                    </p>
+                    ${related.map(r => `<a href="${r.url}" style="display:block;padding:10px 16px;margin:6px 0;border:1px solid #F3EFE8;border-radius:12px;text-decoration:none;color:#2D2A33;font-size:14px;">📄 ${r.name}</a>`).join('')}
+                  </div>`;
+                })()}
                 <div style="border-top:1px solid #F3EFE8;padding-top:24px;margin-top:24px;text-align:center;">
                   <p style="color:#4A4A5C;font-size:14px;line-height:1.7;margin:0 0 16px;">
                     ${isAr
