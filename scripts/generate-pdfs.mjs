@@ -20,79 +20,87 @@ const B = {
   border: '#E8E0D4',
 };
 
-// Toolkit metadata — subtitles for cover pages
+// Toolkit metadata — bilingual subtitles & categories for cover pages
 const META = {
   'family-communication-toolkit': {
-    subtitle: 'A practical guide to talking, listening, and connecting as a family',
-    category: 'Family Wellness',
+    subtitle: { en: 'A practical guide to talking, listening, and connecting as a family', ar: 'دليلٌ عمليٌّ للحوارِ والاستماعِ والتّواصلِ كأسرة' },
+    category: { en: 'Family Wellness', ar: 'صحّةُ الأسرة' },
   },
   'anger-management-worksheet': {
-    subtitle: 'Identify your triggers. Understand your cycle. Practice calm.',
-    category: 'Mental Health',
+    subtitle: { en: 'Identify your triggers. Understand your cycle. Practice calm.', ar: 'حدِّدْ محفِّزاتِك. افهَمْ دورتَك. مارِسِ الهدوء.' },
+    category: { en: 'Mental Health', ar: 'الصّحّةُ النّفسيّة' },
   },
   'calm-parent-checklist': {
-    subtitle: '10 daily micro-practices for staying grounded',
-    category: 'Parenting',
+    subtitle: { en: '10 daily micro-practices for staying grounded', ar: '10 ممارساتٍ يوميّةٍ مصغّرةٍ للبقاءِ متماسكًا' },
+    category: { en: 'Parenting', ar: 'الأبوّةُ والأمومة' },
   },
   'understanding-your-teen': {
-    subtitle: "A parent's guide to the teenage brain, decoded",
-    category: 'Parenting',
+    subtitle: { en: "A parent's guide to the teenage brain, decoded", ar: 'دليلُ الوالدين لفهمِ دماغِ المراهق' },
+    category: { en: 'Parenting', ar: 'الأبوّةُ والأمومة' },
   },
   'self-care-assessment': {
-    subtitle: 'Assess, plan, and protect your well-being across six dimensions',
-    category: 'Self-Care',
+    subtitle: { en: 'Assess, plan, and protect your well-being across six dimensions', ar: 'قيِّمْ رعايتَك الذّاتيّةَ وخطِّطْ لها عبرَ ستّةِ أبعاد' },
+    category: { en: 'Self-Care', ar: 'الرّعايةُ الذّاتيّة' },
   },
   'complete-parenting-guide': {
-    subtitle: 'Attachment, discipline, emotional coaching, screen time & resilience',
-    category: 'Parenting',
+    subtitle: { en: 'Attachment, discipline, emotional coaching, screen time & resilience', ar: 'التّعلُّق، والانضباط، والتّدريبُ العاطفيّ، ووقتُ الشّاشة، والمرونة' },
+    category: { en: 'Parenting', ar: 'الأبوّةُ والأمومة' },
   },
   'couples-communication-workbook': {
-    subtitle: '30 structured exercises to rebuild, repair & deepen your connection',
-    category: 'Relationships',
+    subtitle: { en: '30 structured exercises to rebuild, repair & deepen your connection', ar: '30 تمرينًا مُنظَّمًا لإعادةِ البناءِ والإصلاحِ وتعميقِ التّواصل' },
+    category: { en: 'Relationships', ar: 'العلاقات' },
   },
   'anxiety-recovery-journal': {
-    subtitle: 'A 90-day guided journal combining CBT, gratitude & cognitive reframing',
-    category: 'Mental Health',
+    subtitle: { en: 'A 90-day guided journal combining CBT, gratitude & cognitive reframing', ar: 'يوميّاتٌ مُوجَّهة لـ90 يومًا تجمعُ العلاجَ المعرفيّ والامتنانَ وإعادةَ الصّياغة' },
+    category: { en: 'Mental Health', ar: 'الصّحّةُ النّفسيّة' },
   },
   'social-media-survival-guide': {
-    subtitle: 'Practical strategies for a healthier relationship with social media',
-    category: 'Digital Wellness',
+    subtitle: { en: 'Practical strategies for a healthier relationship with social media', ar: 'استراتيجيّاتٌ عمليّةٌ لعلاقةٍ أكثرَ صحّةً مع وسائلِ التّواصل' },
+    category: { en: 'Digital Wellness', ar: 'العافيةُ الرّقميّة' },
   },
   'teen-anger-toolkit': {
-    subtitle: 'Understanding, managing, and channeling anger in healthy ways',
-    category: 'Teen Mental Health',
+    subtitle: { en: 'Understanding, managing, and channeling anger in healthy ways', ar: 'فهمُ الغضبِ وإدارتُه وتوجيهُه بطرقٍ صحّيّة' },
+    category: { en: 'Teen Mental Health', ar: 'صحّةُ المراهقِ النّفسيّة' },
   },
   'teen-identity-map': {
-    subtitle: 'A guided exploration of who you are, who you are becoming, and what matters most',
-    category: 'Teen Identity',
+    subtitle: { en: 'A guided exploration of who you are, who you are becoming, and what matters most', ar: 'استكشافٌ مُوجَّهٌ لمعرفةِ مَن أنت ومَن تُصبِح وما يهمُّك حقًّا' },
+    category: { en: 'Teen Identity', ar: 'هُويّةُ المراهق' },
   },
   'friendship-flags-checklist': {
-    subtitle: 'How to recognize healthy friendships, red flags, and everything in between',
-    category: 'Relationships',
+    subtitle: { en: 'How to recognize healthy friendships, red flags, and everything in between', ar: 'كيفَ تتعرَّفُ على الصّداقاتِ الصّحيّةِ والعلاماتِ الحمراءِ وما بينَهما' },
+    category: { en: 'Relationships', ar: 'العلاقات' },
   },
   'exam-season-emergency-kit': {
-    subtitle: 'Practical strategies for managing stress, staying focused, and surviving exam season',
-    category: 'Student Wellness',
+    subtitle: { en: 'Practical strategies for managing stress, staying focused, and surviving exam season', ar: 'استراتيجيّاتٌ عمليّةٌ لإدارةِ التّوتّرِ والحفاظِ على التّركيز' },
+    category: { en: 'Student Wellness', ar: 'عافيةُ الطّالب' },
   },
   'imposter-syndrome-playbook': {
-    subtitle: 'Recognizing, reframing, and overcoming the voice that says you do not belong',
-    category: 'Mental Health',
+    subtitle: { en: 'Recognizing, reframing, and overcoming the voice that says you do not belong', ar: 'التّعرُّفُ على صوتِ "لا تنتمي" وإعادةُ صياغتِه والتّغلُّبُ عليه' },
+    category: { en: 'Mental Health', ar: 'الصّحّةُ النّفسيّة' },
   },
   'adulting-emotional-edition': {
-    subtitle: 'A guide to the emotional skills nobody taught you in school',
-    category: 'Young Adult',
+    subtitle: { en: 'A guide to the emotional skills nobody taught you in school', ar: 'دليلٌ للمهاراتِ العاطفيّةِ التي لم يعلِّمْك إيّاها أحدٌ في المدرسة' },
+    category: { en: 'Young Adult', ar: 'الشّبابُ البالغ' },
   },
   'student-burnout-recovery': {
-    subtitle: 'Identifying burnout, rebuilding energy, and creating sustainable habits',
-    category: 'Student Wellness',
+    subtitle: { en: 'Identifying burnout, rebuilding energy, and creating sustainable habits', ar: 'التّعرّفُ على الإنهاكِ وإعادةُ بناءِ الطّاقةِ وخلقُ عاداتٍ مستدامة' },
+    category: { en: 'Student Wellness', ar: 'عافيةُ الطّالب' },
   },
   'bicultural-student-guide': {
-    subtitle: 'Navigating two worlds without losing yourself',
-    category: 'Cultural Identity',
+    subtitle: { en: 'Navigating two worlds without losing yourself', ar: 'التّنقّلُ بينَ عالَمَين دونَ فقدانِ ذاتِك' },
+    category: { en: 'Cultural Identity', ar: 'الهُويّةُ الثّقافيّة' },
   },
   'student-loneliness-toolkit': {
-    subtitle: 'Understanding, managing, and overcoming loneliness as a student',
-    category: 'Student Wellness',
+    subtitle: { en: 'Understanding, managing, and overcoming loneliness as a student', ar: 'فهمُ الوحدةِ وإدارتُها والتّغلُّبُ عليها كطالب' },
+    category: { en: 'Student Wellness', ar: 'عافيةُ الطّالب' },
+  },
+  'conflict-resolution-playbook': {
+    subtitle: { en: 'A practical guide to fighting fair and growing closer through disagreement', ar: 'دليلٌ عمليٌّ للخلافِ البنّاءِ والتّقاربِ من خلالِ الاختلاف' },
+    category: { en: 'Relationships', ar: 'العلاقات' },
+  },
+  'reconnection-rituals': {
+    subtitle: { en: '10 evidence-based rituals to rebuild closeness between partners', ar: '10 طقوسٍ مبنيّةٍ على أُسسٍ علميّةٍ لإعادةِ بناءِ القُربِ بين الشّريكين' },
+    category: { en: 'Relationships', ar: 'العلاقات' },
   },
 };
 
@@ -103,45 +111,63 @@ const META = {
 // SVG icons for section headers — matched by keyword
 function getSectionIcon(heading) {
   const h = heading.toLowerCase();
-  // Communication / talking
-  if (h.includes('communicat') || h.includes('conversation') || h.includes('dialogue') || h.includes('talk'))
+  // Communication / talking (EN + AR)
+  if (h.includes('communicat') || h.includes('conversation') || h.includes('dialogue') || h.includes('talk') || h.includes('تواصل') || h.includes('حوار') || h.includes('محادث'))
     return '<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
-  // Listening / hearing
-  if (h.includes('listen') || h.includes('hear'))
+  // Listening / hearing (EN + AR)
+  if (h.includes('listen') || h.includes('hear') || h.includes('استماع') || h.includes('إصغاء'))
     return '<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
-  // Anger / emotion / feeling
-  if (h.includes('anger') || h.includes('emotion') || h.includes('feeling') || h.includes('trigger') || h.includes('escalat'))
+  // Anger / emotion / feeling (EN + AR)
+  if (h.includes('anger') || h.includes('emotion') || h.includes('feeling') || h.includes('trigger') || h.includes('escalat') || h.includes('غضب') || h.includes('عاطف') || h.includes('مشاعر') || h.includes('محفّز') || h.includes('تصعيد'))
     return '<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>';
-  // Plan / action / strategy
-  if (h.includes('plan') || h.includes('action') || h.includes('strateg') || h.includes('practice') || h.includes('step'))
+  // Plan / action / strategy (EN + AR)
+  if (h.includes('plan') || h.includes('action') || h.includes('strateg') || h.includes('practice') || h.includes('step') || h.includes('خطّ') || h.includes('استراتيج') || h.includes('ممارس') || h.includes('خطوة') || h.includes('تدبير'))
     return '<svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
-  // Track / progress / journal
-  if (h.includes('track') || h.includes('progress') || h.includes('journal') || h.includes('log') || h.includes('record'))
+  // Track / progress / journal (EN + AR)
+  if (h.includes('track') || h.includes('progress') || h.includes('journal') || h.includes('log') || h.includes('record') || h.includes('تتبّع') || h.includes('تقدّم') || h.includes('يوميّات') || h.includes('سجلّ'))
     return '<svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>';
-  // Family / parent / child
-  if (h.includes('family') || h.includes('parent') || h.includes('child') || h.includes('teen') || h.includes('kid'))
+  // Family / parent / child (EN + AR)
+  if (h.includes('family') || h.includes('parent') || h.includes('child') || h.includes('teen') || h.includes('kid') || h.includes('أسر') || h.includes('عائل') || h.includes('والد') || h.includes('طفل') || h.includes('مراهق'))
     return '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
-  // Brain / development / understand
-  if (h.includes('brain') || h.includes('develop') || h.includes('understand') || h.includes('decode'))
+  // Brain / development / understand (EN + AR)
+  if (h.includes('brain') || h.includes('develop') || h.includes('understand') || h.includes('decode') || h.includes('دماغ') || h.includes('فهم') || h.includes('تطوّر'))
     return '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
-  // Heart / love / compassion / care
-  if (h.includes('heart') || h.includes('love') || h.includes('compassion') || h.includes('care') || h.includes('self-care') || h.includes('wellbeing') || h.includes('well-being'))
+  // Heart / love / compassion / care (EN + AR)
+  if (h.includes('heart') || h.includes('love') || h.includes('compassion') || h.includes('care') || h.includes('self-care') || h.includes('wellbeing') || h.includes('well-being') || h.includes('قلب') || h.includes('حبّ') || h.includes('رعاية') || h.includes('عناية') || h.includes('عافية'))
     return '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
-  // Connect / relation / couple / repair
-  if (h.includes('connect') || h.includes('relat') || h.includes('couple') || h.includes('repair') || h.includes('intima'))
+  // Connect / relation / couple / repair (EN + AR)
+  if (h.includes('connect') || h.includes('relat') || h.includes('couple') || h.includes('repair') || h.includes('intima') || h.includes('إصلاح') || h.includes('علاق') || h.includes('زوج') || h.includes('ارتباط') || h.includes('قُرب'))
     return '<svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
-  // Warning / sign / support / help
-  if (h.includes('warning') || h.includes('sign') || h.includes('support') || h.includes('help') || h.includes('need'))
+  // Warning / sign / support / help (EN + AR)
+  if (h.includes('warning') || h.includes('sign') || h.includes('support') || h.includes('help') || h.includes('need') || h.includes('تحذير') || h.includes('علامات') || h.includes('دعم') || h.includes('مساعد'))
     return '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
-  // Assess / score / evaluate
-  if (h.includes('assess') || h.includes('score') || h.includes('evaluat') || h.includes('quiz'))
+  // Assess / score / evaluate (EN + AR)
+  if (h.includes('assess') || h.includes('score') || h.includes('evaluat') || h.includes('quiz') || h.includes('تقييم') || h.includes('اختبار') || h.includes('تدقيق'))
     return '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
-  // Resilience / strength / growth
-  if (h.includes('resilien') || h.includes('strength') || h.includes('growth') || h.includes('flourish'))
+  // Resilience / strength / growth (EN + AR)
+  if (h.includes('resilien') || h.includes('strength') || h.includes('growth') || h.includes('flourish') || h.includes('مرون') || h.includes('قوّة') || h.includes('نموّ') || h.includes('ازدهار'))
     return '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>';
-  // Screen / digital / technology
-  if (h.includes('screen') || h.includes('digital') || h.includes('tech') || h.includes('media'))
+  // Screen / digital / technology (EN + AR)
+  if (h.includes('screen') || h.includes('digital') || h.includes('tech') || h.includes('media') || h.includes('شاشة') || h.includes('رقمي') || h.includes('تواصل اجتماعي') || h.includes('إعلام'))
     return '<svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+  // Identity / self / who am I (AR only — new)
+  if (h.includes('هُويّ') || h.includes('هوية') || h.includes('ذات') || h.includes('مَن أنا'))
+    return '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>';
+  // Loneliness / isolation (AR only — new)
+  if (h.includes('وحد') || h.includes('عزل') || h.includes('loneli') || h.includes('isolat'))
+    return '<svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>';
+  // Burnout / exhaustion (AR only — new)
+  if (h.includes('إنهاك') || h.includes('burnout') || h.includes('احتراق') || h.includes('استنزاف'))
+    return '<svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>';
+  // Exam / study / academic (AR only — new)
+  if (h.includes('امتحان') || h.includes('دراس') || h.includes('أكاديم') || h.includes('exam') || h.includes('study'))
+    return '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
+  // Friendship / صداق (AR only — new)
+  if (h.includes('صداق') || h.includes('friendship') || h.includes('friend'))
+    return '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+  // Conflict / خلاف / نزاع (AR — new)
+  if (h.includes('conflict') || h.includes('خلاف') || h.includes('نزاع'))
+    return '<svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
   // Default: book/document
   return '<svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
 }
@@ -154,8 +180,10 @@ function parseMarkdown(md) {
   text = text.replace(/^# .+\n*/m, '');
   // Remove the subtitle bold line right after (** subtitle **)
   text = text.replace(/^\*\*.+?\*\*\s*\n*/m, '');
-  // Remove the "By Dr. Hala" line
+  // Remove the "By Dr. Hala" line (English and Arabic)
   text = text.replace(/^\*By Dr\. Hala Ali.*?\*\s*\n*/m, '');
+  text = text.replace(/^\*إعداد د\. هالة علي.*?\*\s*\n*/m, '');
+  text = text.replace(/^\*بقلم د\. هالة علي.*?\*\s*\n*/m, '');
 
   const lines = text.split('\n');
   const htmlParts = [];
@@ -287,7 +315,9 @@ function parseMarkdown(md) {
 
     // Default: paragraph
     const paraLines = [];
-    while (i < lines.length && !isBlank(lines[i]) && !/^#{1,3} /.test(lines[i]) && !/^---/.test(lines[i]) && !/^>/.test(lines[i]) && !/^- /.test(lines[i]) && !/^\d+\.\s/.test(lines[i]) && !lines[i].includes('|') && !lines[i].startsWith('```')) {
+    while (i < lines.length && !isBlank(lines[i]) && !/^#{1,3} /.test(lines[i]) && !/^---/.test(lines[i]) && !/^>/.test(lines[i]) && !/^- /.test(lines[i]) && !/^\d+\.\s/.test(lines[i]) && !lines[i].startsWith('```')) {
+      // Only treat as table boundary if this line AND the next look like a table
+      if (lines[i].includes('|') && i + 1 < lines.length && lines[i + 1]?.includes('|') && /\|[\s-:]+\|/.test(lines[i + 1])) break;
       paraLines.push(lines[i]);
       i++;
     }
@@ -384,6 +414,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     line-height: ${isRTL ? '2.1' : '1.75'};
     ${isRTL ? 'word-spacing: 2px; letter-spacing: 0.01em;' : ''}
     direction: ${dir};
+    ${isRTL ? 'unicode-bidi: embed;' : ''}
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
@@ -400,6 +431,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     justify-content: center;
     align-items: center;
     text-align: center;
+    direction: ltr;
     background: linear-gradient(160deg, ${B.cream} 0%, #F0E6DC 35%, #E8D5CC 65%, #DDC5BC 100%);
     position: relative;
     padding: 72px;
@@ -457,6 +489,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     max-width: 420px;
     line-height: 1.55;
     font-style: italic;
+    text-align: center;
   }
 
   .cover-author {
@@ -498,13 +531,13 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     padding: 0 0 12px;
     margin-bottom: 24px;
     border-bottom: 1.5px solid ${B.sand};
-    ${isRTL ? 'flex-direction: row-reverse;' : ''}
+    direction: ${dir};
   }
   .page-header-left {
     display: flex;
     align-items: center;
     gap: 8px;
-    ${isRTL ? 'flex-direction: row-reverse;' : ''}
+    direction: ${dir};
   }
   .page-header-logo {
     width: 24px;
@@ -532,7 +565,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     gap: 14px;
     margin: 36px 0 16px;
     page-break-after: avoid;
-    ${isRTL ? 'flex-direction: row-reverse;' : ''}
+    direction: ${dir};
   }
   .section-icon {
     width: 40px;
@@ -593,7 +626,8 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     display: flex;
     gap: 12px;
     align-items: flex-start;
-    ${isRTL ? 'flex-direction: row-reverse; text-align: right;' : ''}
+    direction: ${dir};
+    ${isRTL ? 'text-align: right;' : ''}
   }
   .callout-icon {
     font-size: 16pt;
@@ -849,10 +883,12 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
   .checkbox-item {
     display: flex;
     align-items: flex-start;
+    ${isRTL ? 'flex-direction: row-reverse;' : ''}
     gap: 10px;
     margin: 8px 0;
     line-height: 1.6;
-    ${isRTL ? 'flex-direction: row-reverse; text-align: right;' : ''}
+    direction: ${dir};
+    ${isRTL ? 'text-align: right;' : ''}
   }
 
   .checkbox-box {
@@ -878,6 +914,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     margin: 0 2px;
     height: 1.4em;
     vertical-align: bottom;
+    ${isRTL ? 'direction: rtl;' : ''}
   }
 
   /* ============ TABLES ============ */
@@ -887,6 +924,7 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
     margin: 16px 0;
     font-size: 9.5pt;
     page-break-inside: avoid;
+    ${isRTL ? 'direction: rtl;' : ''}
   }
 
   thead {
@@ -1039,7 +1077,7 @@ ${bodyHtml}
     ${isRTL ? 'خدماتٌ ثنائيّةُ اللغة بالعربيّةِ والإنجليزيّة' : 'Bilingual services in English &amp; Arabic'}
   </div>
   <!-- Real QR Code linking to booking page -->
-  ${qrDataUri ? `<div class="cta-qr"><img src="${qrDataUri}" width="120" height="120" alt="QR Code" style="display:block;" /></div><div class="cta-qr-label">Scan to book a session</div>` : ''}
+  ${qrDataUri ? `<div class="cta-qr"><img src="${qrDataUri}" width="120" height="120" alt="QR Code" style="display:block;" /></div><div class="cta-qr-label">${isRTL ? 'امسحْ لحجزِ جلسة' : 'Scan to book a session'}</div>` : ''}
   <div class="cta-copyright">&copy; ${new Date().getFullYear()} Mama Hala Consulting. For personal use only. Do not reproduce or distribute without permission.</div>
 </div>
 
@@ -1060,10 +1098,15 @@ function getLogoDataUri() {
   return `data:image/png;base64,${buffer.toString('base64')}`;
 }
 
-async function generatePDF(mdFile, outputPath, logoDataUri, lang = 'en') {
+async function generatePDF(mdFile, outputPath, logoDataUri, lang = 'en', browser) {
   const md = readFileSync(mdFile, 'utf-8');
   const slug = basename(mdFile, '.md');
-  const meta = META[slug] || { subtitle: '', category: 'Resource' };
+  const rawMeta = META[slug] || { subtitle: { en: '', ar: '' }, category: { en: 'Resource', ar: 'مورد' } };
+  const isRTL = lang === 'ar';
+  const meta = {
+    subtitle: typeof rawMeta.subtitle === 'string' ? rawMeta.subtitle : (isRTL ? rawMeta.subtitle.ar : rawMeta.subtitle.en),
+    category: typeof rawMeta.category === 'string' ? rawMeta.category : (isRTL ? rawMeta.category.ar : rawMeta.category.en),
+  };
 
   // Extract title from the first # heading
   const titleMatch = md.match(/^# (.+)$/m);
@@ -1072,8 +1115,8 @@ async function generatePDF(mdFile, outputPath, logoDataUri, lang = 'en') {
   // Parse markdown body into HTML
   const bodyHtml = parseMarkdown(md);
 
-  // Generate real QR code
-  const qrDataUri = await QRCode.toDataURL('https://mamahala.ca/en/book-a-session', {
+  // Generate real QR code — locale-aware
+  const qrDataUri = await QRCode.toDataURL(`https://mamahala.ca/${lang}/book-a-session`, {
     width: 150,
     margin: 1,
     color: { dark: B.plum, light: '#FFFFFF' },
@@ -1082,16 +1125,14 @@ async function generatePDF(mdFile, outputPath, logoDataUri, lang = 'en') {
 
   const fullHtml = buildFullHtml(title, meta.subtitle, meta.category, bodyHtml, logoDataUri, qrDataUri, lang);
 
-  const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
-
   const page = await browser.newPage();
 
-  await page.setContent(fullHtml, { waitUntil: 'networkidle0', timeout: 15000 });
+  await page.setContent(fullHtml, { waitUntil: 'networkidle2', timeout: 60000 });
+  // Extra wait for font rendering
+  await new Promise(r => setTimeout(r, lang === 'ar' ? 2000 : 500));
 
-  await page.pdf({
+  await Promise.race([
+    page.pdf({
     path: outputPath,
     format: 'Letter',
     printBackground: true,
@@ -1108,14 +1149,22 @@ async function generatePDF(mdFile, outputPath, logoDataUri, lang = 'en') {
       bottom: '80px',
       left: '52px',
     },
-  });
+  }),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('PDF generation timed out after 60s')), 60000)),
+  ]);
 
-  await browser.close();
+  await page.close();
   console.log(`  ✓ ${basename(outputPath)}`);
 }
 
 async function main() {
   console.log('\n🔖 Mama Hala Consulting — Premium PDF Generator\n');
+
+  // Optional: filter by slug (pass as CLI arg)
+  const filterSlug = process.argv[2] || null;
+  if (filterSlug) {
+    console.log(`Filtering: only "${filterSlug}"\n`);
+  }
 
   if (!existsSync(OUTPUT_DIR)) {
     mkdirSync(OUTPUT_DIR, { recursive: true });
@@ -1128,40 +1177,52 @@ async function main() {
 
   const logoDataUri = getLogoDataUri();
 
-  // Generate English PDFs
-  const mdFiles = readdirSync(TOOLKITS_DIR)
-    .filter(f => f.endsWith('.md'))
-    .sort();
+  // Launch a single shared browser for all PDFs
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+  });
 
-  console.log(`Found ${mdFiles.length} English toolkit files.\n`);
-
-  for (const file of mdFiles) {
-    const mdPath = join(TOOLKITS_DIR, file);
-    const pdfPath = join(OUTPUT_DIR, file.replace('.md', '.pdf'));
-    await generatePDF(mdPath, pdfPath, logoDataUri);
-  }
-
-  // Generate Arabic PDFs
-  const arDir = join(TOOLKITS_DIR, 'ar');
-  if (existsSync(arDir)) {
-    const arFiles = readdirSync(arDir)
+  try {
+    // Generate English PDFs
+    const mdFiles = readdirSync(TOOLKITS_DIR)
       .filter(f => f.endsWith('.md'))
+      .filter(f => !filterSlug || f === `${filterSlug}.md`)
       .sort();
 
-    console.log(`\nFound ${arFiles.length} Arabic toolkit files.\n`);
+    console.log(`Found ${mdFiles.length} English toolkit files.\n`);
 
-    for (const file of arFiles) {
-      const mdPath = join(arDir, file);
-      const pdfPath = join(arOutputDir, file.replace('.md', '.pdf'));
-      await generatePDF(mdPath, pdfPath, logoDataUri, 'ar');
+    for (const file of mdFiles) {
+      const mdPath = join(TOOLKITS_DIR, file);
+      const pdfPath = join(OUTPUT_DIR, file.replace('.md', '.pdf'));
+      await generatePDF(mdPath, pdfPath, logoDataUri, 'en', browser);
     }
-  } else {
-    console.log('\n⚠ No Arabic toolkit directory found at /public/toolkits/ar/\n');
-  }
 
-  const totalEn = mdFiles.length;
-  const totalAr = existsSync(arDir) ? readdirSync(arDir).filter(f => f.endsWith('.md')).length : 0;
-  console.log(`\n✅ Done! ${totalEn} English + ${totalAr} Arabic PDFs generated\n`);
+    // Generate Arabic PDFs
+    const arDir = join(TOOLKITS_DIR, 'ar');
+    if (existsSync(arDir)) {
+      const arFiles = readdirSync(arDir)
+        .filter(f => f.endsWith('.md'))
+        .filter(f => !filterSlug || f === `${filterSlug}.md`)
+        .sort();
+
+      console.log(`\nFound ${arFiles.length} Arabic toolkit files.\n`);
+
+      for (const file of arFiles) {
+        const mdPath = join(arDir, file);
+        const pdfPath = join(arOutputDir, file.replace('.md', '.pdf'));
+        await generatePDF(mdPath, pdfPath, logoDataUri, 'ar', browser);
+      }
+    } else {
+      console.log('\n⚠ No Arabic toolkit directory found at /public/toolkits/ar/\n');
+    }
+
+    const totalEn = mdFiles.length;
+    const totalAr = existsSync(arDir) ? readdirSync(arDir).filter(f => f.endsWith('.md')).length : 0;
+    console.log(`\n✅ Done! ${totalEn} English + ${totalAr} Arabic PDFs generated\n`);
+  } finally {
+    await browser.close();
+  }
 }
 
 main().catch(err => {
