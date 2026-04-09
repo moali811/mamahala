@@ -358,7 +358,7 @@ export default function ProgramOverviewPage() {
                 return (
                   <p
                     key={i}
-                    className="text-xl sm:text-2xl font-light text-[#4A4A5C] leading-[1.65] tracking-[-0.01em] animate-[fadeSlideUp_0.8s_ease_both]"
+                    className="text-base sm:text-lg font-light text-[#4A4A5C] leading-[1.65] tracking-[-0.01em] animate-[fadeSlideUp_0.8s_ease_both]"
                     style={{ animationDelay: `${0.6 + i * 0.18}s` }}
                   >
                     <span className="font-semibold bg-clip-text text-transparent" style={{ backgroundImage: `linear-gradient(135deg, ${program.color}, #2D2A33)` }}>{hook}</span>

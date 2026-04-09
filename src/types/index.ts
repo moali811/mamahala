@@ -140,6 +140,9 @@ export interface FrameworkNode {
   labelAr: string;
   descriptionEn: string;
   descriptionAr: string;
+  /** Actionable insight shown in the detail card */
+  insightEn?: string;
+  insightAr?: string;
   color?: string;
   position: { x: number; y: number }; // percentage 0-100
 }

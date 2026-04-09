@@ -412,6 +412,25 @@ The teenage brain is not a problem to be fixed. It is a work in progress that de
               textAr: 'خِلالَ المُراهَقَة، الجِهازُ اللّيمْبِيّ (المَشاعِرُ والمُكافَأَة) يُطْلِقُ أَعْلى من القِشْرَةِ الأَمامِيّة. إنَّها مَيزَة، لا عَيْب — تَدْفَعُ الاِسْتِكْشافَ الّذي يَحْتاجُهُ المُراهِقون. مَهَمَّتُكِ أَنْ تَكوني القِشْرَةَ الأَمامِيّةَ الخارِجيَّةَ حَتّى تَجْهَزَ قِشْرَتُهُم.',
             },
             {
+              kind: 'framework', id: 'rt-brain-iceberg',
+              diagram: {
+                type: 'iceberg',
+                titleEn: 'The Teen Brain Iceberg', titleAr: 'جَبَلُ دِماغِ المُراهِقِ الجَليديّ',
+                nodes: [
+                  { id: 'risk', labelEn: 'Risk-Taking', labelAr: 'المُخاطَرَة', descriptionEn: 'Thrill-seeking, impulsive decisions, "I\'ll be fine"', descriptionAr: 'البَحْثُ عَنِ الإثارَة، قَراراتٌ اِنْدِفاعيَّة، "سَأَكونُ بِخَيْر"', insightEn: 'When your teen takes a risk, resist reacting with fear. Say "Tell me what that felt like" — curiosity keeps them talking.', insightAr: 'عِنْدَما يُخاطِرُ ابْنُكِ المُراهِق، قاوِمي رَدَّ فِعْلِ الخَوْف. قولي "أَخْبِرْني كَيْفَ شَعَرْتَ" — الفُضولُ يُبْقيهِمْ يَتَحَدَّثون.', color: '#C4636A', position: { x: 25, y: 18 } },
+                  { id: 'moods', labelEn: 'Mood Swings', labelAr: 'تَقَلُّبُ المَزاج', descriptionEn: 'Intense highs and lows, irritability, drama', descriptionAr: 'اِرْتِفاعاتٌ وَاِنْخِفاضاتٌ حادَّة، تَهَيُّج، دَراما', insightEn: 'Their mood swings are not personal attacks. Try saying "I can see you\'re having a hard time" instead of "Stop being dramatic."', insightAr: 'تَقَلُّباتُ مَزاجِهِمْ لَيْسَتْ هُجوماً شَخْصيّاً. جَرِّبي قَوْلَ "أَرى أَنَّكَ تَمُرُّ بِوَقْتٍ صَعْب" بَدَلاً مِنْ "تَوَقَّفْ عَنِ المُبالَغَة."', color: '#D4A84B', position: { x: 75, y: 18 } },
+                  { id: 'prefrontal', labelEn: 'Prefrontal Cortex Still Building', labelAr: 'القِشْرَةُ الأَمامِيَّةُ قَيْدَ البِناء', descriptionEn: 'Impulse control, planning, consequence-thinking — not ready yet', descriptionAr: 'ضَبْطُ الاِنْدِفاع، التَّخْطيط، التَّفْكيرُ بِالعَواقِب — لَيْسَت جاهِزَةً بَعْد', insightEn: 'When they make a poor decision, remember: the part of their brain that thinks ahead is literally still under construction. Be their external planner for now.', insightAr: 'عِنْدَما يَتَّخِذونَ قَراراً سَيِّئاً، تَذَكَّري: الجُزْءُ مِنْ دِماغِهِمْ الَّذي يُفَكِّرُ لِلأَمامِ لا يَزالُ حَرْفيّاً قَيْدَ البِناء. كوني مُخَطِّطَتَهُمُ الخارِجيَّة.', color: '#5B8FA8', position: { x: 30, y: 55 } },
+                  { id: 'amygdala', labelEn: 'Amygdala Overdrive', labelAr: 'اللَّوْزَةُ في وَضْعِ الإفْراط', descriptionEn: 'Emotions fire louder than logic, alarm system on high', descriptionAr: 'المَشاعِرُ أَعْلى من المَنْطِق، نِظامُ الإنْذارِ في أَعْلاه', insightEn: 'When your teen explodes, their alarm system is firing — not their logic. Wait for the storm to pass before having the conversation.', insightAr: 'عِنْدَما يَنْفَجِرُ ابْنُكِ المُراهِق، نِظامُ الإنْذارِ هُوَ ما يَعْمَل — لَيْسَ المَنْطِق. اِنْتَظِري حَتّى تَمُرَّ العاصِفَةُ قَبْلَ إجْراءِ الحِوار.', color: '#5B8FA8', position: { x: 70, y: 55 } },
+                  { id: 'dopamine', labelEn: 'Dopamine Seeking', labelAr: 'البَحْثُ عَنِ الدّوبامين', descriptionEn: 'Reward center craves novelty, excitement, peer approval', descriptionAr: 'مَرْكَزُ المُكافَأَةِ يَتُوقُ لِلجَديدِ والإثارَةِ ورِضا الأَقْران', insightEn: 'Channel the dopamine hunger toward healthy thrills — cooking a new recipe together, a spontaneous adventure, or learning something exciting.', insightAr: 'وَجِّهي جوعَ الدّوبامينِ نَحْوَ إثاراتٍ صِحّيَّة — طَبْخُ وَصْفَةٍ جَديدَةٍ مَعاً، مُغامَرَةٌ عَفْويَّة، أَوْ تَعَلُّمُ شَيْءٍ مُثير.', color: '#5B8FA8', position: { x: 30, y: 78 } },
+                  { id: 'sleep', labelEn: 'Circadian Shift', labelAr: 'تَحَوُّلُ السّاعَةِ البيولوجيَّة', descriptionEn: 'Melatonin delays 2-3 hours — "laziness" is biology', descriptionAr: 'الميلاتونينُ يَتَأَخَّرُ 2-3 ساعات — "الكَسَلُ" بيولوجِيا', insightEn: 'Instead of battling bedtime, try shifting toward "wind-down time" with screens off an hour early. Their body clock is genuinely different from yours.', insightAr: 'بَدَلاً مِنْ مَعْرَكَةِ وَقْتِ النَّوْم، جَرِّبي التَّحَوُّلَ نَحْوَ "وَقْتِ الاِسْتِرْخاء" بِإيقافِ الشّاشاتِ قَبْلَ ساعَة. ساعَتُهُمُ البيولوجيَّةُ مُخْتَلِفَةٌ فِعْلاً عَنْ ساعَتِك.', color: '#5B8FA8', position: { x: 70, y: 78 } },
+                ],
+                connections: [
+                  { from: 'prefrontal', to: 'risk' }, { from: 'amygdala', to: 'moods' },
+                  { from: 'dopamine', to: 'risk' }, { from: 'sleep', to: 'moods' },
+                ],
+              },
+            },
+            {
               kind: 'comparison', id: 'tb-cmp',
               titleEn: 'What Looks Like Defiance vs What It Actually Is', titleAr: 'ما يَبْدو كَتَحَدٍّ مُقابِلَ ما هو فِعْلاً',
               left: {
@@ -691,6 +710,21 @@ Finally, pay attention to what your teen communicates nonverbally. Their music, 
               kind: 'paragraph', id: 'cb-lead', tone: 'lead',
               textEn: 'Teens don\'t need you to fix their problems. They need to know they can TELL you their problems. Every conversation is a vote: am I someone safe to talk to?',
               textAr: 'المُراهِقونَ لا يَحْتاجونَ أَنْ تُصْلِحي مَشاكِلَهُم. يَحْتاجونَ مَعْرِفَةَ أَنَّهُم يَسْتَطيعونَ إخْبارَكِ بِها. كُلُّ مُحادَثَةٍ تَصْويت: هل أَنا شَخْصٌ آمِنٌ لِلحَديثِ مَعَه؟',
+            },
+            {
+              kind: 'framework', id: 'rt-comm-spectrum',
+              diagram: {
+                type: 'spectrum',
+                titleEn: 'The Communication Spectrum', titleAr: 'طَيْفُ التَّواصُل',
+                nodes: [
+                  { id: 'interrogate', labelEn: 'Interrogation', labelAr: 'اِسْتِجْواب', descriptionEn: '"Why did you do that? What were you thinking?"', descriptionAr: '"لِماذا فَعَلْتَ ذلِك؟ بِماذا كُنْتَ تُفَكِّر؟"', insightEn: 'Notice when you slip into detective mode. "Why" questions put teens on trial — they shut down instead of opening up.', insightAr: 'لاحِظي عِنْدَما تَنْزَلِقينَ إلى وَضْعِ المُحَقِّق. أَسْئِلَةُ "لِماذا" تَضَعُ المُراهِقينَ في قَفَصِ الاِتِّهام — يَنْغَلِقونَ بَدَلاً مِنْ أَنْ يَنْفَتِحوا.', color: '#C4636A', position: { x: 10, y: 50 } },
+                  { id: 'lecture', labelEn: 'Lecturing', labelAr: 'مُحاضَرَة', descriptionEn: 'Long speeches about why they should have known better', descriptionAr: 'خُطَبٌ طَويلَةٌ عَنْ لِماذا كانَ يَجِبُ أَنْ يَعْرِف', insightEn: 'If you hear yourself starting a speech, pause. Ask yourself: "Am I talking to feel better, or to connect?" Keep it under 30 seconds.', insightAr: 'إذا سَمِعْتِ نَفْسَكِ تَبْدَئينَ خُطْبَة، تَوَقَّفي. اِسْأَلي نَفْسَكِ: "هَلْ أَتَكَلَّمُ لِأَشْعُرَ بِتَحَسُّنٍ أَمْ لِأَتَّصِل؟" اِجْعَليها أَقَلَّ مِنْ 30 ثانِيَة.', color: '#D4A84B', position: { x: 30, y: 50 } },
+                  { id: 'advice', labelEn: 'Advice-Giving', labelAr: 'تَقْديمُ نَصيحَة', descriptionEn: '"Here\'s what you should do" — well-meaning but premature', descriptionAr: '"إلَيْكَ ما يَجِبُ فِعْلُه" — حَسَنُ النِّيَّةِ لَكِنْ سابِقٌ لأَوانِه', insightEn: 'Try asking "Would you like my thoughts, or do you just need me to listen?" This one question transforms the conversation.', insightAr: 'جَرِّبي سُؤال "هَلْ تُريدُ رَأْيي، أَمْ تَحْتاجُ فَقَط أَنْ أَسْتَمِع؟" هذا السُّؤالُ الواحِدُ يُحَوِّلُ الحِوارَ بِالكامِل.', color: '#8B6AA0', position: { x: 50, y: 50 } },
+                  { id: 'open', labelEn: 'Open Questions', labelAr: 'أَسْئِلَةٌ مَفْتوحَة', descriptionEn: '"What was that like for you?" — invites their voice', descriptionAr: '"كَيْفَ كانَ ذلِك بِالنِّسْبَةِ لَك؟" — يَدْعو صَوْتَهُم', insightEn: 'Start with "what" or "how" instead of "why." "What happened next?" feels safe. "Why did you do that?" feels like blame.', insightAr: 'اِبْدَئي بِـ "ماذا" أَوْ "كَيْف" بَدَلاً مِنْ "لِماذا." "ماذا حَصَلَ بَعْدَها؟" يَبْدو آمِناً. "لِماذا فَعَلْتَ ذلِك؟" يَبْدو كَلَوْم.', color: '#5B8FA8', position: { x: 70, y: 50 } },
+                  { id: 'curious', labelEn: 'Curious Listening', labelAr: 'إصْغاءٌ فُضوليّ', descriptionEn: 'Side-by-side, 80% listening, zero agenda — they open up', descriptionAr: 'جَنْباً إلى جَنْب، 80% إصْغاء، صِفْرُ أَجِنْدَة — يَنْفَتِحون', insightEn: 'The best teen conversations happen side-by-side — in the car, on a walk, doing dishes. Eye contact can feel like pressure; shoulder-to-shoulder feels safe.', insightAr: 'أَفْضَلُ مُحادَثاتِ المُراهِقينَ تَحْدُثُ جَنْباً إلى جَنْب — في السَّيّارَة، في نُزْهَة، أَثْناءَ غَسْلِ الصُّحون. التَّواصُلُ بِالعَيْنِ قَدْ يَبْدو كَضَغْط؛ الكَتِفُ إلى الكَتِفِ يَبْدو آمِناً.', color: '#3B8A6E', position: { x: 90, y: 50 } },
+                ],
+                connections: [],
+              },
             },
             { kind: 'heading', id: 'cb-h-rules', level: 2, textEn: '5 Rules of Teen Conversation', textAr: '5 قَواعِدَ لِلحَديثِ مع المُراهِقين' },
             {
@@ -1665,6 +1699,24 @@ If your teen's anxiety is severe, persistent, or involves panic attacks, self-ha
               textAr: 'القَلَقُ في دِماغِ المُراهِق = لَوْزَةٌ مُفْرِطَةُ النَّشاط + تَنْظيمٌ جَبْهِيٌّ غَيْرُ مُكْتَمِل. نِظامُ إنْذارِهِ أَعْلى ونِظامُ هُدوئِهِ لا يَزالُ يُرَكِّبُ الأَسْلاك. هذا لَيْسَ شَخْصيَّة. إنَّهُ بيولوجِيا — قابِلَةٌ لِلعِلاجِ بِمَهاراتٍ ووَقْت.',
             },
             {
+              kind: 'framework', id: 'rt-anxiety-ladder',
+              diagram: {
+                type: 'flowchart',
+                titleEn: 'The Anxiety Response Ladder', titleAr: 'سُلَّمُ الاِسْتِجابَةِ لِلقَلَق',
+                nodes: [
+                  { id: 'notice', labelEn: 'Notice the feeling', labelAr: 'لاحِظِ الشُّعور', descriptionEn: '"My chest is tight. Something is happening."', descriptionAr: '"صَدْري مَشْدود. شَيْءٌ ما يَحْدُث."', insightEn: 'Teach your teen to notice body signals first. Ask "Where do you feel it in your body?" — this builds awareness before the anxiety spirals.', insightAr: 'عَلِّمي ابْنَكِ المُراهِقَ مُلاحَظَةَ إشاراتِ الجِسْمِ أَوَّلاً. اِسْأَلي "أَيْنَ تَشْعُرُ بِذلِكَ في جِسْمِك؟" — هذا يَبْني الوَعْيَ قَبْلَ أَنْ يَتَصاعَدَ القَلَق.', color: '#C4636A', position: { x: 50, y: 5 } },
+                  { id: 'name', labelEn: 'Name it', labelAr: 'سَمِّهِ', descriptionEn: '"This is anxiety. It\'s not danger — it\'s my alarm."', descriptionAr: '"هذا قَلَق. لَيْسَ خَطَراً — إنَّهُ جَرَسُ إنْذاري."', insightEn: 'Help your teen label the feeling: "That sounds like anxiety" is more helpful than "Don\'t worry about it." Naming it tames it.', insightAr: 'ساعِدي ابْنَكِ المُراهِقَ في تَسْمِيَةِ الشُّعور: "يَبْدو أَنَّ هذا قَلَق" أَكْثَرُ فائِدَةً مِنْ "لا تَقْلَقْ بِشَأْنِه." تَسْمِيَتُهُ تُرَوِّضُه.', color: '#D4A84B', position: { x: 50, y: 25 } },
+                  { id: 'ground', labelEn: 'Ground: 5-4-3-2-1', labelAr: 'تَثْبيت: 5-4-3-2-1', descriptionEn: '5 see, 4 touch, 3 hear, 2 smell, 1 taste', descriptionAr: '5 تَرى، 4 تَلْمُس، 3 تَسْمَع، 2 تَشُمّ، 1 تَتَذَوَّق', insightEn: 'Practice the 5-4-3-2-1 technique together when your teen is calm so it becomes automatic when anxiety hits.', insightAr: 'تَدَرَّبي عَلى تِقْنيَّة 5-4-3-2-1 مَعاً عِنْدَما يَكونُ ابْنُكِ المُراهِقُ هادِئاً حَتّى تَصيرَ تِلْقائيَّةً عِنْدَما يَضْرِبُ القَلَق.', color: '#5B8FA8', position: { x: 50, y: 45 } },
+                  { id: 'breathe', labelEn: 'Breathe: 4-4-6', labelAr: 'تَنَفَّس: 4-4-6', descriptionEn: '4 counts in, hold 4, out for 6 — calms the nervous system', descriptionAr: '4 داخِل، حَبْسٌ 4، 6 خارِج — يُهَدِّئُ الجِهازَ العَصَبِيّ', insightEn: 'When your teen is anxious, breathe with them. Say "Let\'s do this together" and count out loud — co-regulation works at every age.', insightAr: 'عِنْدَما يَكونُ ابْنُكِ المُراهِقُ قَلِقاً، تَنَفَّسي مَعَه. قولي "لِنَفْعَلْ هذا مَعاً" وَعُدّي بِصَوْتٍ عالٍ — التَّنْظيمُ المُشْتَرَكُ يَعْمَلُ في كُلِّ عُمْر.', color: '#3B8A6E', position: { x: 50, y: 65 } },
+                  { id: 'choose', labelEn: 'Choose your response', labelAr: 'اِخْتَرْ اسْتِجابَتَك', descriptionEn: '"Now I can decide — not my alarm."', descriptionAr: '"الآنَ أَسْتَطيعُ أَنْ أُقَرِّر — لَيْسَ جَرَسُ إنْذاري."', insightEn: 'Celebrate when your teen pauses before reacting — even if the choice isn\'t perfect. The pause itself is the skill you\'re building.', insightAr: 'اِحْتَفِلي عِنْدَما يَتَوَقَّفُ ابْنُكِ المُراهِقُ قَبْلَ أَنْ يَتَفاعَل — حَتّى لَوْ لَمْ يَكُنِ الاِخْتيارُ مِثاليّاً. التَّوَقُّفُ نَفْسُهُ هُوَ المَهارَةُ الَّتي تَبْنينَها.', color: '#7A3B5E', position: { x: 50, y: 85 } },
+                ],
+                connections: [
+                  { from: 'notice', to: 'name' }, { from: 'name', to: 'ground' },
+                  { from: 'ground', to: 'breathe' }, { from: 'breathe', to: 'choose' },
+                ],
+              },
+            },
+            {
               kind: 'likert', id: 'at-lk1',
               reflection: {
                 titleEn: 'Social Anxiety', titleAr: 'القَلَقُ الاِجْتِماعيّ',
@@ -1986,6 +2038,22 @@ Ultimately, navigating peer pressure is about developing the courage to be authe
               titleAr: 'الرَّفْضُ مَهارَة — لَيْسَ شَخْصيَّة',
               bodyEn: 'Your teen WILL face pressure. The question isn\'t if — it\'s whether they have the language ready. These 6 scripts are muscle memory for the moment it matters.\n\nRehearse them with your teen. Out loud. Before the moment.',
               bodyAr: 'مُراهِقُكَ سَيُواجِهُ الضَّغْط. السُّؤالُ لَيْسَ هَلْ — بَلْ هل لَدَيْهِ اللُّغَةُ جاهِزَة. هذِهِ 6 سِينَاريوهات ذاكِرَةٌ عَضَلِيَّةٌ لِلَّحْظَةِ المُهِمَّة.\n\nمارِسيها مع مُراهِقِكَ. بِصَوْتٍ عالٍ. قَبْلَ اللَّحْظَة.',
+            },
+            {
+              kind: 'framework', id: 'rt-peer-triangle',
+              diagram: {
+                type: 'triangle',
+                titleEn: 'The Peer Pressure Triangle', titleAr: 'مُثَلَّثُ ضَغْطِ الأَقْران',
+                nodes: [
+                  { id: 'values', labelEn: 'Values Compass', labelAr: 'بوصَلَةُ القِيَم', descriptionEn: 'An inner reference point built through family conversations — the strongest shield', descriptionAr: 'نُقْطَةُ مَرْجِعيَّةٌ داخِليَّة بُنِيَتْ بِمُحادَثاتِ العائِلَة — أَقْوى دِرْع', insightEn: 'Have values conversations during calm moments, not crises. "What matters most to you?" planted early becomes their inner voice when you\'re not there.', insightAr: 'أَجْري مُحادَثاتِ القِيَمِ في لَحَظاتِ الهُدوء، لَيْسَ الأَزَمات. "ما الأَهَمُّ بِالنِّسْبَةِ لَك؟" المَزْروعَةُ مُبَكِّراً تَصيرُ صَوْتَهُمُ الدّاخِليَّ عِنْدَما لا تَكونينَ هُناك.', color: '#7A3B5E', position: { x: 50, y: 10 } },
+                  { id: 'skills', labelEn: 'Refusal Skills', labelAr: 'مَهاراتُ الرَّفْض', descriptionEn: 'Rehearsed scripts, exit plans, "blame a cause" strategies', descriptionAr: 'سيناريوهاتٌ مُتَدَرَّبٌ عَلَيْها، خُطَطُ خُروج، اِسْتِراتيجيَّاتُ "لَوْمِ سَبَب"', insightEn: 'Role-play refusal scripts together: "My mom checks my phone" or "I have practice early." Give them words they can use without losing face.', insightAr: 'تَدَرَّبي مَعَهُمْ عَلى سيناريوهاتِ الرَّفْض: "أُمّي تَفْحَصُ هاتِفي" أَوْ "عِنْدي تَمْرينٌ مُبَكِّر." أَعْطيهِمْ كَلِماتٍ يَسْتَخْدِمونَها دونَ خَسارَةِ ماءِ الوَجْه.', color: '#5B8FA8', position: { x: 20, y: 80 } },
+                  { id: 'belonging', labelEn: 'Healthy Belonging', labelAr: 'اِنْتِماءٌ صِحِّيّ', descriptionEn: 'Genuine friendships where they feel accepted without conditions', descriptionAr: 'صَداقاتٌ حَقيقيَّةٌ يَشْعُرونَ فيها بِالقَبولِ دونَ شُروط', insightEn: 'Help your teen find their "tribe" through activities that match their interests. One genuine friend is worth more than a hundred followers.', insightAr: 'ساعِدي ابْنَكِ المُراهِقَ في إيجادِ "قَبيلَتِه" مِنْ خِلالِ أَنْشِطَةٍ تُطابِقُ اِهْتِماماتِه. صَديقٌ واحِدٌ حَقيقيٌّ يُساوي أَكْثَرَ مِنْ مِئَةِ مُتابِع.', color: '#3B8A6E', position: { x: 80, y: 80 } },
+                ],
+                connections: [
+                  { from: 'values', to: 'skills' }, { from: 'values', to: 'belonging' },
+                  { from: 'skills', to: 'belonging' },
+                ],
+              },
             },
             {
               kind: 'card', id: 'pp-vape', accentColor: '#C4636A',
@@ -2602,6 +2670,24 @@ Finally, connect self-worth to contribution. Teens who feel that they make a mea
               kind: 'paragraph', id: 'sw-lead', tone: 'lead',
               textEn: 'Self-esteem fluctuates. Self-worth is the floor beneath it. Teens with healthy self-worth know: "I am worthy of love regardless of what I achieve, how I look, or what others think." Your words install or erode this floor.',
               textAr: 'تَقْديرُ الذّاتِ يَتَقَلَّب. قيمَةُ الذّاتِ هي الأَرْضيَّةُ تَحْتَه. المُراهِقونَ بِقيمَةِ ذاتٍ صِحِّيَّةٍ يَعْرِفون: "أَسْتَحِقُّ الحُبَّ بِغَضِّ النَّظَرِ عَمّا أُحَقِّقُه، أَوْ كَيْفَ أَبْدو، أَوْ ما يَعْتَقِدُهُ الآخَرون." كَلِماتُكِ تُرَكِّبُ أَوْ تُآكِلُ هذِهِ الأَرْضيَّة.',
+            },
+            {
+              kind: 'framework', id: 'rt-worth-iceberg',
+              diagram: {
+                type: 'iceberg',
+                titleEn: 'The Self-Worth Iceberg', titleAr: 'جَبَلُ قيمَةِ الذّاتِ الجَليديّ',
+                nodes: [
+                  { id: 'confidence', labelEn: 'Visible Confidence', labelAr: 'الثِّقَةُ المَرْئِيَّة', descriptionEn: 'Grades, social ease, assertiveness — what others see', descriptionAr: 'الدَّرَجات، السُّهولَةُ الاِجْتِماعيَّة، الحَزْم — ما يَراهُ الآخَرون', insightEn: 'Don\'t be fooled by outward confidence — a teen who seems "fine" may be struggling underneath. Check in with curiosity, not assumptions.', insightAr: 'لا تَنْخَدِعي بِالثِّقَةِ الظّاهِريَّة — المُراهِقُ الَّذي يَبْدو "بِخَيْر" قَدْ يُعاني تَحْتَ السَّطْح. تَحَقَّقي بِفُضولٍ لا بِاِفْتِراضات.', color: '#D4A84B', position: { x: 50, y: 18 } },
+                  { id: 'beliefs', labelEn: 'Core Beliefs', labelAr: 'مُعْتَقَداتٌ جَوْهَريَّة', descriptionEn: '"Am I enough?" "Do I matter?" — formed early', descriptionAr: '"هل أَنا كافٍ؟" "هل أَهُمّ؟" — تَتَشَكَّلُ مُبَكِّراً', insightEn: 'Say "I\'m proud of who you are" not just "I\'m proud of what you did." This builds worth that doesn\'t depend on performance.', insightAr: 'قولي "أَنا فَخورَةٌ بِمَنْ أَنْت" لَيْسَ فَقَط "أَنا فَخورَةٌ بِما فَعَلْت." هذا يَبْني قيمَةً لا تَعْتَمِدُ عَلى الأَداء.', color: '#5B8FA8', position: { x: 30, y: 55 } },
+                  { id: 'messages', labelEn: 'Early Messages', labelAr: 'رَسائِلُ الطُّفولَة', descriptionEn: 'What parents/teachers said or didn\'t say about who you are', descriptionAr: 'ما قالَهُ أَوْ لَمْ يَقُلْهُ الأَهْلُ والمُعَلِّمونَ عَمَّنْ أَنْت', insightEn: 'The messages you send today become their inner voice tomorrow. Be intentional: "You matter" and "Your feelings make sense" are powerful seeds.', insightAr: 'الرَّسائِلُ الَّتي تُرْسِلينَها اليَوْمَ تَصيرُ صَوْتَهُمُ الدّاخِليَّ غَداً. كوني مَقْصودَة: "أَنْتَ مُهِمّ" و"مَشاعِرُكَ مَنْطِقيَّة" بُذورٌ قَويَّة.', color: '#5B8FA8', position: { x: 70, y: 55 } },
+                  { id: 'comparison', labelEn: 'Comparison Habits', labelAr: 'عاداتُ المُقارَنَة', descriptionEn: 'Social media, peer ranking, "everyone is better than me"', descriptionAr: 'وَسائِلُ التَّواصُل، تَرْتيبُ الأَقْران، "الجَميعُ أَفْضَلُ مِنّي"', insightEn: 'Model healthy comparison habits yourself. When you catch yourself comparing, say it out loud: "I just compared myself to someone — that never helps."', insightAr: 'كوني قُدْوَةً في عاداتِ المُقارَنَةِ الصِّحّيَّة. عِنْدَما تُمْسِكينَ نَفْسَكِ تُقارِنين، قوليها بِصَوْتٍ عالٍ: "لَقَدْ قارَنْتُ نَفْسي بِشَخْصٍ ما — هذا لا يُساعِدُ أَبَداً."', color: '#C4636A', position: { x: 30, y: 78 } },
+                  { id: 'critic', labelEn: 'Inner Critic', labelAr: 'النّاقِدُ الدّاخِليّ', descriptionEn: 'The voice that says "you\'re not good enough" — relentless', descriptionAr: 'الصَّوْتُ الّذي يَقول "لَسْتَ جَيِّداً بِما يَكْفي" — لا يَرْحَم', insightEn: 'When your teen says "I\'m stupid" or "I can\'t do anything right," don\'t dismiss it. Say "That\'s your inner critic talking — what would you say to a friend feeling this way?"', insightAr: 'عِنْدَما يَقولُ ابْنُكِ المُراهِق "أَنا غَبيّ" أَوْ "لا أَسْتَطيعُ فِعْلَ شَيْءٍ صَحيح،" لا تَرْفُضيه. قولي "هذا ناقِدُكَ الدّاخِليُّ يَتَكَلَّم — ماذا كُنْتَ سَتَقولُ لِصَديقٍ يَشْعُرُ هكَذا؟"', color: '#C4636A', position: { x: 70, y: 78 } },
+                ],
+                connections: [
+                  { from: 'beliefs', to: 'confidence' }, { from: 'messages', to: 'confidence' },
+                  { from: 'comparison', to: 'confidence' }, { from: 'critic', to: 'confidence' },
+                ],
+              },
             },
             {
               kind: 'comparison', id: 'sw-cmp',

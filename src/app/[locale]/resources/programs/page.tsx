@@ -55,10 +55,12 @@ const totalModules = programs.reduce((sum, p) => sum + p.modules, 0);
 const totalHours = programs.reduce((sum, p) => sum + p.hours, 0);
 
 // Program finder quiz questions
+// Q1 (intent) is weighted x2; Q2/Q3 have secondary matches for cross-program relevance
 const finderQuestions = [
   {
     questionEn: 'What area would you most like to focus on?',
     questionAr: 'ما المجال الذي تود التركيز عليه أكثر؟',
+    weight: 2,
     options: [
       { labelEn: 'Parenting young children', labelAr: 'تربية الأطفال الصغار', match: 'intentional-parent' },
       { labelEn: 'Raising teenagers', labelAr: 'تربية المراهقين', match: 'resilient-teens' },
@@ -69,21 +71,23 @@ const finderQuestions = [
   {
     questionEn: 'What best describes your situation?',
     questionAr: 'ما الذي يصف وضعك الحالي أفضل؟',
+    weight: 1,
     options: [
-      { labelEn: 'I feel reactive, not intentional', labelAr: 'أشعر أنني أتصرف بردة فعل وليس بقصد', match: 'intentional-parent' },
-      { labelEn: 'Communication feels broken', labelAr: 'التواصل يبدو متقطعاً', match: 'resilient-teens' },
-      { labelEn: 'We keep having the same conflicts', labelAr: 'نستمر في نفس الخلافات', match: 'stronger-together' },
+      { labelEn: 'I feel reactive, not intentional', labelAr: 'أشعر أنني أتصرف بردة فعل وليس بقصد', match: 'intentional-parent', secondaryMatch: 'resilient-teens' },
+      { labelEn: 'Communication feels broken', labelAr: 'التواصل يبدو متقطعاً', match: 'resilient-teens', secondaryMatch: 'stronger-together' },
+      { labelEn: 'We keep having the same conflicts', labelAr: 'نستمر في نفس الخلافات', match: 'stronger-together', secondaryMatch: 'resilient-teens' },
       { labelEn: 'I feel stuck or anxious', labelAr: 'أشعر بالجمود أو القلق', match: 'inner-compass' },
     ],
   },
   {
     questionEn: 'What learning style suits you?',
     questionAr: 'ما أسلوب التعلم الذي يناسبك؟',
+    weight: 1,
     options: [
       { labelEn: 'Deep, comprehensive study', labelAr: 'دراسة عميقة وشاملة', match: 'intentional-parent' },
-      { labelEn: 'Practical tools I can use today', labelAr: 'أدوات عملية أستخدمها اليوم', match: 'inner-compass' },
-      { labelEn: 'Interactive scenarios & activities', labelAr: 'سيناريوهات وأنشطة تفاعلية', match: 'stronger-together' },
-      { labelEn: 'Research-backed strategies', labelAr: 'استراتيجيات مبنية على الأبحاث', match: 'resilient-teens' },
+      { labelEn: 'Practical tools I can use today', labelAr: 'أدوات عملية أستخدمها اليوم', match: 'inner-compass', secondaryMatch: 'intentional-parent' },
+      { labelEn: 'Interactive scenarios & activities', labelAr: 'سيناريوهات وأنشطة تفاعلية', match: 'stronger-together', secondaryMatch: 'resilient-teens' },
+      { labelEn: 'Research-backed strategies', labelAr: 'استراتيجيات مبنية على الأبحاث', match: 'resilient-teens', secondaryMatch: 'inner-compass' },
     ],
   },
 ];
@@ -151,11 +155,11 @@ export default function ProgramsPage() {
 
   // Program finder state
   const [finderStep, setFinderStep] = useState(-1); // -1 = not started
-  const [finderAnswers, setFinderAnswers] = useState<string[]>([]);
+  const [finderAnswers, setFinderAnswers] = useState<{ match: string; secondaryMatch?: string; questionIndex: number }[]>([]);
   const [previewRevealed, setPreviewRevealed] = useState(false);
 
-  const handleFinderAnswer = (match: string) => {
-    const next = [...finderAnswers, match];
+  const handleFinderAnswer = (match: string, secondaryMatch?: string) => {
+    const next = [...finderAnswers, { match, secondaryMatch, questionIndex: finderStep }];
     setFinderAnswers(next);
     if (finderStep < finderQuestions.length - 1) {
       setFinderStep(finderStep + 1);
@@ -166,8 +170,12 @@ export default function ProgramsPage() {
 
   const getRecommendedPrograms = () => {
     const scores: Record<string, number> = {};
-    finderAnswers.forEach(match => {
-      scores[match] = (scores[match] || 0) + 1;
+    finderAnswers.forEach(({ match, secondaryMatch, questionIndex }) => {
+      const weight = finderQuestions[questionIndex]?.weight || 1;
+      scores[match] = (scores[match] || 0) + weight;
+      if (secondaryMatch) {
+        scores[secondaryMatch] = (scores[secondaryMatch] || 0) + 0.5;
+      }
     });
     return programs
       .map(p => ({ ...p, score: scores[p.slug] || 0 }))
@@ -324,7 +332,7 @@ export default function ProgramsPage() {
                         key={i}
                         whileHover={{ y: -2, boxShadow: '0 4px 16px rgba(0,0,0,0.06)' }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => handleFinderAnswer(opt.match)}
+                        onClick={() => handleFinderAnswer(opt.match, (opt as { secondaryMatch?: string }).secondaryMatch)}
                         className="w-full text-left px-5 py-4 rounded-xl border-2 border-[#F3EFE8] hover:border-[#7A3B5E]/30 bg-white transition-all text-sm text-[#4A4A5C]"
                       >
                         {isRTL ? opt.labelAr : opt.labelEn}
