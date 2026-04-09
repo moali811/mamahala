@@ -33,6 +33,85 @@ function circlePos(index: number, total: number, radius: number) {
 }
 
 /* ══════════════════════════════════════════════════════════════════
+   HOVER REVEAL CARD — Used by Quadrant & Triangle.
+   On hover/tap the card scales up from its grid position, rises above
+   siblings, and smoothly reveals description + insight. Other cards dim.
+   Uses CSS transform so the grid never reflows.
+   ══════════════════════════════════════════════════════════════════ */
+function HoverRevealCard({ node, index, color, isRTL, isActive, anyActive, inView, transformOrigin, onSelect, className = '', style = {} }: {
+  node: FrameworkDiagram['nodes'][number]; index: number; color: string; isRTL: boolean;
+  isActive: boolean; anyActive: boolean; inView: boolean; transformOrigin: string;
+  onSelect: (id: string | null) => void; className?: string; style?: React.CSSProperties;
+}) {
+  const nodeColor = node.color || color;
+
+  return (
+    <motion.div
+      className={`relative ${className}`}
+      style={{ ...style, zIndex: isActive ? 20 : 1 }}
+      onClick={() => onSelect(isActive ? null : node.id)}
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={inView ? {
+        opacity: anyActive && !isActive ? 0.4 : 1,
+        scale: isActive ? 1.06 : 1,
+      } : {}}
+      whileTap={{ scale: 0.97 }}
+      transition={{ duration: 0.3, ...SPRING }}
+    >
+      <div
+        className="rounded-2xl border-2 p-3.5 cursor-pointer text-center overflow-hidden"
+        style={{
+          borderColor: isActive ? nodeColor : `${nodeColor}25`,
+          backgroundColor: isActive ? 'rgba(255,255,255,0.98)' : `${nodeColor}04`,
+          boxShadow: isActive
+            ? `0 12px 40px ${nodeColor}20, 0 0 0 1px ${nodeColor}15`
+            : '0 1px 4px rgba(0,0,0,0.04)',
+          transformOrigin,
+          transition: 'border-color 0.2s, background-color 0.2s, box-shadow 0.3s',
+        }}
+      >
+        <span
+          className="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold mb-2 transition-colors"
+          style={{ backgroundColor: isActive ? nodeColor : `${nodeColor}18`, color: isActive ? 'white' : nodeColor }}
+        >
+          {index + 1}
+        </span>
+        <span className="text-xs font-semibold block transition-colors" style={{ color: isActive ? '#2D2A33' : '#4A4A5C' }}>
+          {t(node.labelEn, node.labelAr, isRTL)}
+        </span>
+
+        {/* Reveal on hover — smooth height animation */}
+        <AnimatePresence>
+          {isActive && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.25, ease: EASE }}
+              className="overflow-hidden"
+            >
+              <div className="mt-2 pt-2 border-t text-left" style={{ borderColor: `${nodeColor}15` }} dir={isRTL ? 'rtl' : 'ltr'}>
+                <p className="text-[11px] text-[#4A4A5C] leading-snug">
+                  {t(node.descriptionEn, node.descriptionAr, isRTL)}
+                </p>
+                {(node.insightEn || node.insightAr) && (
+                  <div className="rounded-md px-2 py-1.5 mt-2" style={{ background: `${nodeColor}08` }}>
+                    <p className="text-[10px] text-[#3A3A4C] leading-snug">
+                      <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
+                      {t(node.insightEn || '', node.insightAr || '', isRTL)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════
    FLOWCHART — Vertical cascade of cards with animated connectors
    ══════════════════════════════════════════════════════════════════ */
 function FlowchartView({ diagram, isRTL, color, selected, onSelect }: {
@@ -763,16 +842,16 @@ function TriangleView({ diagram, isRTL, color, selected, onSelect }: {
   const inView = useInView(ref, { once: true, margin: '-40px' });
   const nodes = diagram.nodes.slice(0, 3);
 
-  // Positions: top-center, bottom-left, bottom-right
   const positions = [
     'col-span-2 justify-self-center',
     'justify-self-end',
     'justify-self-start',
   ];
+  // Transform origins: top card → bottom, bottom-left → top-right, bottom-right → top-left
+  const origins = ['center bottom', 'right top', 'left top'];
 
   return (
     <div ref={ref}>
-      {/* SVG triangle outline */}
       <div className="relative">
         <svg viewBox="0 0 300 260" className="absolute inset-0 w-full h-full pointer-events-none z-0" preserveAspectRatio="xMidYMid meet">
           <motion.polygon
@@ -787,76 +866,29 @@ function TriangleView({ diagram, isRTL, color, selected, onSelect }: {
           />
         </svg>
 
-        <div className="relative z-10 grid grid-cols-2 gap-4 py-6 px-4" style={{ gridAutoRows: '1fr' }}>
+        <div className="relative z-10 grid grid-cols-2 gap-4 py-6 px-4">
           {nodes.map((node, i) => {
             const nodeColor = node.color || color;
             const isActive = selected === node.id;
 
             return (
-              <motion.button
+              <HoverRevealCard
                 key={node.id}
-                type="button"
-                onClick={() => onSelect(isActive ? null : node.id)}
-                className={`rounded-2xl border-2 px-4 py-3 cursor-pointer transition-shadow flex flex-col items-center justify-start ${positions[i]}`}
-                style={{
-                  minWidth: 130,
-                  maxWidth: 180,
-                  borderColor: isActive ? nodeColor : `${nodeColor}30`,
-                  backgroundColor: isActive ? `${nodeColor}08` : 'white',
-                  boxShadow: isActive ? `0 4px 16px ${nodeColor}20` : '0 1px 4px rgba(0,0,0,0.04)',
-                }}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={inView ? { opacity: 1, scale: 1 } : {}}
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ delay: 0.2 + i * 0.15, duration: 0.5, ...SPRING }}
-              >
-                <span
-                  className="text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center mx-auto mb-1.5"
-                  style={{ backgroundColor: isActive ? nodeColor : `${nodeColor}18`, color: isActive ? 'white' : nodeColor }}
-                >
-                  {i + 1}
-                </span>
-                <span className="text-xs font-semibold block text-center" style={{ color: isActive ? '#2D2A33' : '#4A4A5C' }}>
-                  {t(node.labelEn, node.labelAr, isRTL)}
-                </span>
-              </motion.button>
+                node={node}
+                index={i}
+                color={color}
+                isRTL={isRTL}
+                isActive={isActive}
+                anyActive={!!selected}
+                inView={inView}
+                transformOrigin={origins[i]}
+                onSelect={onSelect}
+                className={positions[i]}
+                style={{ minWidth: 130, maxWidth: 180 }}
+              />
             );
           })}
         </div>
-
-        {/* Detail panel below grid */}
-        <AnimatePresence>
-          {selected && (() => {
-            const node = nodes.find(n => n.id === selected);
-            if (!node) return null;
-            const nodeColor = node.color || color;
-            return (
-              <motion.div
-                key={selected}
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.3 }}
-                className="mx-4 mb-4 rounded-2xl border-2 p-4 text-center"
-                style={{ borderColor: nodeColor, backgroundColor: `${nodeColor}08` }}
-              >
-                <p className="text-xs font-semibold mb-1.5" style={{ color: nodeColor }}>
-                  {t(node.labelEn, node.labelAr, isRTL)}
-                </p>
-                <p className="text-[11px] text-[#4A4A5C] leading-relaxed">
-                  {t(node.descriptionEn, node.descriptionAr, isRTL)}
-                </p>
-                {(node.insightEn || node.insightAr) && (
-                  <p className="text-[10px] text-[#3A3A4C] leading-snug mt-2 pt-2 border-t" style={{ borderColor: `${nodeColor}18` }}>
-                    <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
-                    {t(node.insightEn || '', node.insightAr || '', isRTL)}
-                  </p>
-                )}
-              </motion.div>
-            );
-          })()}
-        </AnimatePresence>
       </div>
     </div>
   );
@@ -875,8 +907,8 @@ function SpectrumView({ diagram, isRTL, color, selected, onSelect }: {
 
   return (
     <div ref={ref} className="px-2 py-6">
-      {/* Gradient bar */}
       <div className="relative mx-auto max-w-[380px]">
+        {/* Gradient bar */}
         <motion.div
           className="h-2 rounded-full mx-6"
           style={{
@@ -896,73 +928,71 @@ function SpectrumView({ diagram, isRTL, color, selected, onSelect }: {
             const isActive = selected === node.id;
 
             return (
-              <motion.button
-                key={node.id}
-                type="button"
-                onClick={() => onSelect(isActive ? null : node.id)}
-                className="flex flex-col items-center cursor-pointer group"
-                style={{ flex: '1 1 0', maxWidth: `${100 / count}%` }}
-                initial={{ opacity: 0, y: 10 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                whileHover={{ y: -3 }}
-                transition={{ delay: 0.4 + i * 0.1, duration: 0.4, ...SPRING }}
-              >
-                {/* Dot */}
-                <motion.div
-                  className="rounded-full mb-2"
-                  style={{
-                    width: isActive ? 20 : 14,
-                    height: isActive ? 20 : 14,
-                    backgroundColor: isActive ? nodeColor : `${nodeColor}25`,
-                    border: `2px solid ${nodeColor}`,
-                    boxShadow: isActive ? `0 0 12px ${nodeColor}30` : 'none',
-                  }}
-                  animate={{ scale: isActive ? 1.1 : 1 }}
-                  transition={SPRING}
-                />
-                <span
-                  className="text-[10px] font-semibold text-center leading-tight"
-                  style={{ color: isActive ? '#2D2A33' : '#4A4A5C' }}
+              <div key={node.id} className="relative" style={{ flex: '1 1 0', maxWidth: `${100 / count}%` }}>
+                <motion.button
+                  type="button"
+                  onClick={() => onSelect(isActive ? null : node.id)}
+                  className="flex flex-col items-center cursor-pointer group w-full"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={inView ? { opacity: selected && !isActive ? 0.35 : 1, y: 0 } : {}}
+                  whileHover={{ y: -3 }}
+                  transition={{ delay: 0.4 + i * 0.1, duration: 0.4, ...SPRING }}
                 >
-                  {t(node.labelEn, node.labelAr, isRTL)}
-                </span>
-              </motion.button>
+                  <motion.div
+                    className="rounded-full mb-2"
+                    style={{
+                      width: isActive ? 20 : 14,
+                      height: isActive ? 20 : 14,
+                      backgroundColor: isActive ? nodeColor : `${nodeColor}25`,
+                      border: `2px solid ${nodeColor}`,
+                      boxShadow: isActive ? `0 0 12px ${nodeColor}30` : 'none',
+                    }}
+                    animate={{ scale: isActive ? 1.15 : 1 }}
+                    transition={SPRING}
+                  />
+                  <span
+                    className="text-[10px] font-semibold text-center leading-tight"
+                    style={{ color: isActive ? '#2D2A33' : '#4A4A5C' }}
+                  >
+                    {t(node.labelEn, node.labelAr, isRTL)}
+                  </span>
+                </motion.button>
+
+                {/* Tooltip above marker */}
+                <AnimatePresence>
+                  {isActive && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8, scale: 0.9 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                      transition={{ duration: 0.2, ...SPRING }}
+                      className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-[200px] rounded-xl overflow-hidden backdrop-blur-xl pointer-events-none z-20"
+                      style={{
+                        background: 'rgba(255,255,255,0.96)',
+                        boxShadow: `0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px ${nodeColor}15`,
+                      }}
+                    >
+                      <div style={{ height: 2, background: `linear-gradient(90deg, ${nodeColor}, ${nodeColor}40)` }} />
+                      <div className="px-3 py-2.5">
+                        <p className="text-[11px] text-[#4A4A5C] leading-snug">
+                          {t(node.descriptionEn, node.descriptionAr, isRTL)}
+                        </p>
+                        {(node.insightEn || node.insightAr) && (
+                          <p className="text-[10px] text-[#3A3A4C] leading-snug mt-1.5 pt-1.5 border-t" style={{ borderColor: `${nodeColor}15` }}>
+                            <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
+                            {t(node.insightEn || '', node.insightAr || '', isRTL)}
+                          </p>
+                        )}
+                      </div>
+                      {/* Arrow */}
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 -mt-1" style={{ background: 'rgba(255,255,255,0.96)', boxShadow: '2px 2px 4px rgba(0,0,0,0.05)' }} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             );
           })}
         </div>
-
-        {/* Detail panel below spectrum */}
-        <AnimatePresence>
-          {selected && (() => {
-            const node = diagram.nodes.find(n => n.id === selected);
-            if (!node) return null;
-            const nodeColor = node.color || color;
-            return (
-              <motion.div
-                key={selected}
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.3 }}
-                className="mt-3 rounded-2xl border-2 p-4 text-center"
-                style={{ borderColor: nodeColor, backgroundColor: `${nodeColor}08` }}
-              >
-                <p className="text-xs font-semibold mb-1.5" style={{ color: nodeColor }}>
-                  {t(node.labelEn, node.labelAr, isRTL)}
-                </p>
-                <p className="text-[11px] text-[#4A4A5C] leading-relaxed">
-                  {t(node.descriptionEn, node.descriptionAr, isRTL)}
-                </p>
-                {(node.insightEn || node.insightAr) && (
-                  <p className="text-[10px] text-[#3A3A4C] leading-snug mt-2 pt-2 border-t" style={{ borderColor: `${nodeColor}18` }}>
-                    <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
-                    {t(node.insightEn || '', node.insightAr || '', isRTL)}
-                  </p>
-                )}
-              </motion.div>
-            );
-          })()}
-        </AnimatePresence>
       </div>
     </div>
   );
@@ -979,6 +1009,9 @@ function QuadrantView({ diagram, isRTL, color, selected, onSelect }: {
   const inView = useInView(ref, { once: true, margin: '-40px' });
   const nodes = diagram.nodes.slice(0, 4);
 
+  // Transform origins: each card expands toward the center of the 2×2 grid
+  const origins = ['right bottom', 'left bottom', 'right top', 'left top'];
+
   return (
     <div ref={ref} className="relative px-2 py-4">
       {/* Axis lines */}
@@ -989,77 +1022,22 @@ function QuadrantView({ diagram, isRTL, color, selected, onSelect }: {
         <div className="h-[1px] w-[85%] bg-[#E5E0D8]" />
       </div>
 
-      <div className="relative z-10 grid grid-cols-2 gap-3 max-w-[380px] mx-auto" style={{ gridAutoRows: '1fr' }}>
-        {nodes.map((node, i) => {
-          const nodeColor = node.color || color;
-          const isActive = selected === node.id;
-
-          return (
-            <motion.button
-              key={node.id}
-              type="button"
-              onClick={() => onSelect(isActive ? null : node.id)}
-              className="rounded-2xl border-2 p-3.5 cursor-pointer transition-shadow text-center flex flex-col items-center justify-start"
-              style={{
-                borderColor: isActive ? nodeColor : `${nodeColor}25`,
-                backgroundColor: isActive ? `${nodeColor}10` : `${nodeColor}04`,
-                boxShadow: isActive ? `0 4px 16px ${nodeColor}18` : 'none',
-              }}
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={inView ? { opacity: 1, scale: 1 } : {}}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              transition={{ delay: 0.2 + i * 0.1, duration: 0.5, ...SPRING }}
-            >
-              <span
-                className="inline-flex items-center justify-center w-6 h-6 rounded-full text-[10px] font-bold mb-2"
-                style={{ backgroundColor: isActive ? nodeColor : `${nodeColor}18`, color: isActive ? 'white' : nodeColor }}
-              >
-                {i + 1}
-              </span>
-              <span className="text-xs font-semibold block" style={{ color: isActive ? '#2D2A33' : '#4A4A5C' }}>
-                {t(node.labelEn, node.labelAr, isRTL)}
-              </span>
-            </motion.button>
-          );
-        })}
+      <div className="relative z-10 grid grid-cols-2 gap-3 max-w-[380px] mx-auto">
+        {nodes.map((node, i) => (
+          <HoverRevealCard
+            key={node.id}
+            node={node}
+            index={i}
+            color={color}
+            isRTL={isRTL}
+            isActive={selected === node.id}
+            anyActive={!!selected}
+            inView={inView}
+            transformOrigin={origins[i]}
+            onSelect={onSelect}
+          />
+        ))}
       </div>
-
-      {/* Detail panel below grid */}
-      <AnimatePresence>
-        {selected && (() => {
-          const node = nodes.find(n => n.id === selected);
-          if (!node) return null;
-          const nodeColor = node.color || color;
-          return (
-            <motion.div
-              key={selected}
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3 }}
-              className="mt-3 mx-auto max-w-[380px] rounded-2xl border-2 p-4 text-center"
-              style={{
-                borderColor: nodeColor,
-                backgroundColor: `${nodeColor}08`,
-              }}
-            >
-              <p className="text-xs font-semibold mb-1.5" style={{ color: nodeColor }}>
-                {t(node.labelEn, node.labelAr, isRTL)}
-              </p>
-              <p className="text-[11px] text-[#4A4A5C] leading-relaxed">
-                {t(node.descriptionEn, node.descriptionAr, isRTL)}
-              </p>
-              {(node.insightEn || node.insightAr) && (
-                <p className="text-[10px] text-[#3A3A4C] leading-snug mt-2 pt-2 border-t" style={{ borderColor: `${nodeColor}18` }}>
-                  <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
-                  {t(node.insightEn || '', node.insightAr || '', isRTL)}
-                </p>
-              )}
-            </motion.div>
-          );
-        })()}
-      </AnimatePresence>
     </div>
   );
 }

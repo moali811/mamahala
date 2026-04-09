@@ -460,8 +460,11 @@ export default function ModuleLessonPage() {
         </div>
 
         {/* Nudge: after lesson → go to quiz (only if quiz not yet passed) */}
+        {/* For story-format modules, wait until all story scenes are completed */}
         <NextStepNudge
-          show={completedSections.includes('lesson') && !quizPassed}
+          show={completedSections.includes('lesson') && !quizPassed && (
+            !hasBlocks || currentModule.format !== 'story' || (currentModule.blocks || []).every(b => completedSections.includes(b.id))
+          )}
           messageEn="Great progress! Ready to test what you've learned?"
           messageAr="تقدّمٌ رائع! مستعدّ لاختبار ما تعلّمته؟"
           buttonEn="Take the Quiz"
