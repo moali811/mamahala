@@ -881,10 +881,8 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
   }
 
   .checkbox-item {
-    display: flex;
-    align-items: flex-start;
-    ${isRTL ? 'flex-direction: row-reverse;' : ''}
-    gap: 10px;
+    position: relative;
+    ${isRTL ? 'padding-right' : 'padding-left'}: 28px;
     margin: 8px 0;
     line-height: 1.6;
     direction: ${dir};
@@ -892,13 +890,13 @@ ${isRTL ? `<link rel="preconnect" href="https://fonts.googleapis.com">
   }
 
   .checkbox-box {
-    display: inline-block;
+    position: absolute;
+    ${isRTL ? 'right' : 'left'}: 0;
+    top: 3px;
     width: 16px;
     height: 16px;
-    min-width: 16px;
     border: 1.5px solid ${B.rose};
     border-radius: 3px;
-    margin-top: 3px;
     background: white;
   }
 
