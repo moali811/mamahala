@@ -111,7 +111,7 @@ export default function CycleDiagramBlockView({ block, ctx }: { block: CycleDiag
 
   const [active, setActive] = useState(0);
   const [userInteracted, setUserInteracted] = useState(false);
-  const timerRef = useRef<ReturnType<typeof setInterval>>();
+  const timerRef = useRef<ReturnType<typeof setInterval>>(undefined);
 
   /* Auto-rotate */
   const startTimer = useCallback(() => {
