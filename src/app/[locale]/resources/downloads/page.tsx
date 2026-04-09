@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useState, useEffect, useRef, Suspense } from 'react';
+import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   FileText,
@@ -27,7 +27,6 @@ import {
   TrendingUp,
   Clock,
   BookMarked,
-  HelpCircle,
   Users,
   Globe,
 } from 'lucide-react';
@@ -40,6 +39,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
+import { toolkitCatalog } from '@/data/toolkits';
 
 interface DownloadResource {
   id: string;
@@ -483,6 +483,14 @@ const audienceBadgeLabels: Record<string, { en: string; ar: string; color: strin
 };
 
 export default function DownloadsPage() {
+  return (
+    <Suspense>
+      <DownloadsPageInner />
+    </Suspense>
+  );
+}
+
+function DownloadsPageInner() {
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
   const isRTL = locale === 'ar';
@@ -495,7 +503,20 @@ export default function DownloadsPage() {
 
   // Pagination
   const ITEMS_PER_PAGE = 6;
-  const [currentPage, setCurrentPage] = useState(1);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const currentPage = Number(searchParams.get('page')) || 1;
+  const setCurrentPage = (pageOrFn: number | ((prev: number) => number)) => {
+    const newPage = typeof pageOrFn === 'function' ? pageOrFn(currentPage) : pageOrFn;
+    const params = new URLSearchParams(searchParams.toString());
+    if (newPage <= 1) {
+      params.delete('page');
+    } else {
+      params.set('page', String(newPage));
+    }
+    const qs = params.toString();
+    router.replace(`/${locale}/resources/downloads${qs ? `?${qs}` : ''}`, { scroll: false });
+  };
 
   // Preview modal
   const [previewId, setPreviewId] = useState<string | null>(null);
@@ -534,8 +555,15 @@ export default function DownloadsPage() {
     currentPage * ITEMS_PER_PAGE
   );
 
-  // Reset page when filters change
-  useEffect(() => { setCurrentPage(1); }, [audienceFilter, typeFilter]);
+  // Reset page when filters change (skip initial mount)
+  const filterMounted = useRef(false);
+  useEffect(() => {
+    if (!filterMounted.current) { filterMounted.current = true; return; }
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('page');
+    const qs = params.toString();
+    router.replace(`/${locale}/resources/downloads${qs ? `?${qs}` : ''}`, { scroll: false });
+  }, [audienceFilter, typeFilter]);
 
   // Preview handler
   const openPreview = async (id: string) => {
@@ -721,29 +749,6 @@ export default function DownloadsPage() {
             </ScrollReveal>
           )}
 
-          {/* Not sure where to start? */}
-          <ScrollReveal className="mb-10">
-            <Link
-              href={`/${locale}/quiz`}
-              className="group flex items-center justify-between gap-4 px-6 py-4 bg-white rounded-2xl border border-[#F3EFE8] hover:border-[#7A3B5E]/20 hover:shadow-md transition-all max-w-2xl mx-auto"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#7A3B5E]/8">
-                  <HelpCircle className="w-5 h-5 text-[#7A3B5E]" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[#2D2A33]">
-                    {isRTL ? 'لستَ متأكّدًا من أين تبدأ؟' : 'Not sure where to start?'}
-                  </p>
-                  <p className="text-xs text-[#8E8E9F]">
-                    {isRTL ? 'أجِبْ على اختبارٍ سريعٍ لنجدَ الأدواتَ المناسبةَ لك.' : 'Take our quick quiz to find the right tools for you.'}
-                  </p>
-                </div>
-              </div>
-              <ArrowRight className={`w-5 h-5 text-[#7A3B5E] group-hover:translate-x-1 transition-transform ${isRTL ? 'rotate-180 group-hover:-translate-x-1' : ''}`} />
-            </Link>
-          </ScrollReveal>
-
           {/* Audience filter tabs */}
           <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
             {audienceFilters.map((filter) => (
@@ -800,17 +805,12 @@ export default function DownloadsPage() {
 
                       {/* Badges */}
                       <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
-                        {resource.featured && (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-[#7A3B5E] to-[#5E2D48] shadow-sm">
-                            <Heart className="w-3 h-3" /> {isRTL ? 'اختيارُ د. هالة' : "Dr. Hala's Pick"}
-                          </span>
-                        )}
-                        {resource.popular && !resource.featured && (
+                        {resource.popular && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-[#C8A97D] to-[#B08D57] shadow-sm">
                             <TrendingUp className="w-3 h-3" /> {isRTL ? 'الأكثرُ شعبيّة' : 'Most Popular'}
                           </span>
                         )}
-                        {isNew(resource.dateAdded) && !resource.featured && !resource.popular && (
+                        {isNew(resource.dateAdded) && !resource.popular && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] shadow-sm animate-pulse">
                             <Sparkles className="w-3 h-3" /> {isRTL ? 'جديد' : 'New'}
                           </span>
@@ -868,6 +868,17 @@ export default function DownloadsPage() {
                           <Eye className="w-4 h-4" />
                           {isRTL ? 'ألقِ نظرة' : 'Peek Inside'}
                         </button>
+
+                        {/* Interactive version link */}
+                        {toolkitCatalog.find(tc => tc.slug === resource.id)?.hasInteractiveVersion && (
+                          <Link
+                            href={`/${locale}/resources/toolkits/${resource.id}`}
+                            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#7A3B5E] to-[#C4878A] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity"
+                          >
+                            <Sparkles className="w-4 h-4" />
+                            {isRTL ? 'النسخة التفاعلية' : 'Try Interactive Version'}
+                          </Link>
+                        )}
 
                         {isUnlocked ? (
                           <button
@@ -1009,11 +1020,6 @@ export default function DownloadsPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <Badge variant="sage" size="sm">{typeLabel}</Badge>
-                    {resource.featured && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-[#7A3B5E]">
-                        <Heart className="w-3 h-3" /> {isRTL ? 'اختيارُ د. هالة' : "Dr. Hala's Pick"}
-                      </span>
-                    )}
                   </div>
                   <h2 className="text-lg font-bold text-[#2D2A33] truncate" style={{ fontFamily: 'var(--font-heading)' }}>
                     {title}

@@ -1,0 +1,456 @@
+'use client';
+
+/* ================================================================
+   Toolkit Detail Page
+   Renders a full interactive toolkit (journal / workbook / guide)
+   with section navigation, accordion days, and block content.
+   ================================================================ */
+
+import { useParams } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  BookOpen,
+  Home,
+  Sun, Moon, Eye, Heart, Shield, PenLine, Clock,
+  CheckCircle, Target, Sparkles, Lock, Brain, Flame, Compass, MessageCircle,
+} from 'lucide-react';
+
+import type { Locale } from '@/types';
+import type { ToolkitMeta, ToolkitSection, ToolkitBlock } from '@/types/toolkit';
+import { getToolkit } from '@/data/toolkits';
+import ToolkitBlockRenderer, { type ToolkitBlockContext } from '@/components/toolkit/ToolkitBlockRenderer';
+import FinalCTA from '@/components/shared/FinalCTA';
+import ScrollReveal from '@/components/motion/ScrollReveal';
+import { t } from '@/lib/academy-helpers';
+import { ease } from '@/lib/animations';
+
+/* ── Icon map ─────────────────────────────────────────────────── */
+const iconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
+  sun: Sun, moon: Moon, eye: Eye, heart: Heart, shield: Shield,
+  'pen-line': PenLine, clock: Clock, 'check-circle': CheckCircle,
+  target: Target, sparkles: Sparkles, lock: Lock, brain: Brain,
+  flame: Flame, compass: Compass, 'message-circle': MessageCircle,
+};
+
+/* ── Color tokens ──────────────────────────────────────────────── */
+const colors = {
+  plum: '#7A3B5E',
+  textDark: '#2D2A33',
+  textSecondary: '#4A4A5C',
+  bgLight: '#FAF7F2',
+  border: '#F3EFE8',
+};
+
+/* ── Skeleton loader ───────────────────────────────────────────── */
+function ToolkitSkeleton() {
+  return (
+    <div className="min-h-screen bg-[#FAF7F2]">
+      {/* Hero skeleton */}
+      <div className="px-6 pt-24 pb-16 max-w-4xl mx-auto">
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 w-48 bg-[#F3EFE8] rounded" />
+          <div className="h-10 w-3/4 bg-[#F3EFE8] rounded" />
+          <div className="h-6 w-1/2 bg-[#F3EFE8] rounded" />
+          <div className="h-24 w-full bg-[#F3EFE8] rounded-xl mt-8" />
+        </div>
+      </div>
+      {/* Content skeleton */}
+      <div className="px-6 max-w-4xl mx-auto space-y-6">
+        {[...Array(4)].map((_, i) => (
+          <div key={i} className="animate-pulse">
+            <div className="h-16 bg-[#F3EFE8] rounded-xl" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── Main Page Component ───────────────────────────────────────── */
+export default function ToolkitDetailPage() {
+  const params = useParams();
+  const locale = (params?.locale as Locale) || 'en';
+  const slug = params?.slug as string;
+  const isRTL = locale === 'ar';
+
+  const [toolkit, setToolkit] = useState<ToolkitMeta | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState(0);
+  const [expandedDay, setExpandedDay] = useState<string | null>(null);
+
+  /* ── Load toolkit data ───────────────────────────────────────── */
+  useEffect(() => {
+    if (!slug) return;
+    let cancelled = false;
+    setLoading(true);
+    getToolkit(slug).then((data) => {
+      if (!cancelled) {
+        setToolkit(data);
+        setLoading(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [slug]);
+
+  /* ── Helpers ─────────────────────────────────────────────────── */
+  const toggleDay = useCallback((dayId: string) => {
+    setExpandedDay((prev) => (prev === dayId ? null : dayId));
+  }, []);
+
+  if (loading) return <ToolkitSkeleton />;
+  if (!toolkit) {
+    return (
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <p className="text-xl text-[#4A4A5C]">
+            {isRTL ? 'لم يتم العثور على المجموعة' : 'Toolkit not found'}
+          </p>
+          <Link
+            href={`/${locale}/resources`}
+            className="text-[#7A3B5E] underline hover:opacity-80 transition"
+          >
+            {isRTL ? 'العودة للموارد' : 'Back to Resources'}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const section = toolkit.sections[activeSection];
+  const blockCtx: ToolkitBlockContext = {
+    locale,
+    isRTL,
+    color: toolkit.color || colors.plum,
+    toolkitSlug: toolkit.slug,
+  };
+
+  const ArrowBack = isRTL ? ChevronRight : ChevronLeft;
+
+  /* ── Classify blocks ─────────────────────────────────────────── */
+  const isDayBlock = (b: ToolkitBlock) => b.kind === 'journal-day';
+  const introBlocks = section ? section.blocks.filter((b) => !isDayBlock(b)) : [];
+  const dayBlocks = section ? section.blocks.filter(isDayBlock) : [];
+
+  /* ── Compute progress ────────────────────────────────────────── */
+  const totalSections = toolkit.sections.length;
+  const progressPercent = totalSections > 0 ? ((activeSection + 1) / totalSections) * 100 : 0;
+
+  return (
+    <div className="min-h-screen bg-[#FAF7F2]" dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* ── Breadcrumb ──────────────────────────────────────────── */}
+      <div className="px-6 pt-6 max-w-5xl mx-auto">
+        <nav className="flex items-center gap-2 text-sm text-[#4A4A5C]">
+          <Link
+            href={`/${locale}`}
+            className="hover:text-[#7A3B5E] transition flex items-center gap-1"
+          >
+            <Home className="w-3.5 h-3.5" />
+            {isRTL ? 'الرئيسيّة' : 'Home'}
+          </Link>
+          <span className="opacity-40">/</span>
+          <Link
+            href={`/${locale}/resources/downloads`}
+            className="hover:text-[#7A3B5E] transition"
+          >
+            {isRTL ? 'الأدوات' : 'Toolkits'}
+          </Link>
+          <span className="opacity-40">/</span>
+          <span className="text-[#2D2A33] font-medium truncate max-w-[200px]">
+            {t(toolkit.titleEn, toolkit.titleAr, isRTL)}
+          </span>
+        </nav>
+      </div>
+
+      {/* ── Hero Section ────────────────────────────────────────── */}
+      <header className="px-6 pt-8 pb-12 max-w-5xl mx-auto">
+        <ScrollReveal>
+          <div className="space-y-4">
+            <div
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
+              style={{ backgroundColor: `${toolkit.color}15`, color: toolkit.color }}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              {t(
+                toolkit.format === 'journal' ? 'Interactive Journal' :
+                toolkit.format === 'workbook' ? 'Workbook' :
+                toolkit.format === 'guide' ? 'Guide' : 'Checklist',
+                toolkit.format === 'journal' ? 'يوميّات تفاعليّة' :
+                toolkit.format === 'workbook' ? 'دفتر عمل' :
+                toolkit.format === 'guide' ? 'دليل' : 'قائمة',
+                isRTL,
+              )}
+              {toolkit.totalDays && (
+                <span className="opacity-60">
+                  &middot; {toolkit.totalDays} {isRTL ? 'يوم' : 'days'}
+                </span>
+              )}
+            </div>
+            <h1
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] leading-tight"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {t(toolkit.titleEn, toolkit.titleAr, isRTL)}
+            </h1>
+            <p className="text-lg text-[#4A4A5C] max-w-2xl leading-relaxed">
+              {t(toolkit.subtitleEn, toolkit.subtitleAr, isRTL)}
+            </p>
+            {toolkit.heroQuoteEn && (
+              <blockquote
+                className="mt-6 border-s-4 ps-4 py-2 italic text-[#4A4A5C] max-w-xl"
+                style={{ borderColor: toolkit.color }}
+              >
+                &ldquo;{t(toolkit.heroQuoteEn, toolkit.heroQuoteAr || '', isRTL)}&rdquo;
+              </blockquote>
+            )}
+          </div>
+        </ScrollReveal>
+      </header>
+
+      {/* ── How to Use — Icon Grid ──────────────────────────────── */}
+      {toolkit.howToUse.length > 0 && (
+        <section className="px-6 pb-12 max-w-5xl mx-auto">
+          <ScrollReveal delay={0.1}>
+            <h2
+              className="text-xl font-semibold text-[#2D2A33] mb-6"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              {isRTL ? 'كيفيّة الاستخدام' : 'How to Use This Toolkit'}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {toolkit.howToUse.map((item, i) => (
+                <motion.div
+                  key={i}
+                  className="bg-white rounded-xl p-5 border border-[#F3EFE8] shadow-sm"
+                  initial={{ opacity: 0, y: 16 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08, duration: 0.5, ease }}
+                >
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
+                    style={{ backgroundColor: `${toolkit.color}18` }}
+                  >
+                    {(() => {
+                      const Icon = iconMap[item.iconName.toLowerCase()] || Heart;
+                      return <Icon className="w-5 h-5" style={{ color: toolkit.color }} />;
+                    })()}
+                  </div>
+                  <p className="font-medium text-[#2D2A33] text-sm">
+                    {t(item.labelEn, item.labelAr, isRTL)}
+                  </p>
+                  {item.descEn && (
+                    <p className="text-xs text-[#4A4A5C] mt-1 leading-relaxed">
+                      {t(item.descEn, item.descAr || '', isRTL)}
+                    </p>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </ScrollReveal>
+        </section>
+      )}
+
+      {/* ── Progress Bar ────────────────────────────────────────── */}
+      <div className="sticky top-0 z-30 bg-[#FAF7F2]/95 backdrop-blur-md border-b border-[#F3EFE8]">
+        <div className="max-w-5xl mx-auto px-6 py-3">
+          {/* Progress track */}
+          <div className="h-1.5 bg-[#F3EFE8] rounded-full overflow-hidden mb-3">
+            <motion.div
+              className="h-full rounded-full"
+              style={{ backgroundColor: toolkit.color }}
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercent}%` }}
+              transition={{ duration: 0.4, ease }}
+            />
+          </div>
+          {/* Section tabs */}
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
+            {toolkit.sections.map((sec, i) => {
+              const isActive = i === activeSection;
+              return (
+                <button
+                  key={sec.id}
+                  onClick={() => {
+                    setActiveSection(i);
+                    setExpandedDay(null);
+                  }}
+                  className={`
+                    whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium
+                    transition-all duration-200 flex-shrink-0
+                    ${isActive
+                      ? 'text-white shadow-sm'
+                      : 'text-[#4A4A5C] hover:bg-[#F3EFE8]'
+                    }
+                  `}
+                  style={isActive ? { backgroundColor: sec.color || toolkit.color } : undefined}
+                >
+                  {t(sec.titleEn, sec.titleAr, isRTL)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Active Section Content ──────────────────────────────── */}
+      {section && (
+        <main className="px-6 py-10 max-w-4xl mx-auto">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={section.id}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.35, ease }}
+            >
+              {/* Section header */}
+              <div className="mb-8">
+                <h2
+                  className="text-2xl sm:text-3xl font-bold text-[#2D2A33]"
+                  style={{ fontFamily: 'var(--font-heading)' }}
+                >
+                  {t(section.titleEn, section.titleAr, isRTL)}
+                </h2>
+                {section.subtitleEn && (
+                  <p className="mt-2 text-[#4A4A5C] leading-relaxed">
+                    {t(section.subtitleEn, section.subtitleAr || '', isRTL)}
+                  </p>
+                )}
+                {section.dateRangeEn && (
+                  <p className="mt-1 text-sm text-[#4A4A5C] opacity-70">
+                    {t(section.dateRangeEn, section.dateRangeAr || '', isRTL)}
+                  </p>
+                )}
+              </div>
+
+              {/* Intro / non-day blocks */}
+              {introBlocks.length > 0 && (
+                <div className="space-y-6 mb-8">
+                  {introBlocks.map((block) => (
+                    <ScrollReveal key={block.id}>
+                      <ToolkitBlockRenderer block={block} ctx={blockCtx} />
+                    </ScrollReveal>
+                  ))}
+                </div>
+              )}
+
+              {/* Day blocks as accordions */}
+              {dayBlocks.length > 0 && (
+                <div className="space-y-3">
+                  {dayBlocks.map((block) => {
+                    if (block.kind !== 'journal-day') return null;
+                    const isOpen = expandedDay === block.id;
+                    return (
+                      <div
+                        key={block.id}
+                        className="bg-white rounded-xl border border-[#F3EFE8] shadow-sm overflow-hidden"
+                      >
+                        {/* Accordion trigger */}
+                        <button
+                          onClick={() => toggleDay(block.id)}
+                          className="w-full flex items-center justify-between px-5 py-4 text-start hover:bg-[#FAF7F2]/50 transition"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0"
+                              style={{ backgroundColor: section.color || toolkit.color }}
+                            >
+                              {block.dayNumber}
+                            </span>
+                            <div>
+                              <span className="font-semibold text-[#2D2A33] text-sm">
+                                {t(block.titleEn, block.titleAr, isRTL)}
+                              </span>
+                            </div>
+                          </div>
+                          <motion.div
+                            animate={{ rotate: isOpen ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown className="w-5 h-5 text-[#4A4A5C]" />
+                          </motion.div>
+                        </button>
+
+                        {/* Accordion content */}
+                        <AnimatePresence initial={false}>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.3, ease }}
+                              className="overflow-hidden"
+                            >
+                              <div className="px-5 pb-5 pt-2 border-t border-[#F3EFE8]">
+                                <ToolkitBlockRenderer block={block} ctx={blockCtx} />
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Section navigation */}
+              <div className="flex items-center justify-between mt-12 pt-6 border-t border-[#F3EFE8]">
+                <button
+                  onClick={() => {
+                    if (activeSection > 0) {
+                      setActiveSection(activeSection - 1);
+                      setExpandedDay(null);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                  disabled={activeSection === 0}
+                  className="flex items-center gap-2 text-sm font-medium text-[#4A4A5C] hover:text-[#2D2A33] disabled:opacity-30 disabled:cursor-not-allowed transition"
+                >
+                  <ArrowBack className="w-4 h-4" />
+                  {isRTL ? 'القسم السابق' : 'Previous Section'}
+                </button>
+                <span className="text-xs text-[#4A4A5C] opacity-60">
+                  {activeSection + 1} / {totalSections}
+                </span>
+                <button
+                  onClick={() => {
+                    if (activeSection < totalSections - 1) {
+                      setActiveSection(activeSection + 1);
+                      setExpandedDay(null);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                  }}
+                  disabled={activeSection >= totalSections - 1}
+                  className="flex items-center gap-2 text-sm font-medium text-[#4A4A5C] hover:text-[#2D2A33] disabled:opacity-30 disabled:cursor-not-allowed transition"
+                >
+                  {isRTL ? 'القسم التالي' : 'Next Section'}
+                  {isRTL ? <ChevronLeft className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                </button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      )}
+
+      {/* ── Final CTA ───────────────────────────────────────────── */}
+      <FinalCTA
+        locale={locale}
+        fillColorAbove="#FAF7F2"
+        headingEn={<>Ready to Begin Your <span style={{ color: toolkit.color }}>Journey</span>?</>}
+        headingAr={<>مستعدّ لبدء <span style={{ color: toolkit.color }}>رحلتك</span>؟</>}
+        descEn="Start with a free 30-minute consultation to see how we can support you."
+        descAr="ابدأ باستشارة مجّانيّة لمدّة ٣٠ دقيقة لتتعرّف على كيفيّة دعمنا لك."
+        primaryTextEn="Book a Session"
+        primaryTextAr="احجز جلسة"
+        secondaryTextEn="Learn More"
+        secondaryTextAr="اعرف المزيد"
+        secondaryHref={`/${locale}/resources`}
+      />
+    </div>
+  );
+}

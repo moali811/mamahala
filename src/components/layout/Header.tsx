@@ -56,10 +56,12 @@ export default function Header({ locale, messages }: HeaderProps) {
   const pathnameWithoutLocale = pathname.replace(/^\/(en|ar)/, '') || '/';
   const langSwitchHref = `/${altLocale}${pathnameWithoutLocale}`;
 
-  // Save scroll position before language switch, restore after
-  const handleLangSwitch = useCallback(() => {
+  // Save scroll position before language switch, preserve search params
+  const handleLangSwitch = useCallback((e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
     sessionStorage.setItem('mh_scroll_y', String(window.scrollY));
-  }, []);
+    window.location.href = `/${altLocale}${pathnameWithoutLocale}${window.location.search}`;
+  }, [altLocale, pathnameWithoutLocale]);
 
   useEffect(() => {
     const savedY = sessionStorage.getItem('mh_scroll_y');
@@ -408,14 +410,14 @@ export default function Header({ locale, messages }: HeaderProps) {
 
             {/* Desktop Right */}
             <div className="hidden items-center gap-2.5 lg:flex">
-              <Link
+              <a
                 href={langSwitchHref}
                 onClick={handleLangSwitch}
                 className="inline-flex items-center gap-1.5 rounded-lg border border-[#F3EFE8] px-2.5 py-1.5 text-xs font-medium text-[#4A4A5C] transition-colors hover:border-[#7A3B5E]/20 hover:text-[#7A3B5E]"
               >
                 <Globe size={14} className="opacity-60" />
                 {locale === 'en' ? 'AR' : 'EN'}
-              </Link>
+              </a>
 
               <Link
                 href={`/${locale}/book-a-session`}
@@ -752,14 +754,14 @@ export default function Header({ locale, messages }: HeaderProps) {
                     </Link>
 
                     {/* Language toggle — compact square */}
-                    <Link
+                    <a
                       href={langSwitchHref}
-                      onClick={() => { handleLangSwitch(); setMobileOpen(false); }}
+                      onClick={(e) => { handleLangSwitch(e); setMobileOpen(false); }}
                       className="flex-shrink-0 flex items-center justify-center gap-1.5 rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] px-3 py-3 text-xs font-semibold text-[#4A4A5C] active:scale-[0.97] transition-transform"
                     >
                       <Globe size={14} className="text-[#8E8E9F]" />
                       {locale === 'en' ? 'AR' : 'EN'}
-                    </Link>
+                    </a>
                   </div>
                 </div>
               </div>
