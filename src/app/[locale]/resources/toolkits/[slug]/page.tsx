@@ -142,47 +142,49 @@ export default function ToolkitDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]" dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* ── Breadcrumb ──────────────────────────────────────────── */}
-      <div className="px-6 pt-6 max-w-5xl mx-auto">
-        <nav className="flex items-center gap-2 text-sm text-[#4A4A5C]">
-          <Link
-            href={`/${locale}`}
-            className="hover:text-[#7A3B5E] transition flex items-center gap-1"
-          >
-            <Home className="w-3.5 h-3.5" />
-            {isRTL ? 'الرئيسيّة' : 'Home'}
-          </Link>
-          <span className="opacity-40">/</span>
-          <Link
-            href={`/${locale}/resources/downloads`}
-            className="hover:text-[#7A3B5E] transition"
-          >
-            {isRTL ? 'الأدوات' : 'Toolkits'}
-          </Link>
-          <span className="opacity-40">/</span>
-          <span className="text-[#2D2A33] font-medium truncate max-w-[200px]">
-            {t(toolkit.titleEn, toolkit.titleAr, isRTL)}
-          </span>
-        </nav>
-      </div>
-
-      {/* ── Hero Section ────────────────────────────────────────── */}
-      <header className="px-6 pt-8 pb-12 max-w-5xl mx-auto relative">
-        {/* Decorative accent */}
+      {/* ── Hero Section — full-width warm background ─────────────── */}
+      <header
+        className="relative overflow-hidden"
+        style={{ background: `linear-gradient(180deg, ${toolkit.color}08 0%, #FAF7F2 100%)` }}
+      >
+        {/* Decorative blobs */}
         <div
-          className="absolute -top-8 pointer-events-none opacity-[0.04]"
+          className="absolute -top-20 pointer-events-none opacity-[0.06]"
           style={{
-            [isRTL ? 'left' : 'right']: '-2rem',
-            width: '200px',
-            height: '200px',
-            borderRadius: '50%',
+            [isRTL ? 'left' : 'right']: '-4rem',
+            width: '300px', height: '300px', borderRadius: '50%',
             background: `radial-gradient(circle, ${toolkit.color}, transparent 70%)`,
           }}
         />
-        <ScrollReveal>
-          <div className="space-y-4">
+        <div
+          className="absolute bottom-0 pointer-events-none opacity-[0.04]"
+          style={{
+            [isRTL ? 'right' : 'left']: '10%',
+            width: '200px', height: '200px', borderRadius: '50%',
+            background: `radial-gradient(circle, ${toolkit.color}, transparent 70%)`,
+          }}
+        />
+
+        <div className="max-w-5xl mx-auto px-6 pt-6 pb-10">
+          {/* Breadcrumb */}
+          <nav className="flex items-center gap-2 text-sm text-[#4A4A5C] mb-8">
+            <Link href={`/${locale}`} className="hover:text-[#7A3B5E] transition flex items-center gap-1">
+              <Home className="w-3.5 h-3.5" />
+              {isRTL ? 'الرئيسيّة' : 'Home'}
+            </Link>
+            <span className="opacity-40">/</span>
+            <Link href={`/${locale}/resources/downloads`} className="hover:text-[#7A3B5E] transition">
+              {isRTL ? 'الأدوات' : 'Toolkits'}
+            </Link>
+            <span className="opacity-40">/</span>
+            <span className="text-[#2D2A33] font-medium truncate max-w-[200px]">
+              {t(toolkit.titleEn, toolkit.titleAr, isRTL)}
+            </span>
+          </nav>
+
+          <ScrollReveal>
             <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-4"
               style={{ backgroundColor: `${toolkit.color}15`, color: toolkit.color }}
             >
               <BookOpen className="w-3.5 h-3.5" />
@@ -202,41 +204,41 @@ export default function ToolkitDetailPage() {
               )}
             </div>
             <h1
-              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] leading-tight"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#2D2A33] leading-tight mb-3"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {t(toolkit.titleEn, toolkit.titleAr, isRTL)}
             </h1>
-            <p className="text-lg text-[#4A4A5C] max-w-2xl leading-relaxed">
+            <p className="text-base sm:text-lg text-[#4A4A5C] max-w-2xl leading-relaxed">
               {t(toolkit.subtitleEn, toolkit.subtitleAr, isRTL)}
             </p>
             {toolkit.heroQuoteEn && (
               <blockquote
-                className="mt-6 border-s-4 ps-4 py-2 italic text-[#4A4A5C] max-w-xl"
-                style={{ borderColor: toolkit.color }}
+                className="mt-5 rounded-xl px-5 py-4 italic text-[#4A4A5C] max-w-xl border-s-3"
+                style={{ borderColor: toolkit.color, backgroundColor: `${toolkit.color}06` }}
               >
                 &ldquo;{t(toolkit.heroQuoteEn, toolkit.heroQuoteAr || '', isRTL)}&rdquo;
               </blockquote>
             )}
-          </div>
-        </ScrollReveal>
+          </ScrollReveal>
+        </div>
       </header>
 
       {/* ── How to Use — Ritual Timeline ─────────────────────────── */}
       {toolkit.howToUse.length > 0 && (
-        <section className="px-6 pb-16 max-w-3xl mx-auto">
+        <section className="px-6 py-10 max-w-3xl mx-auto">
           <ScrollReveal delay={0.1}>
-            <div className="text-center mb-10">
+            <div className="text-center mb-8">
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: toolkit.color }}>
                 {isRTL ? 'طَقْسُكِ اليَوْمِيّ' : 'Your Daily Ritual'}
               </p>
               <h2
-                className="text-2xl sm:text-3xl font-bold text-[#2D2A33]"
+                className="text-xl sm:text-2xl font-bold text-[#2D2A33]"
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {isRTL ? 'كيفيّة الاستخدام' : 'How to Use This Toolkit'}
               </h2>
-              <div className="w-12 h-[2px] mx-auto mt-4" style={{ backgroundColor: toolkit.color }} />
+              <div className="w-10 h-[2px] mx-auto mt-3" style={{ backgroundColor: toolkit.color }} />
             </div>
           </ScrollReveal>
 
