@@ -906,7 +906,7 @@ function SpectrumView({ diagram, isRTL, color, selected, onSelect }: {
   const count = diagram.nodes.length;
 
   return (
-    <div ref={ref} className="px-2 py-6">
+    <div ref={ref} className="px-2 pt-6 pb-[160px]">
       <div className="relative mx-auto max-w-[380px]">
         {/* Gradient bar */}
         <motion.div
@@ -958,22 +958,27 @@ function SpectrumView({ diagram, isRTL, color, selected, onSelect }: {
                   </span>
                 </motion.button>
 
-                {/* Tooltip above marker */}
+                {/* Tooltip below marker — shows below to avoid overlap with container title */}
                 <AnimatePresence>
                   {isActive && (
                     <motion.div
-                      initial={{ opacity: 0, y: 8, scale: 0.9 }}
+                      initial={{ opacity: 0, y: -8, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 4, scale: 0.95 }}
+                      exit={{ opacity: 0, y: -4, scale: 0.95 }}
                       transition={{ duration: 0.2, ...SPRING }}
-                      className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-[200px] rounded-xl overflow-hidden backdrop-blur-xl pointer-events-none z-20"
+                      className="absolute top-full mt-3 left-1/2 -translate-x-1/2 w-[220px] rounded-xl overflow-hidden backdrop-blur-xl pointer-events-none z-20"
                       style={{
-                        background: 'rgba(255,255,255,0.96)',
+                        background: 'rgba(255,255,255,0.98)',
                         boxShadow: `0 8px 32px rgba(0,0,0,0.12), 0 0 0 1px ${nodeColor}15`,
                       }}
                     >
+                      {/* Arrow pointing up */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 -mb-1 z-[-1]" style={{ background: 'rgba(255,255,255,0.98)', boxShadow: '-2px -2px 4px rgba(0,0,0,0.04)' }} />
                       <div style={{ height: 2, background: `linear-gradient(90deg, ${nodeColor}, ${nodeColor}40)` }} />
                       <div className="px-3 py-2.5">
+                        <p className="text-[11px] font-bold mb-1" style={{ color: nodeColor }}>
+                          {t(node.labelEn, node.labelAr, isRTL)}
+                        </p>
                         <p className="text-[11px] text-[#4A4A5C] leading-snug">
                           {t(node.descriptionEn, node.descriptionAr, isRTL)}
                         </p>
@@ -984,8 +989,6 @@ function SpectrumView({ diagram, isRTL, color, selected, onSelect }: {
                           </p>
                         )}
                       </div>
-                      {/* Arrow */}
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 w-2 h-2 rotate-45 -mt-1" style={{ background: 'rgba(255,255,255,0.96)', boxShadow: '2px 2px 4px rgba(0,0,0,0.05)' }} />
                     </motion.div>
                   )}
                 </AnimatePresence>
