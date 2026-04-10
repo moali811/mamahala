@@ -317,20 +317,30 @@ export default function HomePage() {
       {/* ================================================================ */}
       <section className="relative min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
         {/* Editorial image — soft fade via CSS mask */}
+        {/* Mobile: 1500px optimized (134KB), Desktop: 5K from upscaled source (1MB) */}
         <div
           className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}
           style={{ backgroundColor: '#E8D5D0' }}
         >
+          {/* Mobile hero — max 3x retina, 134KB */}
           <Image
-            src="/images/hala-confident_ups.png"
+            src="/images/hala-hero-mobile.jpg"
             alt="Dr. Hala Ali - Mama Hala"
             fill
             priority
-            quality={100}
-            sizes="(min-width: 1536px) 60vw, (min-width: 1024px) 55vw, 100vw"
-            className="object-cover object-top"
-            placeholder="blur"
-            blurDataURL="data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQC2yCFT5/Pao6aUJLgAAP7v0f5OHzJdK1svIxQtw0N/HgyyhatKQOpClQv97LqE75+dnZ34eoB+RpYabT9AAAA="
+            quality={90}
+            sizes="100vw"
+            className="object-cover object-top lg:hidden"
+          />
+          {/* Desktop hero — 5K source, served at optimal size per viewport */}
+          <Image
+            src="/images/hala-hero-desktop.jpg"
+            alt="Dr. Hala Ali - Mama Hala"
+            fill
+            priority
+            quality={90}
+            sizes="(min-width: 1536px) 60vw, 55vw"
+            className="object-cover object-top hidden lg:block"
           />
         </div>
 
