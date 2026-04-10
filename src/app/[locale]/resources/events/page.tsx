@@ -13,6 +13,7 @@ import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
 import PulseCarousel from '@/components/events/PulseCarousel';
 import EventCard from '@/components/events/EventCard';
+import FeaturedSummerCard from '@/components/events/FeaturedSummerCard';
 import PastEventCard from '@/components/events/PastEventCard';
 import EventUrgencyBadge from '@/components/events/EventUrgencyBadge';
 import EventReminderSignup from '@/components/events/EventReminderSignup';
@@ -323,30 +324,19 @@ export default function EventsPage() {
             </ScrollReveal>
 
             <div className="grid gap-6 md:grid-cols-2 md:gap-6 lg:gap-8">
-              {featuredEvents.map((event) => (
+              {featuredEvents.map((event, i) => (
                 <motion.div
                   key={event.slug}
                   initial={{ opacity: 0, y: 24 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-80px' }}
-                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative rounded-2xl border-2 border-[#C8A97D]/30 overflow-hidden bg-white shadow-[0_8px_40px_rgba(176,141,87,0.08)] flex flex-col"
+                  transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  {/* Gold accent stripe at top */}
-                  <div className="h-1.5 bg-gradient-to-r from-[#C8A97D] via-[#B08D57] to-[#7A3B5E]" />
-                  {/* Featured badge overlay */}
-                  <div className={`absolute top-5 ${isRTL ? 'left-5' : 'right-5'} z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] shadow-md`}>
-                    <Sparkles className="w-2.5 h-2.5" />
-                    {isRTL ? 'مُمَيَّز' : 'Featured'}
-                  </div>
-                  <EventCard
+                  <FeaturedSummerCard
                     event={event}
                     locale={locale}
-                    compact
-                    isExpanded={expandedSlug === event.slug}
-                    onToggleExpand={() =>
-                      setExpandedSlug(expandedSlug === event.slug ? null : event.slug)
-                    }
+                    pulseCount={pulseCounts[event.slug] || 0}
+                    onResonate={handleResonate}
                   />
                 </motion.div>
               ))}
