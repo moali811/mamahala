@@ -43,6 +43,7 @@ const SHARED_BLOCK_KINDS = new Set([
   'callout',
   'pullquote',
   'checklist',
+  'comparison',
   'reflection-prompt',
   'reveal',
   'tabs',

@@ -11,6 +11,7 @@ import type {
   CalloutBlock,
   PullQuoteBlock,
   ChecklistBlock,
+  ComparisonBlock,
   ReflectionPromptBlock,
   RevealBlock,
   TabsBlock,
@@ -146,6 +147,7 @@ export type ToolkitBlock =
   | CalloutBlock
   | PullQuoteBlock
   | ChecklistBlock
+  | ComparisonBlock
   | ReflectionPromptBlock
   | RevealBlock
   | TabsBlock

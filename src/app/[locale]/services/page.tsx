@@ -96,7 +96,7 @@ export default function ServicesPage() {
               eyebrowAr: 'خُطْوَةٌ أولى مَجّانِيَّة',
               titleEn: 'Talk to Dr. Hala first',
               titleAr: 'تَحَدَّثي مع د. هالَة أَوَّلاً',
-              accent: { type: 'caption', textEn: '15-min discovery call', textAr: 'مُكالَمَةُ تَعارُف ١٥ دَقيقَة' },
+              accent: { type: 'caption', textEn: '30-min discovery call', textAr: 'مُكالَمَةُ تَعارُف ٣٠ دَقيقَة' },
             },
           ]}
         />
