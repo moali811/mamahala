@@ -199,4 +199,9 @@ export interface ToolkitMeta {
     descAr?: string;
   }[];
   sections: ToolkitSection[];
+  /** Premium toolkit settings */
+  isPremium?: boolean;
+  priceCAD?: number;
+  /** Section ID to keep free when premium (first section if not specified) */
+  freePreviewSectionId?: string;
 }

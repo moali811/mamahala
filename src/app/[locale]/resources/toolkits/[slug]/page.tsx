@@ -28,6 +28,7 @@ import FinalCTA from '@/components/shared/FinalCTA';
 import ScrollReveal from '@/components/motion/ScrollReveal';
 import { t } from '@/lib/academy-helpers';
 import { ease } from '@/lib/animations';
+import { BUSINESS } from '@/config/business';
 
 /* ── Icon map ─────────────────────────────────────────────────── */
 const iconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
@@ -82,6 +83,7 @@ export default function ToolkitDetailPage() {
   const [loading, setLoading] = useState(true);
   const [activeSection, setActiveSection] = useState(0);
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
 
   /* ── Load toolkit data ───────────────────────────────────────── */
   useEffect(() => {
@@ -95,6 +97,19 @@ export default function ToolkitDetailPage() {
       }
     });
     return () => { cancelled = true; };
+  }, [slug]);
+
+  /* ── Check unlock status for premium toolkits ──────────────────── */
+  useEffect(() => {
+    if (!slug) return;
+    const unlocked = localStorage.getItem(`toolkit:paid:${slug}`) === 'true';
+    setIsUnlocked(unlocked);
+    // Handle unlock param from Stripe redirect
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.get('unlocked') === slug) {
+      localStorage.setItem(`toolkit:paid:${slug}`, 'true');
+      setIsUnlocked(true);
+    }
   }, [slug]);
 
   /* ── Helpers ─────────────────────────────────────────────────── */
@@ -139,6 +154,13 @@ export default function ToolkitDetailPage() {
   /* ── Compute progress ────────────────────────────────────────── */
   const totalSections = toolkit.sections.length;
   const progressPercent = totalSections > 0 ? ((activeSection + 1) / totalSections) * 100 : 0;
+
+  /* ── Premium lock logic ──────────────────────────────────────── */
+  const isPremium = toolkit.isPremium ?? false;
+  const freePreviewId = toolkit.freePreviewSectionId || toolkit.sections[0]?.id;
+  const isSectionLocked = (sec: ToolkitSection) =>
+    isPremium && !isUnlocked && sec.id !== freePreviewId;
+  const currentSectionLocked = section ? isSectionLocked(section) : false;
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]" dir={isRTL ? 'rtl' : 'ltr'}>
@@ -327,6 +349,7 @@ export default function ToolkitDetailPage() {
           <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
             {toolkit.sections.map((sec, i) => {
               const isActive = i === activeSection;
+              const locked = isSectionLocked(sec);
               return (
                 <button
                   key={sec.id}
@@ -336,7 +359,7 @@ export default function ToolkitDetailPage() {
                   }}
                   className={`
                     whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium
-                    transition-all duration-200 flex-shrink-0
+                    transition-all duration-200 flex-shrink-0 inline-flex items-center gap-1.5
                     ${isActive
                       ? 'text-white shadow-sm'
                       : 'text-[#4A4A5C] hover:bg-[#F3EFE8]'
@@ -344,6 +367,7 @@ export default function ToolkitDetailPage() {
                   `}
                   style={isActive ? { backgroundColor: sec.color || toolkit.color } : undefined}
                 >
+                  {locked && <Lock className="w-3 h-3" />}
                   {t(sec.titleEn, sec.titleAr, isRTL)}
                 </button>
               );
@@ -383,8 +407,119 @@ export default function ToolkitDetailPage() {
                 )}
               </div>
 
-              {/* Intro / non-day blocks */}
-              {introBlocks.length > 0 && (
+              {/* Premium lock overlay for locked sections */}
+              {currentSectionLocked && (
+                <div className="relative mb-8">
+                  {/* Blurred preview of first block */}
+                  {introBlocks[0] && (
+                    <div className="relative">
+                      <div className="pointer-events-none select-none blur-sm opacity-50">
+                        <ToolkitBlockRenderer block={introBlocks[0]} ctx={blockCtx} />
+                      </div>
+                      {/* Gradient fade to white */}
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          background: `linear-gradient(180deg, transparent 0%, #FAF7F2 70%)`,
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Unlock card — positioned over blurred content */}
+                  <div className="relative mt-6">
+                    <div
+                      className="bg-white rounded-2xl border-2 p-8 sm:p-10 text-center shadow-xl max-w-xl mx-auto"
+                      style={{ borderColor: `${toolkit.color}30` }}
+                    >
+                      <div
+                        className="w-14 h-14 rounded-2xl mx-auto flex items-center justify-center mb-5"
+                        style={{ backgroundColor: `${toolkit.color}15` }}
+                      >
+                        <Lock className="w-7 h-7" style={{ color: toolkit.color }} />
+                      </div>
+                      <p
+                        className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2"
+                        style={{ color: toolkit.color }}
+                      >
+                        {isRTL ? 'قِسْمٌ مُمَيَّز' : 'Premium Section'}
+                      </p>
+                      <h3
+                        className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-3"
+                        style={{ fontFamily: 'var(--font-heading)' }}
+                      >
+                        {isRTL ? 'اكمِلي رحلتَك' : 'Continue Your Journey'}
+                      </h3>
+                      <p className="text-[#4A4A5C] leading-relaxed mb-6 max-w-md mx-auto">
+                        {isRTL
+                          ? `لقد أكملتِ المعاينةَ المجّانيّة. افتحي باقي الأقسام واستمتعي بالتجربةِ التفاعليّة الكاملة.`
+                          : `You've finished the free preview. Unlock the rest of this interactive journey — every section, every exercise, forever yours.`}
+                      </p>
+                      {/* Features list */}
+                      <div className="flex flex-col gap-2 mb-6 max-w-sm mx-auto text-start">
+                        {[
+                          isRTL ? 'وصولٌ دائم لجميعِ الأقسام' : 'Lifetime access to all sections',
+                          isRTL ? 'تمارينٌ تفاعليّة وأدواتٌ حقيقيّة' : 'Interactive exercises & real tools',
+                          isRTL ? 'تقدُّمُكِ يُحفَظ تلقائيًّا' : 'Your progress saves automatically',
+                        ].map((feat, i) => (
+                          <div key={i} className="flex items-center gap-2 text-sm text-[#4A4A5C]">
+                            <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: toolkit.color }} />
+                            {feat}
+                          </div>
+                        ))}
+                      </div>
+                      {/* Price + CTA */}
+                      <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-baseline gap-2">
+                          <span
+                            className="text-4xl font-bold"
+                            style={{ color: toolkit.color, fontFamily: 'var(--font-heading)' }}
+                          >
+                            ${toolkit.priceCAD}
+                          </span>
+                          <span className="text-sm text-[#8E8E9F]">CAD</span>
+                        </div>
+                        <p className="text-xs text-[#8E8E9F] mb-3">
+                          {isRTL ? 'دفعةٌ واحدة · بدون اشتراك' : 'One-time payment · no subscription'}
+                        </p>
+                        <button
+                          onClick={() => {
+                            // Determine which shared Stripe link to use based on price tier
+                            const tier = toolkit.priceCAD === 29 ? 'flagship' : 'standard';
+                            const stripeLink = BUSINESS.toolkitPaymentLinks[tier];
+                            if (stripeLink) {
+                              // Append client_reference_id so Stripe can redirect back with the slug
+                              const url = `${stripeLink}?client_reference_id=${toolkit.slug}`;
+                              window.location.href = url;
+                            } else {
+                              // Stripe link not configured yet — show friendly message + dev simulation
+                              const confirm = window.confirm(
+                                isRTL
+                                  ? 'الدفع قيد الإعداد — سيتوفّر قريبًا. هل تريدين المحاكاة للتجربة؟'
+                                  : 'Payment setup coming soon. Simulate unlock for testing?'
+                              );
+                              if (confirm) {
+                                localStorage.setItem(`toolkit:paid:${toolkit.slug}`, 'true');
+                                setIsUnlocked(true);
+                              }
+                            }
+                          }}
+                          className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 text-white text-sm font-semibold rounded-xl shadow-md hover:opacity-90 transition-opacity"
+                          style={{
+                            background: `linear-gradient(135deg, ${toolkit.color}, ${toolkit.color}CC)`,
+                          }}
+                        >
+                          <Sparkles className="w-4 h-4" />
+                          {isRTL ? 'افتحي الوصول الكامل' : 'Unlock Full Access'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Intro / non-day blocks — hidden when locked */}
+              {!currentSectionLocked && introBlocks.length > 0 && (
                 <div className="space-y-6 mb-8">
                   {introBlocks.map((block) => (
                     <ScrollReveal key={block.id}>
@@ -394,8 +529,8 @@ export default function ToolkitDetailPage() {
                 </div>
               )}
 
-              {/* Day blocks as accordions */}
-              {dayBlocks.length > 0 && (
+              {/* Day blocks as accordions — hidden when locked */}
+              {!currentSectionLocked && dayBlocks.length > 0 && (
                 <div className="space-y-3">
                   {dayBlocks.map((block) => {
                     if (block.kind !== 'journal-day') return null;

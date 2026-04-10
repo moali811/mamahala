@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileText,
   Download,
@@ -51,6 +51,8 @@ interface DownloadResource {
   dateAdded?: string; // ISO date — shows "New" badge for 14 days
   featured?: boolean; // Dr. Hala's Pick
   popular?: boolean; // Most Popular
+  isPremium?: boolean; // Premium interactive version
+  priceCAD?: number; // Price in CAD for premium unlock
   price: number;
   isFree: boolean;
   isLeadMagnet: boolean;
@@ -110,7 +112,6 @@ const resources: DownloadResource[] = [
     },
     type: 'checklist',
     category: 'families',
-    popular: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -127,6 +128,7 @@ const resources: DownloadResource[] = [
     },
     type: 'guide',
     category: 'youth',
+    popular: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -160,6 +162,8 @@ const resources: DownloadResource[] = [
     },
     type: 'ebook',
     category: 'families',
+    featured: true,
+    popular: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -176,6 +180,8 @@ const resources: DownloadResource[] = [
     },
     type: 'ebook',
     category: 'couples',
+    featured: true,
+    popular: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -194,6 +200,8 @@ const resources: DownloadResource[] = [
     category: 'adults',
     featured: true,
     popular: true,
+    isPremium: true,
+    priceCAD: 19,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -214,6 +222,7 @@ const resources: DownloadResource[] = [
     category: 'youth',
     audience: 'teens',
     dateAdded: '2026-04-08',
+    popular: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -398,6 +407,7 @@ const resources: DownloadResource[] = [
     category: 'couples',
     audience: 'general',
     dateAdded: '2026-04-09',
+    popular: true,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -465,14 +475,74 @@ const categoryLabels: Record<string, { en: string; ar: string }> = {
   couples: { en: 'Couples', ar: 'الأزواج' },
 };
 
-const audienceFilters = [
+// Level 1: Primary demographic tabs (matches Services page)
+const demographicFilters = [
   { key: 'all', en: 'All Toolkits', ar: 'جميعُ الأدوات' },
-  { key: 'teens', en: 'For Teens', ar: 'للمراهقين' },
-  { key: 'university', en: 'For University Students', ar: 'لطلّابِ الجامعات' },
-  { key: 'parents', en: 'For Parents & Families', ar: 'للآباءِ والعائلات' },
-  { key: 'adults', en: 'For Adults', ar: 'للبالغين' },
-  { key: 'couples', en: 'For Couples', ar: 'للأزواج' },
+  { key: 'youth', en: 'Youth', ar: 'الناشئة' },
+  { key: 'families', en: 'Families', ar: 'العائلات' },
+  { key: 'adults', en: 'Adults', ar: 'البالغون' },
+  { key: 'couples', en: 'Couples', ar: 'الأزواج' },
 ];
+
+// Level 2: Contextual theme chips — derived from toolkit id groupings
+const themesByDemographic: Record<string, Array<{ key: string; en: string; ar: string; ids: string[] }>> = {
+  youth: [
+    {
+      key: 'teens', en: 'For Teens', ar: 'للمراهقين',
+      ids: ['social-media-survival-guide', 'teen-anger-toolkit', 'teen-identity-map', 'friendship-flags-checklist', 'exam-season-emergency-kit'],
+    },
+    {
+      key: 'parents-of-teens', en: 'Parents of Teens', ar: 'آباء المراهقين',
+      ids: ['understanding-your-teen'],
+    },
+  ],
+  families: [
+    {
+      key: 'communication', en: 'Communication', ar: 'التواصل',
+      ids: ['family-communication-toolkit'],
+    },
+    {
+      key: 'daily-practice', en: 'Daily Practice', ar: 'الممارسة اليومية',
+      ids: ['calm-parent-checklist'],
+    },
+    {
+      key: 'intentional', en: 'Intentional Parenting', ar: 'التربية القصدية',
+      ids: ['complete-parenting-guide'],
+    },
+  ],
+  adults: [
+    {
+      key: 'university', en: 'University Life', ar: 'الحياة الجامعية',
+      ids: ['imposter-syndrome-playbook', 'adulting-emotional-edition', 'student-burnout-recovery', 'bicultural-student-guide', 'student-loneliness-toolkit'],
+    },
+    {
+      key: 'anxiety', en: 'Anxiety & Emotions', ar: 'القلق والمشاعر',
+      ids: ['anxiety-recovery-journal', 'anger-management-worksheet', 'self-care-assessment'],
+    },
+  ],
+  couples: [
+    {
+      key: 'communication', en: 'Communication', ar: 'التواصل',
+      ids: ['couples-communication-workbook'],
+    },
+    {
+      key: 'conflict', en: 'Conflict', ar: 'الخلافات',
+      ids: ['conflict-resolution-playbook'],
+    },
+    {
+      key: 'reconnection', en: 'Reconnection', ar: 'إعادة التواصل',
+      ids: ['reconnection-rituals'],
+    },
+  ],
+};
+
+// Demographic colors (matches Services page palette)
+const demographicColors: Record<string, string> = {
+  youth: '#C4878A',
+  families: '#C8A97D',
+  adults: '#5A8B6F',
+  couples: '#D4836A',
+};
 
 const audienceBadgeLabels: Record<string, { en: string; ar: string; color: string }> = {
   teens: { en: 'For Teens', ar: 'للمراهقين', color: '#C4878A' },
@@ -497,8 +567,9 @@ function DownloadsPageInner() {
   const messages = getMessages(locale as Locale);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
-  // Filters
-  const [audienceFilter, setAudienceFilter] = useState<string>('all');
+  // Filters — two-level system
+  const [demographicFilter, setDemographicFilter] = useState<string>('all');
+  const [themeFilter, setThemeFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
   // Pagination
@@ -530,13 +601,14 @@ function DownloadsPageInner() {
   const [unlockStatus, setUnlockStatus] = useState<'idle' | 'loading' | 'invalid'>('idle');
   const [downloadedIds, setDownloadedIds] = useState<Set<string>>(new Set());
 
-  // Filter resources by audience + type — use category as fallback for old toolkits without audience tag
+  // Filter resources by demographic (level 1) + theme (level 2) + type
   // Sort new items to the top
   const filteredResources = resources
     .filter(r => {
-      if (audienceFilter !== 'all') {
-        const aud = r.audience || ({ families: 'parents', adults: 'adults', youth: 'parents', couples: 'couples' }[r.category]);
-        if (aud !== audienceFilter) return false;
+      if (demographicFilter !== 'all' && r.category !== demographicFilter) return false;
+      if (themeFilter !== 'all') {
+        const theme = themesByDemographic[demographicFilter]?.find(t => t.key === themeFilter);
+        if (theme && !theme.ids.includes(r.id)) return false;
       }
       if (typeFilter !== 'all' && r.type !== typeFilter) return false;
       return true;
@@ -563,7 +635,12 @@ function DownloadsPageInner() {
     params.delete('page');
     const qs = params.toString();
     router.replace(`/${locale}/resources/downloads${qs ? `?${qs}` : ''}`, { scroll: false });
-  }, [audienceFilter, typeFilter]);
+  }, [demographicFilter, themeFilter, typeFilter]);
+
+  // Reset theme filter when demographic changes
+  useEffect(() => {
+    setThemeFilter('all');
+  }, [demographicFilter]);
 
   // Preview handler
   const openPreview = async (id: string) => {
@@ -665,21 +742,25 @@ function DownloadsPageInner() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1] tracking-tight"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {isRTL ? 'مكتبتُك المجّانيّة' : 'Your Free Resource Library'}
+              {isRTL ? 'مكتبتُك من الأدوات' : 'Your Resource Library'}
             </h1>
             <p className="mt-5 text-lg lg:text-xl text-[#4A4A5C] max-w-2xl leading-relaxed">
               {isRTL
-                ? 'أدواتٌ مبنيّةٌ على أُسسٍ علميّة، صمّمَتْها دكتورة هالة لدعمِ عائلتِك ومسيرتِك.'
-                : 'Evidence-based tools designed by Dr. Hala to support your family and your journey.'}
+                ? 'أدواتٌ مبنيّةٌ على أُسسٍ علميّة من دكتورة هالة — معظمُها مجّانيّ، وبعضُها تجارِبُ تفاعليّةٌ مُمَيَّزة لعملٍ أعمق.'
+                : 'Evidence-based tools from Dr. Hala — most are free, a few premium experiences for deeper work.'}
             </p>
 
             {/* Stats row */}
             <div className="flex flex-wrap items-center gap-4 mt-6">
-              {[
-                { icon: BookMarked, en: `${resources.length} Free Tools`, ar: `${resources.length} أداةً مجّانيّة` },
-                { icon: Users, en: '5 Audiences', ar: '5 فئات' },
-                { icon: Globe, en: 'Bilingual EN/AR', ar: 'ثنائيّةُ اللغة' },
-              ].map((stat, i) => (
+              {(() => {
+                const premiumCount = toolkitCatalog.filter(tc => tc.isPremium).length;
+                const freeCount = resources.length - premiumCount;
+                return [
+                  { icon: BookMarked, en: `${freeCount} Free Downloads`, ar: `${freeCount} تحميلًا مجّانيًّا` },
+                  { icon: Sparkles, en: `${premiumCount} Premium Interactive`, ar: `${premiumCount} تجربةً تفاعليّةً مُمَيَّزة` },
+                  { icon: Globe, en: 'Bilingual EN/AR', ar: 'ثنائيّةُ اللغة' },
+                ];
+              })().map((stat, i) => (
                 <div key={i} className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 backdrop-blur-sm text-sm text-[#4A4A5C] font-medium">
                   <stat.icon className="w-4 h-4 text-[#7A3B5E]" />
                   {isRTL ? stat.ar : stat.en}
@@ -694,23 +775,23 @@ function DownloadsPageInner() {
       {/* ================================================================ */}
       {/*  DOWNLOADS GRID                                                  */}
       {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+      <section className="py-10 lg:py-14 bg-[#FAF7F2]">
         <div className="container-main">
 
           {/* Unlock banner */}
           {!isUnlocked ? (
-            <ScrollReveal className="mb-12">
+            <ScrollReveal className="mb-8">
               <div className="bg-white rounded-2xl border border-[#F3EFE8] p-8 md:p-10 max-w-2xl mx-auto text-center shadow-sm">
                 <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-[#7A3B5E]/8 mb-5">
                   <Lock className="w-7 h-7 text-[#7A3B5E]" />
                 </div>
                 <h3 className="text-xl font-bold text-[#2D2A33] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-                  {isRTL ? 'افتحْ جميعَ الأدواتِ المجّانيّة' : 'Unlock All Free Tools'}
+                  {isRTL ? 'افتحي جميعَ التحميلاتِ المجّانيّة' : 'Unlock All Free Downloads'}
                 </h3>
                 <p className="text-sm text-[#8E8E9F] mb-6">
                   {isRTL
-                    ? 'أدخِلْ بريدَك الإلكترونيّ مرّةً واحدةً لفتحِ جميعِ الأدواتِ والتحميلِ فورًا.'
-                    : 'Enter your email once to unlock all toolkits and download instantly.'}
+                    ? 'أدخلي بريدَكِ الإلكترونيّ مرّةً واحدةً لتحميلِ جميعِ الأدواتِ المجّانيّة فورًا. التجاربُ التفاعليّةُ المُمَيَّزة تُفتَحُ بشكلٍ منفصل.'
+                    : 'Enter your email once to download every free toolkit instantly. Premium interactive experiences unlock separately.'}
                 </p>
                 <form onSubmit={handleUnlock} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                   <div className="relative flex-1">
@@ -749,25 +830,75 @@ function DownloadsPageInner() {
             </ScrollReveal>
           )}
 
-          {/* Audience filter tabs */}
+          {/* Level 1: Demographic filter tabs */}
           <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
-            {audienceFilters.map((filter) => (
-              <button
-                key={filter.key}
-                onClick={() => setAudienceFilter(filter.key)}
-                className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
-                  audienceFilter === filter.key
-                    ? 'bg-[#7A3B5E] text-white shadow-md'
-                    : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:bg-[#FAF7F2]'
-                }`}
-              >
-                {isRTL ? filter.ar : filter.en}
-              </button>
-            ))}
+            {demographicFilters.map((filter) => {
+              const isActive = demographicFilter === filter.key;
+              const activeColor = filter.key !== 'all' ? demographicColors[filter.key] : '#7A3B5E';
+              return (
+                <button
+                  key={filter.key}
+                  onClick={() => setDemographicFilter(filter.key)}
+                  className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'text-white shadow-md'
+                      : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:bg-[#FAF7F2]'
+                  }`}
+                  style={isActive ? { backgroundColor: activeColor } : undefined}
+                >
+                  {isRTL ? filter.ar : filter.en}
+                </button>
+              );
+            })}
           </div>
 
+          {/* Level 2: Theme chips (contextual — animate in when demographic selected) */}
+          <AnimatePresence mode="wait">
+            {demographicFilter !== 'all' && themesByDemographic[demographicFilter]?.length > 0 && (
+              <motion.div
+                key={demographicFilter}
+                initial={{ opacity: 0, y: -8, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, y: -8, height: 0 }}
+                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="flex flex-wrap items-center justify-center gap-2 mb-3 pt-1">
+                  <button
+                    onClick={() => setThemeFilter('all')}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                      themeFilter === 'all'
+                        ? 'text-white'
+                        : 'bg-white text-[#6B6580] border border-[#F3EFE8] hover:bg-[#FAF7F2]'
+                    }`}
+                    style={themeFilter === 'all' ? { backgroundColor: `${demographicColors[demographicFilter]}CC` } : undefined}
+                  >
+                    {isRTL ? 'الكل' : 'All'}
+                  </button>
+                  {themesByDemographic[demographicFilter].map((theme) => {
+                    const isActive = themeFilter === theme.key;
+                    return (
+                      <button
+                        key={theme.key}
+                        onClick={() => setThemeFilter(theme.key)}
+                        className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                          isActive
+                            ? 'text-white'
+                            : 'bg-white text-[#6B6580] border border-[#F3EFE8] hover:bg-[#FAF7F2]'
+                        }`}
+                        style={isActive ? { backgroundColor: `${demographicColors[demographicFilter]}CC` } : undefined}
+                      >
+                        {isRTL ? theme.ar : theme.en}
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Type filter tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
             {typeFilters.map((filter) => (
               <button
                 key={filter.key}
@@ -790,6 +921,10 @@ function DownloadsPageInner() {
               const typeLabel = isRTL ? typeLabels[resource.type].ar : typeLabels[resource.type].en;
               const categoryLabel = isRTL ? categoryLabels[resource.category].ar : categoryLabels[resource.category].en;
               const TypeIcon = typeIcons[resource.type] || FileText;
+              const catalogEntry = toolkitCatalog.find(tc => tc.slug === resource.id);
+              const hasInteractive = catalogEntry?.hasInteractiveVersion ?? false;
+              const isPremium = catalogEntry?.isPremium ?? resource.isPremium ?? false;
+              const priceCAD = catalogEntry?.priceCAD ?? resource.priceCAD;
 
               return (
                 <motion.div key={resource.id}
@@ -797,110 +932,115 @@ function DownloadsPageInner() {
                     whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    {/* Top accent + icon area */}
-                    <div className={`relative bg-gradient-to-br ${typeGradients[resource.type] || 'from-[#F3EFE8] to-[#FAF7F2]'} p-8 text-center`}>
-                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.06)] mb-4">
-                        <TypeIcon className={`w-7 h-7 ${typeIconColors[resource.type] || 'text-[#7A3B5E]'}`} />
-                      </div>
+                    {/* Accent stripe */}
+                    <div className={`h-1 bg-gradient-to-r ${typeGradients[resource.type] || 'from-[#F3EFE8] to-[#FAF7F2]'}`} />
 
-                      {/* Badges */}
-                      <div className="absolute top-4 right-4 flex flex-col items-end gap-1.5">
-                        {resource.popular && (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-[#C8A97D] to-[#B08D57] shadow-sm">
-                            <TrendingUp className="w-3 h-3" /> {isRTL ? 'الأكثرُ شعبيّة' : 'Most Popular'}
-                          </span>
-                        )}
-                        {isNew(resource.dateAdded) && !resource.popular && (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold text-white bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] shadow-sm animate-pulse">
-                            <Sparkles className="w-3 h-3" /> {isRTL ? 'جديد' : 'New'}
-                          </span>
-                        )}
-                        <Badge variant="success" size="md">
-                          {messages.common.free}
-                        </Badge>
-                      </div>
-                    </div>
-
-                    <div className="p-6 flex-1 flex flex-col">
-                      {/* Type + audience badges */}
-                      <div className="flex items-center flex-wrap gap-2 mb-4">
-                        <Badge variant="sage" size="sm">
-                          {typeLabel}
-                        </Badge>
-                        {resource.audience && audienceBadgeLabels[resource.audience] && (
-                          <span
-                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold"
-                            style={{
-                              backgroundColor: `${audienceBadgeLabels[resource.audience].color}15`,
-                              color: audienceBadgeLabels[resource.audience].color,
-                            }}
+                    <div className="p-5 flex-1 flex flex-col">
+                      {/* Compact header: icon + contextual labels + popular/new badge */}
+                      <div className="flex items-center justify-between mb-3 min-h-[2.25rem]">
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <div
+                            className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-gradient-to-br ${typeGradients[resource.type] || 'from-[#F3EFE8] to-[#FAF7F2]'}`}
                           >
-                            {isRTL ? audienceBadgeLabels[resource.audience].ar : audienceBadgeLabels[resource.audience].en}
+                            <TypeIcon className={`w-4.5 h-4.5 ${typeIconColors[resource.type] || 'text-[#7A3B5E]'}`} />
+                          </div>
+                          {/* Only show type label when not filtered by type */}
+                          {typeFilter === 'all' && (
+                            <Badge variant="sage" size="sm">{typeLabel}</Badge>
+                          )}
+                          {/* Only show demographic label when not filtered by demographic */}
+                          {demographicFilter === 'all' && (
+                            <span
+                              className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold truncate"
+                              style={{
+                                backgroundColor: `${demographicColors[resource.category]}15`,
+                                color: demographicColors[resource.category],
+                              }}
+                            >
+                              {isRTL ? categoryLabels[resource.category].ar : categoryLabels[resource.category].en}
+                            </span>
+                          )}
+                        </div>
+                        {/* Premium takes precedence, then Popular, then New */}
+                        {isPremium ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] flex-shrink-0 shadow-sm">
+                            <Sparkles className="w-2.5 h-2.5" /> {isRTL ? 'مميّز' : 'Premium'}
                           </span>
-                        )}
-                        {!resource.audience && (
-                          <Badge variant="neutral" size="sm">
-                            {categoryLabel}
-                          </Badge>
-                        )}
+                        ) : resource.popular ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#C8A97D] to-[#B08D57] flex-shrink-0">
+                            <TrendingUp className="w-2.5 h-2.5" /> {isRTL ? 'شائع' : 'Popular'}
+                          </span>
+                        ) : isNew(resource.dateAdded) ? (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] flex-shrink-0">
+                            <Sparkles className="w-2.5 h-2.5" /> {isRTL ? 'جديد' : 'New'}
+                          </span>
+                        ) : null}
                       </div>
 
                       {/* Title */}
                       <h3
-                        className="text-lg font-bold text-[#2D2A33] mb-3 group-hover:text-[#7A3B5E] transition-colors duration-200"
+                        className="text-base font-bold text-[#2D2A33] mb-2 group-hover:text-[#7A3B5E] transition-colors duration-200 leading-snug"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
                         {title}
                       </h3>
 
-                      {/* Description */}
-                      <p className="text-sm text-[#4A4A5C] leading-relaxed mb-6 flex-1">
+                      {/* Description — 2 lines max */}
+                      <p className="text-sm text-[#4A4A5C] leading-relaxed mb-5 flex-1 line-clamp-2">
                         {description}
                       </p>
 
                       {/* Action area */}
-                      <div className="pt-5 border-t border-[#F3EFE8] flex flex-col gap-2">
-                        {/* Peek Inside button */}
-                        <button
-                          onClick={() => openPreview(resource.id)}
-                          className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 border border-[#7A3B5E]/20 text-[#7A3B5E] text-sm font-medium rounded-xl hover:bg-[#7A3B5E]/5 transition-colors"
-                        >
-                          <Eye className="w-4 h-4" />
-                          {isRTL ? 'ألقِ نظرة' : 'Peek Inside'}
-                        </button>
-
-                        {/* Interactive version link */}
-                        {toolkitCatalog.find(tc => tc.slug === resource.id)?.hasInteractiveVersion && (
-                          <Link
-                            href={`/${locale}/resources/toolkits/${resource.id}`}
-                            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#7A3B5E] to-[#C4878A] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity"
+                      <div className="pt-4 border-t border-[#F3EFE8] flex flex-col gap-2">
+                        {/* Primary CTA: Interactive version OR Peek Inside */}
+                        {hasInteractive ? (
+                          <>
+                            <Link
+                              href={`/${locale}/resources/toolkits/${resource.id}`}
+                              className={`w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity ${
+                                isPremium
+                                  ? 'bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] shadow-md'
+                                  : 'bg-gradient-to-r from-[#7A3B5E] to-[#C4878A]'
+                              }`}
+                            >
+                              <Sparkles className="w-4 h-4" />
+                              {isPremium
+                                ? (isRTL ? `جرّبها مجّانًا · $${priceCAD}` : `Try Free · Unlock $${priceCAD}`)
+                                : (isRTL ? 'النسخة التفاعلية' : 'Try Interactive Version')}
+                            </Link>
+                            <button
+                              onClick={() => openPreview(resource.id)}
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#7A3B5E] text-xs font-medium hover:underline transition-colors"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                              {isRTL ? 'ألقِ نظرة' : 'Peek Inside'}
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => openPreview(resource.id)}
+                            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#7A3B5E] text-white text-sm font-semibold rounded-xl hover:bg-[#5E2D48] transition-colors"
                           >
-                            <Sparkles className="w-4 h-4" />
-                            {isRTL ? 'النسخة التفاعلية' : 'Try Interactive Version'}
-                          </Link>
+                            <Eye className="w-4 h-4" />
+                            {isRTL ? 'ألقِ نظرة' : 'Peek Inside'}
+                          </button>
                         )}
 
                         {isUnlocked ? (
                           <button
                             onClick={() => handleDownload(resource.id)}
-                            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#7A3B5E] text-white text-sm font-semibold rounded-xl hover:bg-[#5E2D48] transition-colors"
+                            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#7A3B5E] text-xs font-medium hover:underline transition-colors"
                           >
                             {downloadedIds.has(resource.id) ? (
-                              <>
-                                <Check className="w-4 h-4" />
-                                {isRTL ? 'حمِّلْ مرّة أخرى' : 'Download Again'}
-                              </>
+                              <><Check className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلْ مرّة أخرى' : 'Download Again'}</>
                             ) : (
-                              <>
-                                <Download className="w-4 h-4" />
-                                {isRTL ? 'حمِّلْ مجّانًا' : 'Download Free'}
-                              </>
+                              <><Download className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلْ مجّانًا' : 'Download Free'}</>
                             )}
                           </button>
                         ) : (
-                          <div className="flex items-center gap-2 text-sm text-[#8E8E9F]">
-                            <Lock className="w-4 h-4" />
-                            {isRTL ? 'أدخِلْ بريدَك أعلاه لفتح جميع الأدوات' : 'Enter your email above to unlock all tools'}
+                          <div className="flex items-center justify-center gap-1.5 text-xs text-[#8E8E9F]">
+                            <Lock className="w-3 h-3" />
+                            {isRTL ? 'أدخِلْ بريدَك لفتح التحميل' : 'Unlock with email above'}
                           </div>
                         )}
                       </div>

@@ -44,3 +44,5 @@ next-env.d.ts
 # remotion
 out/
 remotion/assets/*.mp4
+public/images/hala-confident_ups_5x.png
+public/images/hala-hero-desktop.png

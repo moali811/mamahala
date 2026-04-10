@@ -5,6 +5,8 @@ export interface ToolkitCatalogEntry {
   titleEn: string;
   titleAr: string;
   hasInteractiveVersion: boolean;
+  isPremium?: boolean;
+  priceCAD?: number;
 }
 
 export const toolkitCatalog: ToolkitCatalogEntry[] = [
@@ -13,6 +15,8 @@ export const toolkitCatalog: ToolkitCatalogEntry[] = [
     titleEn: 'The Anxiety Recovery Journal',
     titleAr: 'يوميّاتُ التعافي من القلق',
     hasInteractiveVersion: true,
+    isPremium: true,
+    priceCAD: 19,
   },
   // All others have hasInteractiveVersion: false for now
 ];

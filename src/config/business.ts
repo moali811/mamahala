@@ -39,6 +39,16 @@ export const BUSINESS = {
   // Pricing strategy: lead magnet → 1:1 funnel. Low friction entry, real business is Dr. Hala's 1:1 practice.
   academyLevelPrices: { growth: 19, mastery: 29 } as { growth: number; mastery: number },
 
+  // Toolkit Premium Stripe Payment Links — shared across all premium toolkits
+  // Uses ?client_reference_id={toolkit-slug} so the success URL redirects
+  // back to /resources/toolkits/unlock-success?slug={slug}
+  // Success URL configured in Stripe dashboard:
+  //   https://mamahala.ca/en/resources/toolkits/unlock-success?slug={CHECKOUT_SESSION_CLIENT_REFERENCE_ID}
+  toolkitPaymentLinks: {
+    standard: 'https://buy.stripe.com/00w8wOaB88gd23XaMxawo0b',  // $19 CAD — Mama Hala Toolkit - Premium
+    flagship: 'https://buy.stripe.com/cNi7sK5gO8gddMFbQBawo0c',  // $29 CAD — Mama Hala Toolkit - Flagship
+  },
+
   // Social
   social: {
     instagram: 'https://www.instagram.com/mamahala.ca/',
