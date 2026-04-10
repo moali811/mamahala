@@ -1020,7 +1020,7 @@ function DownloadsPageInner() {
                             >
                               <Sparkles className="w-4 h-4" />
                               {isPremium
-                                ? (isRTL ? `جرّبها مجّانًا · $${priceCAD}` : `Try Free · Unlock $${priceCAD}`)
+                                ? (isRTL ? `جرّبها مجّانًا · $${priceCAD} CAD` : `Try Free · Unlock $${priceCAD} CAD`)
                                 : (isRTL ? 'النسخة التفاعلية' : 'Try Interactive Version')}
                             </Link>
                             <button

@@ -405,8 +405,8 @@ export default function ProgramOverviewPage() {
                 {program.isFree
                   ? (isRTL ? 'مجاني' : 'Free')
                   : (isRTL
-                      ? `ابْدَئي مَجّاناً · $${BUSINESS.academyFullAccessPrice} للوُصولِ الكامِل`
-                      : `Start free · $${BUSINESS.academyFullAccessPrice} for full access`)}
+                      ? `ابْدَئي مَجّاناً · $${BUSINESS.academyFullAccessPrice} CAD للوُصولِ الكامِل`
+                      : `Start free · $${BUSINESS.academyFullAccessPrice} CAD for full access`)}
               </Badge>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {program.totalModules} {isRTL ? 'وحدة' : 'modules'}</span>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Clock className="w-4 h-4" /> {program.totalDurationHours}h</span>
@@ -922,8 +922,8 @@ export default function ProgramOverviewPage() {
                   {!program.isFree && (
                     <p className="text-xs text-[#8E8E9F] text-center mt-3">
                       {isRTL
-                        ? `المُسْتَوى الأَوَّل مَجّاني · الوُصولُ الكامِل $${BUSINESS.academyFullAccessPrice}`
-                        : `Level 1 is free · Full access $${BUSINESS.academyFullAccessPrice}`}
+                        ? `المُسْتَوى الأَوَّل مَجّاني · الوُصولُ الكامِل $${BUSINESS.academyFullAccessPrice} CAD`
+                        : `Level 1 is free · Full access $${BUSINESS.academyFullAccessPrice} CAD`}
                     </p>
                   )}
                 </>
