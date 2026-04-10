@@ -755,6 +755,12 @@ function DownloadsPageInner() {
   const [unlockEmail, setUnlockEmail] = useState('');
   const [unlockStatus, setUnlockStatus] = useState<'idle' | 'loading' | 'invalid'>('idle');
   const [downloadedIds, setDownloadedIds] = useState<Set<string>>(new Set());
+  /**
+   * Tracks which premium toolkits the current user has paid for.
+   * Populated from localStorage keys `toolkit:paid:{slug}` on mount and after email unlock.
+   * Premium cards gate the PDF download + hide the Peek Inside button based on this.
+   */
+  const [paidSlugs, setPaidSlugs] = useState<Set<string>>(new Set());
 
   // Filter resources by demographic (level 1) + theme (level 2) + type
   // Sort new items to the top
@@ -829,6 +835,16 @@ function DownloadsPageInner() {
     if (downloaded) {
       setDownloadedIds(new Set(JSON.parse(downloaded)));
     }
+    // Read paid status for every premium toolkit. The interactive viewer page writes
+    // `toolkit:paid:{slug}` after Stripe checkout; we mirror that here so cards reflect
+    // purchases without requiring a page refresh.
+    const paid = new Set<string>();
+    for (const entry of toolkitCatalog) {
+      if (entry.isPremium && localStorage.getItem(`toolkit:paid:${entry.slug}`) === 'true') {
+        paid.add(entry.slug);
+      }
+    }
+    setPaidSlugs(paid);
   }, []);
 
   const handleUnlock = async (e: React.FormEvent) => {
@@ -855,10 +871,22 @@ function DownloadsPageInner() {
       const premiumToolkits = toolkitCatalog.filter(tc => tc.isPremium).map(tc => tc.slug);
       const allPrograms = ['intentional-parent', 'inner-compass', 'resilient-teens', 'stronger-together'];
       unlockAllForVip(allPrograms, premiumToolkits);
+      // Mirror the VIP unlock into our card-level state so premium cards flip to "paid"
+      // immediately without requiring a page refresh.
+      setPaidSlugs(new Set(premiumToolkits));
     }
   };
 
   const handleDownload = async (id: string) => {
+    // Premium guard: block PDF open if this is a premium toolkit and the user
+    // hasn't paid (or isn't a VIP whose unlock already landed in paidSlugs).
+    // The UI shouldn't route here anyway, but this is the safety net.
+    const catalogEntry = toolkitCatalog.find(tc => tc.slug === id);
+    if (catalogEntry?.isPremium && !paidSlugs.has(id)) {
+      // Send them to the interactive version page, which handles Stripe checkout.
+      window.location.href = `/${locale}/resources/toolkits/${id}`;
+      return;
+    }
     // Track the download
     try {
       await fetch('/api/toolkit', {
@@ -1194,21 +1222,45 @@ function DownloadsPageInner() {
 
                       {/* Action area */}
                       <div className="pt-4 border-t border-[#F3EFE8] flex flex-col gap-2">
-                        {/* Primary CTA: Interactive version OR Peek Inside */}
-                        {hasInteractive ? (
+                        {/* ── Premium cards: interactive CTA only, no Peek Inside ── */}
+                        {isPremium ? (
                           <>
                             <Link
                               href={`/${locale}/resources/toolkits/${resource.id}`}
-                              className={`w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity ${
-                                isPremium
-                                  ? 'bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] shadow-md'
-                                  : 'bg-gradient-to-r from-[#7A3B5E] to-[#C4878A]'
-                              }`}
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] shadow-md"
                             >
                               <Sparkles className="w-4 h-4" />
-                              {isPremium
-                                ? (isRTL ? `جرّبها مجّانًا · $${priceCAD} CAD` : `Try Free · Unlock $${priceCAD} CAD`)
-                                : (isRTL ? 'النسخة التفاعلية' : 'Try Interactive Version')}
+                              {paidSlugs.has(resource.id)
+                                ? (isRTL ? 'افْتَحِ النُّسْخَةَ التَّفاعُلِيَّة' : 'Open Interactive Version')
+                                : (isRTL ? `جرِّبيها مَجّاناً · اِفْتَحي $${priceCAD} CAD` : `Try Free · Unlock $${priceCAD} CAD`)}
+                            </Link>
+                            {paidSlugs.has(resource.id) ? (
+                              <button
+                                onClick={() => handleDownload(resource.id)}
+                                className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#7A3B5E] text-xs font-medium hover:underline transition-colors"
+                              >
+                                {downloadedIds.has(resource.id) ? (
+                                  <><Check className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلِ الـ PDF مَرَّةً أُخْرى' : 'Download PDF Again'}</>
+                                ) : (
+                                  <><Download className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلِ الـ PDF' : 'Download PDF'}</>
+                                )}
+                              </button>
+                            ) : (
+                              <div className="flex items-center justify-center gap-1.5 text-xs text-[#8E8E9F]">
+                                <Lock className="w-3 h-3" />
+                                {isRTL ? 'الـ PDF مُتاحٌ بَعْدَ الشِّراء' : 'PDF available after purchase'}
+                              </div>
+                            )}
+                          </>
+                        ) : hasInteractive ? (
+                          /* ── Free toolkits with an interactive version ── */
+                          <>
+                            <Link
+                              href={`/${locale}/resources/toolkits/${resource.id}`}
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity bg-gradient-to-r from-[#7A3B5E] to-[#C4878A]"
+                            >
+                              <Sparkles className="w-4 h-4" />
+                              {isRTL ? 'النسخة التفاعلية' : 'Try Interactive Version'}
                             </Link>
                             <button
                               onClick={() => openPreview(resource.id)}
@@ -1219,6 +1271,7 @@ function DownloadsPageInner() {
                             </button>
                           </>
                         ) : (
+                          /* ── Free toolkits, preview only ── */
                           <button
                             onClick={() => openPreview(resource.id)}
                             className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#7A3B5E] text-white text-sm font-semibold rounded-xl hover:bg-[#5E2D48] transition-colors"
@@ -1228,22 +1281,26 @@ function DownloadsPageInner() {
                           </button>
                         )}
 
-                        {isUnlocked ? (
-                          <button
-                            onClick={() => handleDownload(resource.id)}
-                            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#7A3B5E] text-xs font-medium hover:underline transition-colors"
-                          >
-                            {downloadedIds.has(resource.id) ? (
-                              <><Check className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلْ مرّة أخرى' : 'Download Again'}</>
-                            ) : (
-                              <><Download className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلْ مجّانًا' : 'Download Free'}</>
-                            )}
-                          </button>
-                        ) : (
-                          <div className="flex items-center justify-center gap-1.5 text-xs text-[#8E8E9F]">
-                            <Lock className="w-3 h-3" />
-                            {isRTL ? 'أدخِلْ بريدَك لفتح التحميل' : 'Unlock with email above'}
-                          </div>
+                        {/* Free PDF download row — hidden on premium cards because the
+                            premium branch above handles the gated PDF state itself */}
+                        {!isPremium && (
+                          isUnlocked ? (
+                            <button
+                              onClick={() => handleDownload(resource.id)}
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#7A3B5E] text-xs font-medium hover:underline transition-colors"
+                            >
+                              {downloadedIds.has(resource.id) ? (
+                                <><Check className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلْ مرّة أخرى' : 'Download Again'}</>
+                              ) : (
+                                <><Download className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلْ مجّانًا' : 'Download Free'}</>
+                              )}
+                            </button>
+                          ) : (
+                            <div className="flex items-center justify-center gap-1.5 text-xs text-[#8E8E9F]">
+                              <Lock className="w-3 h-3" />
+                              {isRTL ? 'أدخِلْ بريدَك لفتح التحميل' : 'Unlock with email above'}
+                            </div>
+                          )
                         )}
                       </div>
                     </div>
@@ -1327,6 +1384,12 @@ function DownloadsPageInner() {
         // Related toolkits: score by audience + category + type diversity
         const relatedToolkits = resources
           .filter(r => r.id !== resource.id)
+          // Premium toolkits don't belong in Peek Inside suggestions — they have their
+          // own buy flow via the interactive page and shouldn't be previewed this way.
+          .filter(r => {
+            const catalog = toolkitCatalog.find(tc => tc.slug === r.id);
+            return !(catalog?.isPremium ?? r.isPremium ?? false);
+          })
           .map(r => {
             let score = 0;
             const rAud = r.audience || ({ families: 'parents', adults: 'adults', youth: 'parents', couples: 'couples' }[r.category]);
