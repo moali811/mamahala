@@ -67,6 +67,158 @@ function isNew(dateAdded?: string): boolean {
   return diff < NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
 }
 
+/** Parse inline markdown: **bold** → <strong>, *italic* → <em> */
+function renderInlineMd(text: string): React.ReactNode {
+  const regex = /\*\*(.+?)\*\*|\*(.+?)\*/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  let key = 0;
+  while ((match = regex.exec(text)) !== null) {
+    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
+    if (match[1] !== undefined) {
+      parts.push(<strong key={key++} className="font-semibold text-[#2D2A33]">{match[1]}</strong>);
+    } else if (match[2] !== undefined) {
+      parts.push(<em key={key++}>{match[2]}</em>);
+    }
+    lastIndex = match.index + match[0].length;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+  return parts.length > 1 ? <>{parts}</> : text;
+}
+
+/**
+ * Extract a meaningful preview excerpt from a toolkit markdown file.
+ * Skips the title, subtitle, author, and any boilerplate to find real content.
+ * Returns ~1500 characters of rich content from where the user would actually
+ * want to start reading (hero quote or first meaningful paragraph).
+ */
+function extractToolkitPreview(md: string): string {
+  if (!md) return '';
+  const lines = md.split('\n');
+  const contentLines: string[] = [];
+  let pastFrontMatter = false;
+  let charCount = 0;
+  const MAX_CHARS = 1800;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    // Skip H1 (title)
+    if (trimmed.startsWith('# ')) continue;
+    // Skip author attribution lines (various formats — "A Toolkit by", "A Comprehensive Guide by", etc.)
+    if (/^\*\*A\s+.+\s+by\s+Dr\.?\s+Hala/i.test(trimmed)) continue;
+    // Skip "By Dr. Hala" style lines
+    if (/^\*?\*?By\s+Dr\.?\s+Hala/i.test(trimmed)) continue;
+    // Skip pure dividers
+    if (trimmed === '---') {
+      if (pastFrontMatter) {
+        contentLines.push(trimmed);
+        charCount += 3;
+      }
+      pastFrontMatter = true;
+      continue;
+    }
+    // Mark past front matter after first blockquote or paragraph
+    if (!pastFrontMatter && (trimmed.startsWith('>') || (trimmed.length > 20 && !trimmed.startsWith('#')))) {
+      pastFrontMatter = true;
+    }
+    if (!pastFrontMatter) continue;
+
+    contentLines.push(line);
+    charCount += line.length + 1;
+    if (charCount >= MAX_CHARS) break;
+  }
+
+  return contentLines.join('\n').trim();
+}
+
+/**
+ * Render a markdown string as React nodes — handles headings, paragraphs,
+ * bullets, numbered lists, blockquotes, bold, italic. Used in the toolkit
+ * preview modal to show real content instead of a bare TOC.
+ */
+function renderMarkdownPreview(md: string): React.ReactNode {
+  if (!md) return null;
+  const blocks = md.split(/\n\n+/);
+  return blocks.map((block, blockIdx) => {
+    const trimmed = block.trim();
+    if (!trimmed) return null;
+
+    // Horizontal rule
+    if (trimmed === '---') {
+      return <hr key={blockIdx} className="my-4 border-[#F3EFE8]" />;
+    }
+
+    // H2
+    if (trimmed.startsWith('## ')) {
+      return (
+        <h3 key={blockIdx} className="text-base font-bold text-[#2D2A33] mt-5 mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+          {renderInlineMd(trimmed.slice(3))}
+        </h3>
+      );
+    }
+
+    // H3
+    if (trimmed.startsWith('### ')) {
+      return (
+        <h4 key={blockIdx} className="text-sm font-semibold text-[#2D2A33] mt-4 mb-1.5">
+          {renderInlineMd(trimmed.slice(4))}
+        </h4>
+      );
+    }
+
+    // Blockquote (multi-line possible)
+    if (trimmed.startsWith('> ')) {
+      const lines = trimmed.split('\n').map(l => l.replace(/^>\s?/, ''));
+      return (
+        <blockquote
+          key={blockIdx}
+          className="border-s-4 border-[#7A3B5E]/30 ps-4 py-1 my-3 italic text-[#4A4A5C] text-sm leading-relaxed"
+        >
+          {lines.map((line, i) => (
+            <p key={i}>{renderInlineMd(line)}</p>
+          ))}
+        </blockquote>
+      );
+    }
+
+    // Unordered list
+    if (trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+      const items = trimmed.split('\n').filter(l => l.trim().startsWith('- ') || l.trim().startsWith('• '));
+      return (
+        <ul key={blockIdx} className="space-y-1.5 my-3 ps-4 list-disc text-sm text-[#4A4A5C]">
+          {items.map((item, i) => (
+            <li key={i} className="leading-relaxed">
+              {renderInlineMd(item.replace(/^[-•]\s?/, ''))}
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    // Ordered list
+    if (/^\d+\.\s/.test(trimmed)) {
+      const items = trimmed.split('\n').filter(l => /^\d+\.\s/.test(l.trim()));
+      return (
+        <ol key={blockIdx} className="space-y-1.5 my-3 ps-4 list-decimal text-sm text-[#4A4A5C]">
+          {items.map((item, i) => (
+            <li key={i} className="leading-relaxed">
+              {renderInlineMd(item.replace(/^\d+\.\s/, ''))}
+            </li>
+          ))}
+        </ol>
+      );
+    }
+
+    // Paragraph (default)
+    return (
+      <p key={blockIdx} className="text-sm text-[#4A4A5C] leading-relaxed my-3">
+        {renderInlineMd(trimmed)}
+      </p>
+    );
+  });
+}
+
 const resources: DownloadResource[] = [
   // ─── PARENTS & FAMILIES ───
   {
@@ -1206,32 +1358,42 @@ function DownloadsPageInner() {
                     </div>
                   )}
 
-                  {/* What you'll learn — Table of Contents */}
+                  {/* Rich content preview — shows actual excerpt with fade-out */}
                   {previewLoading ? (
                     <div className="flex items-center justify-center py-12">
                       <div className="w-8 h-8 border-2 border-[#7A3B5E] border-t-transparent rounded-full animate-spin" />
                     </div>
-                  ) : sections.length > 0 ? (
+                  ) : previewContent ? (
                     <div className="mb-6">
-                      <h3 className="text-sm font-bold text-[#2D2A33] uppercase tracking-wider mb-3">
-                        {isRTL ? 'ماذا ستتعلّم' : "What You'll Learn"}
-                      </h3>
-                      <div className="space-y-2">
-                        {sections.map((section, i) => (
-                          <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-[#FAF7F2] border border-[#F3EFE8]">
-                            <span className="flex items-center justify-center w-6 h-6 rounded-lg bg-white text-xs font-bold text-[#7A3B5E] shadow-sm shrink-0 mt-0.5">
-                              {i + 1}
-                            </span>
-                            <span className="text-sm text-[#2D2A33] font-medium">{section}</span>
-                          </div>
-                        ))}
+                      <div className="flex items-center gap-2 mb-4">
+                        <div className="w-1 h-4 rounded-full bg-[#7A3B5E]" />
+                        <h3 className="text-xs font-bold text-[#7A3B5E] uppercase tracking-[0.15em]">
+                          {isRTL ? 'نَظْرَةٌ داخِلِيَّة' : 'A Peek Inside'}
+                        </h3>
                       </div>
+                      <div className="relative rounded-2xl border border-[#F3EFE8] bg-[#FAF7F2]/40 p-5 pb-16 overflow-hidden">
+                        <div className="relative">
+                          {renderMarkdownPreview(extractToolkitPreview(previewContent))}
+                        </div>
+                        {/* Fade-out gradient */}
+                        <div
+                          className="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+                          style={{
+                            background: 'linear-gradient(to bottom, rgba(250,247,242,0) 0%, rgba(250,247,242,0.95) 60%, #FAF7F2 100%)',
+                          }}
+                        />
+                      </div>
+                      <p className="text-xs text-[#8E8E9F] text-center mt-3 italic">
+                        {isRTL
+                          ? `هذا جُزْءٌ صَغيرٌ من ${sections.length} أَقْسام — حَمِّلي الأَداةَ الكامِلَةَ للمُتابَعَة`
+                          : `This is a small excerpt from ${sections.length} sections — download the full toolkit to continue`}
+                      </p>
                     </div>
-                  ) : !previewContent ? (
+                  ) : (
                     <p className="text-sm text-[#8E8E9F] text-center py-8">
                       {isRTL ? 'لا يمكن تحميل المعاينة' : 'Preview not available'}
                     </p>
-                  ) : null}
+                  )}
 
                   {/* Related toolkits */}
                   {relatedToolkits.length > 0 && (
