@@ -1278,6 +1278,9 @@ function DownloadsPageInner() {
         const description = isRTL ? resource.description.ar : resource.description.en;
         const TypeIcon = typeIcons[resource.type] || FileText;
         const typeLabel = isRTL ? typeLabels[resource.type].ar : typeLabels[resource.type].en;
+        const previewCatalog = toolkitCatalog.find(tc => tc.slug === resource.id);
+        const previewHasInteractive = previewCatalog?.hasInteractiveVersion ?? false;
+        const previewIsPremium = previewCatalog?.isPremium ?? resource.isPremium ?? false;
 
         // Extract structured preview from markdown
         const sections = previewContent
@@ -1354,7 +1357,14 @@ function DownloadsPageInner() {
                         <Clock className="w-3.5 h-3.5" />
                         {isRTL ? `${readTime} دقائق قراءة` : `${readTime} min read`}
                       </div>
-                      <Badge variant="success" size="sm">{messages.common.free}</Badge>
+                      {previewIsPremium ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] shadow-sm">
+                          <Sparkles className="w-2.5 h-2.5" />
+                          {isRTL ? `مميّز · $${BUSINESS.toolkitFullAccessPrice} CAD` : `Premium · $${BUSINESS.toolkitFullAccessPrice} CAD`}
+                        </span>
+                      ) : (
+                        <Badge variant="success" size="sm">{messages.common.free}</Badge>
+                      )}
                     </div>
                   )}
 
@@ -1431,9 +1441,32 @@ function DownloadsPageInner() {
                 </div>
               </div>
 
-              {/* CTA */}
+              {/* CTA — branches on premium/interactive/download state */}
               <div className="p-5 border-t border-[#F3EFE8] bg-white flex items-center gap-3">
-                {isUnlocked ? (
+                {previewIsPremium ? (
+                  /* Premium: show Try Interactive Version CTA linking to the free preview section */
+                  <Link
+                    href={`/${locale}/resources/toolkits/${resource.id}`}
+                    onClick={() => setPreviewId(null)}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 text-white text-sm font-semibold rounded-xl shadow-md hover:opacity-90 transition-opacity bg-gradient-to-r from-[#B08D57] to-[#7A3B5E]"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    {isRTL
+                      ? `جرّبي القِسْمَ المَجّاني · افتحي $${BUSINESS.toolkitFullAccessPrice} CAD`
+                      : `Try Free · Unlock $${BUSINESS.toolkitFullAccessPrice} CAD`}
+                  </Link>
+                ) : previewHasInteractive ? (
+                  /* Non-premium interactive: direct link to interactive version */
+                  <Link
+                    href={`/${locale}/resources/toolkits/${resource.id}`}
+                    onClick={() => setPreviewId(null)}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#7A3B5E] to-[#C4878A] text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    {isRTL ? 'النسخة التفاعلية' : 'Try Interactive Version'}
+                  </Link>
+                ) : isUnlocked ? (
+                  /* Free toolkit + email unlocked: direct download */
                   <button
                     onClick={() => { handleDownload(resource.id); setPreviewId(null); }}
                     className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 bg-[#7A3B5E] text-white text-sm font-semibold rounded-xl hover:bg-[#5E2D48] transition-colors"
@@ -1442,6 +1475,7 @@ function DownloadsPageInner() {
                     {isRTL ? 'حمِّلْ الأداة كاملة' : 'Download Full Toolkit'}
                   </button>
                 ) : (
+                  /* Free toolkit, email not yet provided */
                   <div className="flex-1 text-center text-sm text-[#8E8E9F]">
                     <Lock className="w-4 h-4 inline-block mr-1" />
                     {isRTL ? 'أدخِلْ بريدَك لفتح التحميل' : 'Enter your email above to unlock downloads'}
