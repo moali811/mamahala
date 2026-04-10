@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import FinalCTA from '@/components/shared/FinalCTA';
-import Hero3DImage from '@/components/shared/Hero3DImage';
 import {
   ArrowRight,
   ArrowLeft,
@@ -317,13 +316,23 @@ export default function HomePage() {
       {/*  SECTION 1: HERO                                                */}
       {/* ================================================================ */}
       <section className="relative min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
-        {/* Editorial image — 3D perspective tilt with soft fade via CSS mask */}
-        <Hero3DImage
-          src="/images/hala-confident.png"
-          alt="Dr. Hala Ali - Mama Hala"
-          isRTL={isRTL}
-          maskClass={isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}
-        />
+        {/* Editorial image — soft fade via CSS mask */}
+        <div
+          className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}
+          style={{ backgroundColor: '#E8D5D0' }}
+        >
+          <Image
+            src="/images/hala-confident_ups.png"
+            alt="Dr. Hala Ali - Mama Hala"
+            fill
+            priority
+            quality={100}
+            sizes="(min-width: 1536px) 60vw, (min-width: 1024px) 55vw, 100vw"
+            className="object-cover object-top"
+            placeholder="blur"
+            blurDataURL="data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAADwAwCdASoUAAsAPu1iqU2ppaOiMAgBMB2JZQC2yCFT5/Pao6aUJLgAAP7v0f5OHzJdK1svIxQtw0N/HgyyhatKQOpClQv97LqE75+dnZ34eoB+RpYabT9AAAA="
+          />
+        </div>
 
         {/* Mobile text readability gradient — positioned lower so the photo shows through more */}
         <div className="absolute inset-x-0 bottom-0 top-[45%] z-[5] bg-gradient-to-t from-[#FDF8F4] via-[#FDF8F4]/75 to-transparent lg:hidden" />
