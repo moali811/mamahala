@@ -322,7 +322,7 @@ export default function EventsPage() {
               </p>
             </ScrollReveal>
 
-            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+            <div className="grid gap-6 md:grid-cols-2 md:gap-6 lg:gap-8">
               {featuredEvents.map((event) => (
                 <motion.div
                   key={event.slug}
@@ -330,7 +330,7 @@ export default function EventsPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-80px' }}
                   transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                  className="relative rounded-2xl border-2 border-[#C8A97D]/30 overflow-hidden bg-white shadow-[0_8px_40px_rgba(176,141,87,0.08)]"
+                  className="relative rounded-2xl border-2 border-[#C8A97D]/30 overflow-hidden bg-white shadow-[0_8px_40px_rgba(176,141,87,0.08)] flex flex-col"
                 >
                   {/* Gold accent stripe at top */}
                   <div className="h-1.5 bg-gradient-to-r from-[#C8A97D] via-[#B08D57] to-[#7A3B5E]" />
@@ -342,6 +342,7 @@ export default function EventsPage() {
                   <EventCard
                     event={event}
                     locale={locale}
+                    compact
                     isExpanded={expandedSlug === event.slug}
                     onToggleExpand={() =>
                       setExpandedSlug(expandedSlug === event.slug ? null : event.slug)

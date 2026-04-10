@@ -41,6 +41,13 @@ interface Props {
   locale: string;
   isExpanded?: boolean;
   onToggleExpand?: () => void;
+  /**
+   * When true, forces the card into a vertical layout at all breakpoints
+   * (instead of side-by-side visual/content). Used for the featured summer
+   * programs section where 2 cards sit side-by-side in a 2-col grid and
+   * can't afford the 340px visual column stealing horizontal space.
+   */
+  compact?: boolean;
 }
 
 const typeGradients: Record<EventType, string> = {
@@ -65,7 +72,7 @@ const locationTypeLabels = {
   hybrid: { en: 'Hybrid', ar: 'حضوري + عبر الإنترنت' },
 };
 
-export default function EventCard({ event, locale, isExpanded, onToggleExpand }: Props) {
+export default function EventCard({ event, locale, isExpanded, onToggleExpand, compact = false }: Props) {
   const [showModal, setShowModal] = useState(false);
   const [showCalModal, setShowCalModal] = useState(false);
   const isRTL = locale === 'ar';
@@ -97,9 +104,13 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
       whileHover={{ y: -4, boxShadow: '0 12px 48px rgba(0,0,0,0.08)' }}
       transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="flex flex-col lg:flex-row">
-        {/* Left: Visual area */}
-        <div className={`relative flex-shrink-0 w-full lg:w-[340px] overflow-hidden bg-gradient-to-br ${typeGradients[event.type]}`}>
+      <div className={compact ? 'flex flex-col' : 'flex flex-col lg:flex-row'}>
+        {/* Left: Visual area (top banner in compact mode) */}
+        <div
+          className={`relative flex-shrink-0 w-full overflow-hidden bg-gradient-to-br ${typeGradients[event.type]} ${
+            compact ? '' : 'lg:w-[340px]'
+          }`}
+        >
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -108,33 +119,39 @@ export default function EventCard({ event, locale, isExpanded, onToggleExpand }:
               color: '#7A3B5E',
             }}
           />
-          <div className="relative flex flex-col items-center justify-center p-8 lg:p-10 h-full min-h-[200px]">
+          <div
+            className={`relative flex flex-col items-center justify-center ${
+              compact ? 'p-6 min-h-[140px]' : 'p-8 lg:p-10 h-full min-h-[200px]'
+            }`}
+          >
             <span
-              className="text-7xl lg:text-8xl font-bold text-[#2D2A33]/10"
+              className={`font-bold text-[#2D2A33]/10 ${
+                compact ? 'text-6xl' : 'text-7xl lg:text-8xl'
+              }`}
               style={{ fontFamily: 'var(--font-heading)' }}
             >
               {dateParts.day}
             </span>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-[#C8A97D] mb-1">
+              <span className={`font-bold uppercase tracking-[0.3em] text-[#C8A97D] mb-1 ${compact ? 'text-[10px]' : 'text-xs'}`}>
                 {dateParts.month}
               </span>
               <span
-                className="text-4xl lg:text-5xl font-bold text-[#2D2A33]"
+                className={`font-bold text-[#2D2A33] ${compact ? 'text-3xl' : 'text-4xl lg:text-5xl'}`}
                 style={{ fontFamily: 'var(--font-heading)' }}
               >
                 {dateParts.day}
               </span>
-              <span className="text-sm text-[#8E8E9F] mt-1">{dateParts.year}</span>
+              <span className={`text-[#8E8E9F] mt-1 ${compact ? 'text-xs' : 'text-sm'}`}>{dateParts.year}</span>
             </div>
-            <div className="absolute bottom-4 right-4 w-10 h-10 rounded-xl bg-white/95 flex items-center justify-center shadow-sm">
+            <div className={`absolute bottom-4 right-4 rounded-xl bg-white/95 flex items-center justify-center shadow-sm ${compact ? 'w-9 h-9' : 'w-10 h-10'}`}>
               {typeIcons[event.type]}
             </div>
           </div>
         </div>
 
-        {/* Right: Content */}
-        <div className="flex-1 p-6 sm:p-8 lg:p-10 flex flex-col">
+        {/* Right: Content (below banner in compact mode) */}
+        <div className={`flex-1 flex flex-col ${compact ? 'p-5 sm:p-6' : 'p-6 sm:p-8 lg:p-10'}`}>
           {/* Badges */}
           <div className="flex items-center flex-wrap gap-2 mb-4">
             <Badge variant={event.isFree ? 'success' : 'sand'} size="md">
