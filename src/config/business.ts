@@ -49,6 +49,14 @@ export const BUSINESS = {
     flagship: 'https://buy.stripe.com/cNi7sK5gO8gddMFbQBawo0c',  // $29 CAD — Mama Hala Toolkit - Flagship
   },
 
+  // VIP emails — bypass ALL paywalls (academy levels + premium toolkits)
+  // Used for admin access, founder access, and internal testing
+  // When any of these emails are entered in email gates, everything unlocks
+  vipEmails: [
+    'admin@mamahala.ca',
+    'mo.ali811@gmail.com',
+  ] as string[],
+
   // Social
   social: {
     instagram: 'https://www.instagram.com/mamahala.ca/',

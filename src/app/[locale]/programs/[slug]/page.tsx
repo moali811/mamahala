@@ -47,6 +47,7 @@ const LEVEL_DIMENSIONS: Record<string, Record<number, LevelDimension[]>> = {
   },
 };
 import { BUSINESS } from '@/config/business';
+import { isVipEmail } from '@/lib/vip-emails';
 import { t, tArray } from '@/lib/academy-helpers';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import SkillMeter from '@/components/academy/visual/SkillMeter';
@@ -107,9 +108,17 @@ export default function ProgramOverviewPage() {
   // Load unlock state from localStorage (both per-level and legacy per-module)
   useEffect(() => {
     if (typeof window !== 'undefined' && program) {
+      // VIP bypass: if stored academy or toolkit email is a VIP, unlock ALL levels
+      const academyEmail = localStorage.getItem('academy_email');
+      const toolkitEmail = localStorage.getItem('mh_toolkit_email');
+      const vipBypass = isVipEmail(academyEmail) || isVipEmail(toolkitEmail);
+
       const levels = new Set<number>();
       program.levels.forEach(lvl => {
-        if (localStorage.getItem(`academy:paid:${slug}:level-${lvl.level}`) === 'true') {
+        if (vipBypass) {
+          levels.add(lvl.level);
+          localStorage.setItem(`academy:paid:${slug}:level-${lvl.level}`, 'true');
+        } else if (localStorage.getItem(`academy:paid:${slug}:level-${lvl.level}`) === 'true') {
           levels.add(lvl.level);
         }
       });
@@ -227,19 +236,21 @@ export default function ProgramOverviewPage() {
     e.preventDefault();
     if (!enrollEmail.trim()) return;
     setEnrolling(true);
+    const normalizedEmail = enrollEmail.trim();
+    const isVip = isVipEmail(normalizedEmail);
     try {
       const res = await fetch('/api/academy/enroll', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: enrollEmail.trim(), name: enrollName.trim(), programSlug: slug }),
+        body: JSON.stringify({ email: normalizedEmail, name: enrollName.trim(), programSlug: slug }),
       });
       const data = await res.json();
       if (res.ok) {
         setEnrolled(true);
-        localStorage.setItem(`academy_email`, enrollEmail.trim());
+        localStorage.setItem(`academy_email`, normalizedEmail);
         localStorage.setItem(`academy_enrolled_${slug}`, 'true');
-        // Admin auto-unlock: set all paid levels in localStorage
-        if (data.adminUnlocked) {
+        // Admin/VIP auto-unlock: set all paid levels in localStorage
+        if (data.adminUnlocked || isVip) {
           unlockLevelLocally(2);
           unlockLevelLocally(3);
         }
@@ -248,7 +259,16 @@ export default function ProgramOverviewPage() {
           document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 600);
       }
-    } catch { /* ignore */ }
+    } catch {
+      // Network error — still unlock locally if VIP (works offline)
+      if (isVip) {
+        setEnrolled(true);
+        localStorage.setItem(`academy_email`, normalizedEmail);
+        localStorage.setItem(`academy_enrolled_${slug}`, 'true');
+        unlockLevelLocally(2);
+        unlockLevelLocally(3);
+      }
+    }
     setEnrolling(false);
   };
 

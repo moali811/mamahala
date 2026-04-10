@@ -29,6 +29,7 @@ import ScrollReveal from '@/components/motion/ScrollReveal';
 import { t } from '@/lib/academy-helpers';
 import { ease } from '@/lib/animations';
 import { BUSINESS } from '@/config/business';
+import { isVipEmail } from '@/lib/vip-emails';
 
 /* ── Icon map ─────────────────────────────────────────────────── */
 const iconMap: Record<string, React.ComponentType<{ className?: string; style?: React.CSSProperties }>> = {
@@ -102,6 +103,14 @@ export default function ToolkitDetailPage() {
   /* ── Check unlock status for premium toolkits ──────────────────── */
   useEffect(() => {
     if (!slug) return;
+    // VIP bypass: if any stored email is a VIP, auto-unlock everything
+    const toolkitEmail = localStorage.getItem('mh_toolkit_email');
+    const academyEmail = localStorage.getItem('academy_email');
+    if (isVipEmail(toolkitEmail) || isVipEmail(academyEmail)) {
+      localStorage.setItem(`toolkit:paid:${slug}`, 'true');
+      setIsUnlocked(true);
+      return;
+    }
     const unlocked = localStorage.getItem(`toolkit:paid:${slug}`) === 'true';
     setIsUnlocked(unlocked);
     // Handle unlock param from Stripe redirect
@@ -511,6 +520,29 @@ export default function ToolkitDetailPage() {
                         >
                           <Sparkles className="w-4 h-4" />
                           {isRTL ? 'افتحي الوصول الكامل' : 'Unlock Full Access'}
+                        </button>
+                        {/* Redeem access for VIPs */}
+                        <button
+                          onClick={() => {
+                            const email = window.prompt(
+                              isRTL ? 'أدخلي البريد الإلكترونيّ للاسترداد:' : 'Enter your access email:'
+                            );
+                            if (!email) return;
+                            if (isVipEmail(email)) {
+                              localStorage.setItem('mh_toolkit_email', email.trim());
+                              localStorage.setItem(`toolkit:paid:${toolkit.slug}`, 'true');
+                              setIsUnlocked(true);
+                            } else {
+                              window.alert(
+                                isRTL
+                                  ? 'هذا البريدُ ليس مؤهَّلًا للوصولِ المجّانيّ. يُرجى استخدامُ الدفعِ أعلاه.'
+                                  : "This email doesn't qualify for complimentary access. Please use the payment option above."
+                              );
+                            }
+                          }}
+                          className="text-xs text-[#8E8E9F] hover:text-[#4A4A5C] underline transition-colors mt-3"
+                        >
+                          {isRTL ? 'لديكِ وصولٌ مُسبق؟ استرداد' : 'Have access? Redeem'}
                         </button>
                       </div>
                     </div>

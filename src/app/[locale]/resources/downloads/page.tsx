@@ -40,6 +40,7 @@ import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
 import { toolkitCatalog } from '@/data/toolkits';
+import { isVipEmail, unlockAllForVip } from '@/lib/vip-emails';
 
 interface DownloadResource {
   id: string;
@@ -663,6 +664,12 @@ function DownloadsPageInner() {
     if (saved) {
       setUnlockedEmail(saved);
       setIsUnlocked(true);
+      // VIP bypass: auto-unlock all premium toolkits + academy levels
+      if (isVipEmail(saved)) {
+        const premiumToolkits = toolkitCatalog.filter(tc => tc.isPremium).map(tc => tc.slug);
+        const allPrograms = ['intentional-parent', 'inner-compass', 'resilient-teens', 'stronger-together'];
+        unlockAllForVip(allPrograms, premiumToolkits);
+      }
     }
     const downloaded = localStorage.getItem('mh_toolkit_downloaded');
     if (downloaded) {
@@ -689,6 +696,12 @@ function DownloadsPageInner() {
     setUnlockedEmail(unlockEmail);
     setIsUnlocked(true);
     setUnlockStatus('idle');
+    // VIP bypass: auto-unlock all premium content site-wide
+    if (isVipEmail(unlockEmail)) {
+      const premiumToolkits = toolkitCatalog.filter(tc => tc.isPremium).map(tc => tc.slug);
+      const allPrograms = ['intentional-parent', 'inner-compass', 'resilient-teens', 'stronger-together'];
+      unlockAllForVip(allPrograms, premiumToolkits);
+    }
   };
 
   const handleDownload = async (id: string) => {
