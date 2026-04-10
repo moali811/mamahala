@@ -8,6 +8,219 @@
 import type { SmartEvent, EventType } from '@/types';
 
 export const events: SmartEvent[] = [
+  /* ── Summer 2026 Flagship Programs — Premium Featured ──────── */
+  {
+    slug: 'balance-compass-girls-summer',
+    titleEn: 'The Balance Compass — A Summer Program for Girls',
+    titleAr: 'بَوْصَلَةُ التَّوازُن — بَرْنامَجٌ صَيْفِيٌّ لِلفَتَيات',
+    scenarioEn: "She smiles in photos but cries at night. She says 'I\u2019m fine' and means anything but. She\u2019s carrying everything — grades, friendships, her body, the voice in her head — and she\u2019s tired of pretending she has it together.",
+    scenarioAr: 'تَبْتَسِمُ في الصُّوَرِ وتَبْكي في اللَّيْل. تَقولُ "أَنا بِخَيْر" وتَعْني أَيَّ شَيْءٍ إِلّا ذلِك. تَحْمِلُ كُلَّ شَيْء — العَلامات، الصَّداقات، جَسَدَها، الصَّوْتَ في رَأْسِها — وهِيَ مُتْعَبَةٌ مِنَ التَّظاهُرِ بِأَنَّها بِخَيْر.',
+    descriptionEn:
+      'A 4-week hybrid program for girls (12–19) to rebuild self-awareness, confidence, and emotional balance — with Dr. Hala and a small circle of peers.',
+    descriptionAr:
+      'بَرْنامَجٌ هَجينٌ مِنْ ٤ أَسابيعَ لِلفَتَياتِ (١٢–١٩) لِإِعادَةِ بِناءِ الوَعْيِ الذّاتِيّ والثِّقَةِ والتَّوازُنِ العاطِفِيّ — مع د. هالَة ودائِرَةٍ صَغيرَةٍ مِنَ الأَقْران.',
+    longDescriptionEn:
+      'The teenage girl years are loud on the outside and loud on the inside — and almost nobody is teaching girls how to hear themselves over all of it. The Balance Compass is a small-circle summer program where girls slow down, put down the performance, and do real work on the things that actually shape who they\u2019re becoming: their self-worth, their emotional range, their body story, their friendships, and the voice they use with themselves. Three weekly online sessions build the skills. One full-day in-person retreat in Ottawa makes them real. Dr. Hala leads every session personally, and the circle stays small (max 12) on purpose.',
+    longDescriptionAr:
+      'سَنَواتُ المُراهَقَةِ لِلفَتاةِ صاخِبَةٌ مِنَ الخارِجِ وصاخِبَةٌ مِنَ الداخِل — وَلا أَحَدَ تَقْريباً يُعَلِّمُ الفَتَياتِ كَيْفَ يَسْمَعْنَ أَنْفُسَهُنَّ فَوْقَ كُلِّ ذلِك. بَوْصَلَةُ التَّوازُنِ بَرْنامَجٌ صَيْفِيٌّ في دائِرَةٍ صَغيرَةٍ تُبْطِئُ فيهِ الفَتَياتُ، وَيَضَعْنَ الأَداءَ جانِباً، وَيَعْمَلْنَ عَمَلاً حَقيقِيّاً عَلى الأَشْياءِ التي تُشَكِّلُ مَنْ يُصْبِحْن: قيمَتُهُنَّ الذّاتِيَّة، مَدى مَشاعِرِهِنَّ، قِصَّةُ أَجْسادِهِنَّ، صَداقاتُهُنَّ، والصَّوْتُ الذي يَسْتَخْدِمْنَهُ مع أَنْفُسِهِن. ثَلاثُ جَلَساتٍ أُسْبوعِيَّةٍ عَبْرَ الإِنْتَرْنِتْ تَبْني المَهارات. ويَوْمٌ كامِلٌ في اعْتِكافٍ حُضورِيٍّ في أوتاوا يَجْعَلُها حَقيقَة. د. هالَة تَقودُ كُلَّ جَلْسَةٍ بِنَفْسِها، والدّائِرَةُ تَبْقى صَغيرَةً (١٢ كَحَدٍّ أَقْصى) عَنْ قَصْد.',
+    type: 'workshop',
+    audiences: ['youth'],
+    relatedServiceSlug: 'teen-counseling',
+    date: '2026-07-06',
+    startTime: '18:00',
+    endTime: '19:30',
+    timezone: 'America/Toronto',
+    dateTBD: true,
+    sessions: [
+      { date: '2026-07-06', startTime: '18:00', endTime: '19:30' },
+      { date: '2026-07-13', startTime: '18:00', endTime: '19:30' },
+      { date: '2026-07-20', startTime: '18:00', endTime: '19:30' },
+      { date: '2026-07-25', startTime: '10:00', endTime: '15:00' },
+    ],
+    locationType: 'hybrid',
+    locationNameEn: 'Google Meet + Ottawa retreat venue',
+    locationNameAr: 'Google Meet + مَكانُ الاعْتِكافِ في أوتاوا',
+    isFree: false,
+    priceCAD: 149,
+    priceNoteEn: 'full 4-week program · lifetime access to recordings',
+    priceNoteAr: 'البَرْنامَجُ الكامِلُ ٤ أَسابيع · وُصولٌ دائِمٌ إلى التَّسْجيلات',
+    capacity: 12,
+    spotsRemaining: 12,
+    registrationStatus: 'open',
+    registrationUrl: 'events-balance-compass-girls',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: true },
+    confirmationMessageEn:
+      "You\u2019re on the interest list. We\u2019ll confirm the dates once we have enough girls signed up — this small-circle program only runs when the group is the right size.",
+    confirmationMessageAr:
+      'أَنْتِ على قائِمَةِ الاهْتِمام. سَنُؤَكِّدُ المَواعيدَ بِمُجَرَّدِ أَنْ يَكْتَمِلَ العَدَد — هذا البَرْنامَجُ الصَّغيرُ الدّائِرَةِ يَنْطَلِقُ فَقَطْ عِنْدَما تَكونُ المَجْموعَةُ بِالحَجْمِ المُناسِب.',
+    featured: true,
+    facilitator: {
+      nameEn: 'Dr. Hala Ali',
+      nameAr: 'د. هالة علي',
+      titleEn: 'Certified Family Counselor · Adolescent Girls Specialist',
+      titleAr: 'مُسْتَشارَةٌ أُسْرِيَّةٌ مُعْتَمَدَة · مُتَخَصِّصَةٌ في الفَتَياتِ المُراهِقات',
+    },
+    whatToBringEn: [
+      'A journal that feels like yours',
+      'An open heart — no judgment, no pressure',
+      "Curiosity about who you're becoming",
+    ],
+    whatToBringAr: [
+      'دَفْتَرٌ يَشْبَهُكِ',
+      'قَلْبٌ مُنْفَتِح — لا حُكْم، لا ضَغْط',
+      'فُضولٌ حَوْلَ مَنْ تُصْبِحين',
+    ],
+    faqs: [
+      {
+        questionEn: 'Do I need to be super outgoing?',
+        questionAr: 'هَلْ يَجِبُ أَنْ أَكونَ اجْتِماعِيَّةً جِدّاً؟',
+        answerEn: 'No. This circle is designed for quiet girls too. Listening counts as participation, and journaling is always an option when talking feels like too much.',
+        answerAr: 'لا. هذِهِ الدّائِرَةُ مُصَمَّمَةٌ لِلفَتَياتِ الهادِئاتِ أَيْضاً. الاسْتِماعُ هُوَ مُشارَكَة، والكِتابَةُ في الدَّفْتَرِ خِيارٌ دائِمٌ عِنْدَما يَكونُ الكَلامُ كَثيراً.',
+      },
+      {
+        questionEn: "What if I can't attend every session?",
+        questionAr: 'ماذا لَوْ لَمْ أَسْتَطِعْ حُضورَ كُلِّ الجَلَسات؟',
+        answerEn: 'Lifetime access to all session recordings means you can catch up anytime. The in-person retreat day is the one session we really hope you make — that\u2019s where the circle comes alive.',
+        answerAr: 'الوُصولُ الدّائِمُ لِتَسْجيلاتِ الجَلَساتِ يَعْني أَنَّكِ تَسْتَطيعينَ المُتابَعَةَ في أَيِّ وَقْت. يَوْمُ الاعْتِكافِ الحُضورِيُّ هُوَ الجَلْسَةُ الواحِدَةُ التي نَتَمَنّى حُضورَها حَقّاً — هُناكَ تَنْبَضُ الدّائِرَة.',
+      },
+      {
+        questionEn: 'Is this therapy?',
+        questionAr: 'هَلْ هذا عِلاجٌ نَفْسِيّ؟',
+        answerEn: "No — it\u2019s a growth program, not a therapy group. Dr. Hala is a certified counselor and will privately refer anyone who needs deeper support.",
+        answerAr: 'لا — هُوَ بَرْنامَجُ نُمُوٍّ وَلَيْسَ مَجْموعَةَ عِلاج. د. هالَة مُسْتَشارَةٌ مُعْتَمَدَةٌ وَسَتُحَوِّلُ بِشَكْلٍ خاصٍّ أَيَّ فَتاةٍ تَحْتاجُ دَعْماً أَعْمَق.',
+      },
+    ],
+    outcomesEn: [
+      'Build a self-awareness practice that fits your real life',
+      'Name the pressures that shape you — and decide which ones to keep',
+      'Develop emotional tools for the moments you usually freeze or explode',
+      'Leave with a personal compass — values, boundaries, voice',
+      'Connect with a small circle of girls who get it',
+    ],
+    outcomesAr: [
+      'بِناءُ مُمارَسَةِ وَعْيٍ ذاتِيٍّ تُناسِبُ حَياتَكِ الحَقيقِيَّة',
+      'تَسْمِيَةُ الضُّغوطِ التي تُشَكِّلُكِ — والاخْتِيارُ أَيَّها تَحْتَفِظينَ بِها',
+      'تَطْويرُ أَدَواتٍ عاطِفِيَّةٍ لِلَحَظاتِ التي تَتَجَمَّدينَ أَوْ تَنْفَجِرينَ فيها عادَةً',
+      'الخُروجُ بِبَوْصَلَةٍ شَخْصِيَّة — قِيَم، حُدود، صَوْت',
+      'التَّواصُلُ مع دائِرَةٍ صَغيرَةٍ مِنَ الفَتَياتِ اللّواتي يَفْهَمْنَكِ',
+    ],
+    audienceDescEn: 'Girls aged 12–19 ready to slow down, tune in, and build who they actually want to become',
+    audienceDescAr: 'فَتَياتٌ بَيْنَ ١٢ وَ ١٩ مُسْتَعِدّاتٌ لِلتَّمَهُّلِ، الاسْتِماعِ الدّاخِلِيِّ، وبِناءِ مَنْ يُرِدْنَ أَنْ يَكُنَّ حَقّاً',
+    feeDisplayEn: '$149 CAD · 4-week program with lifetime recording access',
+    feeDisplayAr: '١٤٩ دولار كَنَدي · بَرْنامَجٌ مِنْ ٤ أَسابيعَ مع وُصولٍ دائِمٍ لِلتَّسْجيلات',
+    formatDescEn: '4-week hybrid program — 3 online sessions (90 min each) + 1 full-day in-person retreat in Ottawa. Small circle of 12.',
+    formatDescAr: 'بَرْنامَجٌ هَجينٌ مِنْ ٤ أَسابيع — ٣ جَلَساتٍ عَبْرَ الإِنْتَرْنِتْ (٩٠ دَقيقَةً لِكُلٍّ مِنْها) + يَوْمٌ كامِلٌ في اعْتِكافٍ حُضورِيٍّ في أوتاوا. دائِرَةٌ صَغيرَةٌ مِنْ ١٢ فَتاة.',
+    tags: ['youth', 'girls', 'identity', 'emotional-growth', 'summer-program', 'premium'],
+    dateAdded: '2026-04-10',
+  },
+
+  {
+    slug: 'path-strength-awareness-boys-summer',
+    titleEn: 'The Path of Strength & Awareness — A Summer Program for Boys',
+    titleAr: 'دَرْبُ القُوَّةِ والوَعْي — بَرْنامَجٌ صَيْفِيٌّ لِلفِتْيان',
+    scenarioEn: "He shrugs 'I\u2019m good' at dinner and slams the door by bedtime. You ask what\u2019s wrong, he says 'nothing' — but you\u2019ve watched him get angrier, quieter, further away. He doesn\u2019t know how to say it: he\u2019s trying to figure out how to be a man, and nobody gave him a map.",
+    scenarioAr: 'يَهُزُّ كَتِفَيْهِ "أَنا بِخَيْر" عَلى العَشاءِ ويُغْلِقُ البابَ بِقُوَّةٍ عِنْدَ النَّوْم. تَسْأَلينَهُ ما الخَطْب، يَقولُ "لا شَيْء" — لكِنَّكِ رَأَيْتِهِ يَصيرُ أَكْثَرَ غَضَباً، وأَكْثَرَ صَمْتاً، وأَبْعَد. لا يَعْرِفُ كَيْفَ يَقولُها: يُحاوِلُ أَنْ يَفْهَمَ كَيْفَ يَكونُ رَجُلاً، ولا أَحَدَ أَعْطاهُ خَريطَة.',
+    descriptionEn:
+      'A 4-week hybrid program for boys (12–19) to build decision-making, self-discipline, emotional awareness, and responsibility — guided by Dr. Hala with a small brotherhood of peers.',
+    descriptionAr:
+      'بَرْنامَجٌ هَجينٌ مِنْ ٤ أَسابيعَ لِلفِتْيانِ (١٢–١٩) لِبِناءِ اتِّخاذِ القَرار، الانْضِباطِ الذّاتِيّ، الوَعْيِ العاطِفِيّ، والمَسْؤولِيَّة — بِقِيادَةِ د. هالَة مع أُخُوَّةٍ صَغيرَةٍ مِنَ الأَقْران.',
+    longDescriptionEn:
+      "Teen boys get the silence treatment from the world: figure it out, don\u2019t ask, don\u2019t cry, just deal with it. And then we\u2019re surprised when they shut down, or explode, or can\u2019t make a real decision without checking their phone. The Path of Strength & Awareness is a summer program built for boys who are ready to stop running on autopilot. Over three online sessions and one full-day in-person gathering in Ottawa, boys work with Dr. Hala on the things nobody taught them: how to think under pressure, how to handle their own anger without it handling them, what self-discipline actually looks like when it\u2019s rooted in values instead of shame, and why responsibility is the foundation of freedom — not the opposite. Small brotherhood of 12. Honest. Real. Unafraid.",
+    longDescriptionAr:
+      'يَحْصُلُ الفِتْيانُ المُراهِقونَ عَلى مُعامَلَةِ الصَّمْتِ مِنَ العالَم: افْهَمْ وَحْدَك، لا تَسْأَل، لا تَبْكِ، فَقَطْ تَعامَلْ مع الأَمْر. وَنَحْنُ نَتَفاجَأُ حينَ يَنْغَلِقون، أَوْ يَنْفَجِرون، أَوْ لا يَسْتَطيعونَ اتِّخاذَ قَرارٍ حَقيقِيٍّ دونَ أَنْ يَسْأَلوا هَواتِفَهُم. دَرْبُ القُوَّةِ والوَعْي بَرْنامَجٌ صَيْفِيٌّ مَبْنِيٌّ لِلفِتْيانِ المُسْتَعِدّينَ لِلتَّوَقُّفِ عَنِ السَّيْرِ عَلى الطَّيّارِ الآلِيّ. عَبْرَ ثَلاثِ جَلَساتٍ عَبْرَ الإِنْتَرْنِتْ ويَوْمٍ كامِلٍ حُضورِيٍّ في أوتاوا، يَعْمَلُ الفِتْيانُ مع د. هالَة عَلى الأَشْياءِ التي لَمْ يُعَلِّمْها أَحَدٌ: كَيْفَ يُفَكِّرونَ تَحْتَ الضَّغْط، كَيْفَ يَتَعامَلونَ مع غَضَبِهِمْ دونَ أَنْ يَتَعامَلَ غَضَبُهُمْ مَعَهُم، ما الذي يَبْدو عَلَيْهِ الانْضِباطُ الذّاتِيُّ حَقّاً حينَ يَكونُ جِذْرُهُ القِيَمَ لا الخَجَل، وَلِماذا المَسْؤولِيَّةُ هي أَساسُ الحُرِّيَّةِ — وَلَيْسَتْ نَقيضَها. أُخُوَّةٌ صَغيرَةٌ مِنْ ١٢ فَتىً. صادِقَة. حَقيقِيَّة. غَيْرُ خائِفَة.',
+    type: 'workshop',
+    audiences: ['youth'],
+    relatedServiceSlug: 'teen-counseling',
+    date: '2026-07-07',
+    startTime: '18:00',
+    endTime: '19:30',
+    timezone: 'America/Toronto',
+    dateTBD: true,
+    sessions: [
+      { date: '2026-07-07', startTime: '18:00', endTime: '19:30' },
+      { date: '2026-07-14', startTime: '18:00', endTime: '19:30' },
+      { date: '2026-07-21', startTime: '18:00', endTime: '19:30' },
+      { date: '2026-07-26', startTime: '10:00', endTime: '15:00' },
+    ],
+    locationType: 'hybrid',
+    locationNameEn: 'Google Meet + Ottawa retreat venue',
+    locationNameAr: 'Google Meet + مَكانُ الاعْتِكافِ في أوتاوا',
+    isFree: false,
+    priceCAD: 149,
+    priceNoteEn: 'full 4-week program · lifetime access to recordings',
+    priceNoteAr: 'البَرْنامَجُ الكامِلُ ٤ أَسابيع · وُصولٌ دائِمٌ إلى التَّسْجيلات',
+    capacity: 12,
+    spotsRemaining: 12,
+    registrationStatus: 'open',
+    registrationUrl: 'events-path-strength-boys',
+    registrationType: 'rsvp',
+    registrationFields: { phone: true, notes: true },
+    confirmationMessageEn:
+      "You\u2019re on the interest list. We\u2019ll confirm the dates once we have enough boys signed up — this brotherhood only runs when the group is the right size.",
+    confirmationMessageAr:
+      'أَنْتَ على قائِمَةِ الاهْتِمام. سَنُؤَكِّدُ المَواعيدَ بِمُجَرَّدِ اكْتِمالِ العَدَد — هذِهِ الأُخُوَّةُ تَنْطَلِقُ فَقَطْ عِنْدَما تَكونُ المَجْموعَةُ بِالحَجْمِ المُناسِب.',
+    featured: true,
+    facilitator: {
+      nameEn: 'Dr. Hala Ali',
+      nameAr: 'د. هالة علي',
+      titleEn: 'Certified Family Counselor · Adolescent Boys Specialist',
+      titleAr: 'مُسْتَشارَةٌ أُسْرِيَّةٌ مُعْتَمَدَة · مُتَخَصِّصَةٌ في الفِتْيانِ المُراهِقين',
+    },
+    whatToBringEn: [
+      'A notebook — something to think on paper with',
+      'Honesty',
+      "Questions you\u2019ve been afraid to ask",
+    ],
+    whatToBringAr: [
+      'دَفْتَر — شَيْءٌ تُفَكِّرُ عَلَيْهِ عَلى الوَرَق',
+      'صِدْق',
+      'أَسْئِلَةٌ خِفْتَ أَنْ تَسْأَلَها',
+    ],
+    faqs: [
+      {
+        questionEn: "I\u2019m not the talkative type. Is this for me?",
+        questionAr: 'لَسْتُ مِنَ النَّوْعِ الذي يَتَكَلَّمُ كَثيراً. هَلْ هذا لي؟',
+        answerEn: "Yes — especially. This brotherhood isn\u2019t about talking the most. It\u2019s about thinking honestly, listening well, and showing up. Quiet boys often do the deepest work here.",
+        answerAr: 'نَعَم — خاصَّةً. هذِهِ الأُخُوَّةُ لَيْسَتْ عَنِ الكَلامِ الكَثير. هِيَ عَنِ التَّفْكيرِ الصّادِق، الاسْتِماعِ الجَيِّد، والحُضور. الفِتْيانُ الهادِئونَ غالِباً ما يَقومونَ بِأَعْمَقِ عَمَلٍ هُنا.',
+      },
+      {
+        questionEn: "What if I can't attend every session?",
+        questionAr: 'ماذا لَوْ لَمْ أَسْتَطِعْ حُضورَ كُلِّ الجَلَسات؟',
+        answerEn: "Lifetime access to session recordings means you can catch up on anything you miss. The in-person retreat day is the one we hope you can make — that\u2019s where the brotherhood locks in.",
+        answerAr: 'الوُصولُ الدّائِمُ لِلتَّسْجيلاتِ يَعْني أَنَّكَ تَسْتَطيعُ المُتابَعَةَ لاحِقاً. يَوْمُ الاعْتِكافِ الحُضورِيُّ هُوَ اليَوْمُ الذي نَتَمَنّى أَنْ تَحْضُرَه — هُناكَ تَتَرَسَّخُ الأُخُوَّة.',
+      },
+      {
+        questionEn: 'Is this therapy?',
+        questionAr: 'هَلْ هذا عِلاجٌ نَفْسِيّ؟',
+        answerEn: "No. This is a growth program, not a therapy group. Dr. Hala is a certified counselor and will privately refer anyone who needs deeper one-on-one support.",
+        answerAr: 'لا. هذا بَرْنامَجُ نُمُوٍّ وَلَيْسَ مَجْموعَةَ عِلاج. د. هالَة مُسْتَشارَةٌ مُعْتَمَدَةٌ وَسَتُحَوِّلُ بِشَكْلٍ خاصٍّ أَيَّ فَتىً يَحْتاجُ دَعْماً فَرْدِيّاً أَعْمَق.',
+      },
+    ],
+    outcomesEn: [
+      'Build a decision-making framework you actually trust',
+      "Name your anger, your pressure, your expectations — and work with them instead of against them",
+      "Develop the self-discipline that matches your values, not someone else\u2019s",
+      'Understand responsibility as freedom, not burden',
+      "Connect with a brotherhood that doesn\u2019t demand you perform",
+    ],
+    outcomesAr: [
+      'بِناءُ إِطارِ اتِّخاذِ قَرارٍ تَثِقُ بِهِ حَقّاً',
+      'تَسْمِيَةُ غَضَبِكَ، ضَغْطِكَ، تَوَقُّعاتِك — والعَمَلُ مَعَها بَدَلَ العَمَلِ ضِدَّها',
+      'تَطْويرُ انْضِباطٍ ذاتِيٍّ يَتَوافَقُ مع قِيَمِكَ، لا قِيَمِ غَيْرِكَ',
+      'فَهْمُ المَسْؤولِيَّةِ كَحُرِّيَّة، لا كَعِبْء',
+      'التَّواصُلُ مع أُخُوَّةٍ لا تُطالِبُكَ بِالأَداء',
+    ],
+    audienceDescEn: 'Boys aged 12–19 ready to stop running on autopilot and actually figure out who they want to be',
+    audienceDescAr: 'فِتْيانٌ بَيْنَ ١٢ وَ ١٩ مُسْتَعِدّونَ لِلتَّوَقُّفِ عَنِ السَّيْرِ عَلى الطَّيّارِ الآلِيّ وَاكْتِشافِ مَنْ يُريدونَ أَنْ يَكونوا حَقّاً',
+    feeDisplayEn: '$149 CAD · 4-week program with lifetime recording access',
+    feeDisplayAr: '١٤٩ دولار كَنَدي · بَرْنامَجٌ مِنْ ٤ أَسابيعَ مع وُصولٍ دائِمٍ لِلتَّسْجيلات',
+    formatDescEn: '4-week hybrid program — 3 online sessions (90 min each) + 1 full-day in-person gathering in Ottawa. Brotherhood of 12.',
+    formatDescAr: 'بَرْنامَجٌ هَجينٌ مِنْ ٤ أَسابيع — ٣ جَلَساتٍ عَبْرَ الإِنْتَرْنِتْ (٩٠ دَقيقَةً لِكُلٍّ مِنْها) + يَوْمٌ كامِلٌ حُضورِيٌّ في أوتاوا. أُخُوَّةٌ مِنْ ١٢ فَتىً.',
+    tags: ['youth', 'boys', 'identity', 'discipline', 'responsibility', 'summer-program', 'premium'],
+    dateAdded: '2026-04-10',
+  },
+
   /* ── Upcoming / Featured ────────────────────────────────────── */
   {
     slug: 'parenting-digital-age',
@@ -43,7 +256,9 @@ export const events: SmartEvent[] = [
     registrationFields: { phone: true, notes: false },
     confirmationMessageEn: 'You\'re on the interest list! We\'ll contact you with the confirmed date and details once we have enough registrations.',
     confirmationMessageAr: 'أنت مسجل! تحقق من بريدك الإلكتروني للحصول على رابط Zoom قبل الندوة.',
-    featured: true,
+    // Note: "featured" is now reserved for the 2 Summer 2026 Flagship Programs
+    // (Balance Compass + Path of Strength). This event continues to render in
+    // the Community Pulse section via its dateTBD flag.
     facilitator: {
       nameEn: 'Dr. Hala Ali',
       nameAr: 'د. هالة علي',

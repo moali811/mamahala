@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Activity, CalendarCheck, Sparkles, History } from 'lucide-react';
+import { Activity, CalendarCheck, Sparkles, History, Heart, Flame, Compass } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { categorizeEvents } from '@/lib/event-lifecycle';
 import { getSeasonalTheme } from '@/lib/seasonal-themes';
@@ -84,8 +84,18 @@ export default function EventsPage() {
   const filteredPulse = pulse.filter(filterEvent);
   const hasActiveFilters = filters.audience !== 'all' || filters.format !== 'all' || filters.price !== 'all';
 
-  const hasUpcoming = filteredUpcoming.length > 0;
-  const hasPulse = filteredPulse.length > 0;
+  // Featured events — extracted from both upcoming and pulse sections so they
+  // appear at the top of the page regardless of lifecycle state. Currently
+  // used for the Summer 2026 Flagship Programs (girls + boys).
+  const featuredUpcoming = filteredUpcoming.filter((e) => e.featured === true);
+  const featuredPulse = filteredPulse.filter((e) => e.featured === true);
+  const featuredEvents = [...featuredUpcoming, ...featuredPulse];
+  const regularUpcoming = filteredUpcoming.filter((e) => e.featured !== true);
+  const regularPulse = filteredPulse.filter((e) => e.featured !== true);
+
+  const hasFeatured = featuredEvents.length > 0;
+  const hasUpcoming = regularUpcoming.length > 0;
+  const hasPulse = regularPulse.length > 0;
   const hasPast = past.length > 0;
   const totalTopics = upcoming.length + pulse.length;
 
@@ -98,6 +108,74 @@ export default function EventsPage() {
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] blur-[80px]" />
           <div className="absolute bottom-10 left-[10%] w-[300px] h-[300px] rounded-full bg-[#C8A97D]/[0.06] blur-[60px]" />
+        </div>
+
+        {/* Decorative stacked event cards — desktop only, purely visual */}
+        <div
+          className={`absolute top-1/2 -translate-y-1/2 hidden lg:block pointer-events-none ${isRTL ? 'left-[8%]' : 'right-[8%]'}`}
+          aria-hidden="true"
+        >
+          <div className="relative w-[280px] h-[320px]">
+            {/* Back card — slightly rotated */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: -8 }}
+              animate={{ opacity: 1, y: 0, rotate: -6 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-2 left-6 w-[220px] rounded-2xl bg-white/80 backdrop-blur-sm border border-[#F3EFE8] p-4 shadow-[0_8px_30px_rgba(122,59,94,0.08)]"
+              style={{ transformOrigin: 'center' }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-7 h-7 rounded-lg bg-[#C8A97D]/20 flex items-center justify-center">
+                  <Compass className="w-3.5 h-3.5 text-[#C8A97D]" />
+                </div>
+                <div className="text-[9px] font-bold uppercase tracking-wider text-[#C8A97D]">Summer Program</div>
+              </div>
+              <div className="text-[11px] font-semibold text-[#2D2A33] leading-tight mb-2">The Balance Compass</div>
+              <div className="h-1 bg-[#F3EFE8] rounded-full overflow-hidden mb-1.5">
+                <div className="h-full bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] rounded-full" style={{ width: '42%' }} />
+              </div>
+              <div className="text-[9px] text-[#8E8E9F]">8 girls resonate</div>
+            </motion.div>
+
+            {/* Middle card — slight opposite rotation */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: 6 }}
+              animate={{ opacity: 1, y: 0, rotate: 4 }}
+              transition={{ duration: 0.8, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-16 right-0 w-[220px] rounded-2xl bg-white/90 backdrop-blur-sm border border-[#F3EFE8] p-4 shadow-[0_8px_30px_rgba(122,59,94,0.1)]"
+              style={{ transformOrigin: 'center' }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-7 h-7 rounded-lg bg-[#5A8B6F]/18 flex items-center justify-center">
+                  <Flame className="w-3.5 h-3.5 text-[#5A8B6F]" />
+                </div>
+                <div className="text-[9px] font-bold uppercase tracking-wider text-[#5A8B6F]">Summer Program</div>
+              </div>
+              <div className="text-[11px] font-semibold text-[#2D2A33] leading-tight mb-2">Path of Strength</div>
+              <div className="h-1 bg-[#F3EFE8] rounded-full overflow-hidden mb-1.5">
+                <div className="h-full bg-gradient-to-r from-[#5A8B6F] to-[#3B8A6E] rounded-full" style={{ width: '58%' }} />
+              </div>
+              <div className="text-[9px] text-[#8E8E9F]">11 boys resonate</div>
+            </motion.div>
+
+            {/* Front card — slight tilt */}
+            <motion.div
+              initial={{ opacity: 0, y: 20, rotate: -3 }}
+              animate={{ opacity: 1, y: 0, rotate: -2 }}
+              transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="absolute top-[140px] left-4 w-[220px] rounded-2xl bg-white border border-[#F3EFE8] p-4 shadow-[0_12px_40px_rgba(122,59,94,0.12)]"
+              style={{ transformOrigin: 'center' }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-7 h-7 rounded-lg bg-[#C4878A]/18 flex items-center justify-center">
+                  <Heart className="w-3.5 h-3.5 text-[#C4878A] fill-[#C4878A]/20" />
+                </div>
+                <div className="text-[9px] font-bold uppercase tracking-wider text-[#C4878A]">This Resonates</div>
+              </div>
+              <div className="text-[11px] font-semibold text-[#2D2A33] leading-tight mb-2">Your voice shapes what's next</div>
+              <div className="text-[9px] text-[#8E8E9F] leading-relaxed">Tap hearts on topics that speak to you.</div>
+            </motion.div>
+          </div>
         </div>
 
         <div className="container-main relative z-10">
@@ -121,8 +199,8 @@ export default function EventsPage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C4878A] opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#7A3B5E]" />
               </span>
-              <span className="text-sm font-semibold tracking-[0.1em] uppercase text-[#7A3B5E]">
-                {isRTL ? 'الفعاليّاتُ والمجتمع' : 'Events & Community'}
+              <span className="text-sm font-semibold tracking-[0.18em] uppercase text-[#7A3B5E]">
+                {isRTL ? 'صَوِّتي · انْضَمّي · اِجْتَمِعي' : 'Vote · Join · Gather'}
               </span>
             </div>
 
@@ -152,6 +230,11 @@ export default function EventsPage() {
                 )}
                 {hasPulse && (
                   <span className="inline-flex items-center gap-1.5">
+                    {/* Live pulsing dot — signals the number is real and active */}
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C8A97D] opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C8A97D]" />
+                    </span>
                     <Activity className="w-4 h-4 text-[#C8A97D]" />
                     {isRTL
                       ? `${pulse.length} ${pulse.length <= 2 ? 'فِكْرَةٌ مَفْتوحَة' : pulse.length <= 10 ? 'أَفْكارٌ مَفْتوحَة' : 'فِكْرَةً مَفْتوحَة'} لِلتَّصْويت`
@@ -159,12 +242,20 @@ export default function EventsPage() {
                   </span>
                 )}
                 {hasPast && (
-                  <span className="inline-flex items-center gap-1.5">
+                  <a
+                    href="#past-events"
+                    className="inline-flex items-center gap-1.5 hover:text-[#7A3B5E] transition-colors cursor-pointer"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById('past-events')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }}
+                  >
                     <History className="w-4 h-4 text-[#B08B6E]" />
                     {isRTL
                       ? `${past.length} ${past.length <= 2 ? 'فَعاليَّةٌ مُنْعَقِدَة' : past.length <= 10 ? 'فَعاليّاتٌ مُنْعَقِدَة' : 'فَعاليَّةً مُنْعَقِدَة'}`
                       : `${past.length} event${past.length !== 1 ? 's' : ''} already held`}
-                  </span>
+                    <span className="text-[10px] opacity-60 ms-0.5">↓</span>
+                  </a>
                 )}
               </div>
             )}
@@ -201,10 +292,73 @@ export default function EventsPage() {
       )}
 
       {/* ================================================================ */}
+      {/*  FEATURED: SUMMER 2026 FLAGSHIP PROGRAMS                         */}
+      {/*  Extracted from upcoming + pulse when event.featured === true    */}
+      {/* ================================================================ */}
+      {hasFeatured && (
+        <section className="pt-10 lg:pt-14 pb-10 lg:pb-12 bg-[#FAF7F2]">
+          <div className="container-main">
+            <ScrollReveal className="mb-8 text-center">
+              <div className="inline-flex items-center gap-2 mb-3 px-3 py-1.5 rounded-full bg-gradient-to-r from-[#C8A97D]/15 to-[#B08D57]/15 border border-[#C8A97D]/25">
+                <Sparkles className="w-3.5 h-3.5 text-[#B08D57]" />
+                <span className="text-[10px] font-bold tracking-[0.18em] uppercase text-[#B08D57]">
+                  {isRTL ? 'صَيْفُ ٢٠٢٦ · بَرامِجُ رائِدَة' : 'Summer 2026 · Flagship Programs'}
+                </span>
+              </div>
+              <h2
+                className="text-3xl sm:text-4xl lg:text-5xl text-[#2D2A33] leading-tight max-w-2xl mx-auto"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {isRTL ? (
+                  <>طَريقان.{' '}<span className="text-[#7A3B5E] italic">صَيْفٌ واحِد.</span></>
+                ) : (
+                  <>Two Paths.{' '}<span className="text-[#7A3B5E] italic">One Summer.</span></>
+                )}
+              </h2>
+              <p className="mt-4 text-base text-[#6B6580] max-w-2xl mx-auto leading-relaxed">
+                {isRTL
+                  ? 'بَرْنامَجانِ مُصَمَّمانِ خِصّيصاً لِلمُراهِقينَ — دَوائِرُ صَغيرَةٌ، قِيادَةُ د. هالَة، وعَمَلٌ حَقيقِيٌّ عَلى ما يُشَكِّلُ مَنْ يُصْبِحون.'
+                  : 'Two programs designed specifically for teens — small circles, Dr. Hala in the room, and real work on what actually shapes who they become.'}
+              </p>
+            </ScrollReveal>
+
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-8">
+              {featuredEvents.map((event) => (
+                <motion.div
+                  key={event.slug}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative rounded-2xl border-2 border-[#C8A97D]/30 overflow-hidden bg-white shadow-[0_8px_40px_rgba(176,141,87,0.08)]"
+                >
+                  {/* Gold accent stripe at top */}
+                  <div className="h-1.5 bg-gradient-to-r from-[#C8A97D] via-[#B08D57] to-[#7A3B5E]" />
+                  {/* Featured badge overlay */}
+                  <div className={`absolute top-5 ${isRTL ? 'left-5' : 'right-5'} z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] shadow-md`}>
+                    <Sparkles className="w-2.5 h-2.5" />
+                    {isRTL ? 'مُمَيَّز' : 'Featured'}
+                  </div>
+                  <EventCard
+                    event={event}
+                    locale={locale}
+                    isExpanded={expandedSlug === event.slug}
+                    onToggleExpand={() =>
+                      setExpandedSlug(expandedSlug === event.slug ? null : event.slug)
+                    }
+                  />
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ================================================================ */}
       {/*  SECTION 1: COMING UP — Scheduled events with dates              */}
       {/* ================================================================ */}
       {hasUpcoming && (
-        <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+        <section className={`${hasFeatured ? 'pt-8 lg:pt-12' : 'pt-10 lg:pt-14'} pb-16 lg:pb-24 bg-[#FAF7F2]`}>
           <div className="container-main">
             <ScrollReveal className="mb-10">
               <div className="flex items-center gap-3 mb-2">
@@ -227,7 +381,7 @@ export default function EventsPage() {
             </ScrollReveal>
 
             <StaggerReveal className="space-y-6">
-              {filteredUpcoming.map((event) => (
+              {regularUpcoming.map((event) => (
                 <StaggerChild key={event.slug}>
                   <div className="relative rounded-2xl border border-[#F3EFE8] overflow-hidden bg-white">
                     {/* Urgency badge */}
@@ -256,7 +410,7 @@ export default function EventsPage() {
       {/*  SECTION 2: SHAPE WHAT'S NEXT — Pulse / concept voting           */}
       {/* ================================================================ */}
       {hasPulse && (
-        <section className={`py-16 lg:py-24 ${hasUpcoming ? 'bg-white' : 'bg-[#FAF7F2]'}`}>
+        <section className={`py-16 lg:py-24 ${hasUpcoming || hasFeatured ? 'bg-white' : 'bg-[#FAF7F2]'}`}>
           <div className="container-main">
             <ScrollReveal className="mb-10">
               <div className="flex items-center gap-3 mb-2">
@@ -282,7 +436,7 @@ export default function EventsPage() {
             </ScrollReveal>
 
             <PulseCarousel
-              events={filteredPulse}
+              events={regularPulse}
               pulseCounts={pulseCounts}
               locale={locale}
               onResonate={handleResonate}
@@ -294,7 +448,7 @@ export default function EventsPage() {
       )}
 
       {/* No results message when filters exclude everything */}
-      {hasActiveFilters && !hasUpcoming && !hasPulse && (
+      {hasActiveFilters && !hasFeatured && !hasUpcoming && !hasPulse && (
         <section className="py-16 bg-[#FAF7F2]">
           <div className="container-main text-center">
             <p className="text-[#8E8E9F] text-sm">
@@ -322,7 +476,7 @@ export default function EventsPage() {
         const hiddenCount = Math.max(0, past.length - HOMEPAGE_LIMIT);
 
         return (
-        <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+        <section id="past-events" className="py-16 lg:py-24 bg-[#FAF7F2] scroll-mt-24">
           <div className="container-main">
             <ScrollReveal className="mb-8">
               <div className="flex items-center gap-3 mb-2">

@@ -17,6 +17,16 @@ interface Props {
   suggestedAudience?: EventAudience;
 }
 
+/** Demographic color system — matches the Toolkits page pattern */
+const demographicColors: Record<string, string> = {
+  all: '#7A3B5E',        // plum (default)
+  youth: '#C4878A',      // warm rose
+  families: '#C8A97D',   // gold/sand
+  adults: '#5A8B6F',     // sage
+  couples: '#D4836A',    // terracotta
+  community: '#7A3B5E',  // plum
+};
+
 const audienceLabels: Record<string, { en: string; ar: string }> = {
   all: { en: 'All', ar: 'الكلّ' },
   youth: { en: 'Youth', ar: 'الشّباب' },
@@ -43,10 +53,12 @@ function Pill({
   active,
   label,
   onClick,
+  activeColor = '#7A3B5E',
 }: {
   active: boolean;
   label: string;
   onClick: () => void;
+  activeColor?: string;
 }) {
   return (
     <motion.button
@@ -54,9 +66,10 @@ function Pill({
       onClick={onClick}
       className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors duration-200 ${
         active
-          ? 'bg-[#7A3B5E] text-white shadow-sm'
+          ? 'text-white shadow-sm'
           : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
       }`}
+      style={active ? { backgroundColor: activeColor } : undefined}
       whileTap={{ scale: 0.97 }}
     >
       {label}
@@ -71,7 +84,7 @@ export default function EventFilters({ filters, onFiltersChange, locale }: Props
 
   return (
     <div className="space-y-3">
-      {/* Audience row */}
+      {/* Audience row — per-demographic colors on active */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8E8E9F] w-12 flex-shrink-0">
           {isRTL ? 'لِمَن' : 'For'}
@@ -80,6 +93,7 @@ export default function EventFilters({ filters, onFiltersChange, locale }: Props
           <Pill
             key={key}
             active={filters.audience === key}
+            activeColor={demographicColors[key] || '#7A3B5E'}
             label={isRTL ? labels.ar : labels.en}
             onClick={() => onFiltersChange({ ...filters, audience: key as Filters['audience'] })}
           />
