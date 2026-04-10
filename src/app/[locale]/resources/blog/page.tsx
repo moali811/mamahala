@@ -11,6 +11,8 @@ import {
   ArrowLeft,
   Heart,
   Sparkles,
+  BookOpen,
+  TrendingUp,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer, ease } from '@/lib/animations';
@@ -18,6 +20,7 @@ import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/S
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import HeroDecorCluster from '@/components/ui/HeroDecorCluster';
 import FinalCTA from '@/components/shared/FinalCTA';
 import { useBlog } from '@/hooks/useBlog';
 
@@ -83,6 +86,40 @@ export default function BlogListingPage() {
               'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
             backgroundSize: '40px 40px',
           }}
+        />
+
+        {/* Decorative stacked article cluster — desktop only */}
+        <HeroDecorCluster
+          locale={locale}
+          cards={[
+            {
+              icon: BookOpen,
+              color: '#C4878A',
+              eyebrowEn: 'For Couples',
+              eyebrowAr: 'لِلأَزْواج',
+              titleEn: 'When silence isn\u2019t peace',
+              titleAr: 'حينَ لا يَكونُ الصَّمْتُ سَلاماً',
+              accent: { type: 'caption', textEn: '7 min read · Communication', textAr: '٧ دَقائِق · التَّواصُل' },
+            },
+            {
+              icon: Heart,
+              color: '#C8A97D',
+              eyebrowEn: 'For Families',
+              eyebrowAr: 'لِلعائِلات',
+              titleEn: 'The dinner table fix',
+              titleAr: 'إِصْلاحُ طاوِلَةِ العَشاء',
+              accent: { type: 'caption', textEn: '5 min read · Connection', textAr: '٥ دَقائِق · التَّواصُل' },
+            },
+            {
+              icon: TrendingUp,
+              color: '#5A8B6E',
+              eyebrowEn: 'Most Read',
+              eyebrowAr: 'الأَكْثَرُ قِراءَةً',
+              titleEn: 'Raising teens with empathy',
+              titleAr: 'تَرْبِيَةُ المُراهِقينَ بِتَعاطُف',
+              accent: { type: 'bar', value: 78, captionEn: 'Trending this month', captionAr: 'الأَكْثَرُ تَداوُلاً هذا الشَّهْر' },
+            },
+          ]}
         />
 
         <div className="container-main relative z-10">

@@ -4,12 +4,13 @@ import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, ArrowLeft, Clock } from 'lucide-react';
+import { Sparkles, ArrowRight, ArrowLeft, Clock, Brain, Heart, Compass } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer, ease } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import WaveDivider from '@/components/ui/WaveDivider';
+import HeroDecorCluster from '@/components/ui/HeroDecorCluster';
 import FinalCTA from '@/components/shared/FinalCTA';
 
 type Category = 'all' | 'youth' | 'families' | 'adults' | 'couples';
@@ -225,6 +226,41 @@ export default function AssessmentsPage() {
       {/* Hero */}
       <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
+
+        {/* Decorative stacked assessment cluster — desktop only */}
+        <HeroDecorCluster
+          locale={locale}
+          cards={[
+            {
+              icon: Heart,
+              color: '#D4836A',
+              eyebrowEn: 'For Parents',
+              eyebrowAr: 'لِلآباء',
+              titleEn: 'Child Emotional IQ',
+              titleAr: 'الذَّكاءُ العاطِفِيّ لِلطِّفْل',
+              accent: { type: 'caption', textEn: '12 questions · 5 min', textAr: '١٢ سُؤال · ٥ دَقائِق' },
+            },
+            {
+              icon: Compass,
+              color: '#C4878A',
+              eyebrowEn: 'For Couples',
+              eyebrowAr: 'لِلأَزْواج',
+              titleEn: 'Relationship Compass',
+              titleAr: 'بَوْصَلَةُ العَلاقَة',
+              accent: { type: 'bar', value: 72, captionEn: '230 couples this month', captionAr: '٢٣٠ زَوْجاً هذا الشَّهْر' },
+            },
+            {
+              icon: Brain,
+              color: '#5A8B6E',
+              eyebrowEn: 'Quick Check-in',
+              eyebrowAr: 'فَحْصٌ سَريع',
+              titleEn: 'How are you, really?',
+              titleAr: 'كَيْفَ حالُكِ حَقّاً؟',
+              accent: { type: 'caption', textEn: '2 min · Instant insight', textAr: 'دَقيقَتان · رُؤْيَةٌ فَوْرِيَّة' },
+            },
+          ]}
+        />
+
         <div className="container-main relative z-10">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease }}>
             <Breadcrumb

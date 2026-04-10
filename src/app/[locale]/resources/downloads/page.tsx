@@ -38,6 +38,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import HeroDecorCluster from '@/components/ui/HeroDecorCluster';
 import FinalCTA from '@/components/shared/FinalCTA';
 import { toolkitCatalog } from '@/data/toolkits';
 import { isVipEmail, unlockAllForVip } from '@/lib/vip-emails';
@@ -887,6 +888,40 @@ function DownloadsPageInner() {
           <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] blur-[80px]" />
           <div className="absolute bottom-10 left-[10%] w-[300px] h-[300px] rounded-full bg-[#C8A97D]/[0.06] blur-[60px]" />
         </div>
+
+        {/* Decorative stacked toolkit cluster — desktop only */}
+        <HeroDecorCluster
+          locale={locale}
+          cards={[
+            {
+              icon: PenLine,
+              color: '#C4878A',
+              eyebrowEn: 'Worksheet',
+              eyebrowAr: 'وَرَقَةُ عَمَل',
+              titleEn: 'Family Communication',
+              titleAr: 'التَّواصُلُ الأُسَرِيّ',
+              accent: { type: 'caption', textEn: 'PDF · 4 pages · Free', textAr: 'PDF · ٤ صَفَحات · مَجّانِيّ' },
+            },
+            {
+              icon: Compass,
+              color: '#C8A97D',
+              eyebrowEn: 'Interactive Guide',
+              eyebrowAr: 'دَليلٌ تَفاعُلِيّ',
+              titleEn: '21-Day Reset',
+              titleAr: 'إِعادَةُ ضَبْطٍ في ٢١ يَوْماً',
+              accent: { type: 'bar', value: 64, captionEn: '215 families this week', captionAr: '٢١٥ عائِلَة هذا الأُسْبوع' },
+            },
+            {
+              icon: BookMarked,
+              color: '#5A8B6E',
+              eyebrowEn: 'Bilingual',
+              eyebrowAr: 'ثُنائِيَّةُ اللُّغَة',
+              titleEn: 'Every tool · EN + AR',
+              titleAr: 'كُلُّ أَداة · إِنْجِليزِيَّة وَعَرَبِيَّة',
+              accent: { type: 'caption', textEn: 'Download once, both languages', textAr: 'حَمِّلي مَرَّةً، اللُّغَتان' },
+            },
+          ]}
+        />
 
         <div className="container-main relative z-10">
           <Breadcrumb

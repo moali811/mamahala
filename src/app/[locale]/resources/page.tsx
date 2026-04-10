@@ -22,6 +22,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import HeroDecorCluster from '@/components/ui/HeroDecorCluster';
 import FinalCTA from '@/components/shared/FinalCTA';
 
 /*
@@ -122,6 +123,40 @@ export default function ResourcesPage() {
               'radial-gradient(circle at 1px 1px, white 1px, transparent 0)',
             backgroundSize: '40px 40px',
           }}
+        />
+
+        {/* Decorative stacked card cluster — desktop only */}
+        <HeroDecorCluster
+          locale={locale}
+          cards={[
+            {
+              icon: Sparkles,
+              color: '#8B5CF6',
+              eyebrowEn: 'Self-Assessment',
+              eyebrowAr: 'تَقْييمٌ ذاتِيّ',
+              titleEn: 'Know yourself in 5 min',
+              titleAr: 'اِعْرِفي نَفْسَكِ في ٥ دقائِق',
+              accent: { type: 'caption', textEn: 'Free · Instant insights', textAr: 'مَجّانِيّ · رُؤى فَوْرِيَّة' },
+            },
+            {
+              icon: BookOpen,
+              color: '#C4878A',
+              eyebrowEn: 'Insight Article',
+              eyebrowAr: 'مَقالَة',
+              titleEn: 'Reads that change things',
+              titleAr: 'قِراءاتٌ تَصْنَعُ فَرْقاً',
+              accent: { type: 'caption', textEn: '5–10 min reads · Weekly', textAr: '٥–١٠ دَقائِق · أُسْبوعِيَّة' },
+            },
+            {
+              icon: Download,
+              color: '#5A8B6E',
+              eyebrowEn: 'Free Toolkit',
+              eyebrowAr: 'أَداةٌ مَجّانِيَّة',
+              titleEn: 'Print, fill, repeat',
+              titleAr: 'اِطْبَعي، اِمْلَئي، كَرِّري',
+              accent: { type: 'caption', textEn: 'Bilingual EN/AR', textAr: 'ثُنائِيَّةُ اللُّغَة' },
+            },
+          ]}
         />
 
         <div className="container-main relative z-10">

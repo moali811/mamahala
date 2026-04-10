@@ -27,6 +27,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import HeroDecorCluster from '@/components/ui/HeroDecorCluster';
 import FinalCTA from '@/components/shared/FinalCTA';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -65,6 +66,40 @@ export default function ServicesPage() {
           <div className="absolute top-20 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.04] hidden lg:block blur-[80px]" />
           <div className="absolute bottom-10 left-[10%] w-[300px] h-[300px] rounded-full bg-[#C8A97D]/[0.06] hidden lg:block blur-[60px]" />
         </div>
+
+        {/* Decorative stacked service cluster — desktop only */}
+        <HeroDecorCluster
+          locale={locale}
+          cards={[
+            {
+              icon: Heart,
+              color: '#C4878A',
+              eyebrowEn: 'For Families',
+              eyebrowAr: 'لِلعائِلات',
+              titleEn: 'Parenting & home life',
+              titleAr: 'التَّرْبِيَةُ وحَياةُ البَيْت',
+              accent: { type: 'caption', textEn: '1-on-1 · Family · In-person', textAr: 'فَرْدِيّ · عائِلِيّ · حُضورِيّ' },
+            },
+            {
+              icon: Users,
+              color: '#C8A97D',
+              eyebrowEn: 'For Couples',
+              eyebrowAr: 'لِلأَزْواج',
+              titleEn: 'Reconnect & rebuild',
+              titleAr: 'إِعادَةُ تَواصُل',
+              accent: { type: 'caption', textEn: 'Pre-marriage · Counseling', textAr: 'ما قَبْلَ الزَّواج · اِسْتِشارَة' },
+            },
+            {
+              icon: MessageCircle,
+              color: '#5A8B6E',
+              eyebrowEn: 'Free First Step',
+              eyebrowAr: 'خُطْوَةٌ أولى مَجّانِيَّة',
+              titleEn: 'Talk to Dr. Hala first',
+              titleAr: 'تَحَدَّثي مع د. هالَة أَوَّلاً',
+              accent: { type: 'caption', textEn: '15-min discovery call', textAr: 'مُكالَمَةُ تَعارُف ١٥ دَقيقَة' },
+            },
+          ]}
+        />
 
         <div className="container-main relative z-10">
           <Breadcrumb
