@@ -167,7 +167,18 @@ export default function ToolkitDetailPage() {
       </div>
 
       {/* ── Hero Section ────────────────────────────────────────── */}
-      <header className="px-6 pt-8 pb-12 max-w-5xl mx-auto">
+      <header className="px-6 pt-8 pb-12 max-w-5xl mx-auto relative">
+        {/* Decorative accent */}
+        <div
+          className="absolute -top-8 pointer-events-none opacity-[0.04]"
+          style={{
+            [isRTL ? 'left' : 'right']: '-2rem',
+            width: '200px',
+            height: '200px',
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${toolkit.color}, transparent 70%)`,
+          }}
+        />
         <ScrollReveal>
           <div className="space-y-4">
             <div
@@ -211,47 +222,89 @@ export default function ToolkitDetailPage() {
         </ScrollReveal>
       </header>
 
-      {/* ── How to Use — Icon Grid ──────────────────────────────── */}
+      {/* ── How to Use — Ritual Timeline ─────────────────────────── */}
       {toolkit.howToUse.length > 0 && (
-        <section className="px-6 pb-12 max-w-5xl mx-auto">
+        <section className="px-6 pb-16 max-w-3xl mx-auto">
           <ScrollReveal delay={0.1}>
-            <h2
-              className="text-xl font-semibold text-[#2D2A33] mb-6"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              {isRTL ? 'كيفيّة الاستخدام' : 'How to Use This Toolkit'}
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {toolkit.howToUse.map((item, i) => (
-                <motion.div
-                  key={i}
-                  className="bg-white rounded-xl p-5 border border-[#F3EFE8] shadow-sm"
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08, duration: 0.5, ease }}
-                >
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center mb-3"
-                    style={{ backgroundColor: `${toolkit.color}18` }}
-                  >
-                    {(() => {
-                      const Icon = iconMap[item.iconName.toLowerCase()] || Heart;
-                      return <Icon className="w-5 h-5" style={{ color: toolkit.color }} />;
-                    })()}
-                  </div>
-                  <p className="font-medium text-[#2D2A33] text-sm">
-                    {t(item.labelEn, item.labelAr, isRTL)}
-                  </p>
-                  {item.descEn && (
-                    <p className="text-xs text-[#4A4A5C] mt-1 leading-relaxed">
-                      {t(item.descEn, item.descAr || '', isRTL)}
-                    </p>
-                  )}
-                </motion.div>
-              ))}
+            <div className="text-center mb-10">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] mb-2" style={{ color: toolkit.color }}>
+                {isRTL ? 'طَقْسُكِ اليَوْمِيّ' : 'Your Daily Ritual'}
+              </p>
+              <h2
+                className="text-2xl sm:text-3xl font-bold text-[#2D2A33]"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {isRTL ? 'كيفيّة الاستخدام' : 'How to Use This Toolkit'}
+              </h2>
+              <div className="w-12 h-[2px] mx-auto mt-4" style={{ backgroundColor: toolkit.color }} />
             </div>
           </ScrollReveal>
+
+          <div className="relative">
+            {/* Connecting dashed line */}
+            <div
+              className="absolute top-6 bottom-6 hidden sm:block"
+              style={{
+                [isRTL ? 'right' : 'left']: '1.5rem',
+                width: '2px',
+                backgroundImage: `repeating-linear-gradient(to bottom, ${toolkit.color}30 0px, ${toolkit.color}30 6px, transparent 6px, transparent 14px)`,
+              }}
+            />
+
+            <div className="space-y-4">
+              {toolkit.howToUse.map((item, i) => {
+                const Icon = iconMap[item.iconName.toLowerCase()] || Heart;
+                const isLast = i === toolkit.howToUse.length - 1;
+
+                return (
+                  <motion.div
+                    key={i}
+                    className={`relative flex items-start gap-5 rounded-2xl p-5 sm:p-6 transition-colors ${isRTL ? 'flex-row-reverse text-right' : ''}`}
+                    style={{
+                      backgroundColor: i % 2 === 0 ? `${toolkit.color}06` : 'transparent',
+                    }}
+                    initial={{ opacity: 0, x: isRTL ? 20 : -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1, duration: 0.5, ease }}
+                  >
+                    {/* Numbered icon circle */}
+                    <div className="relative flex-shrink-0">
+                      <div
+                        className="w-12 h-12 rounded-full flex items-center justify-center border-2"
+                        style={{
+                          borderColor: toolkit.color,
+                          backgroundColor: 'white',
+                          boxShadow: `0 2px 8px ${toolkit.color}15`,
+                        }}
+                      >
+                        <Icon className="w-5 h-5" style={{ color: toolkit.color }} />
+                      </div>
+                      {/* Step number badge */}
+                      <span
+                        className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white"
+                        style={{ backgroundColor: toolkit.color }}
+                      >
+                        {i + 1}
+                      </span>
+                    </div>
+
+                    {/* Content */}
+                    <div className="pt-1 min-w-0">
+                      <p className="font-semibold text-[#2D2A33] text-[15px] leading-snug">
+                        {t(item.labelEn, item.labelAr, isRTL)}
+                      </p>
+                      {item.descEn && (
+                        <p className="text-sm text-[#4A4A5C] mt-1.5 leading-relaxed">
+                          {t(item.descEn, item.descAr || '', isRTL)}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          </div>
         </section>
       )}
 
