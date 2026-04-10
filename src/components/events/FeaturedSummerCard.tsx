@@ -35,6 +35,8 @@ import {
   Users,
   Video,
   Home,
+  Venus,
+  Mars,
 } from 'lucide-react';
 import type { SmartEvent } from '@/types';
 import EventRegistrationModal from './EventRegistrationModal';
@@ -53,9 +55,12 @@ interface SummerTheme {
   primarySoft: string;   // soft tint for backgrounds
   heroBg: string;        // hero area background gradient
   border: string;        // card border
-  icon: React.ReactNode; // hero icon
+  icon: React.ReactNode; // hero watermark icon (large decorative)
+  genderIcon: React.ReactNode; // small icon used in the age badge
   ringFrom: string;      // interest bar gradient start
   ringTo: string;        // interest bar gradient end
+  ageLabelEn: string;    // gendered age label
+  ageLabelAr: string;
 }
 
 const girlsTheme: SummerTheme = {
@@ -65,8 +70,11 @@ const girlsTheme: SummerTheme = {
   heroBg: 'linear-gradient(135deg, #F8EEF1 0%, #F0D9E0 45%, #E8C4D0 100%)',
   border: '#C4878A40',
   icon: <Compass className="w-full h-full" />,
+  genderIcon: <Venus className="w-3 h-3" />,
   ringFrom: '#C4878A',
   ringTo: '#9B5E7A',
+  ageLabelEn: 'Girls 12–19',
+  ageLabelAr: 'فَتَيات ١٢–١٩',
 };
 
 const boysTheme: SummerTheme = {
@@ -76,8 +84,11 @@ const boysTheme: SummerTheme = {
   heroBg: 'linear-gradient(135deg, #EEF5F0 0%, #D5E8DC 45%, #B8D5C2 100%)',
   border: '#5A8B6F40',
   icon: <Flame className="w-full h-full" />,
+  genderIcon: <Mars className="w-3 h-3" />,
   ringFrom: '#5A8B6F',
   ringTo: '#3B6B50',
+  ageLabelEn: 'Boys 12–19',
+  ageLabelAr: 'فِتْيان ١٢–١٩',
 };
 
 /* ── Pulse milestones (shared with PulseCard) ──────────────────── */
@@ -129,6 +140,14 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
     if (voted) setHasVoted(true);
   }, [event.slug]);
 
+  // Auto-expand Learn More if user navigated via #slug anchor (e.g. from "Picked for You")
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.location.hash === `#${event.slug}`) {
+      setExpanded(true);
+    }
+  }, [event.slug]);
+
   const handleResonate = () => {
     if (hasVoted) return;
     setHasVoted(true);
@@ -163,7 +182,8 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
 
   return (
     <motion.div
-      className="relative rounded-3xl overflow-hidden bg-white flex flex-col"
+      id={event.slug}
+      className="relative rounded-3xl overflow-hidden bg-white flex flex-col scroll-mt-24"
       style={{
         border: `2px solid ${theme.border}`,
         boxShadow: `0 12px 48px ${theme.primary}18, 0 4px 16px rgba(0,0,0,0.04)`,
@@ -198,19 +218,19 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
           }}
         />
 
-        {/* Age badge */}
+        {/* Gendered age badge */}
         <div
           className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-[0.15em] mb-4 ${
             isRTL ? 'flex-row-reverse' : ''
           }`}
           style={{
-            backgroundColor: 'rgba(255,255,255,0.7)',
+            backgroundColor: 'rgba(255,255,255,0.75)',
             color: theme.primaryDark,
             border: `1px solid ${theme.primary}30`,
           }}
         >
-          <Users className="w-3 h-3" />
-          {isRTL ? 'للأَعْمارِ ١٢–١٩' : 'Ages 12–19'}
+          {theme.genderIcon}
+          {isRTL ? theme.ageLabelAr : theme.ageLabelEn}
         </div>
 
         {/* Large decorative icon floating on the right */}
@@ -504,20 +524,25 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
                   </>
                 )}
 
-                {/* STORY */}
-                {activeSection === 'story' && (
-                  <>
-                    <p
-                      className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2"
-                      style={{ color: theme.primaryDark }}
-                    >
-                      {isRTL ? 'القِصَّةُ الكامِلَة' : 'The Full Story'}
-                    </p>
-                    <p className="text-sm text-[#4A4A5C] leading-relaxed whitespace-pre-line">
-                      {longDescription || description}
-                    </p>
-                  </>
-                )}
+                {/* STORY — short excerpt only (first 2 sentences) */}
+                {activeSection === 'story' && (() => {
+                  // Trim longDescription to first 2 sentences for a tight excerpt;
+                  // fall back to plain description if no longDescription exists.
+                  const source = longDescription || description;
+                  const sentences = source.match(/[^.!?]+[.!?]+/g) || [source];
+                  const excerpt = sentences.slice(0, 2).join(' ').trim();
+                  return (
+                    <>
+                      <p
+                        className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2"
+                        style={{ color: theme.primaryDark }}
+                      >
+                        {isRTL ? 'القِصَّة' : 'The Story'}
+                      </p>
+                      <p className="text-sm text-[#4A4A5C] leading-relaxed">{excerpt}</p>
+                    </>
+                  );
+                })()}
 
                 {/* WHO IT'S FOR — includes facilitator card */}
                 {activeSection === 'who' && (
@@ -554,7 +579,7 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
                             {facilitatorName}
                           </p>
                           <p className="text-[11px] text-[#6B6580] leading-tight mt-0.5">
-                            {facilitatorTitle}
+                            {isRTL ? 'مستشارة أسرية معتمدة' : 'Certified Family Counselor'}
                           </p>
                         </div>
                       </div>
@@ -562,26 +587,35 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
                   </div>
                 )}
 
-                {/* FORMAT — includes what to bring */}
+                {/* FORMAT — concise icon-based bullets */}
                 {activeSection === 'format' && (
                   <div className="space-y-4">
-                    {formatDesc && (
-                      <div>
-                        <p
-                          className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2"
-                          style={{ color: theme.primaryDark }}
-                        >
-                          {isRTL ? 'كَيْفَ يَسيرُ البَرْنامَج' : 'How It Runs'}
-                        </p>
-                        <div className={`flex items-start gap-2.5 text-sm text-[#4A4A5C] ${isRTL ? 'flex-row-reverse' : ''}`}>
-                          <Clock
-                            className="w-4 h-4 flex-shrink-0 mt-0.5"
-                            style={{ color: theme.primary }}
-                          />
-                          <span className="leading-relaxed">{formatDesc}</span>
-                        </div>
-                      </div>
-                    )}
+                    <div>
+                      <p
+                        className="text-[10px] font-bold uppercase tracking-[0.18em] mb-3"
+                        style={{ color: theme.primaryDark }}
+                      >
+                        {isRTL ? 'كَيْفَ يَسيرُ البَرْنامَج' : 'How It Runs'}
+                      </p>
+                      <ul className="space-y-2">
+                        <li className={`flex items-center gap-2.5 text-sm text-[#2D2A33] ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                          <Video className="w-4 h-4 flex-shrink-0" style={{ color: theme.primary }} />
+                          <span>{isRTL ? '٣ جَلَساتٍ عَبْرَ الإنْتَرْنِت · ٩٠ دَقيقَة' : '3 online sessions · 90 min each'}</span>
+                        </li>
+                        <li className={`flex items-center gap-2.5 text-sm text-[#2D2A33] ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                          <Home className="w-4 h-4 flex-shrink-0" style={{ color: theme.primary }} />
+                          <span>{isRTL ? 'يَوْمٌ كامِلٌ حُضورِيّ في أوتاوا' : '1 full-day retreat in Ottawa'}</span>
+                        </li>
+                        <li className={`flex items-center gap-2.5 text-sm text-[#2D2A33] ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                          <Users className="w-4 h-4 flex-shrink-0" style={{ color: theme.primary }} />
+                          <span>{isRTL ? 'دائِرَةٌ صَغيرَة · ١٠ كَحَدٍّ أَقْصى' : 'Small circle · max 10'}</span>
+                        </li>
+                        <li className={`flex items-center gap-2.5 text-sm text-[#2D2A33] ${isRTL ? 'flex-row-reverse text-right' : ''}`}>
+                          <Clock className="w-4 h-4 flex-shrink-0" style={{ color: theme.primary }} />
+                          <span>{isRTL ? 'وُصولٌ دائِمٌ لِلتَّسْجيلات' : 'Lifetime access to recordings'}</span>
+                        </li>
+                      </ul>
+                    </div>
                     {whatToBring && whatToBring.length > 0 && (
                       <div
                         className="pt-3 border-t"
