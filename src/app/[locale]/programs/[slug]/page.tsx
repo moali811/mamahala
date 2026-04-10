@@ -733,15 +733,18 @@ export default function ProgramOverviewPage() {
                                         <div className="flex items-center gap-2 flex-shrink-0">
                                           {hasInteractive && <Sparkles className="w-3 h-3 text-[#C8A97D]" />}
                                           <span className="text-xs text-[#8E8E9F]">{mod.durationMinutes} min</span>
-                                          <a
-                                            href={`/api/academy/worksheet/${slug}/${mod.slug}?locale=${locale}`}
-                                            download
-                                            onClick={(e) => e.stopPropagation()}
+                                          <button
+                                            type="button"
+                                            onClick={(e) => {
+                                              e.preventDefault();
+                                              e.stopPropagation();
+                                              window.location.href = `/api/academy/worksheet/${slug}/${mod.slug}?locale=${locale}`;
+                                            }}
                                             title={locale === 'ar' ? 'تحميل ورقة العمل' : 'Download worksheet'}
-                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-[#8E8E9F] hover:text-[#7A3B5E]"
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity text-[#8E8E9F] hover:text-[#7A3B5E] cursor-pointer"
                                           >
                                             <Download className="w-3.5 h-3.5" />
-                                          </a>
+                                          </button>
                                           <Play className="w-3.5 h-3.5 text-[#C8A97D] opacity-0 group-hover:opacity-100 transition-opacity" />
                                         </div>
                                       </a>
