@@ -323,7 +323,12 @@ export default function EventsPage() {
               </p>
             </ScrollReveal>
 
-            <div className="grid gap-6 md:grid-cols-2 md:gap-6 lg:gap-8">
+            <MobileCarousel
+              desktopGrid="md:grid-cols-2"
+              mobileWidth="88vw"
+              gap={24}
+              showDots={featuredEvents.length > 1}
+            >
               {featuredEvents.map((event, i) => (
                 <motion.div
                   key={event.slug}
@@ -331,6 +336,7 @@ export default function EventsPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: '-80px' }}
                   transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  className="h-full"
                 >
                   <FeaturedSummerCard
                     event={event}
@@ -340,7 +346,7 @@ export default function EventsPage() {
                   />
                 </motion.div>
               ))}
-            </div>
+            </MobileCarousel>
           </div>
         </section>
       )}

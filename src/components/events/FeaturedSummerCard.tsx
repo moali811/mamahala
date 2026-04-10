@@ -33,6 +33,8 @@ import {
   CalendarDays,
   MapPin,
   Users,
+  Video,
+  Home,
 } from 'lucide-react';
 import type { SmartEvent } from '@/types';
 import EventRegistrationModal from './EventRegistrationModal';
@@ -95,10 +97,13 @@ function getNextMilestone(count: number, isRTL: boolean): { remaining: number; l
   return null;
 }
 
+type LearnSection = 'story' | 'outcomes' | 'who' | 'format' | 'faqs';
+
 export default function FeaturedSummerCard({ event, locale, pulseCount, onResonate }: Props) {
   const isRTL = locale === 'ar';
   const [hasVoted, setHasVoted] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [activeSection, setActiveSection] = useState<LearnSection>('outcomes');
   const [showModal, setShowModal] = useState(false);
   const [animateHeart, setAnimateHeart] = useState(false);
 
@@ -253,19 +258,40 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
         {/* Description */}
         <p className="text-sm text-[#4A4A5C] leading-relaxed mb-5">{description}</p>
 
-        {/* Quick-facts strip */}
-        <div className="grid grid-cols-3 gap-2 mb-5">
-          <div
-            className="rounded-xl p-3 text-center"
-            style={{ backgroundColor: theme.primarySoft, border: `1px solid ${theme.primary}20` }}
+        {/* Dual-format chips — clearly shows both Online + In-Person */}
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
+          <span
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
+            style={{
+              backgroundColor: 'white',
+              color: theme.primaryDark,
+              border: `1.5px solid ${theme.primary}40`,
+            }}
           >
-            <div className="text-[9px] font-semibold uppercase tracking-wider text-[#8E8E9F] mb-0.5">
-              {isRTL ? 'الصّيغة' : 'Format'}
-            </div>
-            <div className="text-xs font-bold text-[#2D2A33]">
-              {isRTL ? 'هَجين' : 'Hybrid'}
-            </div>
-          </div>
+            <Video className="w-3 h-3" />
+            {isRTL ? 'عَبْرَ الإنْتَرْنِت' : 'Online'}
+          </span>
+          <span
+            className="text-[10px] font-bold uppercase tracking-wider text-[#8E8E9F]"
+            style={{ color: `${theme.primary}80` }}
+          >
+            +
+          </span>
+          <span
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold"
+            style={{
+              backgroundColor: 'white',
+              color: theme.primaryDark,
+              border: `1.5px solid ${theme.primary}40`,
+            }}
+          >
+            <Home className="w-3 h-3" />
+            {isRTL ? 'حُضورِيّ' : 'In-Person'}
+          </span>
+        </div>
+
+        {/* Quick-facts strip — Length + Invest */}
+        <div className="grid grid-cols-2 gap-2 mb-5">
           <div
             className="rounded-xl p-3 text-center"
             style={{ backgroundColor: theme.primarySoft, border: `1px solid ${theme.primary}20` }}
@@ -394,151 +420,215 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
         </div>
       </div>
 
-      {/* ── EXPANDABLE LEARN MORE PANEL ─────────────────────────── */}
+      {/* ── LEARN MORE PANEL — tabbed accordion (one section at a time) ── */}
       <AnimatePresence initial={false}>
         {expanded && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
             style={{ borderTop: `1px solid ${theme.primary}20` }}
           >
-            <div
-              className="px-6 py-6 space-y-6"
-              style={{ backgroundColor: theme.primarySoft }}
-            >
-              {/* Long description / narrative */}
-              {longDescription && (
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: theme.primaryDark }}>
-                    {isRTL ? 'القِصَّةُ الكامِلَة' : 'The Full Story'}
-                  </p>
-                  <p className="text-sm text-[#4A4A5C] leading-relaxed whitespace-pre-line">
-                    {longDescription}
-                  </p>
-                </div>
-              )}
+            <div className="px-6 py-5" style={{ backgroundColor: theme.primarySoft }}>
+              {/* Section tabs — compact pill row */}
+              <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                {([
+                  { key: 'outcomes', en: 'What You Get', ar: 'ثَمَرَةُ حُضورِك' },
+                  { key: 'story', en: 'The Story', ar: 'القِصَّة' },
+                  { key: 'who', en: "Who It's For", ar: 'لِمَن' },
+                  { key: 'format', en: 'Format', ar: 'الصّيغَة' },
+                  { key: 'faqs', en: 'FAQs', ar: 'أَسْئِلَة' },
+                ] as const).map((tab) => {
+                  const isActive = activeSection === tab.key;
+                  return (
+                    <button
+                      key={tab.key}
+                      type="button"
+                      onClick={() => setActiveSection(tab.key)}
+                      className="px-3 py-1.5 rounded-full text-[11px] font-semibold transition-all"
+                      style={
+                        isActive
+                          ? {
+                              background: `linear-gradient(135deg, ${theme.primary}, ${theme.primaryDark})`,
+                              color: 'white',
+                              boxShadow: `0 2px 8px ${theme.primary}30`,
+                            }
+                          : {
+                              backgroundColor: 'white',
+                              color: theme.primaryDark,
+                              border: `1px solid ${theme.primary}25`,
+                            }
+                      }
+                    >
+                      {isRTL ? tab.ar : tab.en}
+                    </button>
+                  );
+                })}
+              </div>
 
-              {/* Outcomes — what you'll leave with */}
-              {outcomes && outcomes.length > 0 && (
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-3" style={{ color: theme.primaryDark }}>
-                    {isRTL ? 'ما سَتَخْرُجينَ بِه' : "What You'll Leave With"}
-                  </p>
-                  <ul className="space-y-2">
-                    {outcomes.map((outcome, i) => (
-                      <li key={i} className="flex items-start gap-2.5 text-sm text-[#2D2A33]">
-                        <CheckCircle2
-                          className="w-4 h-4 flex-shrink-0 mt-0.5"
-                          style={{ color: theme.primary }}
-                        />
-                        <span className="leading-relaxed">{outcome}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Who it's for */}
-              {audienceDesc && (
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: theme.primaryDark }}>
-                    {isRTL ? 'لِمَنْ هذا البَرْنامَج' : "Who It's For"}
-                  </p>
-                  <p className="text-sm text-[#4A4A5C] leading-relaxed italic">
-                    {audienceDesc}
-                  </p>
-                </div>
-              )}
-
-              {/* Format */}
-              {formatDesc && (
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: theme.primaryDark }}>
-                    {isRTL ? 'الصّيغَة' : 'Format'}
-                  </p>
-                  <div className="flex items-start gap-2.5 text-sm text-[#4A4A5C]">
-                    <Clock
-                      className="w-4 h-4 flex-shrink-0 mt-0.5"
-                      style={{ color: theme.primary }}
-                    />
-                    <span className="leading-relaxed">{formatDesc}</span>
-                  </div>
-                </div>
-              )}
-
-              {/* What to bring */}
-              {whatToBring && whatToBring.length > 0 && (
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2" style={{ color: theme.primaryDark }}>
-                    {isRTL ? 'ما تُحْضِرينَهُ مَعَك' : 'What to Bring'}
-                  </p>
-                  <ul className="space-y-1.5">
-                    {whatToBring.map((item, i) => (
-                      <li key={i} className="text-sm text-[#4A4A5C] leading-relaxed">
-                        · {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Facilitator */}
-              {facilitator && (
-                <div
-                  className="rounded-xl p-4 flex items-center gap-3"
-                  style={{
-                    backgroundColor: 'white',
-                    border: `1px solid ${theme.primary}25`,
-                  }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0"
-                    style={{
-                      background: `linear-gradient(135deg, ${theme.primary}, ${theme.primaryDark})`,
-                    }}
-                  >
-                    {facilitatorName?.charAt(0) || 'H'}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#8E8E9F]">
-                      {isRTL ? 'تَقودُها' : 'Led by'}
+              {/* Active section content */}
+              <motion.div
+                key={activeSection}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                className="rounded-xl p-4"
+                style={{
+                  backgroundColor: 'white',
+                  border: `1px solid ${theme.primary}25`,
+                  minHeight: '120px',
+                }}
+              >
+                {/* OUTCOMES — default/primary section ("ثَمَرَةُ حُضورِك") */}
+                {activeSection === 'outcomes' && outcomes && outcomes.length > 0 && (
+                  <>
+                    <p
+                      className="text-[10px] font-bold uppercase tracking-[0.18em] mb-3"
+                      style={{ color: theme.primaryDark }}
+                    >
+                      {isRTL ? 'ثَمَرَةُ حُضورِك' : "What You'll Leave With"}
                     </p>
-                    <p className="text-sm font-bold text-[#2D2A33] leading-tight">{facilitatorName}</p>
-                    <p className="text-[11px] text-[#6B6580] leading-tight mt-0.5">{facilitatorTitle}</p>
-                  </div>
-                </div>
-              )}
+                    <ul className="space-y-2">
+                      {outcomes.map((outcome, i) => (
+                        <li key={i} className="flex items-start gap-2.5 text-sm text-[#2D2A33]">
+                          <CheckCircle2
+                            className="w-4 h-4 flex-shrink-0 mt-0.5"
+                            style={{ color: theme.primary }}
+                          />
+                          <span className="leading-relaxed">{outcome}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
 
-              {/* FAQs */}
-              {event.faqs && event.faqs.length > 0 && (
-                <div>
-                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] mb-3" style={{ color: theme.primaryDark }}>
-                    {isRTL ? 'أَسْئِلَةٌ شائِعَة' : 'Common Questions'}
-                  </p>
-                  <div className="space-y-3">
-                    {event.faqs.map((faq, i) => (
-                      <div
-                        key={i}
-                        className="rounded-xl p-3.5"
-                        style={{
-                          backgroundColor: 'white',
-                          border: `1px solid ${theme.primary}20`,
-                        }}
-                      >
-                        <p className="text-xs font-bold text-[#2D2A33] mb-1.5">
-                          {isRTL ? faq.questionAr : faq.questionEn}
+                {/* STORY */}
+                {activeSection === 'story' && (
+                  <>
+                    <p
+                      className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2"
+                      style={{ color: theme.primaryDark }}
+                    >
+                      {isRTL ? 'القِصَّةُ الكامِلَة' : 'The Full Story'}
+                    </p>
+                    <p className="text-sm text-[#4A4A5C] leading-relaxed whitespace-pre-line">
+                      {longDescription || description}
+                    </p>
+                  </>
+                )}
+
+                {/* WHO IT'S FOR — includes facilitator card */}
+                {activeSection === 'who' && (
+                  <div className="space-y-4">
+                    {audienceDesc && (
+                      <div>
+                        <p
+                          className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2"
+                          style={{ color: theme.primaryDark }}
+                        >
+                          {isRTL ? 'لِمَنْ هذا البَرْنامَج' : "Who It's For"}
                         </p>
-                        <p className="text-xs text-[#4A4A5C] leading-relaxed">
-                          {isRTL ? faq.answerAr : faq.answerEn}
-                        </p>
+                        <p className="text-sm text-[#4A4A5C] leading-relaxed italic">{audienceDesc}</p>
                       </div>
-                    ))}
+                    )}
+                    {facilitator && (
+                      <div
+                        className={`pt-3 border-t flex items-center gap-3 ${isRTL ? 'flex-row-reverse' : ''}`}
+                        style={{ borderColor: `${theme.primary}20` }}
+                      >
+                        <div
+                          className="w-11 h-11 rounded-full flex items-center justify-center text-white text-lg font-bold flex-shrink-0"
+                          style={{
+                            background: `linear-gradient(135deg, ${theme.primary}, ${theme.primaryDark})`,
+                          }}
+                        >
+                          {facilitatorName?.charAt(0) || 'H'}
+                        </div>
+                        <div className={`min-w-0 ${isRTL ? 'text-right' : ''}`}>
+                          <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#8E8E9F]">
+                            {isRTL ? 'تَقودُها' : 'Led by'}
+                          </p>
+                          <p className="text-sm font-bold text-[#2D2A33] leading-tight">
+                            {facilitatorName}
+                          </p>
+                          <p className="text-[11px] text-[#6B6580] leading-tight mt-0.5">
+                            {facilitatorTitle}
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
+                )}
+
+                {/* FORMAT — includes what to bring */}
+                {activeSection === 'format' && (
+                  <div className="space-y-4">
+                    {formatDesc && (
+                      <div>
+                        <p
+                          className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2"
+                          style={{ color: theme.primaryDark }}
+                        >
+                          {isRTL ? 'كَيْفَ يَسيرُ البَرْنامَج' : 'How It Runs'}
+                        </p>
+                        <div className={`flex items-start gap-2.5 text-sm text-[#4A4A5C] ${isRTL ? 'flex-row-reverse' : ''}`}>
+                          <Clock
+                            className="w-4 h-4 flex-shrink-0 mt-0.5"
+                            style={{ color: theme.primary }}
+                          />
+                          <span className="leading-relaxed">{formatDesc}</span>
+                        </div>
+                      </div>
+                    )}
+                    {whatToBring && whatToBring.length > 0 && (
+                      <div
+                        className="pt-3 border-t"
+                        style={{ borderColor: `${theme.primary}20` }}
+                      >
+                        <p
+                          className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2"
+                          style={{ color: theme.primaryDark }}
+                        >
+                          {isRTL ? 'ما تُحْضِرينَهُ مَعَك' : 'What to Bring'}
+                        </p>
+                        <ul className="space-y-1">
+                          {whatToBring.map((item, i) => (
+                            <li key={i} className="text-xs text-[#4A4A5C] leading-relaxed">
+                              · {item}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* FAQs */}
+                {activeSection === 'faqs' && event.faqs && event.faqs.length > 0 && (
+                  <>
+                    <p
+                      className="text-[10px] font-bold uppercase tracking-[0.18em] mb-3"
+                      style={{ color: theme.primaryDark }}
+                    >
+                      {isRTL ? 'أَسْئِلَةٌ شائِعَة' : 'Common Questions'}
+                    </p>
+                    <div className="space-y-3">
+                      {event.faqs.map((faq, i) => (
+                        <div key={i}>
+                          <p className="text-xs font-bold text-[#2D2A33] mb-1">
+                            {isRTL ? faq.questionAr : faq.questionEn}
+                          </p>
+                          <p className="text-xs text-[#4A4A5C] leading-relaxed">
+                            {isRTL ? faq.answerAr : faq.answerEn}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </motion.div>
             </div>
           </motion.div>
         )}
