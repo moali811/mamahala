@@ -7,7 +7,7 @@
    ================================================================ */
 
 import { useParams } from 'next/navigation';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -85,6 +85,13 @@ export default function ToolkitDetailPage() {
   const [activeSection, setActiveSection] = useState(0);
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
+  /**
+   * Ref to the <main> that holds the active section content.
+   * Used by changeSection() to scroll the user to the start of the new
+   * section's content (just below the sticky progress/tabs bar) instead
+   * of scrolling all the way back to the top of the page.
+   */
+  const contentRef = useRef<HTMLElement>(null);
 
   /* ── Load toolkit data ───────────────────────────────────────── */
   useEffect(() => {
@@ -124,6 +131,22 @@ export default function ToolkitDetailPage() {
   /* ── Helpers ─────────────────────────────────────────────────── */
   const toggleDay = useCallback((dayId: string) => {
     setExpandedDay((prev) => (prev === dayId ? null : dayId));
+  }, []);
+
+  /**
+   * Switch to a different section AND scroll the user to the top of
+   * the new section's content. Previously this jumped back to y=0 which
+   * landed on the "How to Use This Toolkit" hero instead of the new
+   * section. Now we scrollIntoView on the content ref, and the
+   * scroll-mt-28 utility on <main> accounts for the sticky progress bar.
+   */
+  const changeSection = useCallback((nextIndex: number) => {
+    setActiveSection(nextIndex);
+    setExpandedDay(null);
+    // Wait one frame so the new section DOM mounts before we scroll to it.
+    requestAnimationFrame(() => {
+      contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
   }, []);
 
   if (loading) return <ToolkitSkeleton />;
@@ -362,10 +385,7 @@ export default function ToolkitDetailPage() {
               return (
                 <button
                   key={sec.id}
-                  onClick={() => {
-                    setActiveSection(i);
-                    setExpandedDay(null);
-                  }}
+                  onClick={() => changeSection(i)}
                   className={`
                     whitespace-nowrap px-4 py-2 rounded-full text-sm font-medium
                     transition-all duration-200 flex-shrink-0 inline-flex items-center gap-1.5
@@ -387,7 +407,10 @@ export default function ToolkitDetailPage() {
 
       {/* ── Active Section Content ──────────────────────────────── */}
       {section && (
-        <main className="px-6 py-10 max-w-4xl mx-auto">
+        <main
+          ref={contentRef}
+          className="px-6 py-10 max-w-4xl mx-auto scroll-mt-28"
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={section.id}
@@ -621,11 +644,7 @@ export default function ToolkitDetailPage() {
               <div className="flex items-center justify-between mt-12 pt-6 border-t border-[#F3EFE8]">
                 <button
                   onClick={() => {
-                    if (activeSection > 0) {
-                      setActiveSection(activeSection - 1);
-                      setExpandedDay(null);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
+                    if (activeSection > 0) changeSection(activeSection - 1);
                   }}
                   disabled={activeSection === 0}
                   className="flex items-center gap-2 text-sm font-medium text-[#4A4A5C] hover:text-[#2D2A33] disabled:opacity-30 disabled:cursor-not-allowed transition"
@@ -638,11 +657,7 @@ export default function ToolkitDetailPage() {
                 </span>
                 <button
                   onClick={() => {
-                    if (activeSection < totalSections - 1) {
-                      setActiveSection(activeSection + 1);
-                      setExpandedDay(null);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
+                    if (activeSection < totalSections - 1) changeSection(activeSection + 1);
                   }}
                   disabled={activeSection >= totalSections - 1}
                   className="flex items-center gap-2 text-sm font-medium text-[#4A4A5C] hover:text-[#2D2A33] disabled:opacity-30 disabled:cursor-not-allowed transition"
