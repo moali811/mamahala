@@ -26,11 +26,9 @@ export async function POST(req: NextRequest) {
 
     const stripe = getStripe();
 
-    // Determine price based on level tier
-    const tier = levelNumber === 2 ? 'growth' : 'mastery';
-    const priceCAD = levelNumber === 2
-      ? BUSINESS.academyLevelPrices.growth
-      : BUSINESS.academyLevelPrices.mastery;
+    // Academy now uses a single Full Access tier — any paid level unlocks everything.
+    const tier = 'fullAccess';
+    const priceCAD = BUSINESS.academyFullAccessPrice;
 
     const origin = req.headers.get('origin') || 'https://mamahala.ca';
     const loc = locale || 'en';
@@ -44,8 +42,8 @@ export async function POST(req: NextRequest) {
             currency: 'cad',
             unit_amount: priceCAD * 100, // Stripe uses cents
             product_data: {
-              name: `${programTitle} — Level ${levelNumber} (${tier === 'growth' ? 'Growth' : 'Mastery'})`,
-              description: `Lifetime access to all Level ${levelNumber} modules`,
+              name: `${programTitle} — Full Program Access`,
+              description: 'Lifetime access to all levels and modules',
             },
           },
           quantity: 1,

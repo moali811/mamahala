@@ -41,6 +41,7 @@ import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
 import { toolkitCatalog } from '@/data/toolkits';
 import { isVipEmail, unlockAllForVip } from '@/lib/vip-emails';
+import { BUSINESS } from '@/config/business';
 
 interface DownloadResource {
   id: string;
@@ -937,7 +938,8 @@ function DownloadsPageInner() {
               const catalogEntry = toolkitCatalog.find(tc => tc.slug === resource.id);
               const hasInteractive = catalogEntry?.hasInteractiveVersion ?? false;
               const isPremium = catalogEntry?.isPremium ?? resource.isPremium ?? false;
-              const priceCAD = catalogEntry?.priceCAD ?? resource.priceCAD;
+              // All premium toolkits share the same flat price
+              const priceCAD = BUSINESS.toolkitFullAccessPrice;
 
               return (
                 <motion.div key={resource.id}

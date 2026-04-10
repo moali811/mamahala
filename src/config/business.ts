@@ -24,29 +24,24 @@ export const BUSINESS = {
   calUsername: 'mamahala',
   calBaseUrl: 'https://cal.com/mamahala',
 
-  // Academy Stripe Payment Links (no API key needed — direct redirect)
+  // ─── ACADEMY — Single Full Program Access tier ────────────────
+  // One flat price unlocks everything (Level 2 + Level 3). Level 1 stays free.
+  // Previous tiered pricing (Growth $19 / Mastery $29 / Bundle $41) was
+  // collapsed into one clean decision: free or $41 for full access.
+  // Strategy: lead magnet → 1:1 funnel (Dr. Hala's real business).
+  academyFullAccessPrice: 41,
   academyPaymentLinks: {
-    growth: 'https://buy.stripe.com/bJecN424C8gd5g907Tawo08',   // $19 CAD — Level 2
-    mastery: 'https://buy.stripe.com/dRm5kC10y8gd0ZT07Tawo09',  // $29 CAD — Level 3
-    bundle: 'https://buy.stripe.com/4gM3cueRo7c97ohf2Nawo0a',   // $41 CAD — Full Access (15% off)
+    fullAccess: 'https://buy.stripe.com/4gM3cueRo7c97ohf2Nawo0a',  // $41 CAD — Mama Hala Academy - Full Program Access
   },
-  academyBundlePrice: 41,
-  academyBundleSavings: 15, // percentage
 
-  // Per-module price (legacy — used as fallback only)
-  academyModulePrice: 9,
-  // Default per-level prices (CAD). Override per-level via AcademyLevel.priceCAD
-  // Pricing strategy: lead magnet → 1:1 funnel. Low friction entry, real business is Dr. Hala's 1:1 practice.
-  academyLevelPrices: { growth: 19, mastery: 29 } as { growth: number; mastery: number },
-
-  // Toolkit Premium Stripe Payment Links — shared across all premium toolkits
-  // Uses ?client_reference_id={toolkit-slug} so the success URL redirects
-  // back to /resources/toolkits/unlock-success?slug={slug}
+  // ─── TOOLKITS — Single Premium Access tier ────────────────────
+  // One flat price unlocks any premium toolkit. Free preview (section 1) stays.
+  // Previous tiered pricing (Standard $19 / Flagship $29) was collapsed.
   // Success URL configured in Stripe dashboard:
   //   https://mamahala.ca/en/resources/toolkits/unlock-success?slug={CHECKOUT_SESSION_CLIENT_REFERENCE_ID}
+  toolkitFullAccessPrice: 19,
   toolkitPaymentLinks: {
-    standard: 'https://buy.stripe.com/00w8wOaB88gd23XaMxawo0b',  // $19 CAD — Mama Hala Toolkit - Premium
-    flagship: 'https://buy.stripe.com/cNi7sK5gO8gddMFbQBawo0c',  // $29 CAD — Mama Hala Toolkit - Flagship
+    fullAccess: 'https://buy.stripe.com/00w8wOaB88gd23XaMxawo0b',  // $19 CAD — Mama Hala Toolkit - Full Premium Access
   },
 
   // VIP emails — bypass ALL paywalls (academy levels + premium toolkits)

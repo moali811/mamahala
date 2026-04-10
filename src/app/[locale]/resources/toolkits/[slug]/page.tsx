@@ -484,7 +484,7 @@ export default function ToolkitDetailPage() {
                             className="text-4xl font-bold"
                             style={{ color: toolkit.color, fontFamily: 'var(--font-heading)' }}
                           >
-                            ${toolkit.priceCAD}
+                            ${BUSINESS.toolkitFullAccessPrice}
                           </span>
                           <span className="text-sm text-[#8E8E9F]">CAD</span>
                         </div>
@@ -493,15 +493,12 @@ export default function ToolkitDetailPage() {
                         </p>
                         <button
                           onClick={() => {
-                            // Determine which shared Stripe link to use based on price tier
-                            const tier = toolkit.priceCAD === 29 ? 'flagship' : 'standard';
-                            const stripeLink = BUSINESS.toolkitPaymentLinks[tier];
+                            // Single shared Stripe link unlocks any premium toolkit.
+                            const stripeLink = BUSINESS.toolkitPaymentLinks.fullAccess;
                             if (stripeLink) {
-                              // Append client_reference_id so Stripe can redirect back with the slug
                               const url = `${stripeLink}?client_reference_id=${toolkit.slug}`;
                               window.location.href = url;
                             } else {
-                              // Stripe link not configured yet — show friendly message + dev simulation
                               const confirm = window.confirm(
                                 isRTL
                                   ? 'الدفع قيد الإعداد — سيتوفّر قريبًا. هل تريدين المحاكاة للتجربة؟'

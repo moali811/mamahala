@@ -199,16 +199,14 @@ export default function ProgramOverviewPage() {
     setCheckoutLoading(true);
     setUnlockingLevel(levelNum);
 
-    // Direct redirect to Stripe Payment Link — no API key needed
-    const tier = levelNum === 2 ? 'growth' : 'mastery';
-    const paymentUrl = BUSINESS.academyPaymentLinks[tier as keyof typeof BUSINESS.academyPaymentLinks];
+    // Academy now uses single Full Access tier — any level button unlocks everything.
+    // Using :bundle: format so unlock-success handler unlocks both Level 2 and Level 3.
+    const paymentUrl = BUSINESS.academyPaymentLinks.fullAccess;
     if (paymentUrl) {
-      // Append prefilled email if available
       const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : '';
       const url = new URL(paymentUrl);
       if (email) url.searchParams.set('prefilled_email', email);
-      // Add client_reference_id for webhook tracking
-      url.searchParams.set('client_reference_id', `${slug}:level-${levelNum}:${email}`);
+      url.searchParams.set('client_reference_id', `${slug}:bundle:${email}`);
       window.location.href = url.toString();
     } else {
       setCheckoutLoading(false);
@@ -407,8 +405,8 @@ export default function ProgramOverviewPage() {
                 {program.isFree
                   ? (isRTL ? 'مجاني' : 'Free')
                   : (isRTL
-                      ? `ابْدَئي مَجّاناً · مِنْ $${BUSINESS.academyLevelPrices.growth}/مُسْتَوى`
-                      : `Start free · from $${BUSINESS.academyLevelPrices.growth}/level`)}
+                      ? `ابْدَئي مَجّاناً · $${BUSINESS.academyFullAccessPrice} للوُصولِ الكامِل`
+                      : `Start free · $${BUSINESS.academyFullAccessPrice} for full access`)}
               </Badge>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {program.totalModules} {isRTL ? 'وحدة' : 'modules'}</span>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Clock className="w-4 h-4" /> {program.totalDurationHours}h</span>
@@ -539,7 +537,7 @@ export default function ProgramOverviewPage() {
             )}
           </ScrollReveal>
 
-          {/* Bundle offer — show when enrolled and at least one paid level is still locked */}
+          {/* Full Program Access CTA — show when enrolled and at least one paid level is still locked */}
           {enrolled && !program.isFree && !(unlockedLevels.has(2) && unlockedLevels.has(3)) && (
             <ScrollReveal className="max-w-3xl mx-auto mb-8">
               <div
@@ -549,37 +547,33 @@ export default function ProgramOverviewPage() {
                 <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-5 sm:p-6">
                   <div className="flex-1 text-center sm:text-start">
                     <div className="inline-flex items-center gap-2 mb-2">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white" style={{ backgroundColor: '#3B8A6E' }}>
-                        {isRTL ? `وفّر ${BUSINESS.academyBundleSavings}%` : `Save ${BUSINESS.academyBundleSavings}%`}
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white" style={{ backgroundColor: program.color }}>
+                        {isRTL ? '🚀 سِعْرُ الإطْلاق' : '🚀 Launch Pricing'}
                       </span>
                     </div>
                     <h3 className="text-lg font-bold text-[#2D2A33] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
-                      {isRTL ? 'احصلي على الوصول الكامل' : 'Get Full Access'}
+                      {isRTL ? 'افتحي البرنامجَ بالكامل' : 'Unlock the Full Program'}
                     </h3>
                     <p className="text-sm text-[#6B6580]">
                       {isRTL
-                        ? 'افتحي مستويَي النّموّ والإتقان معاً بسعرٍ مخفَّض — وصولٌ مدى الحياة.'
-                        : 'Unlock both Growth and Mastery levels together at a discount — lifetime access.'}
+                        ? 'دَفْعَةٌ واحِدَة · جَميعُ المُسْتَوَياتِ والوَحَدات · وُصولٌ مَدى الحَياة · شَهادَةُ إِتْمام.'
+                        : 'One payment · all levels and modules · lifetime access · completion certificate.'}
                     </p>
                   </div>
                   <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-sm text-[#8E8E9F] line-through">${BUSINESS.academyLevelPrices.growth + BUSINESS.academyLevelPrices.mastery}</span>
-                      <span className="text-2xl font-bold" style={{ color: program.color }}>${BUSINESS.academyBundlePrice}</span>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold" style={{ color: program.color }}>${BUSINESS.academyFullAccessPrice}</span>
                       <span className="text-xs text-[#8E8E9F]">CAD</span>
                     </div>
                     <button
-                      onClick={() => {
-                        const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : '';
-                        const url = new URL(BUSINESS.academyPaymentLinks.bundle);
-                        if (email) url.searchParams.set('prefilled_email', email);
-                        url.searchParams.set('client_reference_id', `${slug}:bundle:${email}`);
-                        window.location.href = url.toString();
-                      }}
-                      className="px-6 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg"
+                      onClick={() => handleUnlockLevel(2)}
+                      disabled={checkoutLoading}
+                      className="px-6 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg disabled:opacity-50"
                       style={{ backgroundColor: program.color }}
                     >
-                      {isRTL ? 'احصلي على الحزمة' : 'Get the Bundle'}
+                      {checkoutLoading
+                        ? (isRTL ? 'جارٍ...' : 'Loading...')
+                        : (isRTL ? 'افتحي الوُصولَ الكامِل' : 'Unlock Full Access')}
                     </button>
                   </div>
                 </div>
@@ -620,7 +614,7 @@ export default function ProgramOverviewPage() {
                               <Badge variant="success" size="sm">{isRTL ? 'مفتوح' : 'Unlocked'}</Badge>
                             ) : (
                               <Badge variant="neutral" size="sm">
-                                <Lock className="w-3 h-3 mr-1" /> CAD ${level.priceCAD ?? (level.level === 2 ? BUSINESS.academyLevelPrices.growth : BUSINESS.academyLevelPrices.mastery)}
+                                <Lock className="w-3 h-3 mr-1" /> {isRTL ? 'مُغْلَق' : 'Locked'}
                               </Badge>
                             )}
                           </div>
@@ -679,18 +673,19 @@ export default function ProgramOverviewPage() {
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-[#2D2A33]">
-                                      {isRTL ? `اِفْتَحي ${level.modules.length} وِحْدات` : `Unlock all ${level.modules.length} modules`}
+                                      {isRTL ? 'اِفْتَحي البَرْنامَجَ بِالكامِل' : 'Unlock the Full Program'}
                                     </p>
                                     <p className="text-[11px] text-[#8E8E9F]">
-                                      {isRTL ? 'دَفْعةٌ واحِدَةٌ — وُصولٌ دائِم' : 'One-time payment · lifetime access'}
+                                      {isRTL ? 'جَميعُ المُسْتَوَيات · دَفْعةٌ واحِدَة · وُصولٌ دائِم' : 'All levels · one payment · lifetime access'}
                                     </p>
                                   </div>
                                   <button
                                     onClick={() => handleUnlockLevel(level.level)}
-                                    className="px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all hover:shadow-md flex-shrink-0"
+                                    disabled={checkoutLoading}
+                                    className="px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all hover:shadow-md flex-shrink-0 disabled:opacity-50"
                                     style={{ backgroundColor: program.color }}
                                   >
-                                    CAD ${level.priceCAD ?? (level.level === 2 ? BUSINESS.academyLevelPrices.growth : BUSINESS.academyLevelPrices.mastery)}
+                                    CAD ${BUSINESS.academyFullAccessPrice}
                                   </button>
                                 </div>
                               )}
@@ -924,8 +919,8 @@ export default function ProgramOverviewPage() {
                   {!program.isFree && (
                     <p className="text-xs text-[#8E8E9F] text-center mt-3">
                       {isRTL
-                        ? `المُسْتَوى الأَوَّل مَجّاني · النّمو $${BUSINESS.academyLevelPrices.growth} · الإتْقان $${BUSINESS.academyLevelPrices.mastery}`
-                        : `Level 1 is free · Growth $${BUSINESS.academyLevelPrices.growth} · Mastery $${BUSINESS.academyLevelPrices.mastery}`}
+                        ? `المُسْتَوى الأَوَّل مَجّاني · الوُصولُ الكامِل $${BUSINESS.academyFullAccessPrice}`
+                        : `Level 1 is free · Full access $${BUSINESS.academyFullAccessPrice}`}
                     </p>
                   )}
                 </>

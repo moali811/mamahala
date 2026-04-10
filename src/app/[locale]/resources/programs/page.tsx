@@ -380,7 +380,7 @@ export default function ProgramsPage() {
                           <div className="flex items-center gap-3 text-xs text-[#8E8E9F]">
                             <span>{prog.modules} {isRTL ? 'وحدة' : 'modules'}</span>
                             <span>{prog.hours}h</span>
-                            <span>{prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `من $${BUSINESS.academyLevelPrices.growth}/مُسْتَوى` : `from $${BUSINESS.academyLevelPrices.growth}/level`)}</span>
+                            <span>{prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `من $${BUSINESS.academyFullAccessPrice}` : `from $${BUSINESS.academyFullAccessPrice}`)}</span>
                           </div>
                         </div>
                         <ArrowRight className="w-5 h-5 text-[#8E8E9F] flex-shrink-0 mt-2" />
@@ -463,7 +463,7 @@ export default function ProgramsPage() {
                       <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {prog.hours}h</span>
                       <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1"><Award className="w-3.5 h-3.5" /> {isRTL ? 'شهادة' : 'Certificate'}</span>
                       <span className="ml-auto text-sm font-bold" style={{ color: prog.color }}>
-                        {prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `من $${BUSINESS.academyLevelPrices.growth}/مُسْتَوى` : `from $${BUSINESS.academyLevelPrices.growth}/level`)}
+                        {prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `$${BUSINESS.academyFullAccessPrice}` : `$${BUSINESS.academyFullAccessPrice}`)}
                       </span>
                     </div>
                   </div>
@@ -802,7 +802,7 @@ export default function ProgramsPage() {
                         {isRTL ? 'L1 مجاني' : 'L1 Free'}
                       </span>
                       <span className="text-[10px] text-[#8E8E9F] tabular-nums">
-                        {`L2 $${BUSINESS.academyLevelPrices.growth} · L3 $${BUSINESS.academyLevelPrices.mastery}`}
+                        {`${isRTL ? 'الوُصول الكامِل' : 'Full access'} $${BUSINESS.academyFullAccessPrice}`}
                       </span>
                     </div>
                   </div>
@@ -893,8 +893,8 @@ export default function ProgramsPage() {
                           </span>
                           <span className="text-[10px] text-[#8E8E9F] tabular-nums">
                             {isRTL
-                              ? `L2 $${BUSINESS.academyLevelPrices.growth} · L3 $${BUSINESS.academyLevelPrices.mastery}`
-                              : `L2 $${BUSINESS.academyLevelPrices.growth} · L3 $${BUSINESS.academyLevelPrices.mastery}`}
+                              ? `الوُصولُ الكامِل $${BUSINESS.academyFullAccessPrice}`
+                              : `Full access $${BUSINESS.academyFullAccessPrice}`}
                           </span>
                         </div>
                       </td>
@@ -908,8 +908,8 @@ export default function ProgramsPage() {
               <Sparkles className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#C8A97D' }} />
               <span>
                 {isRTL
-                  ? 'كُلُّ برنامج يَبْدَأُ بمستوى أول مجاني. تُكْمِلينه، ثم تُقَرِّرين إنْ كُنْتِ تُريدين الاستمرار — الدفع عن كل مستوى على حِدَة.'
-                  : 'Every program starts with a free Level 1. Finish it, then decide if you want to continue — pay per level, no bundles, no subscriptions.'}
+                  ? 'كُلُّ برنامج يَبْدَأُ بمستوى أول مجاني. تُكْمِلينه، ثم تُقَرِّرين إنْ كُنْتِ تُريدين الاستمرار — دَفْعةٌ واحدةٌ لوُصولٍ كامِلٍ دائم.'
+                  : 'Every program starts with a free Level 1. Finish it, then decide if you want to continue — one payment for full lifetime access.'}
               </span>
             </div>
           </div>
@@ -964,12 +964,12 @@ export default function ProgramsPage() {
               },
               {
                 icon: <CheckCircle className="w-6 h-6" />,
-                label: isRTL ? 'اِبْدَئي مَجّاناً، اِدْفَعي مُسْتَوًى بِمُسْتَوى' : 'Start Free, Pay Level by Level',
+                label: isRTL ? 'اِبْدَئي مَجّاناً، ادْفَعي مَرَّةً واحِدَة' : 'Start Free, Pay Once',
                 desc: isRTL
-                  ? `المُسْتَوى الأَوَّلُ مَجّاني. النّموّ $${BUSINESS.academyLevelPrices.growth}، الإتقان $${BUSINESS.academyLevelPrices.mastery}. أو احصلي على الحزمة الكاملة بـ $${BUSINESS.academyBundlePrice} (وفّري ${BUSINESS.academyBundleSavings}%). لا اشتراكات.`
-                  : `Level 1 is free. Growth $${BUSINESS.academyLevelPrices.growth}, Mastery $${BUSINESS.academyLevelPrices.mastery}. Or get the full bundle for $${BUSINESS.academyBundlePrice} (save ${BUSINESS.academyBundleSavings}%). No subscriptions.`,
+                  ? `المُسْتَوى الأَوَّلُ مَجّاني. ثُمَّ دَفْعةٌ واحِدَةٌ بِـ $${BUSINESS.academyFullAccessPrice} تَفْتَحُ البَرْنامَجَ بِالكامِل — وُصولٌ مَدى الحَياة. لا اشْتِراكات.`
+                  : `Level 1 is free. Then one payment of $${BUSINESS.academyFullAccessPrice} unlocks the full program — lifetime access. No subscriptions.`,
                 color: '#3B8A6E',
-                tag: isRTL ? `L1 مجاني · حزمة $${BUSINESS.academyBundlePrice}` : `L1 free · bundle $${BUSINESS.academyBundlePrice}`,
+                tag: isRTL ? `L1 مجاني · كامِل $${BUSINESS.academyFullAccessPrice}` : `L1 free · full $${BUSINESS.academyFullAccessPrice}`,
               },
               {
                 icon: <GraduationCap className="w-6 h-6" />,
