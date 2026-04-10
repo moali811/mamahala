@@ -397,8 +397,8 @@ export const events: SmartEvent[] = [
     slug: 'bicultural-teen-identity',
     titleEn: 'Two Worlds, One You: Identity for Bicultural Teens',
     titleAr: 'عالَمانِ، شَخْصٌ واحِد: الهُويَّةُ لِلمُراهِقينَ ثُنائِيّي الثَّقافَة',
-    scenarioEn: "At school you're 'the Arab kid.' At home you're 'too Westernized.' At the mosque you feel like a tourist. You're tired of code-switching. Who are you when nobody's watching?",
-    scenarioAr: 'في المَدْرَسَة أَنْتَ "العَرَبيّ". في البَيْتِ أَنْتَ "مُتَغَرِّبٌ أَكْثَرَ مِنَ اللّازِم". في المَسْجِدِ تَشْعُرُ كَسائِح. أَنْتَ مُتْعَبٌ مِنْ تَبْديلِ الأَقْنِعَة. مَنْ تَكونُ حينَ لا يَنْظُرُ إِلَيْكَ أَحَد؟',
+    scenarioEn: "At school you're 'the foreign kid.' At home you're 'too Westernized.' With your own people, you feel like a tourist. You're tired of code-switching. Who are you when nobody's watching?",
+    scenarioAr: 'في المَدْرَسَة أَنْتَ "الغَريب". في البَيْتِ أَنْتَ "مُتَغَرِّبٌ أَكْثَرَ مِنَ اللّازِم". بَيْنَ أَهْلِكَ تَشْعُرُ كَسائِح. أَنْتَ مُتْعَبٌ مِنْ تَبْديلِ الأَقْنِعَة. مَنْ تَكونُ حينَ لا يَنْظُرُ إِلَيْكَ أَحَد؟',
     descriptionEn:
       'A workshop for teens (13–18) navigating dual cultures — building a self that doesn\'t shrink to fit either world.',
     descriptionAr:
