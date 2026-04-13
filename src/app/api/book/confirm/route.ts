@@ -150,14 +150,18 @@ export async function POST(request: NextRequest) {
     const manageToken = await createManageToken(bookingId);
 
     // ─── For free sessions: create GCal event + Meet link now ─
+    // Awaited so the Meet link is available before building the email
     if (isFreeSession) {
-      createCalendarEvent(booking).then(result => {
-        if (result) {
-          booking.calendarEventId = result.eventId;
-          if (result.meetLink) booking.meetLink = result.meetLink;
-          return saveBooking(booking);
+      try {
+        const calResult = await createCalendarEvent(booking);
+        if (calResult) {
+          booking.calendarEventId = calResult.eventId;
+          if (calResult.meetLink) booking.meetLink = calResult.meetLink;
+          await saveBooking(booking);
         }
-      }).catch(err => console.error('[Booking Confirm] GCal failed:', err));
+      } catch (err) {
+        console.error('[Booking Confirm] GCal failed:', err);
+      }
     }
 
     // ─── Generate AI prep tips (non-blocking) ────────────────

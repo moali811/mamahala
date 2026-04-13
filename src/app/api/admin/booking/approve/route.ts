@@ -132,7 +132,11 @@ async function processApproval(bookingId: string): Promise<{
         <p style="margin:0;font-size:12px;color:#4A4A5C;">This link will be active when your session starts.</p>
         <a href="${meetLink}" style="display:inline-block;margin-top:8px;padding:8px 20px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Google Meet</a>
       </div>
-      ` : ''}
+      ` : (booking.sessionMode === 'online' ? `
+      <div style="background:#FFFAF5;border-left:3px solid #C8A97D;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">
+        <p style="margin:0;font-size:13px;color:#4A4A5C;">Your video call link will be shared before the session via email and calendar invite.</p>
+      </div>
+      ` : '')}
     </div>
   </td></tr>
   <tr><td style="text-align:center;padding:20px 0;">

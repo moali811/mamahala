@@ -620,6 +620,10 @@ export function buildStatusConfirmedEmail(
         <p style="margin:0 0 10px;font-size:12px;color:#4A4A5C;">Your Google Meet link is ready.</p>
         <a href="${booking.meetLink}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Google Meet</a>
       </div>`
+    : booking.sessionMode === 'online'
+    ? `<div style="${styles.goldAccent}">
+        <p style="margin:0;font-size:13px;color:#4A4A5C;">Your video call link will be shared before the session via email and calendar invite.</p>
+      </div>`
     : '';
 
   const content = `

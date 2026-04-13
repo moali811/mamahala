@@ -259,7 +259,8 @@ export async function createCalendarEvent(
     );
 
     if (!res.ok) {
-      console.error(`[GCal] Event creation failed: ${res.status}`);
+      const errBody = await res.text().catch(() => '');
+      console.error(`[GCal] Event creation failed: ${res.status}`, errBody);
       return null;
     }
 
@@ -271,6 +272,14 @@ export async function createCalendarEvent(
       (ep: any) => ep.entryPointType === 'video',
     )?.uri ?? created.hangoutLink ?? undefined;
 
+    if (isOnline) {
+      console.log(`[GCal] Meet link: ${meetLink ?? 'NOT CREATED'}`, {
+        hasConferenceData: !!created.conferenceData,
+        entryPoints: created.conferenceData?.entryPoints?.length ?? 0,
+        hangoutLink: created.hangoutLink ?? 'none',
+      });
+    }
+
     // Store the mapping
     await setCalendarEventId(booking.bookingId, eventId).catch(() => {});
 
@@ -279,8 +288,8 @@ export async function createCalendarEvent(
     await setCachedBusySlots(date, []).catch(() => {});
 
     return { eventId, meetLink };
-  } catch (err) {
-    console.error('[GCal] Event creation error:', err);
+  } catch (err: any) {
+    console.error('[GCal] Event creation error:', err?.message ?? err, err?.stack);
     return null;
   }
 }
