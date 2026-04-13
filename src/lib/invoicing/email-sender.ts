@@ -104,22 +104,14 @@ function buildInvoiceEmailHtml(
         </table>
       </div>
 
-      ${(() => {
-        // Prefer dynamic checkout URL (exact invoice amount), fallback to static link
-        const payUrl = invoice.stripeCheckoutUrl || BUSINESS.stripePaymentLink;
-        if (!payUrl) return '';
-        const isDynamic = !!invoice.stripeCheckoutUrl;
-        return `
-      <!-- Pay Online — prominent, above payment instructions -->
+      ${invoice.stripeCheckoutUrl ? `
+      <!-- Pay Online — dynamic checkout with exact invoice amount -->
       <div style="background:#F0FAF5;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;">
         <p style="margin:0 0 4px;color:#3B8A6E;font-size:14px;font-weight:700;">Pay Securely Online</p>
-        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;">${isDynamic
-          ? `Pay <strong>${escapeHtml(bd.formattedTotal)}</strong> securely with card`
-          : 'The fastest way to confirm your session'}</p>
-        <a href="${payUrl}" style="display:inline-block;padding:16px 48px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:12px;font-size:16px;font-weight:700;letter-spacing:0.3px;">Pay ${isDynamic ? escapeHtml(bd.formattedTotal) : 'Online Now'}</a>
-        ${!isDynamic ? `<p style="margin:12px 0 0;color:#8E8E9F;font-size:11px;">Include invoice <strong>${escapeHtml(invoice.invoiceNumber)}</strong> in payment notes</p>` : ''}
-      </div>`;
-      })()}
+        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;">Pay <strong>${escapeHtml(bd.formattedTotal)}</strong> securely with card</p>
+        <a href="${invoice.stripeCheckoutUrl}" style="display:inline-block;padding:16px 48px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:12px;font-size:16px;font-weight:700;letter-spacing:0.3px;">Pay ${escapeHtml(bd.formattedTotal)}</a>
+      </div>
+      ` : ''}
 
       <!-- Other payment methods -->
       <div style="margin-bottom:20px;">
