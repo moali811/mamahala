@@ -275,9 +275,19 @@ h1, h2, h3, h4, h5, h6 {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slideInLeft {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
 /* Text balance for headings */
 @utility text-balance {
   text-wrap: balance;
+}
+
+/* Safe area padding for mobile bottom bars (iPhone notch) */
+@utility safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 /* Container */

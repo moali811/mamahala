@@ -25,6 +25,7 @@ import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import CounselorShareModal from '@/components/quiz/CounselorShareModal';
 import { generateSessionId } from '@/lib/quiz-share';
+import { getBookingUrl } from '@/config/business';
 
 // Map service slugs to their categories for building links
 const serviceCategories: Record<string, string> = {
@@ -474,7 +475,7 @@ export default function FamilyHarmonyQuizPage() {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Button
                         as="a"
-                        href={`/${locale}/book-a-session`}
+                        href={getBookingUrl(locale as string)}
                         size="lg"
                         icon={<Calendar className="w-5 h-5" />}
                       >

@@ -13,6 +13,7 @@ import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import CounselorShareModal from '@/components/quiz/CounselorShareModal';
 import { generateSessionId } from '@/lib/quiz-share';
+import { getBookingUrl } from '@/config/business';
 
 export default function WellbeingQuizPage() {
   const params = useParams();
@@ -208,7 +209,7 @@ export default function WellbeingQuizPage() {
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <Button
                       as="a"
-                      href={`/${locale}/book-a-session`}
+                      href={getBookingUrl(locale as string)}
                       size="lg"
                       icon={<Calendar className="w-5 h-5" />}
                     >

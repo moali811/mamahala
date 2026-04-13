@@ -14,6 +14,11 @@ export const BUSINESS = {
   email: 'admin@mamahala.ca',
   whatsappUrl: 'https://wa.me/16132222104',
 
+  // All admin email recipients — single source of truth.
+  // Used for BCC on client-facing emails (invoices, receipts) and
+  // direct delivery for admin notifications (booking alerts).
+  adminEmails: ['admin@mamahala.ca', 'mo.ali811@gmail.com'] as string[],
+
   location: 'Ottawa, Canada & Dubai, UAE',
   locationAr: 'أوتاوا، كندا ودبي، الإمارات',
 
@@ -61,6 +66,17 @@ export const BUSINESS = {
     snapchat: 'https://www.snapchat.com/add/mamahala.ca',
     telegram: 'https://t.me/+Ut1Xms3zRX5jMmNh',
   },
+  // ─── BOOKING SYSTEM — Phase 5 ───────────────────────────────
+  // 'native' = new booking page at /[locale]/book
+  // 'cal-com' = legacy Cal.com iframe at /[locale]/book-a-session
+  bookingMode: 'native' as 'native' | 'cal-com',
+
+  // ─── ONLINE PAYMENT — Stripe Payment Link ──────────────────
+  // Created in Stripe Dashboard → Payment Links → "Session Payment"
+  // Set up as a customer-chooses-amount link, or a fixed-amount link per tier.
+  // Clients see a branded Stripe page, pay by card, and Dr. Hala sees it in Stripe.
+  // No API key needed — this is just a URL.
+  stripePaymentLink: 'https://buy.stripe.com/bJebJ0dNk6857ohdYJawo0d',
 } as const;
 
 // Helper to get WhatsApp link with pre-filled message
@@ -74,4 +90,18 @@ export function getWhatsAppLink(message?: string, isRTL = false): string {
 export function getCalUrl(slug?: string, embed = false): string {
   const base = slug ? `${BUSINESS.calBaseUrl}/${slug}` : BUSINESS.calBaseUrl;
   return embed ? `${base}?embed=true&theme=light&layout=month_view` : base;
+}
+
+/**
+ * Smart booking URL — respects the bookingMode feature flag.
+ * Use this everywhere instead of hardcoding /book-a-session or /book.
+ *
+ * @param locale - Current locale ('en' or 'ar')
+ * @param serviceSlug - Optional service to pre-select (skips AI intake step)
+ */
+export function getBookingUrl(locale: string, serviceSlug?: string): string {
+  const basePath = BUSINESS.bookingMode === 'native' ? 'book' : 'book-a-session';
+  const base = `/${locale}/${basePath}`;
+  if (serviceSlug) return `${base}?service=${serviceSlug}`;
+  return base;
 }

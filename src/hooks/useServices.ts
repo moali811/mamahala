@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import type { Service, ServiceCategory } from '@/types';
-import { services as staticServices, serviceCategories, getServicePricing, getCategoryInfo } from '@/data/services';
+import { services as staticServices, serviceCategories, getServicePricingForRegion, getCategoryInfo } from '@/data/services';
 
 let globalServices: Service[] | null = null;
 let fetchPromise: Promise<void> | null = null;
@@ -54,6 +54,6 @@ export function useServices() {
     getServicesByCategory,
     getServiceCountByCategory,
     getCategoryInfo,
-    getServicePricing,
+    getServicePricingForRegion,
   };
 }

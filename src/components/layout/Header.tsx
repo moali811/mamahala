@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { serviceCategories } from '@/data/services';
 import { useServices } from '@/hooks/useServices';
+import { getBookingUrl } from '@/config/business';
 import type { Locale } from '@/types';
 
 interface HeaderProps {
@@ -420,7 +421,7 @@ export default function Header({ locale, messages }: HeaderProps) {
               </a>
 
               <Link
-                href={`/${locale}/book-a-session`}
+                href={getBookingUrl(locale as string)}
                 className="inline-flex items-center gap-1.5 rounded-full bg-[#7A3B5E] px-4 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-[#5E2D48] hover:shadow-[var(--shadow-glow-plum)] active:scale-[0.98]"
               >
                 <Calendar size={14} />
@@ -745,7 +746,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                   <div className="flex items-center gap-2">
                     {/* Book CTA — takes most space */}
                     <Link
-                      href={`/${locale}/book-a-session`}
+                      href={getBookingUrl(locale as string)}
                       onClick={() => setMobileOpen(false)}
                       className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] py-3 text-sm font-semibold text-white active:scale-[0.98] transition-transform"
                     >

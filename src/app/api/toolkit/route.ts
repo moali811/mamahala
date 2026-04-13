@@ -140,7 +140,7 @@ export async function POST(request: Request) {
                       ? 'هل تحتاجُ دعمًا شخصيًّا؟ محادثتُك الأولى مجّانيّة — 30 دقيقة بلا التزام.'
                       : 'Need personalized support? Your first conversation is free — 30 minutes, no commitment.'}
                   </p>
-                  <a href="https://mama-hala-website.vercel.app/${isAr ? 'ar' : 'en'}/book-a-session" style="display:inline-block;background:#7A3B5E;color:white;padding:12px 24px;border-radius:99px;text-decoration:none;font-size:14px;font-weight:600;">
+                  <a href="https://mama-hala-website.vercel.app/${isAr ? 'ar' : 'en'}/book" style="display:inline-block;background:#7A3B5E;color:white;padding:12px 24px;border-radius:99px;text-decoration:none;font-size:14px;font-weight:600;">
                     ${isAr ? 'احجِزْ استشارتَك المجّانيّة' : 'Book Your Free Consultation'}
                   </a>
                 </div>

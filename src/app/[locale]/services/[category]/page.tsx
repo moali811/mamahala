@@ -249,17 +249,20 @@ export default function ServiceCategoryPage() {
 
             return (
               <ScrollReveal key={service.slug}>
-                <div id={`service-${service.slug}`} className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-0 lg:gap-0 mb-12 lg:mb-20 bg-white rounded-3xl overflow-hidden border border-[#F3EFE8] hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)] transition-all duration-500`}>
+                <Link
+                  href={`/${locale}/services/${category}/${service.slug}`}
+                  id={`service-${service.slug}`}
+                  className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-0 lg:gap-0 mb-12 lg:mb-20 bg-white rounded-3xl overflow-hidden border border-[#F3EFE8] hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)] transition-all duration-500 group cursor-pointer`}
+                >
                   {/* Image */}
-                  <div className="relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-auto lg:min-h-[400px]">
+                  <div className="relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-auto lg:min-h-[400px] overflow-hidden">
                     <Image
                       src={imgSrc}
                       alt={sName}
                       fill
-                      className="object-cover"
+                      className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
                       sizes="(max-width: 1024px) 100vw, 50vw"
                     />
-                    {/* Gradient overlay for text readability on mobile */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent lg:hidden" />
                   </div>
 
@@ -272,20 +275,19 @@ export default function ServiceCategoryPage() {
                       >
                         {String(i + 1).padStart(2, '0')}
                       </span>
-                      <div className="flex items-center gap-2 text-xs text-[#8E8E9F]">
-                        <Clock className="w-3 h-3" />
-                        {service.duration}
-                        <span className="mx-1">·</span>
-                        {service.priceFrom === 0 ? (
-                          <span className="text-[#5A8B6F] font-medium">{isRTL ? 'مجّانيّة' : 'Free'}</span>
-                        ) : (
-                          <span>{isRTL ? `من ${service.priceFrom}$ كندي` : `From $${service.priceFrom} CAD`}</span>
-                        )}
+                      <div className="flex items-center gap-3 text-xs text-[#8E8E9F]">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {service.duration}
+                        </span>
+                        <span className="text-[#C8A97D] font-medium">
+                          {isRTL ? 'استشارة أولى مجانية' : 'Free first call'}
+                        </span>
                       </div>
                     </div>
 
                     <h3
-                      className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-3 leading-snug"
+                      className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-3 leading-snug group-hover:text-[#7A3B5E] transition-colors"
                       style={{ fontFamily: 'var(--font-heading)' }}
                     >
                       {sName}
@@ -296,22 +298,19 @@ export default function ServiceCategoryPage() {
                     </p>
 
                     <div>
-                      <Link
-                        href={`/${locale}/services/${category}/${service.slug}`}
-                        className={`inline-flex items-center gap-2 text-sm font-semibold text-[#7A3B5E] hover:text-[#5A2D47] transition-colors group`}
-                      >
+                      <span className={`inline-flex items-center gap-2 text-sm font-semibold text-[#7A3B5E] group-hover:text-[#5A2D47] transition-colors`}>
                         {messages.services.learnMore}
                         <ArrowIcon className={`w-4 h-4 transition-transform ${isRTL ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'}`} />
-                      </Link>
+                      </span>
                     </div>
                   </div>
-                </div>
+                </Link>
               </ScrollReveal>
             );
           })}
 
           <ScrollReveal className="text-center">
-            <p className="text-xs text-[#8E8E9F] italic">{messages.services.priceDisclaimer}</p>
+            <p className="text-xs text-[#8E8E9F] italic">{messages.services.personalizedDisclaimer}</p>
           </ScrollReveal>
         </div>
       </section>

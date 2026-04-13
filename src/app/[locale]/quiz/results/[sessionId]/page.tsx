@@ -9,6 +9,7 @@ import { Calendar, MessageCircle, Share2, Check, ArrowRight, ArrowLeft, External
 import { getMessages, type Locale } from '@/lib/i18n';
 import { getQuizName } from '@/lib/quiz-share';
 import Button from '@/components/ui/Button';
+import { getBookingUrl } from '@/config/business';
 
 interface SharedResult {
   name: string;
@@ -330,7 +331,7 @@ export default function ResultsPage() {
                   : 'Want to discuss your results with a qualified counselor?'}
               </p>
               <div className="flex flex-wrap justify-center gap-3">
-                <Button as="a" href={`/${locale}/book-a-session`} size="md" icon={<Calendar className="w-4 h-4" />}>
+                <Button as="a" href={getBookingUrl(locale as string)} size="md" icon={<Calendar className="w-4 h-4" />}>
                   {isRTL ? 'احجزْ جلسة' : 'Book a Session'}
                 </Button>
                 <Button as="a" href="https://wa.me/16132222104" target="_blank" variant="outline" size="md" icon={<MessageCircle className="w-4 h-4" />}>

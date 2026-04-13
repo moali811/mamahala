@@ -4,6 +4,7 @@ import { ArrowRight, ArrowLeft, MessageCircle } from 'lucide-react';
 import ScrollReveal from '@/components/motion/ScrollReveal';
 import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
+import { getBookingUrl } from '@/config/business';
 import type { Locale } from '@/types';
 
 interface FinalCTAProps {
@@ -59,7 +60,7 @@ export default function FinalCTA({
           <div className="flex flex-wrap justify-center gap-4 mt-10">
             <Button
               as="a"
-              href={primaryHref || `/${locale}/book-a-session`}
+              href={primaryHref || getBookingUrl(locale)}
               size="lg"
               icon={<ArrowIcon className="w-5 h-5" />}
             >

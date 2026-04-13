@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import { getBookingUrl } from '@/config/business';
 
 interface HookSlide {
   headline: string;
@@ -200,7 +201,7 @@ export default function HookCarousel({ locale, isRTL }: Props) {
                   transition={{ delay: 0.3 }}
                 >
                   <Link
-                    href={`/${locale}/book-a-session`}
+                    href={getBookingUrl(locale)}
                     className="inline-flex items-center gap-2 bg-[#7A3B5E] text-white font-semibold px-8 py-4 rounded-full hover:bg-[#5E2D48] transition-all shadow-lg shadow-[#7A3B5E]/20 hover:shadow-xl hover:shadow-[#7A3B5E]/30"
                   >
                     {isRTL ? 'ابدأ رحلتك' : 'Start Your Journey'}

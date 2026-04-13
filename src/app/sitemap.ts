@@ -33,7 +33,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '',
     '/about',
     '/services',
-    '/book-a-session',
+    '/book',
     '/quiz',
     '/contact',
     '/gift',

@@ -6,6 +6,8 @@ import { BUSINESS } from '@/config/business';
 import type { Locale } from '@/types';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import { RegionProvider } from '@/components/region/RegionProvider';
+import { getGeoFromHeaders } from '@/lib/region';
 
 // ---- Metadata (template for child pages) ----
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -45,6 +47,7 @@ export default async function LocaleLayout({
 
   const dir = getDirection(locale as Locale);
   const messages = getMessages(locale as Locale);
+  const { region: initialRegion, country: initialCountry } = await getGeoFromHeaders();
 
   return (
     <div dir={dir} className="flex flex-col min-h-screen">
@@ -62,13 +65,15 @@ export default async function LocaleLayout({
         Skip to content
       </a>
 
-      <Header locale={locale as Locale} messages={messages} />
+      <RegionProvider initialRegion={initialRegion} initialCountry={initialCountry}>
+        <Header locale={locale as Locale} messages={messages} />
 
-      <main id="main-content" className="flex-1 pt-16">
-        {children}
-      </main>
+        <main id="main-content" className="flex-1 pt-16">
+          {children}
+        </main>
 
-      <Footer locale={locale as Locale} messages={messages} />
+        <Footer locale={locale as Locale} messages={messages} />
+      </RegionProvider>
 
     </div>
   );

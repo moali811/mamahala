@@ -28,6 +28,7 @@ import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import CounselorShareModal from '@/components/quiz/CounselorShareModal';
 import { generateSessionId } from '@/lib/quiz-share';
+import { getBookingUrl } from '@/config/business';
 
 const domainIcons: Record<string, React.ReactNode> = {
   ClipboardList: <ClipboardList className="w-4 h-4" />,
@@ -461,7 +462,7 @@ export default function ExecutiveFunctionQuizPage() {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Button
                         as="a"
-                        href={`/${locale}/book-a-session`}
+                        href={getBookingUrl(locale as string)}
                         size="lg"
                         variant="plum"
                         icon={<Calendar className="w-5 h-5" />}

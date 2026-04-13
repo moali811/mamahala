@@ -16,6 +16,7 @@ import MyLearningButton from '@/components/academy/layout/MyLearningButton';
 import { t, tArray } from '@/lib/academy-helpers';
 import { fadeUp, staggerContainer, viewportOnce } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
+import { getBookingUrl } from '@/config/business';
 
 // Academy components
 import ReadingProgressBar from '@/components/academy/layout/ReadingProgressBar';
@@ -664,7 +665,7 @@ export default function ModuleLessonPage() {
               : 'Book a session with Dr. Hala to discuss how to apply what you\'ve learned to your unique situation.'}
           </p>
           <a
-            href={`/${locale}/book-a-session`}
+            href={getBookingUrl(locale as string)}
             className="inline-flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-semibold text-white transition-all hover:shadow-md"
             style={{ backgroundColor: program.color }}
           >

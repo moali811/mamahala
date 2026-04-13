@@ -7,7 +7,7 @@ export const generalFaqs: FAQ[] = [
     answer: 'A warm, no-pressure conversation to understand your needs and explore how we can support you. Your first consultation is free — 30 minutes, online.',
     answerAr: 'محادثةٌ دافئةٌ بلا ضغط لفَهْمِ احتياجاتِك واستكشافِ كيفَ نستطيعُ دعمَك. استشارتُك الأولى مجّانيّة — 30 دقيقة، عبر الإنترنت.',
     tag: 'Getting Started', tagAr: 'البداية',
-    link: { href: '/book-a-session', labelEn: 'Schedule your free consultation', labelAr: 'احجِزْ استشارتَك المجّانيّة' },
+    link: { href: '/book', labelEn: 'Schedule your free consultation', labelAr: 'احجِزْ استشارتَك المجّانيّة' },
   },
   {
     question: 'How long are sessions?',
@@ -45,7 +45,7 @@ export const generalFaqs: FAQ[] = [
     answer: 'Through our website (guided booking assistant), via WhatsApp, or through the contact form. The process takes under 2 minutes.',
     answerAr: 'عبر موقعِنا (مساعدُ الحجز الذكيّ)، أو واتساب، أو نموذج الاتّصال. تستغرقُ العمليّة أقلّ من دقيقتين.',
     tag: 'Booking', tagAr: 'الحجز',
-    link: { href: '/book-a-session', labelEn: 'Start booking now', labelAr: 'ابدأِ الحجزَ الآن' },
+    link: { href: '/book', labelEn: 'Start booking now', labelAr: 'ابدأِ الحجزَ الآن' },
   },
   {
     question: 'What is your cancellation policy?',
@@ -69,7 +69,7 @@ export const generalFaqs: FAQ[] = [
     answer: 'Your first conversation is completely free. After that, pricing is personalized based on your location, session format, and individual needs. We serve clients in Canada and the UAE/Gulf region. Sliding scale options are available for those who need them.',
     answerAr: 'محادثتُك الأولى مجّانيّةٌ تمامًا. بعد ذلك، يُحدَّدُ التسعيرُ بناءً على موقعِك وصيغةِ الجلسةِ واحتياجاتِك الفرديّة. نخدمُ العملاءَ في كندا ومنطقةِ الإماراتِ والخليج. خياراتُ أسعارٍ مُخفَّضة متاحةٌ لمَنْ يحتاجُها.',
     tag: 'Pricing', tagAr: 'الأسعار',
-    link: { href: '/book-a-session', labelEn: 'See pricing details', labelAr: 'عرضُ تفاصيلِ الأسعار' },
+    link: { href: '/book', labelEn: 'See pricing details', labelAr: 'عرضُ تفاصيلِ الأسعار' },
   },
   {
     question: 'Where are you located?',

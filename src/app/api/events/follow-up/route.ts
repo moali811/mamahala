@@ -102,7 +102,7 @@ function generateFollowUpEmail(
   siteUrl: string,
 ): string {
   const title = event.titleEn;
-  const bookingUrl = `${siteUrl}/en/book-a-session?utm_source=event&utm_medium=email&utm_campaign=${event.slug}-followup`;
+  const bookingUrl = `${siteUrl}/en/book?utm_source=event&utm_medium=email&utm_campaign=${event.slug}-followup`;
   const serviceUrl = relatedService
     ? `${siteUrl}/en/services/${relatedService.category}/${relatedService.slug}?utm_source=event&utm_medium=email&utm_campaign=${event.slug}-followup`
     : null;

@@ -10,7 +10,7 @@ import {
   BookOpen, GraduationCap, CalendarDays, Download, HelpCircle, Sparkles, PenLine,
 } from 'lucide-react';
 import { SnapchatIcon, TelegramIcon, TiktokIcon } from '@/components/icons/SocialIcons';
-import { BUSINESS } from '@/config/business';
+import { BUSINESS, getBookingUrl } from '@/config/business';
 import type { Locale } from '@/types';
 
 interface FooterProps {
@@ -65,7 +65,7 @@ export default function Footer({ locale, messages }: FooterProps) {
   const quickLinks = [
     { label: isRTL ? 'من نحن' : 'About', href: `/${locale}/about` },
     { label: isRTL ? 'تواصل معنا' : 'Contact', href: `/${locale}/contact` },
-    { label: isRTL ? 'احجز جلسة' : 'Book a Session', href: `/${locale}/book-a-session` },
+    { label: isRTL ? 'احجز جلسة' : 'Book a Session', href: getBookingUrl(locale) },
     { label: isRTL ? 'هديّةُ رعاية' : 'Gift of Care', href: `/${locale}/gift` },
     { label: isRTL ? 'اكتشِفْ ما يناسبُك' : 'Find Your Fit', href: `/${locale}/quiz` },
   ];

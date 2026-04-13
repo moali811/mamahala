@@ -16,6 +16,7 @@ import { services } from '@/data/services';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
+import { getBookingUrl } from '@/config/business';
 
 interface QuizAnswer {
   question: number;
@@ -382,7 +383,7 @@ export default function QuizPage() {
                       <Badge variant="neutral" size="sm">{service.duration}</Badge>
                     </div>
                     <div className="flex gap-3 mt-5">
-                      <Button as="a" href={`/${locale}/book-a-session`} size="sm" icon={<Calendar className="w-4 h-4" />}>
+                      <Button as="a" href={getBookingUrl(locale as string)} size="sm" icon={<Calendar className="w-4 h-4" />}>
                         {messages.services.bookOnline}
                       </Button>
                       <Button

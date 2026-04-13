@@ -3,6 +3,14 @@
    ================================================================ */
 
 import type { Service, ServiceCategory, ServiceCategoryInfo } from '@/types';
+import {
+  PRICING_TIERS,
+  REGIONS,
+  getAnchor,
+  type Region,
+  type SessionMode,
+  type PricingTierKey,
+} from '@/config/pricing';
 
 export const serviceCategories: ServiceCategoryInfo[] = [
   {
@@ -68,11 +76,29 @@ export const serviceCategories: ServiceCategoryInfo[] = [
 ];
 
 export const services: Service[] = [
-  // NOTE: Online/Phone Consultation is NOT a category service.
-  // It's the universal entry point — handled separately via "Start Here" banners
-  // and the booking page. Cal.com slugs:
-  //   - initial-consultation (free, 30 min, new clients)
-  //   - online-consultation ($100, 30 min, returning clients)
+  // ---- UNIVERSAL ENTRY POINT (free discovery call) ----
+  {
+    slug: 'initial-consultation',
+    name: 'Free Consultation',
+    nameAr: 'استشارة مجانية',
+    description: 'A complimentary 30-minute online discovery session for new clients. Meet Dr. Hala, share your goals, and explore how counseling can support you.',
+    descriptionAr: 'جلسةُ تعارفٍ مجّانيّة عبر الإنترنت لمدّة 30 دقيقة للعملاء الجدد. تعرّفْ على د. هالة، شاركْ أهدافَك، واكتشفْ كيف يمكنُ للاستشارةِ أن تدعمَك.',
+    shortDesc: 'Free 30-minute discovery session for new clients.',
+    shortDescAr: 'جلسةُ تعارفٍ مجّانيّة لمدّة 30 دقيقة للعملاء الجدد.',
+    category: 'adults',
+    priceFrom: 0,
+    currency: 'CAD',
+    duration: '30 min',
+    pricingTierKey: 'discoveryCall30min',
+    icon: 'Heart',
+    whoIsThisFor: ['New clients exploring counseling for the first time', 'Anyone wanting to connect with Dr. Hala before committing'],
+    whoIsThisForAr: ['العملاءُ الجددُ الذين يستكشفونَ الاستشارةَ لأوّلِ مرّة', 'أيُّ شخصٍ يرغبُ في التّواصلِ مع د. هالة قبلَ الالتزام'],
+    whatToExpect: ['Warm, no-pressure conversation', 'Brief needs assessment', 'Personalized service recommendation'],
+    whatToExpectAr: ['محادثةٌ دافئةٌ بدونِ ضغط', 'تقييمٌ موجزٌ للاحتياجات', 'توصيةٌ شخصيّةٌ بالخدمة'],
+    approach: 'A relaxed conversation to understand your needs and how Dr. Hala can best support you.',
+    approachAr: 'محادثةٌ مريحةٌ لفهمِ احتياجاتِك وكيف يمكنُ لد. هالة أن تدعمَك بأفضلِ طريقة.',
+    faqs: [],
+  },
 
   // ---- YOUTH ----
   {
@@ -84,9 +110,10 @@ export const services: Service[] = [
     shortDesc: 'Addressing risky behaviors and building healthier patterns for teens.',
     shortDescAr: 'معالجةُ السّلوكيّاتِ الخَطِرةِ وبناءُ أنماطٍ أصحَّ للمراهقين.',
     category: 'youth',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Shield',
     image: '/images/services/teen-behavioral.jpg',
     whoIsThisFor: [
@@ -135,9 +162,10 @@ export const services: Service[] = [
     shortDesc: 'Building confidence and healthy friendship patterns.',
     shortDescAr: 'بناءُ الثّقةِ وأنماطِ الصّداقةِ السّليمة.',
     category: 'youth',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Users',
     image: '/images/services/social-confidence.jpg',
     whoIsThisFor: ['Shy or withdrawn children', 'Teens struggling to make friends', 'Children with social anxiety', 'Kids experiencing social exclusion'],
@@ -157,9 +185,10 @@ export const services: Service[] = [
     shortDesc: 'Age-appropriate counseling for emotional and behavioral challenges.',
     shortDescAr: 'استشاراتٌ ملائمةٌ للعمرِ لمواجهةِ التّحدّياتِ الوجدانيّةِ والسّلوكيّة.',
     category: 'youth',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Baby',
     image: '/images/services/under18-counseling.jpg',
     whoIsThisFor: ['Children experiencing emotional distress', 'Teens dealing with anxiety or depression', 'Young people navigating difficult life changes', 'Parents seeking professional support for their child'],
@@ -179,9 +208,10 @@ export const services: Service[] = [
     shortDesc: 'Helping children navigate major life transitions with resilience.',
     shortDescAr: 'مساعدةُ الأطفالِ على تجاوزِ التّحوّلاتِ الحياتيّةِ الكبرى بمرونة.',
     category: 'youth',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Compass',
     image: '/images/services/child-big-change.jpg',
     whoIsThisFor: ['Children going through parental separation', 'Kids adjusting to a new school or country', 'Children dealing with loss or grief', 'Families experiencing significant transitions'],
@@ -201,9 +231,10 @@ export const services: Service[] = [
     shortDesc: 'Evidence-based CBT adapted for children and teens.',
     shortDescAr: 'علاجٌ معرفيٌّ سلوكيٌّ قائمٌ على الأدلّةِ مُكيَّفٌ للأطفالِ والمراهقين.',
     category: 'youth',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Brain',
     image: '/images/services/teen-emotional.jpg',
     whoIsThisFor: ['Children with anxiety or worry patterns', 'Teens with negative self-talk', 'Young people with phobias or fears', 'Adolescents dealing with OCD tendencies'],
@@ -223,9 +254,10 @@ export const services: Service[] = [
     shortDesc: 'Comprehensive support for children experiencing bullying.',
     shortDescAr: 'دعمٌ شاملٌ للأطفالِ الذين يتعرّضونَ للتّنمّر.',
     category: 'youth',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'ShieldCheck',
     image: '/images/services/bullying-support.jpg',
     whoIsThisFor: ['Children being bullied at school', 'Teens experiencing cyberbullying', 'Parents seeking guidance on bullying situations', 'Children who have become withdrawn due to bullying'],
@@ -245,9 +277,10 @@ export const services: Service[] = [
     shortDesc: 'Effective strategies for understanding intense emotions.',
     shortDescAr: 'استراتيجيّاتٌ فعّالةٌ لفهمِ المشاعرِ الجيّاشة.',
     category: 'youth',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Flame',
     image: '/images/services/managing-emotions.jpg',
     whoIsThisFor: ['Children who have frequent meltdowns', 'Teens struggling with emotional regulation', 'Parents overwhelmed by their child\'s emotional intensity', 'Families seeking calm and connection'],
@@ -269,9 +302,10 @@ export const services: Service[] = [
     shortDesc: 'Building stronger bonds through communication and respect.',
     shortDescAr: 'بناءُ روابطَ أمتنَ من خلالِ التّواصلِ والاحترام.',
     category: 'families',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'HeartHandshake',
     image: '/images/services/family-strengthening.jpg',
     whoIsThisFor: ['Families experiencing communication breakdown', 'Parents and teens in conflict', 'Blended families adjusting to new dynamics', 'Families wanting to deepen their connection'],
@@ -291,9 +325,10 @@ export const services: Service[] = [
     shortDesc: 'Evidence-based coaching for confident, effective parenting.',
     shortDescAr: 'توجيهٌ قائمٌ على الأدلّةِ لتربيةٍ واثقةٍ وفعّالة.',
     category: 'families',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'BookOpen',
     image: '/images/services/parenting-coaching.jpg',
     whoIsThisFor: ['New parents seeking guidance', 'Parents dealing with behavioral challenges', 'Caregivers wanting to improve their parenting approach', 'Parents going through separation who need co-parenting strategies'],
@@ -313,9 +348,10 @@ export const services: Service[] = [
     shortDesc: 'Practical strategies for reducing tantrums and creating peace.',
     shortDescAr: 'استراتيجيّاتٌ عمليّةٌ للحدِّ من نوباتِ الغضبِ وبثِّ السّكينة.',
     category: 'families',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'CloudLightning',
     image: '/images/services/child-tantrums.jpg',
     whoIsThisFor: ['Parents of toddlers and young children', 'Caregivers dealing with frequent meltdowns', 'Parents feeling overwhelmed by tantrums', 'Families seeking calmer daily routines'],
@@ -335,9 +371,10 @@ export const services: Service[] = [
     shortDesc: 'Managing stress and preventing burnout for parents.',
     shortDescAr: 'إدارةُ الضّغطِ والوقايةُ من الاحتراقِ النّفسيّ للآباء.',
     category: 'families',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Flower2',
     image: '/images/services/parental-wellbeing.jpg',
     whoIsThisFor: ['Overwhelmed or burned-out parents', 'Parents dealing with guilt or self-doubt', 'Caregivers balancing multiple demands', 'Parents going through difficult personal transitions'],
@@ -359,9 +396,10 @@ export const services: Service[] = [
     shortDesc: 'Specialized support for managing anxiety and worry.',
     shortDescAr: 'دعمٌ متخصّصٌ لإدارةِ القلقِ والتّوتّر.',
     category: 'adults',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Wind',
     image: '/images/services/anxiety-counseling.jpg',
     whoIsThisFor: ['Adults experiencing chronic anxiety', 'Individuals with panic attacks', 'People with social anxiety', 'Those dealing with generalized worry'],
@@ -381,9 +419,10 @@ export const services: Service[] = [
     shortDesc: 'Healthy strategies for understanding and managing anger.',
     shortDescAr: 'استراتيجيّاتٌ سليمةٌ لفهمِ الغضبِ وإدارتِه.',
     category: 'adults',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Flame',
     image: '/images/services/anger-management.jpg',
     whoIsThisFor: ['Adults struggling with anger outbursts', 'Individuals whose anger affects relationships', 'People seeking healthier emotional expression', 'Those referred for anger management support'],
@@ -406,6 +445,7 @@ export const services: Service[] = [
     priceFrom: 120,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'universityStudent50min',
     icon: 'GraduationCap',
     whoIsThisFor: ['University students feeling overwhelmed', 'Young adults navigating identity and independence', 'Students dealing with academic pressure', 'Young people struggling with life direction'],
     whoIsThisForAr: ['طلّابُ الجامعاتِ الذين يشعرونَ بالإرهاق', 'الشّبابُ الذين يستكشفونَ هويّتَهم واستقلاليّتَهم', 'الطّلّابُ الذين يواجهونَ الضّغطَ الأكاديميّ', 'الشّبابُ الذين يفتقرونَ إلى بوصلةٍ في حياتِهم'],
@@ -424,9 +464,10 @@ export const services: Service[] = [
     shortDesc: 'Improve organization, time management, and focus.',
     shortDescAr: 'تحسينُ التّنظيمِ وإدارةِ الوقتِ والتّركيز.',
     category: 'adults',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Zap',
     image: '/images/services/adhd-coaching.jpg',
     whoIsThisFor: ['Adults diagnosed with ADHD/ADD', 'Individuals struggling with executive function', 'People having difficulty with organization or time management', 'Those who feel chronically overwhelmed by daily tasks'],
@@ -446,9 +487,10 @@ export const services: Service[] = [
     shortDesc: 'Holistic coaching for a balanced, fulfilling lifestyle.',
     shortDescAr: 'توجيهٌ شاملٌ لنمطِ حياةٍ متوازنٍ ومُشبِع.',
     category: 'adults',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Sparkles',
     image: '/images/services/lifestyle-coaching.jpg',
     whoIsThisFor: ['Adults seeking life balance', 'Individuals at a crossroads', 'People wanting to align their life with their values', 'Those seeking holistic personal development'],
@@ -468,9 +510,10 @@ export const services: Service[] = [
     shortDesc: 'Goal-oriented coaching for personal and professional growth.',
     shortDescAr: 'توجيهٌ مُوجَّهٌ نحوَ الأهدافِ للنّموِّ الشّخصيّ والمهنيّ.',
     category: 'adults',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Target',
     image: '/images/services/life-coaching.jpg',
     whoIsThisFor: ['Adults with goals they struggle to achieve', 'Individuals facing career transitions', 'People wanting accountability and structure', 'Those feeling stuck in life'],
@@ -490,9 +533,10 @@ export const services: Service[] = [
     shortDesc: 'Empowering growth through self-awareness and skill building.',
     shortDescAr: 'تمكينُ النّموِّ من خلالِ الوعيِ الذّاتيّ وبناءِ المهارات.',
     category: 'adults',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'TrendingUp',
     image: '/images/services/self-development.jpg',
     whoIsThisFor: ['Individuals wanting to grow personally', 'Adults building confidence or assertiveness', 'People developing emotional intelligence', 'Those seeking greater self-understanding'],
@@ -514,9 +558,10 @@ export const services: Service[] = [
     shortDesc: 'Building a strong foundation before marriage.',
     shortDescAr: 'بناءُ أساسٍ متينٍ قبلَ الزّواج.',
     category: 'couples',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Gem',
     image: '/images/services/premarital.jpg',
     whoIsThisFor: ['Engaged couples', 'Couples planning to marry', 'Partners wanting to strengthen their foundation', 'Couples from different cultural backgrounds'],
@@ -536,9 +581,10 @@ export const services: Service[] = [
     shortDesc: 'Comprehensive counseling for healthier, lasting relationships.',
     shortDescAr: 'استشاراتٌ شاملةٌ لعلاقاتٍ أكثرَ صحّةً واستمرارًا.',
     category: 'couples',
-    priceFrom: 180,
+    priceFrom: 150,
     currency: 'CAD',
     duration: '50 min',
+    pricingTierKey: 'standard50min',
     icon: 'Heart',
     image: '/images/services/couple-counseling.jpg',
     whoIsThisFor: ['Couples experiencing communication breakdown', 'Partners dealing with trust issues', 'Couples navigating major life transitions together', 'Partners wanting to reconnect and deepen their bond'],
@@ -563,7 +609,8 @@ export const services: Service[] = [
     priceFrom: 180,
     currency: 'CAD',
     duration: '60 min',
-    icon: 'Flower2',
+    pricingTierKey: 'experiential60min',
+    icon:'Flower2',
     image: '/images/services/plant-therapy.jpg',
     whoIsThisFor: ['Nature lovers seeking therapeutic support', 'Individuals with anxiety or depression', 'People who find traditional talk therapy challenging', 'Anyone seeking a calming, creative therapeutic experience'],
     whoIsThisForAr: ['مُحبّو الطّبيعةِ الباحثونَ عن دعمٍ علاجيّ', 'الأفرادُ الذين يُعانونَ من القلقِ أو الاكتئاب', 'الأشخاصُ الذين يجدونَ العلاجَ بالكلامِ التّقليديّ صعبًا', 'كلُّ مَن يبحثُ عن تجربةٍ علاجيّةٍ هادئةٍ وإبداعيّة'],
@@ -585,7 +632,8 @@ export const services: Service[] = [
     priceFrom: 180,
     currency: 'CAD',
     duration: '60 min',
-    icon: 'TreePine',
+    pricingTierKey: 'experiential60min',
+    icon:'TreePine',
     image: '/images/services/walk-talk-therapy.jpg',
     whoIsThisFor: ['People who feel confined in traditional office settings', 'Active individuals who think better while moving', 'Those dealing with mild anxiety or stress', 'Anyone seeking a more natural therapeutic experience'],
     whoIsThisForAr: ['الأشخاصُ الذين يشعرونَ بالضّيقِ في البيئاتِ المكتبيّةِ التّقليديّة', 'الأفرادُ النّشيطونَ الذين يُفكّرونَ بصورةٍ أفضلَ أثناءَ الحركة', 'مَن يواجهونَ قلقًا أو توتّرًا خفيفًا', 'كلُّ مَن يبحثُ عن تجربةٍ علاجيّةٍ أكثرَ طبيعيّة'],
@@ -600,7 +648,12 @@ export const services: Service[] = [
 // ---- Helper Functions ----
 
 export function getServicesByCategory(category: ServiceCategory): Service[] {
-  return services.filter((s) => s.category === category);
+  return services.filter((s) => s.category === category && s.slug !== 'initial-consultation');
+}
+
+/** The free discovery call — standalone, not part of any category. */
+export function getFreeConsultation(): Service | undefined {
+  return services.find((s) => s.slug === 'initial-consultation');
 }
 
 export function getServiceBySlug(slug: string): Service | undefined {
@@ -619,107 +672,54 @@ export function getAllServiceSlugs(): { category: ServiceCategory; slug: string 
   return services.map((s) => ({ category: s.category, slug: s.slug }));
 }
 
-/* ─── Multi-Region Pricing ─── */
-// Based on fee structure: Standard vs Complex, Online vs In-Person
+/* ─── Services Pricing (simplified) ─── */
+// Source of truth: src/config/pricing.ts
+// Services reference a tier by key. This module exposes one helper to resolve
+// the pricing view-model for ONE region at a time.
 
-export interface PricingTier {
-  label: string;
-  labelAr: string;
-  online: string;
-  inPerson: string;
+export interface ResolvedServicePriceRow {
+  mode: SessionMode;
+  anchor: number;
 }
 
-export interface RegionPricing {
-  region: string;
-  regionAr: string;
-  flag: string;
-  currency: string;
-  symbol: string;
-  tiers: PricingTier[];
+export interface ResolvedServicePrice {
+  tierKey: PricingTierKey;
+  durationMinutes: number;
+  region: Region;
+  regionLabelEn: string;
+  regionLabelAr: string;
+  currencyCode: Region;
+  currencySymbol: string;
+  /** Rows to render. Empty means the service has no billable modes in this region. */
+  rows: ResolvedServicePriceRow[];
 }
 
 /**
- * Returns regional pricing for a given service based on its duration and complexity.
- * Pricing tiers derived from official fee schedule.
+ * Returns the pricing view-model for one service in one region.
+ * Safely falls back to 'standard50min' if a CMS-stored service is missing its tier key.
  */
-export function getServicePricing(service: Service): RegionPricing[] {
-  // 30-min consultation (entry-level)
-  if (service.slug === 'online-consultation') {
-    return [
-      {
-        region: 'Canada & USA', regionAr: 'كَنَدا والولايات المتحدة', flag: '🇨🇦',
-        currency: 'CAD', symbol: 'CA$',
-        tiers: [
-          { label: 'Standard', labelAr: 'قياسيّة', online: '100–150', inPerson: '150–200' },
-        ],
-      },
-      {
-        region: 'UAE & Gulf', regionAr: 'الإمارات والخليج', flag: '🇦🇪',
-        currency: 'AED', symbol: 'AED',
-        tiers: [
-          { label: 'Standard', labelAr: 'قياسيّة', online: '300–450', inPerson: '500–650' },
-        ],
-      },
-    ];
-  }
+export function getServicePricingForRegion(
+  service: Pick<Service, 'pricingTierKey'>,
+  region: Region,
+): ResolvedServicePrice {
+  const tierKey: PricingTierKey = service.pricingTierKey ?? 'standard50min';
+  const tier = PRICING_TIERS[tierKey];
+  const meta = REGIONS[region];
 
-  // University students (discounted)
-  if (service.slug === 'university-student-session') {
-    return [
-      {
-        region: 'Canada & USA', regionAr: 'كَنَدا والولايات المتحدة', flag: '🇨🇦',
-        currency: 'CAD', symbol: 'CA$',
-        tiers: [
-          { label: 'Standard', labelAr: 'قياسيّة', online: '120–160', inPerson: '160–200' },
-        ],
-      },
-      {
-        region: 'UAE & Gulf', regionAr: 'الإمارات والخليج', flag: '🇦🇪',
-        currency: 'AED', symbol: 'AED',
-        tiers: [
-          { label: 'Standard', labelAr: 'قياسيّة', online: '350–500', inPerson: '500–700' },
-        ],
-      },
-    ];
-  }
+  const rows: ResolvedServicePriceRow[] = [];
+  const online = getAnchor(tierKey, region, 'online');
+  const inPerson = getAnchor(tierKey, region, 'inPerson');
+  if (online !== null && online > 0) rows.push({ mode: 'online', anchor: online });
+  if (inPerson !== null && inPerson > 0) rows.push({ mode: 'inPerson', anchor: inPerson });
 
-  // Experiential therapy (60-min, nature-based)
-  if (service.category === 'experiential') {
-    return [
-      {
-        region: 'Canada & USA', regionAr: 'كَنَدا والولايات المتحدة', flag: '🇨🇦',
-        currency: 'CAD', symbol: 'CA$',
-        tiers: [
-          { label: 'Standard', labelAr: 'قياسيّة', online: '—', inPerson: '180–250' },
-        ],
-      },
-      {
-        region: 'UAE & Gulf', regionAr: 'الإمارات والخليج', flag: '🇦🇪',
-        currency: 'AED', symbol: 'AED',
-        tiers: [
-          { label: 'Standard', labelAr: 'قياسيّة', online: '—', inPerson: '550–900' },
-        ],
-      },
-    ];
-  }
-
-  // All other 50-min sessions (standard counseling/coaching)
-  return [
-    {
-      region: 'Canada & USA', regionAr: 'كَنَدا والولايات المتحدة', flag: '🇨🇦',
-      currency: 'CAD', symbol: 'CA$',
-      tiers: [
-        { label: 'Standard', labelAr: 'قياسيّة', online: '180–220', inPerson: '200–250' },
-        { label: 'Complex', labelAr: 'مُعقّدة', online: '220–260', inPerson: '250–300' },
-      ],
-    },
-    {
-      region: 'UAE & Gulf', regionAr: 'الإمارات والخليج', flag: '🇦🇪',
-      currency: 'AED', symbol: 'AED',
-      tiers: [
-        { label: 'Standard', labelAr: 'قياسيّة', online: '500–700', inPerson: '650–900' },
-        { label: 'Complex', labelAr: 'مُعقّدة', online: '700–1,000', inPerson: '900–1,500' },
-      ],
-    },
-  ];
+  return {
+    tierKey,
+    durationMinutes: tier.durationMinutes,
+    region,
+    regionLabelEn: meta.labelEn,
+    regionLabelAr: meta.labelAr,
+    currencyCode: meta.code,
+    currencySymbol: meta.symbol,
+    rows,
+  };
 }

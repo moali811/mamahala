@@ -51,14 +51,12 @@
     "learnMore": "Learn More",
     "viewAll": "View All Services",
     "priceFrom": "From",
-    "priceDisclaimer": "Pricing reflects the depth and duration of support. Final rates are personalized during your consultation.",
+    "startingAt": "Starting at",
+    "personalizedDisclaimer": "Sessions are personalized — final rate confirmed during your free 30-minute discovery call.",
+    "regionToggleLabel": "Region",
     "perSession": "per session",
     "online": "Online",
     "inPerson": "In-Person",
-    "standardLabel": "Standard",
-    "complexLabel": "Complex",
-    "standardTooltip": "Individual sessions, general topics",
-    "complexTooltip": "Multi-party, high-conflict, or specialized needs",
     "whoIsThisFor": "Who Is This For?",
     "whatToExpect": "What to Expect",
     "ourApproach": "Our Approach",
@@ -230,5 +228,94 @@
     "share": "Share",
     "minutes": "min",
     "home": "Home"
+  },
+  "book": {
+    "title": "Book a Session",
+    "intake": {
+      "title": "How Can We Help?",
+      "subtitle": "Describe what's on your mind and our AI assistant will recommend the best service for you.",
+      "placeholder": "Tell us what you're going through...",
+      "analyze": "Get Recommendations",
+      "analyzing": "Analyzing...",
+      "firstTime": "First time with Dr. Hala?",
+      "firstTimeCta": "Yes, Book Consultation",
+      "skip": "I know what I need — skip to services",
+      "recommended": "Recommended for You",
+      "match": "match"
+    },
+    "service": {
+      "title": "Choose a Service",
+      "from": "from",
+      "min": "min"
+    },
+    "datetime": {
+      "title": "Pick a Date & Time",
+      "morning": "Morning",
+      "afternoon": "Afternoon",
+      "evening": "Evening",
+      "noSlots": "No available slots for this day",
+      "greatTime": "Great time for your timezone"
+    },
+    "info": {
+      "title": "Your Information",
+      "name": "Full Name",
+      "email": "Email",
+      "phone": "Phone (optional)",
+      "mode": "Session Mode",
+      "online": "Online",
+      "inPerson": "In-Person",
+      "notes": "Notes (optional)",
+      "notesPlaceholder": "Anything you'd like to share beforehand...",
+      "next": "Next — Review Booking"
+    },
+    "confirm": {
+      "title": "Confirm Your Booking",
+      "button": "Confirm Booking",
+      "confirming": "Confirming..."
+    },
+    "success": {
+      "title": "You're All Set!",
+      "subtitle": "Booking details and a calendar file have been sent to your email.",
+      "addCalendar": "Add to Calendar",
+      "manage": "Manage Booking",
+      "bookAnother": "Book Another Session",
+      "prepTitle": "Prepare for Your Session"
+    },
+    "manage": {
+      "title": "Booking Details",
+      "reschedule": "Reschedule",
+      "cancel": "Cancel",
+      "pickNewTime": "Pick a New Time",
+      "confirmCancel": "Confirm Cancel",
+      "cancelReason": "Reason for cancellation (optional)...",
+      "areYouSure": "Are you sure?",
+      "done": "Done!",
+      "doneMessage": "An update has been sent to your email.",
+      "bookNew": "Book a New Session"
+    },
+    "back": "Back"
+  },
+  "account": {
+    "title": "My Account",
+    "loginSubtitle": "Enter your email and we'll send you a login link.",
+    "sendLink": "Send Login Link",
+    "checkEmail": "Check Your Email!",
+    "sentTo": "We sent a login link to",
+    "noAccount": "No account yet?",
+    "bookFirst": "Book a session",
+    "welcome": "Welcome",
+    "tabs": {
+      "upcoming": "Upcoming",
+      "history": "History",
+      "receipts": "Receipts"
+    },
+    "empty": {
+      "upcoming": "No upcoming sessions",
+      "history": "No past sessions",
+      "receipts": "No receipts yet"
+    },
+    "bookSession": "Book Session",
+    "bookFirst": "Book Your First Session",
+    "bookAgain": "Book Again"
   }
 }

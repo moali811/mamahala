@@ -43,6 +43,7 @@ import EmpathySlideshow from '@/components/home/EmpathySlideshow';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
+import { getBookingUrl } from '@/config/business';
 
 // Icon mapping
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -148,7 +149,7 @@ function GuidedScenarioFlow({
                   {isRTL ? <ArrowLeft className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
                 </Link>
                 <Link
-                  href={`/${locale}/book-a-session`}
+                  href={getBookingUrl(locale as string)}
                   className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full border-2 border-[#7A3B5E] text-[#7A3B5E] font-semibold hover:bg-[#7A3B5E]/5 transition-all duration-300 text-[15px]"
                 >
                   <Calendar className="w-4 h-4" />
@@ -171,7 +172,7 @@ function GuidedScenarioFlow({
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Link
-                  href={`/${locale}/book-a-session`}
+                  href={getBookingUrl(locale as string)}
                   className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-[#7A3B5E] text-white font-semibold hover:bg-[#5E2D48] transition-all duration-300 text-[15px]"
                 >
                   <Calendar className="w-4 h-4" />

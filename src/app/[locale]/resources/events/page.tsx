@@ -129,13 +129,19 @@ export default function EventsPage() {
                 <div className="w-7 h-7 rounded-lg bg-[#C8A97D]/20 flex items-center justify-center">
                   <Compass className="w-3.5 h-3.5 text-[#C8A97D]" />
                 </div>
-                <div className="text-[9px] font-bold uppercase tracking-wider text-[#C8A97D]">Summer Program</div>
+                <div className="text-[9px] font-bold uppercase tracking-wider text-[#C8A97D]">
+                  {isRTL ? 'بَرْنامَجٌ صَيْفِيّ' : 'Summer Program'}
+                </div>
               </div>
-              <div className="text-[11px] font-semibold text-[#2D2A33] leading-tight mb-2">The Balance Compass</div>
+              <div className="text-[11px] font-semibold text-[#2D2A33] leading-tight mb-2">
+                {isRTL ? 'بَوْصَلَةُ التَّوازُن' : 'The Balance Compass'}
+              </div>
               <div className="h-1 bg-[#F3EFE8] rounded-full overflow-hidden mb-1.5">
                 <div className="h-full bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] rounded-full" style={{ width: '42%' }} />
               </div>
-              <div className="text-[9px] text-[#8E8E9F]">8 girls resonate</div>
+              <div className="text-[9px] text-[#8E8E9F]">
+                {isRTL ? '٨ فَتَياتٍ مُتَجاوِبات' : '8 girls resonate'}
+              </div>
             </motion.div>
 
             {/* Middle card — slight opposite rotation */}
@@ -150,13 +156,19 @@ export default function EventsPage() {
                 <div className="w-7 h-7 rounded-lg bg-[#5A8B6F]/18 flex items-center justify-center">
                   <Flame className="w-3.5 h-3.5 text-[#5A8B6F]" />
                 </div>
-                <div className="text-[9px] font-bold uppercase tracking-wider text-[#5A8B6F]">Summer Program</div>
+                <div className="text-[9px] font-bold uppercase tracking-wider text-[#5A8B6F]">
+                  {isRTL ? 'بَرْنامَجٌ صَيْفِيّ' : 'Summer Program'}
+                </div>
               </div>
-              <div className="text-[11px] font-semibold text-[#2D2A33] leading-tight mb-2">Path of Strength</div>
+              <div className="text-[11px] font-semibold text-[#2D2A33] leading-tight mb-2">
+                {isRTL ? 'دَرْبُ القُوَّة' : 'Path of Strength'}
+              </div>
               <div className="h-1 bg-[#F3EFE8] rounded-full overflow-hidden mb-1.5">
                 <div className="h-full bg-gradient-to-r from-[#5A8B6F] to-[#3B8A6E] rounded-full" style={{ width: '58%' }} />
               </div>
-              <div className="text-[9px] text-[#8E8E9F]">11 boys resonate</div>
+              <div className="text-[9px] text-[#8E8E9F]">
+                {isRTL ? '١١ فَتىً مُتَجاوِبون' : '11 boys resonate'}
+              </div>
             </motion.div>
 
             {/* Front card — slight tilt */}
@@ -171,10 +183,16 @@ export default function EventsPage() {
                 <div className="w-7 h-7 rounded-lg bg-[#C4878A]/18 flex items-center justify-center">
                   <Heart className="w-3.5 h-3.5 text-[#C4878A] fill-[#C4878A]/20" />
                 </div>
-                <div className="text-[9px] font-bold uppercase tracking-wider text-[#C4878A]">This Resonates</div>
+                <div className="text-[9px] font-bold uppercase tracking-wider text-[#C4878A]">
+                  {isRTL ? 'هذا يَغْنيني' : 'This Resonates'}
+                </div>
               </div>
-              <div className="text-[11px] font-semibold text-[#2D2A33] leading-tight mb-2">Your voice shapes what's next</div>
-              <div className="text-[9px] text-[#8E8E9F] leading-relaxed">Tap hearts on topics that speak to you.</div>
+              <div className="text-[11px] font-semibold text-[#2D2A33] leading-tight mb-2">
+                {isRTL ? 'صَوْتُكَ يَصْنَعُ ما هُوَ آتٍ' : "Your voice shapes what's next"}
+              </div>
+              <div className="text-[9px] text-[#8E8E9F] leading-relaxed">
+                {isRTL ? 'اضْغَطوا القَلْبَ على المَواضيعِ التي تَلْمَسُكُم.' : 'Tap hearts on topics that speak to you.'}
+              </div>
             </motion.div>
           </div>
         </div>

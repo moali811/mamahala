@@ -11,6 +11,7 @@ import { MessageCircleHeart, Send, X, Trash2, Loader2, MessageCircle, Calendar, 
 import { useAICompanion } from '@/hooks/useAICompanion';
 import type { Locale } from '@/types';
 import type { StudentContext } from '@/lib/ai-companion/context';
+import { getBookingUrl } from '@/config/business';
 
 /** Simple inline markdown: **bold** → <strong>, *italic* → <em>, preserves line breaks */
 function renderRichText(text: string): React.ReactNode[] {
@@ -222,7 +223,7 @@ export default function AICompanionPanel({
                   </div>
                   {showBookingCta && (
                     <a
-                      href={`/${locale}/book-a-session`}
+                      href={getBookingUrl(locale)}
                       target="_blank"
                       rel="noopener"
                       className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-semibold text-white shadow-sm hover:shadow-md transition-all max-w-[85%]"
@@ -268,7 +269,7 @@ export default function AICompanionPanel({
               </button>
             </div>
             <a
-              href={`/${locale}/book-a-session`}
+              href={getBookingUrl(locale)}
               target="_blank"
               rel="noopener"
               className="mt-2 flex items-center justify-center gap-1.5 text-[10px] font-medium py-1.5 rounded-lg border border-[#F3EFE8] hover:bg-[#FAF7F2] transition-colors"

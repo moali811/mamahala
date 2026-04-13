@@ -13,12 +13,12 @@ export const events: SmartEvent[] = [
     slug: 'balance-compass-girls-summer',
     titleEn: 'The Balance Compass — A Summer Program for Girls',
     titleAr: 'بَوْصَلَةُ التَّوازُن — بَرْنامَجٌ صَيْفِيٌّ لِلفَتَيات',
-    scenarioEn: "She smiles in photos but cries at night. She says 'I\u2019m fine' and means anything but. She\u2019s carrying everything — grades, friendships, her body, the voice in her head — and she\u2019s tired of pretending she has it together.",
-    scenarioAr: 'تَبْتَسِمُ في الصُّوَرِ وتَبْكي في اللَّيْل. تَقولُ "أَنا بِخَيْر" وتَعْني أَيَّ شَيْءٍ إِلّا ذلِك. تَحْمِلُ كُلَّ شَيْء — العَلامات، الصَّداقات، جَسَدَها، الصَّوْتَ في رَأْسِها — وهِيَ مُتْعَبَةٌ مِنَ التَّظاهُرِ بِأَنَّها بِخَيْر.',
+    scenarioEn: 'A summer for her to come home to herself. Four weeks of honest conversations, emotional clarity, and quiet confidence — with Dr. Hala and a small circle of girls growing together.',
+    scenarioAr: 'صَيْفٌ تَعودُ فيهِ إلى ذاتِها. أَرْبَعَةُ أَسابيعَ مِنَ المُحادَثاتِ الصّادِقَة، والوُضوحِ العاطِفِيّ، والثِّقَةِ الهادِئَة — مع د. هالَة ودائِرَةٍ صَغيرَةٍ مِنَ الفَتَياتِ يَنْمينَ مَعاً.',
     descriptionEn:
-      'A 4-week hybrid program for girls (12–19) to rebuild self-awareness, confidence, and emotional balance — with Dr. Hala and a small circle of peers.',
+      'Ages 12–19 · 3 weekly online sessions + 1 in-person retreat day in Ottawa · circle capped at 10.',
     descriptionAr:
-      'بَرْنامَجٌ هَجينٌ مِنْ ٤ أَسابيعَ لِلفَتَياتِ (١٢–١٩) لِإِعادَةِ بِناءِ الوَعْيِ الذّاتِيّ والثِّقَةِ والتَّوازُنِ العاطِفِيّ — مع د. هالَة ودائِرَةٍ صَغيرَةٍ مِنَ الأَقْران.',
+      'الفَتَياتُ ١٢–١٩ · ٣ جَلَساتٍ أُسْبوعِيَّةٍ عَبْرَ الإِنْتَرْنِتْ + يَوْمُ اعْتِكافٍ حُضورِيٍّ في أوتاوا · الدّائِرَةُ بِحَدٍّ أَقْصى ١٠.',
     longDescriptionEn:
       'The teenage girl years are loud on the outside and loud on the inside — and almost nobody is teaching girls how to hear themselves over all of it. The Balance Compass is a small-circle summer program where girls slow down, put down the performance, and do real work on the things that actually shape who they\u2019re becoming: their self-worth, their emotional range, their body story, their friendships, and the voice they use with themselves. Three weekly online sessions build the skills. One full-day in-person retreat in Ottawa makes them real. Dr. Hala leads every session personally, and the circle stays small (max 10) on purpose.',
     longDescriptionAr:
@@ -119,12 +119,12 @@ export const events: SmartEvent[] = [
     slug: 'path-strength-awareness-boys-summer',
     titleEn: 'The Path of Strength & Awareness — A Summer Program for Boys',
     titleAr: 'دَرْبُ القُوَّةِ والوَعْي — بَرْنامَجٌ صَيْفِيٌّ لِلفِتْيان',
-    scenarioEn: "He shrugs 'I\u2019m good' at dinner and slams the door by bedtime. You ask what\u2019s wrong, he says 'nothing' — but you\u2019ve watched him get angrier, quieter, further away. He doesn\u2019t know how to say it: he\u2019s trying to figure out how to be a man, and nobody gave him a map.",
-    scenarioAr: 'يَهُزُّ كَتِفَيْهِ "أَنا بِخَيْر" عَلى العَشاءِ ويُغْلِقُ البابَ بِقُوَّةٍ عِنْدَ النَّوْم. تَسْأَلينَهُ ما الخَطْب، يَقولُ "لا شَيْء" — لكِنَّكِ رَأَيْتِهِ يَصيرُ أَكْثَرَ غَضَباً، وأَكْثَرَ صَمْتاً، وأَبْعَد. لا يَعْرِفُ كَيْفَ يَقولُها: يُحاوِلُ أَنْ يَفْهَمَ كَيْفَ يَكونُ رَجُلاً، ولا أَحَدَ أَعْطاهُ خَريطَة.',
+    scenarioEn: 'A summer for him to step into the man he wants to become. Four weeks of clear thinking, real responsibility, and calm strength — with Dr. Hala and a small brotherhood walking the path together.',
+    scenarioAr: 'صَيْفٌ يَخْطو فيهِ نَحْوَ الرَّجُلِ الذي يُريدُ أَنْ يَكون. أَرْبَعَةُ أَسابيعَ مِنَ التَّفْكيرِ الواضِح، والمَسْؤولِيَّةِ الحَقيقِيَّة، والقُوَّةِ الهادِئَة — مع د. هالَة وأُخُوَّةٍ صَغيرَةٍ يَسيرونَ مَعاً عَلى الدَّرْب.',
     descriptionEn:
-      'A 4-week hybrid program for boys (12–19) to build decision-making, self-discipline, emotional awareness, and responsibility — guided by Dr. Hala with a small brotherhood of peers.',
+      'Ages 12–19 · 3 weekly online sessions + 1 in-person gathering day in Ottawa · brotherhood capped at 10.',
     descriptionAr:
-      'بَرْنامَجٌ هَجينٌ مِنْ ٤ أَسابيعَ لِلفِتْيانِ (١٢–١٩) لِبِناءِ اتِّخاذِ القَرار، الانْضِباطِ الذّاتِيّ، الوَعْيِ العاطِفِيّ، والمَسْؤولِيَّة — بِقِيادَةِ د. هالَة مع أُخُوَّةٍ صَغيرَةٍ مِنَ الأَقْران.',
+      'الفِتْيانُ ١٢–١٩ · ٣ جَلَساتٍ أُسْبوعِيَّةٍ عَبْرَ الإِنْتَرْنِتْ + يَوْمُ لِقاءٍ حُضورِيٍّ في أوتاوا · الأُخُوَّةُ بِحَدٍّ أَقْصى ١٠.',
     longDescriptionEn:
       "Teen boys get the silence treatment from the world: figure it out, don\u2019t ask, don\u2019t cry, just deal with it. And then we\u2019re surprised when they shut down, or explode, or can\u2019t make a real decision without checking their phone. The Path of Strength & Awareness is a summer program built for boys who are ready to stop running on autopilot. Over three online sessions and one full-day in-person gathering in Ottawa, boys work with Dr. Hala on the things nobody taught them: how to think under pressure, how to handle their own anger without it handling them, what self-discipline actually looks like when it\u2019s rooted in values instead of shame, and why responsibility is the foundation of freedom — not the opposite. Small brotherhood of 10. Honest. Real. Unafraid.",
     longDescriptionAr:

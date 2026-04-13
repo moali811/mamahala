@@ -6,10 +6,7 @@ export type Locale = 'en' | 'ar';
 
 export type ServiceCategory = 'youth' | 'families' | 'adults' | 'couples' | 'experiential';
 
-export interface RegionalPrice {
-  online: [number, number];   // [standard-min, standard-max]
-  inPerson: [number, number]; // [standard-min, standard-max]
-}
+import type { PricingTierKey } from '@/config/pricing';
 
 export interface Service {
   slug: string;
@@ -20,12 +17,18 @@ export interface Service {
   shortDesc: string;
   shortDescAr: string;
   category: ServiceCategory;
+  /** Must equal getMinAnchorCAD(pricingTierKey). Drives the hero badge + category cards. */
   priceFrom: number;
   currency: string;
+  /** Human-readable duration string, e.g. "50 min". The numeric duration lives on the tier. */
   duration: string;
   icon: string; // Lucide icon name
   image?: string; // Hero image path
+  /** Pricing tier key — references PRICING_TIERS in src/config/pricing.ts */
+  pricingTierKey: PricingTierKey;
+  /** @deprecated Legacy admin CMS fields — kept for compat, not read by the public site. */
   pricingCAD?: { online: [number, number]; inPerson?: [number, number] };
+  /** @deprecated Legacy admin CMS fields — kept for compat, not read by the public site. */
   pricingAED?: { online: [number, number]; inPerson?: [number, number] };
   whoIsThisFor: string[];
   whoIsThisForAr: string[];

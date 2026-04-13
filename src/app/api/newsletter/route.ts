@@ -133,7 +133,7 @@ function getTemplate(email: string, source: string): EmailTemplate {
             </tr>
           </table>
           <div style="margin:0 0 24px;text-align:center;">
-            <a href="${baseUrl}/en/book-a-session" style="display:inline-block;background:#7A3B5E;color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;">Book a Free Consultation</a>
+            <a href="${baseUrl}/en/book" style="display:inline-block;background:#7A3B5E;color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:600;">Book a Free Consultation</a>
           </div>
           <p style="color:#8E8E9F;font-size:12px;margin:0;text-align:center;">
             You can unsubscribe at any time. We respect your privacy.<br/>

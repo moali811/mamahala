@@ -7,6 +7,14 @@
     {
       "path": "/api/events/follow-up",
       "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/admin/invoices/recurring/process",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/booking-reminders",
+      "schedule": "0 7 * * *"
     }
   ]
 }

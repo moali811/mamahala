@@ -1,8 +1,10 @@
 /* ================================================================
    Gift Card Email Template
    Beautiful branded HTML email for Mama Hala gift sessions.
-   Table-based layout for maximum email client compatibility.
+   Uses shared branded wrapper with logo header + footer.
    ================================================================ */
+
+import { emailWrapper } from './shared-email-components';
 
 export interface GiftEmailParams {
   recipientName: string;
@@ -61,32 +63,7 @@ export function generateGiftEmail(params: GiftEmailParams): string {
     tagline: isAr ? 'حيثُ يلتقي النّموُّ بالقلب' : 'Where Growth Meets Heart',
   };
 
-  return `<!DOCTYPE html>
-<html lang="${locale}" dir="${dir}">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${t.giftForYou}</title>
-</head>
-<body style="margin:0;padding:0;background-color:#FAF7F2;font-family:${sansFont};">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF7F2;">
-    <tr>
-      <td align="center" style="padding:40px 20px;">
-        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-
-          <!-- Header -->
-          <tr>
-            <td align="center" style="padding-bottom:32px;">
-              <p style="margin:0;font-family:${fontFamily};font-size:22px;font-weight:700;color:#7A3B5E;letter-spacing:0.5px;">
-                ${t.brandName}
-              </p>
-              <p style="margin:4px 0 0;font-family:${sansFont};font-size:12px;color:#C8A97D;letter-spacing:2px;text-transform:uppercase;">
-                ${t.tagline}
-              </p>
-              <div style="width:60px;height:2px;background-color:#C8A97D;margin:16px auto 0;"></div>
-            </td>
-          </tr>
-
+  const content = `
           <!-- Gift Card -->
           <tr>
             <td>
@@ -185,22 +162,15 @@ export function generateGiftEmail(params: GiftEmailParams): string {
             </td>
           </tr>
 
-          <!-- Footer -->
-          <tr>
-            <td style="padding:24px 0;border-top:1px solid #F3EFE8;">
-              <p style="margin:0 0 8px;font-family:${sansFont};font-size:13px;color:#7A3B5E;text-align:center;line-height:1.6;font-weight:500;">
-                ${t.careNote}
-              </p>
-              <p style="margin:0;font-family:${sansFont};font-size:11px;color:#C4C0BC;text-align:center;line-height:1.6;">
-                ${t.sentBecause}
-              </p>
-            </td>
-          </tr>
+          <!-- Care Note -->
+          <div style="text-align:center;padding:8px 0 4px;">
+            <p style="margin:0 0 8px;font-family:${sansFont};font-size:13px;color:#7A3B5E;line-height:1.6;font-weight:500;">
+              ${t.careNote}
+            </p>
+            <p style="margin:0;font-family:${sansFont};font-size:11px;color:#C4C0BC;line-height:1.6;">
+              ${t.sentBecause}
+            </p>
+          </div>`;
 
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+  return emailWrapper(content, { locale });
 }

@@ -248,7 +248,7 @@ const SMART_LINKS: { pattern: RegExp; href: string; labelEn: string; labelAr: st
   { pattern: /cancell?ations?|rescheduling|reschedule|refund|no.?shows?|24.?hour notice|late fee|booking policy|الإلغاء|إعادة.?الجدولة|عدم.?الحضور|سياسة.?الحجز/gi, href: '/booking-policy', labelEn: 'Booking Policy', labelAr: 'سياسة الحجز', icon: '📋' },
   { pattern: /privacy policy|confidential|confidentiality|سر[ّيية]+|الخصوصي[ّةة]+/gi, href: '/privacy-policy', labelEn: 'Privacy Policy', labelAr: 'سياسة الخصوصيّة', icon: '🔒' },
   // Booking & contact
-  { pattern: /book a session|book online|booking assistant|free consultation|schedule|your first.+free|completely free|احج[زْ]|حجز|استشار[ةت].+مجان|مجّانيّة|مساعد.?الحجز|جدول[ةت]/gi, href: '/book-a-session', labelEn: 'Book a Session', labelAr: 'احجز جلسة', icon: '📅' },
+  { pattern: /book a session|book online|booking assistant|free consultation|schedule|your first.+free|completely free|احج[زْ]|حجز|استشار[ةت].+مجان|مجّانيّة|مساعد.?الحجز|جدول[ةت]/gi, href: '/book', labelEn: 'Book a Session', labelAr: 'احجز جلسة', icon: '📅' },
   { pattern: /contact form|contact us|get in touch|reach out|نموذج.?الات[صّ]ال|تواصَلْ/gi, href: '/contact', labelEn: 'Contact Us', labelAr: 'تواصل معنا', icon: '✉️' },
   { pattern: /WhatsApp|واتساب/gi, href: 'https://wa.me/16132222104', labelEn: 'Chat on WhatsApp', labelAr: 'تواصل عبر واتساب', icon: '💬' },
   // Services
@@ -256,7 +256,7 @@ const SMART_LINKS: { pattern: RegExp; href: string; labelEn: string; labelAr: st
   { pattern: /\bfamil(?:y|ies)\b|العائلات|الأسر[ةه]/gi, href: '/services/families', labelEn: 'Family Services', labelAr: 'خدمات الأسرة', icon: '👨‍👩‍👧' },
   { pattern: /\bcouples?\b|marriage|pre.?marital|الأزواج|الزواج/gi, href: '/services/couples', labelEn: 'Couples Services', labelAr: 'خدمات الأزواج', icon: '💑' },
   { pattern: /\badults?\b|individual counseling|individual therapy|anxiety|البالغ[ونين]+|القلق/gi, href: '/services/adults', labelEn: 'Adult Services', labelAr: 'خدمات البالغين', icon: '🧘' },
-  { pattern: /experiential|walk.?and.?talk|plant therapy|العلاج.?التجريبي|المشي.?وال[حك]وار|بالنباتات/gi, href: '/book-a-session', labelEn: 'Book Initial Consultation', labelAr: 'احجز استشارة أولية', icon: '📅' },
+  { pattern: /experiential|walk.?and.?talk|plant therapy|العلاج.?التجريبي|المشي.?وال[حك]وار|بالنباتات/gi, href: '/book', labelEn: 'Book Initial Consultation', labelAr: 'احجز استشارة أولية', icon: '📅' },
   { pattern: /our services|all services|view services|خدمات[نِ]ا|جميع.?الخدمات/gi, href: '/services', labelEn: 'View All Services', labelAr: 'عرض جميع الخدمات', icon: '🏠' },
   // Resources
   { pattern: /\bblog\b|\barticles?\b|المدونة|مقالات/gi, href: '/resources/blog', labelEn: 'Read Our Blog', labelAr: 'اقرأ المدونة', icon: '📝' },

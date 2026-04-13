@@ -93,7 +93,7 @@ export const PAGE_SEO: Record<string, PageSEO> = {
     titleAr: 'احجِزْ جلسة',
     description: 'Book your free initial consultation or choose from 23 specialized counseling services. Online sessions via video call.',
     descriptionAr: 'احجز استشارتك الأوّليّة المجّانيّة أو اختر من بين 23 خدمة استشاريّة متخصّصة. جلسات عبر الإنترنت.',
-    path: '/book-a-session',
+    path: '/book',
   },
   contact: {
     title: 'Contact Us',

@@ -4,17 +4,18 @@
    - Date Announcement: sent to "Notify Me" subscribers when a
      concept event gets a confirmed date
    - Reminder: sent 24h before event start
+   Uses shared branded wrapper with logo header + footer.
    ================================================================ */
 
 import type { SmartEvent } from '@/types';
 import { getFormattedDate, getFormattedTime } from '@/data/events';
+import { emailWrapper } from './shared-email-components';
 
 /**
  * Date Announcement — sent when admin confirms a date for a TBD event.
  */
 export function generateDateAnnouncementEmail(event: SmartEvent, locale: string): string {
   const isAr = locale === 'ar';
-  const dir = isAr ? 'rtl' : 'ltr';
   const align = isAr ? 'right' : 'left';
   const title = isAr ? event.titleAr : event.titleEn;
   const description = isAr ? event.descriptionAr : event.descriptionEn;
@@ -25,25 +26,12 @@ export function generateDateAnnouncementEmail(event: SmartEvent, locale: string)
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app';
   const eventsUrl = `${siteUrl}/${locale}/resources/events#${event.slug}`;
 
-  return `<!DOCTYPE html>
-<html dir="${dir}" lang="${locale}">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#FAF7F2;font-family:'Segoe UI',Tahoma,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F2;padding:32px 16px;">
-<tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-
-  <!-- Header -->
-  <tr><td style="text-align:center;padding:24px 0 16px;">
-    <p style="margin:0;font-size:18px;font-weight:700;color:#7A3B5E;letter-spacing:1px;">Mama Hala Consulting</p>
-    <div style="width:60px;height:2px;background:#C8A97D;margin:16px auto 0;"></div>
-  </td></tr>
-
+  const content = `
+  <table width="100%" cellpadding="0" cellspacing="0">
   <!-- Announcement Card -->
   <tr><td style="padding:0 0 24px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#F0E8DC,#FAF5ED);border-radius:16px;overflow:hidden;">
       <tr><td style="padding:32px;text-align:center;">
-        <div style="font-size:40px;margin-bottom:12px;">🎉</div>
         <h1 style="margin:0;font-size:24px;color:#2D2A33;font-family:Georgia,serif;">
           ${isAr ? 'تمّ تحديدُ الموعد!' : 'The Date is Set!'}
         </h1>
@@ -79,19 +67,15 @@ export function generateDateAnnouncementEmail(event: SmartEvent, locale: string)
     </a>
   </td></tr>
 
-  <!-- Footer -->
-  <tr><td style="text-align:center;padding:16px 0;border-top:1px solid #F3EFE8;">
+  <!-- Opt-in note -->
+  <tr><td style="text-align:center;padding:0 0 8px;">
     <p style="margin:0;font-size:12px;color:#8E8E9F;">
       ${isAr ? 'تلقّيتَ هذا البريدَ لأنّك أبديتَ اهتمامَك بهذا الموضوع.' : 'You received this because you expressed interest in this topic.'}
     </p>
-    <p style="margin:4px 0 0;font-size:11px;color:#B0B0B0;">Mama Hala Consulting</p>
   </td></tr>
+  </table>`;
 
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
+  return emailWrapper(content, { locale });
 }
 
 /**
@@ -99,7 +83,6 @@ export function generateDateAnnouncementEmail(event: SmartEvent, locale: string)
  */
 export function generateEventReminderEmail(event: SmartEvent, firstName: string, locale: string): string {
   const isAr = locale === 'ar';
-  const dir = isAr ? 'rtl' : 'ltr';
   const align = isAr ? 'right' : 'left';
   const title = isAr ? event.titleAr : event.titleEn;
   const location = isAr ? event.locationNameAr : event.locationNameEn;
@@ -108,25 +91,12 @@ export function generateEventReminderEmail(event: SmartEvent, firstName: string,
   const whatToBring = isAr ? event.whatToBringAr : event.whatToBringEn;
   const locationIcon = event.locationType === 'online' ? '💻' : '📍';
 
-  return `<!DOCTYPE html>
-<html dir="${dir}" lang="${locale}">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#FAF7F2;font-family:'Segoe UI',Tahoma,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F2;padding:32px 16px;">
-<tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-
-  <!-- Header -->
-  <tr><td style="text-align:center;padding:24px 0 16px;">
-    <p style="margin:0;font-size:18px;font-weight:700;color:#7A3B5E;letter-spacing:1px;">Mama Hala Consulting</p>
-    <div style="width:60px;height:2px;background:#C8A97D;margin:16px auto 0;"></div>
-  </td></tr>
-
+  const content = `
+  <table width="100%" cellpadding="0" cellspacing="0">
   <!-- Reminder Card -->
   <tr><td style="padding:0 0 24px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#E8F0E8,#F0F8F0);border-radius:16px;overflow:hidden;">
       <tr><td style="padding:32px;text-align:center;">
-        <div style="font-size:40px;margin-bottom:12px;">⏰</div>
         <h1 style="margin:0;font-size:24px;color:#2D2A33;font-family:Georgia,serif;">
           ${isAr ? `${firstName}، موعدُك غدًا!` : `${firstName}, You're Up Tomorrow!`}
         </h1>
@@ -156,8 +126,8 @@ export function generateEventReminderEmail(event: SmartEvent, firstName: string,
   <tr><td style="padding:0 0 24px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:12px;border:1px solid #F3EFE8;">
       <tr><td style="padding:20px;text-align:${align};">
-        <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#C8A97D;text-transform:uppercase;letter-spacing:1px;">🎒 ${isAr ? 'لا تنسَ أن تُحضِر' : "Don't Forget to Bring"}</p>
-        ${whatToBring.map(item => `<p style="margin:0 0 6px;font-size:14px;color:#4A4A5C;padding-${isAr ? 'right' : 'left'}:16px;">• ${item}</p>`).join('')}
+        <p style="margin:0 0 12px;font-size:13px;font-weight:700;color:#C8A97D;text-transform:uppercase;letter-spacing:1px;">${isAr ? 'لا تنسَ أن تُحضِر' : "Don't Forget to Bring"}</p>
+        ${whatToBring.map(item => `<p style="margin:0 0 6px;font-size:14px;color:#4A4A5C;padding-${isAr ? 'right' : 'left'}:16px;">&#8226; ${item}</p>`).join('')}
       </td></tr>
     </table>
   </td></tr>` : ''}
@@ -166,20 +136,12 @@ export function generateEventReminderEmail(event: SmartEvent, firstName: string,
   <tr><td style="padding:0 0 24px;text-align:center;">
     <p style="margin:0 0 8px;font-size:14px;color:#8E8E9F;">${isAr ? 'أسئلة أو تغييرات؟' : 'Questions or changes?'}</p>
     <a href="https://wa.me/16132222104" target="_blank" style="display:inline-block;padding:10px 24px;background:#25D366;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600;">
-      💬 ${isAr ? 'تواصلْ عبر واتساب' : 'Chat on WhatsApp'}
+      ${isAr ? 'تواصلْ عبر واتساب' : 'Chat on WhatsApp'}
     </a>
   </td></tr>
+  </table>`;
 
-  <!-- Footer -->
-  <tr><td style="text-align:center;padding:16px 0;border-top:1px solid #F3EFE8;">
-    <p style="margin:0;font-size:11px;color:#B0B0B0;">Mama Hala Consulting</p>
-  </td></tr>
-
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
+  return emailWrapper(content, { locale });
 }
 
 /**
@@ -187,9 +149,10 @@ export function generateEventReminderEmail(event: SmartEvent, firstName: string,
  */
 export function generatePulseThresholdEmail(event: SmartEvent, pulseCount: number): string {
   const title = event.titleEn;
-  return `
-    <div style="font-family:'Segoe UI',sans-serif;max-width:500px;margin:0 auto;padding:20px;">
-      <h2 style="color:#7A3B5E;margin:0 0 8px;">🔥 Event Interest Threshold Reached</h2>
+  const content = `
+    <div style="background:#FFFFFF;border-radius:12px;padding:24px;margin:0 0 16px;">
+      <div style="display:inline-block;padding:4px 12px;background:#C8A97D;color:#FFFFFF;border-radius:6px;font-size:12px;font-weight:600;margin:0 0 12px;">Interest Threshold</div>
+      <h2 style="color:#7A3B5E;margin:0 0 8px;font-size:18px;">Event Interest Threshold Reached</h2>
       <p style="color:#4A4A5C;font-size:14px;margin:0 0 16px;">"${title}" has reached <strong>${pulseCount} community votes</strong>.</p>
       <p style="color:#4A4A5C;font-size:14px;margin:0 0 16px;">Consider scheduling this event — people are waiting.</p>
       <table style="width:100%;font-size:14px;color:#4A4A5C;margin-bottom:16px;">
@@ -200,6 +163,6 @@ export function generatePulseThresholdEmail(event: SmartEvent, pulseCount: numbe
       <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app'}/admin/events" style="display:inline-block;padding:12px 24px;background:#7A3B5E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">
         Open Events Manager
       </a>
-    </div>
-  `;
+    </div>`;
+  return emailWrapper(content);
 }
