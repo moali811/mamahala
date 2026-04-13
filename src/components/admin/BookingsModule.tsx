@@ -1,12 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar, Clock, User, Mail, Phone, Check, X, Loader2,
   AlertCircle, RefreshCw, ChevronDown, Video, Building2,
   FileText, ExternalLink, MessageSquare, Trash2, ArrowUpDown,
 } from 'lucide-react';
 import type { Booking, BookingStatus } from '@/lib/booking/types';
+import type { InvoiceDraft } from '@/lib/invoicing/types';
+import InvoiceReviewSheet from './InvoiceReviewSheet';
 
 interface Props {
   password: string;
@@ -14,15 +17,15 @@ interface Props {
 
 type FilterStatus = 'all' | 'pending_approval' | 'approved' | 'confirmed' | 'completed' | 'cancelled' | 'declined';
 
-const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  pending_approval: { bg: 'bg-amber-50', text: 'text-amber-700', label: 'Pending' },
-  approved: { bg: 'bg-blue-50', text: 'text-blue-700', label: 'Approved' },
-  confirmed: { bg: 'bg-green-50', text: 'text-green-700', label: 'Confirmed' },
-  completed: { bg: 'bg-slate-50', text: 'text-slate-600', label: 'Completed' },
-  cancelled: { bg: 'bg-red-50', text: 'text-red-600', label: 'Cancelled' },
-  declined: { bg: 'bg-red-50', text: 'text-red-600', label: 'Declined' },
-  rescheduled: { bg: 'bg-orange-50', text: 'text-orange-600', label: 'Rescheduled' },
-  'no-show': { bg: 'bg-gray-50', text: 'text-gray-500', label: 'No-Show' },
+const STATUS_COLORS: Record<string, { bg: string; text: string; label: string; border: string }> = {
+  pending_approval: { bg: 'bg-amber-50', text: 'text-amber-700', label: 'Pending', border: 'border-l-amber-400' },
+  approved: { bg: 'bg-blue-50', text: 'text-blue-700', label: 'Approved', border: 'border-l-blue-400' },
+  confirmed: { bg: 'bg-green-50', text: 'text-green-700', label: 'Confirmed', border: 'border-l-green-500' },
+  completed: { bg: 'bg-slate-50', text: 'text-slate-600', label: 'Completed', border: 'border-l-slate-400' },
+  cancelled: { bg: 'bg-red-50', text: 'text-red-600', label: 'Cancelled', border: 'border-l-red-400' },
+  declined: { bg: 'bg-red-50', text: 'text-red-600', label: 'Declined', border: 'border-l-red-400' },
+  rescheduled: { bg: 'bg-orange-50', text: 'text-orange-600', label: 'Rescheduled', border: 'border-l-orange-400' },
+  'no-show': { bg: 'bg-gray-50', text: 'text-gray-500', label: 'No-Show', border: 'border-l-gray-400' },
 };
 
 export default function BookingsModule({ password }: Props) {
@@ -32,6 +35,9 @@ export default function BookingsModule({ password }: Props) {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Invoice review sheet state
+  const [invoiceSheet, setInvoiceSheet] = useState<{ booking: Booking; draft: InvoiceDraft } | null>(null);
 
   const headers = { Authorization: `Bearer ${password}`, 'Content-Type': 'application/json' };
 
@@ -93,7 +99,7 @@ export default function BookingsModule({ password }: Props) {
       }
 
       // Step 2: Try to fetch the draft created during booking intake
-      let draft = null;
+      let draft: any = null;
       if (booking.draftId) {
         const draftRes = await fetch(`/api/admin/invoices/drafts?id=${booking.draftId}`, { headers });
         const draftData = await draftRes.json();
@@ -102,48 +108,33 @@ export default function BookingsModule({ password }: Props) {
 
       // Step 3: If no draft exists, create one from the booking data
       if (!draft) {
-        // Save a fresh draft from booking info
-        const freshDraft = {
+        const now = new Date().toISOString();
+        const country = booking.clientCountry || 'CA';
+        draft = {
+          draftId: `draft_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`,
           client: {
             name: booking.clientName,
             email: booking.clientEmail,
-            country: booking.clientCountry || 'CA',
+            country,
             phone: booking.clientPhone || '',
           },
           serviceSlug: booking.serviceSlug,
-          complexity: 'standard',
-          package: 1,
+          complexity: { preset: 'standard', percent: 0 },
+          package: 'single',
           slidingScalePercent: 0,
-          taxMode: 'auto',
-          allowETransfer: true,
+          taxMode: country === 'CA' ? 'manual-hst' : 'none',
+          allowETransfer: country === 'CA',
           daysUntilDue: 7,
           subject: `Session: ${booking.serviceName || booking.serviceSlug} on ${new Date(booking.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
           adminNote: `Auto-generated from booking ${booking.bookingId}`,
-        };
-        const saveDraftRes = await fetch('/api/admin/invoices/drafts', {
-          method: 'POST', headers,
-          body: JSON.stringify({ draft: freshDraft }),
-        });
-        const savedData = await saveDraftRes.json();
-        draft = savedData.draft || freshDraft;
-        if (savedData.id) draft.id = savedData.id;
+          createdAt: now,
+          updatedAt: now,
+        } as InvoiceDraft;
       }
 
-      // Step 4: Send the invoice
-      const createRes = await fetch('/api/admin/invoices/create', {
-        method: 'POST', headers,
-        body: JSON.stringify({ draft }),
-      });
-      const createData = await createRes.json();
-      if (!createRes.ok) {
-        // Show the specific error but note approval succeeded
-        throw new Error(`Approved, but invoice failed: ${createData.error || 'Unknown error'}. Go to Invoices tab to send manually.`);
-      }
-
-      const emailNote = createData.emailError
-        ? ` (email issue: ${createData.emailError} — PDF was created, resend from Invoices tab)`
-        : '';
-      setSuccess(`Approved + Invoice ${createData.invoiceNumber || ''} sent to ${booking.clientEmail}!${emailNote}`);
+      // Step 4: Open the invoice review sheet instead of sending immediately
+      setInvoiceSheet({ booking, draft });
+      setSuccess('Booking approved! Review the invoice below.');
       fetchBookings();
     } catch (err: any) {
       setError(err.message || 'Failed');
@@ -175,26 +166,32 @@ export default function BookingsModule({ password }: Props) {
   type SortKey = 'date' | 'name' | 'status';
   const [sortBy, setSortBy] = useState<SortKey>('date');
 
+  // ─── Notification toggle (default ON) ──────────────────────
+  const [notifyClient, setNotifyClient] = useState(true);
+
   // ─── Confirmation dialog state ─────────────────────────────
   const [confirmDialog, setConfirmDialog] = useState<{
     title: string;
     message: string;
     confirmLabel: string;
-    confirmColor: 'red' | 'plum';
+    confirmColor: 'red' | 'plum' | 'green';
+    showNotifyToggle: boolean;
     onConfirm: () => void;
   } | null>(null);
 
-  const handleStatusChange = async (bookingId: string, newStatus: BookingStatus) => {
+  const handleStatusChange = async (bookingId: string, newStatus: BookingStatus, shouldNotify?: boolean) => {
     setActionLoading(bookingId);
     setError(null);
+    const notify = shouldNotify ?? notifyClient;
     try {
       const res = await fetch('/api/admin/booking/update-status', {
         method: 'POST', headers,
-        body: JSON.stringify({ bookingId, status: newStatus }),
+        body: JSON.stringify({ bookingId, status: newStatus, notifyClient: notify }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      setSuccess(`Status updated to ${newStatus}`);
+      const notifyNote = data.emailSent ? ' — client notified' : '';
+      setSuccess(`Status updated to ${newStatus}${notifyNote}`);
       fetchBookings();
     } catch (err: any) {
       setError(err.message || 'Failed to update status');
@@ -224,23 +221,28 @@ export default function BookingsModule({ password }: Props) {
       message: `Permanently delete the booking for ${clientName}? This action cannot be undone.`,
       confirmLabel: 'Delete',
       confirmColor: 'red',
+      showNotifyToggle: false,
       onConfirm: () => { setConfirmDialog(null); executeDelete(bookingId); },
     });
   };
 
-  const handleDestructiveStatusChange = (bookingId: string, clientName: string, newStatus: BookingStatus) => {
-    const labels: Record<string, { title: string; message: string; label: string }> = {
-      cancelled: { title: 'Cancel Booking', message: `Cancel the session for ${clientName}? The client will need to rebook.`, label: 'Yes, Cancel' },
-      declined: { title: 'Decline Request', message: `Decline the booking request from ${clientName}?`, label: 'Yes, Decline' },
-      'no-show': { title: 'Mark No-Show', message: `Mark ${clientName} as a no-show for this session?`, label: 'Mark No-Show' },
+  const handleStatusChangeWithDialog = (bookingId: string, clientName: string, newStatus: BookingStatus) => {
+    const configs: Record<string, { title: string; message: string; label: string; color: 'red' | 'plum' | 'green' }> = {
+      confirmed: { title: 'Confirm Session', message: `Mark ${clientName}'s session as confirmed?`, label: 'Confirm', color: 'green' },
+      completed: { title: 'Complete Session', message: `Mark ${clientName}'s session as completed?`, label: 'Mark Complete', color: 'plum' },
+      cancelled: { title: 'Cancel Booking', message: `Cancel the session for ${clientName}? The client will need to rebook.`, label: 'Yes, Cancel', color: 'red' },
+      declined: { title: 'Decline Request', message: `Decline the booking request from ${clientName}?`, label: 'Yes, Decline', color: 'red' },
+      'no-show': { title: 'Mark No-Show', message: `Mark ${clientName} as a no-show for this session?`, label: 'Mark No-Show', color: 'red' },
     };
-    const info = labels[newStatus];
+    const info = configs[newStatus];
     if (info) {
+      setNotifyClient(true); // reset to default ON each time
       setConfirmDialog({
         title: info.title,
         message: info.message,
         confirmLabel: info.label,
-        confirmColor: 'red',
+        confirmColor: info.color,
+        showNotifyToggle: true,
         onConfirm: () => { setConfirmDialog(null); handleStatusChange(bookingId, newStatus); },
       });
     } else {
@@ -293,22 +295,36 @@ export default function BookingsModule({ password }: Props) {
         </div>
       )}
 
-      {error && (
-        <div className="p-3 rounded-lg bg-red-50 text-sm text-red-700 flex items-center gap-2">
-          <AlertCircle className="w-4 h-4" /> {error}
-          <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-600"><X className="w-4 h-4" /></button>
-        </div>
-      )}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="p-3 rounded-lg bg-red-50 text-sm text-red-700 flex items-center gap-2"
+          >
+            <AlertCircle className="w-4 h-4" /> {error}
+            <button onClick={() => setError(null)} className="ml-auto text-red-400 hover:text-red-600"><X className="w-4 h-4" /></button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {success && (
-        <div className="p-3 rounded-lg bg-green-50 text-sm text-green-700 flex items-center gap-2">
-          <Check className="w-4 h-4" /> {success}
-          <button onClick={() => setSuccess(null)} className="ml-auto text-green-400 hover:text-green-600"><X className="w-4 h-4" /></button>
-        </div>
-      )}
+      <AnimatePresence>
+        {success && (
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            className="p-3 rounded-lg bg-green-50 text-sm text-green-700 flex items-center gap-2"
+          >
+            <Check className="w-4 h-4" /> {success}
+            <button onClick={() => setSuccess(null)} className="ml-auto text-green-400 hover:text-green-600"><X className="w-4 h-4" /></button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Filter Tabs */}
-      <div className="flex gap-1 overflow-x-auto pb-1">
+      <div className="flex gap-1.5 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none">
         {([
           { key: 'pending_approval' as FilterStatus, label: 'Pending', count: bookings.filter(b => b.status === 'pending_approval').length },
           { key: 'approved' as FilterStatus, label: 'Approved', count: bookings.filter(b => b.status === 'approved').length },
@@ -320,9 +336,9 @@ export default function BookingsModule({ password }: Props) {
           <button
             key={tab.key}
             onClick={() => setFilter(tab.key)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+            className={`relative px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all snap-start active:scale-95 ${
               filter === tab.key
-                ? 'bg-[#7A3B5E] text-white'
+                ? 'bg-[#7A3B5E] text-white shadow-sm'
                 : 'bg-white text-[#8E8E9F] hover:bg-[#F5F0EB] border border-[#F0ECE8]'
             }`}
           >
@@ -360,7 +376,8 @@ export default function BookingsModule({ password }: Props) {
         </div>
       ) : (
         <div className="space-y-3">
-          {sorted.map(booking => {
+          <AnimatePresence mode="popLayout">
+          {sorted.map((booking, idx) => {
               const status = STATUS_COLORS[booking.status] ?? STATUS_COLORS.confirmed;
               const dateStr = new Date(booking.startTime).toLocaleDateString('en-US', {
                 weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
@@ -372,11 +389,16 @@ export default function BookingsModule({ password }: Props) {
               const isLoading = actionLoading === booking.bookingId;
 
               return (
-                <div
+                <motion.div
                   key={booking.bookingId}
-                  className={`bg-white rounded-xl border p-4 transition-all ${
+                  layout
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ delay: idx * 0.03, duration: 0.25 }}
+                  className={`bg-white rounded-xl border border-l-[3px] p-4 transition-all ${
                     isActionable ? 'border-amber-200 shadow-sm' : 'border-[#F0ECE8]'
-                  }`}
+                  } ${status.border}`}
                 >
                   {/* Top row: avatar + name + status */}
                   <div className="flex items-start gap-3 mb-3">
@@ -464,10 +486,10 @@ export default function BookingsModule({ password }: Props) {
                       <button
                         onClick={() => handleApproveAndInvoice(booking)}
                         disabled={isLoading}
-                        className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-[#3B8A6E] text-white text-xs font-semibold hover:bg-[#2F7A5E] disabled:opacity-50 transition-all"
+                        className="w-full flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg bg-[#3B8A6E] text-white text-xs font-semibold hover:bg-[#2F7A5E] disabled:opacity-50 transition-all active:scale-[0.97]"
                       >
                         {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                        Approve & Send Invoice
+                        Approve & Review Invoice
                       </button>
                       <div className="flex gap-2">
                         <button
@@ -484,6 +506,7 @@ export default function BookingsModule({ password }: Props) {
                               message: `Decline the booking request from ${booking.clientName}? The client will be notified.`,
                               confirmLabel: 'Decline',
                               confirmColor: 'red',
+                              showNotifyToggle: false,
                               onConfirm: () => { setConfirmDialog(null); handleDecline(booking.bookingId); },
                             });
                           }}
@@ -511,7 +534,7 @@ export default function BookingsModule({ password }: Props) {
                     {/* Quick status pills — show contextual next-step actions */}
                     {booking.status === 'approved' && (
                       <button
-                        onClick={() => handleStatusChange(booking.bookingId, 'confirmed' as BookingStatus)}
+                        onClick={() => handleStatusChangeWithDialog(booking.bookingId, booking.clientName, 'confirmed' as BookingStatus)}
                         disabled={isLoading}
                         className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#3B8A6E]/10 text-[#3B8A6E] hover:bg-[#3B8A6E] hover:text-white disabled:opacity-50 transition-all"
                       >
@@ -520,7 +543,7 @@ export default function BookingsModule({ password }: Props) {
                     )}
                     {(booking.status === 'confirmed' || booking.status === 'approved') && (
                       <button
-                        onClick={() => handleStatusChange(booking.bookingId, 'completed' as BookingStatus)}
+                        onClick={() => handleStatusChangeWithDialog(booking.bookingId, booking.clientName, 'completed' as BookingStatus)}
                         disabled={isLoading}
                         className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#5B8AC4]/10 text-[#5B8AC4] hover:bg-[#5B8AC4] hover:text-white disabled:opacity-50 transition-all"
                       >
@@ -529,7 +552,7 @@ export default function BookingsModule({ password }: Props) {
                     )}
                     {booking.status !== 'cancelled' && booking.status !== 'declined' && booking.status !== 'completed' && (
                       <button
-                        onClick={() => handleDestructiveStatusChange(booking.bookingId, booking.clientName, 'cancelled' as BookingStatus)}
+                        onClick={() => handleStatusChangeWithDialog(booking.bookingId, booking.clientName, 'cancelled' as BookingStatus)}
                         disabled={isLoading}
                         className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#C45B5B]/8 text-[#C45B5B] hover:bg-[#C45B5B] hover:text-white disabled:opacity-50 transition-all"
                       >
@@ -538,7 +561,7 @@ export default function BookingsModule({ password }: Props) {
                     )}
                     {booking.status === 'confirmed' && (
                       <button
-                        onClick={() => handleDestructiveStatusChange(booking.bookingId, booking.clientName, 'no-show' as BookingStatus)}
+                        onClick={() => handleStatusChangeWithDialog(booking.bookingId, booking.clientName, 'no-show' as BookingStatus)}
                         disabled={isLoading}
                         className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#8E8E9F]/10 text-[#8E8E9F] hover:bg-[#8E8E9F] hover:text-white disabled:opacity-50 transition-all"
                       >
@@ -557,16 +580,45 @@ export default function BookingsModule({ password }: Props) {
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
+          </AnimatePresence>
         </div>
       )}
+      {/* ─── Invoice Review Sheet ─── */}
+      {invoiceSheet && (
+        <InvoiceReviewSheet
+          open={!!invoiceSheet}
+          booking={invoiceSheet.booking}
+          draft={invoiceSheet.draft}
+          password={password}
+          onClose={() => setInvoiceSheet(null)}
+          onSent={(invoiceNumber) => {
+            setInvoiceSheet(null);
+            setSuccess(`Invoice ${invoiceNumber} sent to ${invoiceSheet.booking.clientEmail}!`);
+            fetchBookings();
+          }}
+        />
+      )}
+
       {/* ─── Confirmation Dialog ─── */}
+      <AnimatePresence>
       {confirmDialog && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        >
           <div className="absolute inset-0 bg-black/30" onClick={() => setConfirmDialog(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4">
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4"
+          >
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${
                 confirmDialog.confirmColor === 'red' ? 'bg-[#C45B5B]/10' : 'bg-[#7A3B5E]/10'
@@ -578,6 +630,20 @@ export default function BookingsModule({ password }: Props) {
               <h3 className="text-base font-bold text-[#2D2A33]">{confirmDialog.title}</h3>
             </div>
             <p className="text-sm text-[#4A4A5C] leading-relaxed">{confirmDialog.message}</p>
+            {confirmDialog.showNotifyToggle && (
+              <label className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-[#F5F0EB] cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={notifyClient}
+                  onChange={e => setNotifyClient(e.target.checked)}
+                  className="w-4 h-4 rounded accent-[#7A3B5E]"
+                />
+                <div>
+                  <p className="text-sm font-medium text-[#2D2A33]">Notify client via email</p>
+                  <p className="text-[10px] text-[#8E8E9F]">Send a status update email to the client</p>
+                </div>
+              </label>
+            )}
             <div className="flex gap-2 pt-1">
               <button
                 onClick={() => setConfirmDialog(null)}
@@ -590,15 +656,18 @@ export default function BookingsModule({ password }: Props) {
                 className={`flex-1 py-2.5 rounded-xl text-sm font-semibold text-white transition-colors ${
                   confirmDialog.confirmColor === 'red'
                     ? 'bg-[#C45B5B] hover:bg-[#B04A4A]'
+                    : confirmDialog.confirmColor === 'green'
+                    ? 'bg-[#3B8A6E] hover:bg-[#2F7A5E]'
                     : 'bg-[#7A3B5E] hover:bg-[#6A2E4E]'
                 }`}
               >
                 {confirmDialog.confirmLabel}
               </button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </div>
   );
 }

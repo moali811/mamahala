@@ -18,6 +18,7 @@ import { authorize } from '@/lib/invoicing/auth';
 import { computeRateBreakdown } from '@/lib/invoicing/rate-breakdown';
 import { generateInvoicePdf } from '@/lib/invoicing/pdf-generator';
 import { sendInvoiceEmail } from '@/lib/invoicing/email-sender';
+import { createInvoiceCheckoutSession } from '@/lib/invoicing/stripe-checkout';
 import {
   generateInvoiceId,
   formatInvoiceNumber,
@@ -188,6 +189,29 @@ export async function POST(req: NextRequest) {
       dryRun: settings.dryRun,
       origin: 'native',
     };
+
+    // Create dynamic Stripe Checkout Session with the exact invoice amount
+    try {
+      const service = (await import('@/data/services')).services.find(
+        (s: { slug: string }) => s.slug === stored.draft.serviceSlug,
+      );
+      const checkoutUrl = await createInvoiceCheckoutSession({
+        invoiceId: stored.invoiceId,
+        invoiceNumber: stored.invoiceNumber,
+        clientEmail: stored.draft.client.email,
+        clientName: stored.draft.client.name,
+        serviceName: service?.name || stored.draft.serviceSlug,
+        totalCAD: breakdown.totalCAD,
+        displayTotal: breakdown.formattedTotal,
+        displayCurrency: breakdown.displayCurrency,
+      });
+      if (checkoutUrl) {
+        stored.stripeCheckoutUrl = checkoutUrl;
+      }
+    } catch (stripeErr) {
+      console.error('Stripe checkout session creation failed:', stripeErr);
+      // Non-blocking — invoice still sends with fallback static link
+    }
 
     // Generate the PDF
     const pdf = await generateInvoicePdf(stored, settings);

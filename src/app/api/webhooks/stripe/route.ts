@@ -62,6 +62,42 @@ export async function POST(req: NextRequest) {
   }
 
   const meta = session.metadata || {};
+
+  // ─── Invoice payment handling ──────────────────────────────
+  if (meta.type === 'invoice' && meta.invoiceId) {
+    try {
+      const { getInvoiceRecord, saveInvoiceRecord } = await import('@/lib/invoicing/kv-store');
+      const { getSettings } = await import('@/lib/invoicing/kv-store');
+      const { sendReceiptEmail } = await import('@/lib/invoicing/email-sender');
+      const { generateReceiptPdf } = await import('@/lib/invoicing/receipt-pdf');
+
+      const invoice = await getInvoiceRecord(meta.invoiceId);
+      if (invoice && invoice.status !== 'paid') {
+        const now = new Date().toISOString();
+        invoice.status = 'paid';
+        invoice.paidAt = now;
+        invoice.paymentMethod = 'stripe';
+        invoice.updatedAt = now;
+        await saveInvoiceRecord(invoice);
+
+        // Send receipt email
+        try {
+          const settings = await getSettings();
+          const receiptPdf = await generateReceiptPdf({ invoice, paymentMethod: 'Stripe', paidAt: now }, settings);
+          await sendReceiptEmail(invoice, receiptPdf, 'stripe', now, settings);
+        } catch (emailErr) {
+          console.error('Stripe webhook: receipt email failed:', emailErr);
+        }
+
+        console.log(`[Stripe Webhook] Invoice ${meta.invoiceNumber} marked as paid`);
+      }
+    } catch (invoiceErr) {
+      console.error('Stripe webhook: invoice payment processing failed:', invoiceErr);
+    }
+    return NextResponse.json({ received: true, success: true, type: 'invoice' });
+  }
+
+  // ─── Academy/Toolkit payment handling ──────────────────────
   const programSlug = meta.programSlug;
   const levelNumber = meta.levelNumber ? Number(meta.levelNumber) : null;
   const studentEmail = (meta.email || session.customer_email || '').toLowerCase().trim();

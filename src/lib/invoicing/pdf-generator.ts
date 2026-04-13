@@ -295,9 +295,12 @@ export async function generateInvoicePdf(
   y += 4;
 
   // ─── PAY ONLINE — Stripe CTA inside the PDF ───────────────
-  if (BUSINESS.stripePaymentLink && !isPaid) {
+  // Prefer dynamic checkout URL (exact invoice amount), fallback to static link
+  const payUrl = invoice.stripeCheckoutUrl || BUSINESS.stripePaymentLink;
+  if (payUrl && !isPaid) {
     const ctaY = y;
     const ctaH = 14;
+    const isDynamic = !!invoice.stripeCheckoutUrl;
 
     // Plum rounded rect
     doc.setFillColor(...PLUM);
@@ -306,15 +309,23 @@ export async function generateInvoicePdf(
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
     doc.setTextColor(...WHITE);
-    doc.text('Pay Securely Online', PAGE_WIDTH / 2, ctaY + 6, { align: 'center' });
+    doc.text(
+      isDynamic ? `Pay ${bd.formattedTotal} Online` : 'Pay Securely Online',
+      PAGE_WIDTH / 2, ctaY + 6, { align: 'center' },
+    );
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.5);
-    doc.text('Click here to pay via Stripe — the fastest way to confirm your session', PAGE_WIDTH / 2, ctaY + 10.5, { align: 'center' });
+    doc.text(
+      isDynamic
+        ? 'Click here to pay the exact invoice amount securely via Stripe'
+        : 'Click here to pay via Stripe — the fastest way to confirm your session',
+      PAGE_WIDTH / 2, ctaY + 10.5, { align: 'center' },
+    );
 
     // Make the entire area a clickable link
     try {
-      doc.link(MARGIN, ctaY, CONTENT_WIDTH, ctaH, { url: BUSINESS.stripePaymentLink });
+      doc.link(MARGIN, ctaY, CONTENT_WIDTH, ctaH, { url: payUrl });
     } catch { /* link API may vary */ }
 
     y = ctaY + ctaH + 6;

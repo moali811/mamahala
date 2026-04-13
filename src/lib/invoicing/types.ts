@@ -24,6 +24,7 @@ export type PaymentMethodRecord =
   | 'e-transfer'
   | 'wire'
   | 'paypal'
+  | 'stripe'
   | 'other'
   | 'unknown';
 
@@ -212,6 +213,8 @@ export interface StoredInvoice {
   emailSentAt?: string;
   /** True if created in Dry Run mode (skips email send). */
   dryRun: boolean;
+  /** Dynamic Stripe Checkout URL with the exact invoice amount. */
+  stripeCheckoutUrl?: string;
   /**
    * Where this record came from. Defaults to `'native'` when omitted
    * (for backward compat with Phase 2 records).

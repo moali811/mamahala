@@ -54,6 +54,13 @@ import GeoRevenueMap from './charts/GeoRevenueMap';
 import RelationshipDepth from './charts/RelationshipDepth';
 import PredictiveForecast from './charts/PredictiveForecast';
 import AIInsightCard from './charts/AIInsightCard';
+import {
+  Section as SharedSection,
+  Field as SharedField,
+  BreakdownCard as SharedBreakdownCard,
+  makeEmptyDraft as sharedMakeEmptyDraft,
+  inputClass as sharedInputClass,
+} from './invoice-shared';
 
 interface Props {
   password: string;
@@ -268,7 +275,7 @@ export default function InvoicesModule({ password }: Props) {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-1 mb-5 border-b border-[#EDE8DF] overflow-x-auto">
+      <div className="flex items-center gap-1 mb-5 border-b border-[#EDE8DF] overflow-x-auto snap-x snap-mandatory scrollbar-none">
         <TabButton active={tab === 'dashboard'} onClick={() => setTab('dashboard')} icon={<LayoutDashboard className="w-4 h-4" />} label="Dashboard" />
         <TabButton active={tab === 'compose'} onClick={() => setTab('compose')} icon={<FileText className="w-4 h-4" />} label="Compose" />
         <TabButton active={tab === 'history'} onClick={() => setTab('history')} icon={<History className="w-4 h-4" />} label="History" />
@@ -382,14 +389,14 @@ function TabButton({
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+      className={`inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap snap-start active:scale-95 ${
         active
           ? 'border-[#7A3B5E] text-[#7A3B5E]'
           : 'border-transparent text-[#8E8E9F] hover:text-[#4A4A5C]'
       }`}
     >
       {icon}
-      {label}
+      <span className="hidden sm:inline">{label}</span>
     </button>
   );
 }

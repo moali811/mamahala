@@ -603,3 +603,107 @@ export function buildFollowUpEmail(
     html: wrapEmail(content),
   };
 }
+
+// ─── 9. Status → Confirmed Email (admin-triggered) ───────────
+
+export function buildStatusConfirmedEmail(
+  booking: Booking,
+  manageToken?: string,
+): { subject: string; html: string } {
+  const firstName = booking.clientName.split(' ')[0];
+  const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
+  const dateTime = formatDateTime(booking.startTime, booking.clientTimezone);
+
+  const meetHtml = booking.meetLink
+    ? `<div style="${styles.card};background:#F0FAF5;border-left:3px solid #3B8A6E;">
+        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">Join Online Session</p>
+        <p style="margin:0 0 10px;font-size:12px;color:#4A4A5C;">Your Google Meet link is ready.</p>
+        <a href="${booking.meetLink}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Google Meet</a>
+      </div>`
+    : '';
+
+  const content = `
+    <div style="${styles.card}">
+      <div style="text-align:center;margin:0 0 16px;">
+        <div style="display:inline-block;width:48px;height:48px;border-radius:50%;background:#F0FAF5;line-height:48px;font-size:24px;text-align:center;">&#10003;</div>
+      </div>
+      <h2 style="${styles.heading};text-align:center;">Your Session is Confirmed!</h2>
+      <p style="${styles.text}">Hi ${firstName},</p>
+      <p style="${styles.text}">Great news — your <strong>${serviceName}</strong> session is now confirmed. Dr. Hala is looking forward to meeting you.</p>
+    </div>
+    ${sessionDetailsCard(booking)}
+    ${meetHtml}
+    <div style="text-align:center;padding:8px 0 12px;">
+      <a href="${getCalendarUrl(booking)}" style="${styles.button}">Add to Calendar</a>
+    </div>
+    ${manageToken ? `<div style="text-align:center;padding:0 0 20px;">
+      <a href="${getManageUrl(manageToken)}" style="${styles.buttonSecondary}">Manage Booking</a>
+    </div>` : ''}
+    <div style="${styles.card};background:#FEFCFB;">
+      <p style="${styles.muted}">Questions? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a></p>
+    </div>`;
+
+  return {
+    subject: `Your session is confirmed — ${serviceName} on ${dateTime}`,
+    html: wrapEmail(content),
+  };
+}
+
+// ─── 10. Status → Completed Email (admin-triggered) ──────────
+
+export function buildStatusCompletedEmail(
+  booking: Booking,
+): { subject: string; html: string } {
+  const firstName = booking.clientName.split(' ')[0];
+  const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
+
+  const content = `
+    <div style="${styles.card}">
+      <h2 style="${styles.heading}">Session Complete</h2>
+      <p style="${styles.text}">Hi ${firstName},</p>
+      <p style="${styles.text}">Your <strong>${serviceName}</strong> session has been marked as complete. Thank you for investing in yourself — we are honored to be part of your journey.</p>
+      <div style="${styles.goldAccent}">
+        <p style="margin:0;font-size:13px;color:#4A4A5C;">Take a moment to reflect. Growth happens one step at a time.</p>
+      </div>
+    </div>
+    <div style="text-align:center;padding:16px 0 20px;">
+      <a href="${SITE_URL}/en/book" style="${styles.button}">Book Next Session</a>
+    </div>
+    <div style="${styles.card};background:#FEFCFB;">
+      <p style="${styles.muted}">Questions or need support? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a> or <a href="mailto:${BUSINESS.email}" style="color:#7A3B5E;">${BUSINESS.email}</a></p>
+    </div>`;
+
+  return {
+    subject: `Session complete — thank you, ${firstName}`,
+    html: wrapEmail(content),
+  };
+}
+
+// ─── 11. Status → No-Show Email (admin-triggered) ────────────
+
+export function buildStatusNoShowEmail(
+  booking: Booking,
+): { subject: string; html: string } {
+  const firstName = booking.clientName.split(' ')[0];
+  const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
+  const dateTime = formatDateTime(booking.startTime, booking.clientTimezone);
+
+  const content = `
+    <div style="${styles.card}">
+      <h2 style="${styles.heading}">We Missed You</h2>
+      <p style="${styles.text}">Hi ${firstName},</p>
+      <p style="${styles.text}">We noticed you were unable to attend your <strong>${serviceName}</strong> session on <strong>${dateTime}</strong>. We hope everything is okay.</p>
+      <p style="${styles.text}">Life gets busy, and we completely understand. Whenever you are ready, we would love to reschedule your session.</p>
+    </div>
+    <div style="text-align:center;padding:16px 0 20px;">
+      <a href="${SITE_URL}/en/book" style="${styles.button}">Reschedule Session</a>
+    </div>
+    <div style="${styles.card};background:#FEFCFB;">
+      <p style="${styles.muted}">Need to talk? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a> or <a href="mailto:${BUSINESS.email}" style="color:#7A3B5E;">${BUSINESS.email}</a></p>
+    </div>`;
+
+  return {
+    subject: `We missed you — ${serviceName}`,
+    html: wrapEmail(content),
+  };
+}
