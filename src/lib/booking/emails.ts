@@ -618,17 +618,35 @@ export async function notifyAdmin(
   extraInfo?: { oldBooking?: Booking },
 ): Promise<void> {
   const { subject, html } = buildAdminNotificationEmail(type, booking, extraInfo);
-  // Send to ALL admin emails (admin@mamahala.ca + mo.ali811@gmail.com)
-  await Promise.all(
-    ADMIN_EMAILS.map(email =>
-      sendBookingEmail({
+  // Send to ALL admin emails (admin@mamahala.ca + mo.ali811@gmail.com).
+  //
+  // Diagnostic: log the recipient list BEFORE sending and the result
+  // of EACH individual send, so any silent drops (from module caching,
+  // rate limits, or the Lambda termination race) are visible in
+  // Vercel logs as [Admin Notify] lines. 2026-04-15 incident: Resend
+  // dashboard showed only ONE recipient per booking instead of two.
+  console.log('[Admin Notify] dispatching', {
+    type,
+    bookingId: booking.bookingId,
+    adminEmails: ADMIN_EMAILS,
+    adminEmailsLength: ADMIN_EMAILS.length,
+  });
+  const results = await Promise.all(
+    ADMIN_EMAILS.map(async email => {
+      const id = await sendBookingEmail({
         to: email,
         subject,
         html,
         replyTo: booking.clientEmail || undefined,
-      }),
-    ),
+      });
+      console.log('[Admin Notify] send result', { to: email, messageId: id });
+      return { to: email, messageId: id };
+    }),
   );
+  const delivered = results.filter(r => r.messageId).length;
+  if (delivered < ADMIN_EMAILS.length) {
+    console.error('[Admin Notify] INCOMPLETE: only', delivered, 'of', ADMIN_EMAILS.length, 'sends succeeded', { results });
+  }
 }
 
 // ─── 7. Payment Confirmation Email ──────────────────────────────
