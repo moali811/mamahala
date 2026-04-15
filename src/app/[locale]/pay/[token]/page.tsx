@@ -41,6 +41,7 @@ export default function PayConciergePage({
 
   const [data, setData] = useState<PayConciergeData | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [errorKind, setErrorKind] = useState<'notfound' | 'cancelled' | 'other'>('other');
   const [loading, setLoading] = useState(true);
   const [copiedEmail, setCopiedEmail] = useState(false);
 
@@ -51,13 +52,25 @@ export default function PayConciergePage({
         const res = await fetch(`/api/pay/lookup?token=${encodeURIComponent(token)}`);
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
-          if (!cancelled) setError(body.error ?? 'Invoice not found');
+          if (!cancelled) {
+            // 410 = invoice was voided/cancelled. Show a distinct, clearer
+            // message instead of the generic "Invoice Not Found" so the
+            // client doesn't wonder if they typed the wrong URL.
+            if (res.status === 410) {
+              setErrorKind('cancelled');
+              setError(body.error ?? 'This invoice has been cancelled');
+            } else {
+              setErrorKind('notfound');
+              setError(body.error ?? 'Invoice not found');
+            }
+          }
           return;
         }
         const json = (await res.json()) as PayConciergeData;
         if (!cancelled) setData(json);
       } catch (err) {
         if (!cancelled) {
+          setErrorKind('other');
           setError(err instanceof Error ? err.message : 'Failed to load invoice');
         }
       } finally {
@@ -92,22 +105,53 @@ export default function PayConciergePage({
 
   // ─── Error state ───────────────────────────────────────
   if (error || !data) {
+    // Different copy for "cancelled" vs "not found" so the client knows
+    // whether to contact us or check their URL.
+    const isCancelled = errorKind === 'cancelled';
+    const titleEn = isCancelled ? 'Invoice Cancelled' : 'Invoice Not Found';
+    const titleAr = isCancelled ? 'تم إلغاء الفاتورة' : 'لم يتم العثور على الفاتورة';
+    const descriptionEn = isCancelled
+      ? 'This invoice is no longer active. If you believe this is a mistake, please contact Mama Hala Consulting.'
+      : (error || 'This link may have expired. Please check the URL in your invoice email.');
+    const descriptionAr = isCancelled
+      ? 'هذه الفاتورة لم تعد فعّالة. إذا كنت تعتقد أن هذا خطأ، يرجى التواصل مع ماما هالة للاستشارات.'
+      : (error || 'قد يكون الرابط منتهي الصلاحية.');
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2] px-4">
         <div className="max-w-md w-full bg-white rounded-2xl p-8 shadow-sm border border-[#F0ECE8] text-center">
-          <XCircle className="w-12 h-12 text-[#C45B5B] mx-auto mb-3" />
+          <XCircle className={`w-12 h-12 mx-auto mb-3 ${isCancelled ? 'text-[#C8A97D]' : 'text-[#C45B5B]'}`} />
           <h1 className="text-xl font-bold text-[#2D2A33] mb-2">
-            {isRTL ? 'لم يتم العثور على الفاتورة' : 'Invoice Not Found'}
+            {isRTL ? titleAr : titleEn}
           </h1>
           <p className="text-sm text-[#8E8E9F] mb-6">
-            {error || (isRTL ? 'قد يكون الرابط منتهي الصلاحية.' : 'This link may have expired.')}
+            {isRTL ? descriptionAr : descriptionEn}
           </p>
-          <Link
-            href={`/${locale}`}
-            className="inline-block px-6 py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#6A2E4E] transition-colors"
-          >
-            {isRTL ? 'العودة إلى الرئيسية' : 'Back to Home'}
-          </Link>
+          {isCancelled ? (
+            <div className="flex flex-col sm:flex-row gap-2 justify-center">
+              <a
+                href="https://wa.me/16132222104"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block px-6 py-3 rounded-xl bg-[#3B8A6E] text-white text-sm font-semibold hover:bg-[#2F7A5E] transition-colors"
+              >
+                {isRTL ? 'تواصل عبر واتساب' : 'Contact via WhatsApp'}
+              </a>
+              <a
+                href="mailto:admin@mamahala.ca"
+                className="inline-block px-6 py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#6A2E4E] transition-colors"
+              >
+                {isRTL ? 'بريد إلكتروني' : 'Email Us'}
+              </a>
+            </div>
+          ) : (
+            <Link
+              href={`/${locale}`}
+              className="inline-block px-6 py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#6A2E4E] transition-colors"
+            >
+              {isRTL ? 'العودة إلى الرئيسية' : 'Back to Home'}
+            </Link>
+          )}
         </div>
       </div>
     );
