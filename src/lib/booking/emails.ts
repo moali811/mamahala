@@ -476,12 +476,16 @@ export function buildAdminNotificationEmail(
 
   const { label, color } = typeLabels[type];
 
+  // Spam filters flag "[Action Required]" and bracketed prefixes as
+  // urgency triggers. Use plain, descriptive subjects — spam score
+  // improves significantly and the content still reads as clearly
+  // transactional to Dr. Hala scanning her inbox.
   const subjects: Record<AdminNotificationType, string> = {
-    'new-booking': `[Booking] Confirmed: ${booking.clientName} — ${serviceName}`,
-    'pending-approval': `[Action Required] New request: ${booking.clientName} — ${serviceName}`,
-    cancellation: `[Booking] Cancelled: ${booking.clientName} — ${serviceName}`,
-    reschedule: `[Booking] Rescheduled: ${booking.clientName} — ${serviceName}`,
-    'payment-received': `[Booking] Paid: ${booking.clientName} — ${serviceName}`,
+    'new-booking': `New booking confirmed — ${booking.clientName} for ${serviceName}`,
+    'pending-approval': `New session request from ${booking.clientName} — ${serviceName}`,
+    cancellation: `Session cancelled — ${booking.clientName} for ${serviceName}`,
+    reschedule: `Session rescheduled — ${booking.clientName} for ${serviceName}`,
+    'payment-received': `Payment received — ${booking.clientName} for ${serviceName}`,
   };
 
   let extraHtml = '';
@@ -547,6 +551,37 @@ const ADMIN_EMAILS = BUSINESS.adminEmails;
 // Reply-to on client emails always admin@mamahala.ca
 const REPLY_TO_EMAIL = BUSINESS.email; // admin@mamahala.ca
 
+/**
+ * Standard deliverability headers for all transactional emails.
+ *
+ * Why these matter:
+ * - List-Unsubscribe + List-Unsubscribe-Post is the single most
+ *   effective header for transactional spam-score reduction. Mailbox
+ *   providers (Gmail, Outlook, SiteGround/MailSpamProtection) reward
+ *   senders who include it with higher inbox placement.
+ * - Auto-Submitted: auto-generated flags the email as system-generated
+ *   rather than human-authored, which most filters grade as lower
+ *   spam risk for transactional content.
+ * - Precedence: bulk is a soft signal; many filters check it.
+ *
+ * These were missing on 2026-04-15 when booking notifications to
+ * admin@mamahala.ca started landing in the SiteGround junk folder
+ * despite correct SPF/DKIM/DMARC alignment. Adding them won't make
+ * spam filters love us overnight, but combined with marking past
+ * junk emails as "Not Spam" (to train the filter), they should
+ * restore inbox placement within a few sends.
+ */
+function deliverabilityHeaders(bookingId?: string): Record<string, string> {
+  const headers: Record<string, string> = {
+    'List-Unsubscribe': `<mailto:${BUSINESS.email}?subject=unsubscribe>`,
+    'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+    'Auto-Submitted': 'auto-generated',
+    'Precedence': 'bulk',
+  };
+  if (bookingId) headers['X-Entity-Ref-ID'] = bookingId;
+  return headers;
+}
+
 interface SendEmailOptions {
   to: string;
   subject: string;
@@ -591,6 +626,7 @@ export async function sendBookingEmail(options: SendEmailOptions): Promise<strin
       subject: options.subject,
       html: options.html,
       replyTo: options.replyTo ?? REPLY_TO_EMAIL,
+      headers: deliverabilityHeaders(),
       attachments: attachments as any,
     });
 
@@ -663,6 +699,7 @@ export async function notifyAdmin(
       subject,
       html,
       replyTo: booking.clientEmail || REPLY_TO_EMAIL,
+      headers: deliverabilityHeaders(booking.bookingId),
     }));
 
     const { data, error } = await resend.batch.send(payload as any);
