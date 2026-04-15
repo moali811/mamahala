@@ -26,7 +26,7 @@ import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   CreditCard, Mail, Globe, DollarSign, Loader2, ShieldCheck,
-  CheckCircle2, XCircle, Copy, ExternalLink, Phone, MessageSquare,
+  CheckCircle2, XCircle, Copy, ExternalLink, MessageSquare,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { PayConciergeData } from '@/app/api/pay/lookup/route';
@@ -373,7 +373,7 @@ export default function PayConciergePage({
           </span>
         </div>
 
-        {/* Help */}
+        {/* Help — Call removed per Mo's request; WhatsApp + Email only */}
         <div className="mt-6 bg-white/60 rounded-2xl p-5 border border-[#F0ECE8]">
           <p className="text-[11px] uppercase tracking-widest text-[#8E8E9F] font-semibold mb-3 text-center">
             {isRTL ? 'تحتاج مساعدة؟' : 'Need Help?'}
@@ -395,14 +395,6 @@ export default function PayConciergePage({
             >
               <Mail className="w-3.5 h-3.5" />
               {isRTL ? 'البريد' : 'Email'}
-            </a>
-            <span className="w-px h-4 bg-[#E8E0D8]" />
-            <a
-              href={`tel:${data.contact.phone}`}
-              className="flex items-center gap-1.5 text-[#4A4A5C] hover:text-[#C8A97D] transition-colors"
-            >
-              <Phone className="w-3.5 h-3.5" />
-              {isRTL ? 'اتصال' : 'Call'}
             </a>
           </div>
         </div>
