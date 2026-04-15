@@ -65,9 +65,14 @@ export async function POST(request: Request) {
           `),
         });
         if (!error) emailSent = true;
-        else console.error('Resend error:', error);
+        else console.error('[EMAIL FAILURE] Contact form rejected by Resend:', {
+          to: process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca',
+          from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+          errorName: (error as any).name,
+          errorMessage: (error as any).message,
+        });
       } catch (e) {
-        console.error('Resend import/send error:', e);
+        console.error('[EMAIL FAILURE] Contact form threw:', e);
       }
     }
 

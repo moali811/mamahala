@@ -102,7 +102,7 @@ function getDayOfWeek(dateStr: string, timezone: string): number {
 /**
  * Create a UTC ISO string for a given date + time in provider timezone.
  */
-function createSlotTime(dateStr: string, time: string, timezone: string): string {
+export function createSlotTime(dateStr: string, time: string, timezone: string): string {
   const [year, month, day] = dateStr.split('-').map(Number);
   const [hours, minutes] = time.split(':').map(Number);
 

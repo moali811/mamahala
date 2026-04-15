@@ -65,6 +65,9 @@ export default function AvailabilityEditor({ password }: Props) {
   const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
   const [newBlockDate, setNewBlockDate] = useState('');
   const [newBlockReason, setNewBlockReason] = useState('Day off');
+  const [newBlockType, setNewBlockType] = useState<'all-day' | 'time-range'>('all-day');
+  const [newBlockStart, setNewBlockStart] = useState('20:00');
+  const [newBlockEnd, setNewBlockEnd] = useState('21:00');
 
   const headers = useMemo(
     () => ({
@@ -209,14 +212,34 @@ export default function AvailabilityEditor({ password }: Props) {
       setError('Pick a valid date first');
       return;
     }
+
+    const isAllDay = newBlockType === 'all-day';
+
+    // Validate time range for partial blocks
+    if (!isAllDay) {
+      if (!/^\d{2}:\d{2}$/.test(newBlockStart) || !/^\d{2}:\d{2}$/.test(newBlockEnd)) {
+        setError('Start and end times are required');
+        return;
+      }
+      if (newBlockStart >= newBlockEnd) {
+        setError('End time must be after start time');
+        return;
+      }
+    }
+
+    const blockedSlots = isAllDay
+      ? undefined
+      : [{ start: newBlockStart, end: newBlockEnd }];
+
     try {
       const res = await fetch('/api/admin/booking/block-date', {
         method: 'POST',
         headers,
         body: JSON.stringify({
           date: newBlockDate,
-          reason: newBlockReason || 'Blocked',
-          allDay: true,
+          reason: newBlockReason || (isAllDay ? 'Day off' : 'Unavailable'),
+          allDay: isAllDay,
+          blockedSlots,
           action: 'block',
         }),
       });
@@ -224,12 +247,27 @@ export default function AvailabilityEditor({ password }: Props) {
         const body = await res.json();
         throw new Error(body.error || 'Block failed');
       }
+      const result = await res.json().catch(() => ({}));
+
       setBlockedDates([
         ...blockedDates.filter(d => d.date !== newBlockDate),
-        { date: newBlockDate, reason: newBlockReason || 'Blocked', allDay: true },
+        {
+          date: newBlockDate,
+          reason: newBlockReason || (isAllDay ? 'Day off' : 'Unavailable'),
+          allDay: isAllDay,
+          blockedSlots,
+        },
       ].sort((a, b) => a.date.localeCompare(b.date)));
       setNewBlockDate('');
-      setSuccess(`Blocked ${newBlockDate}`);
+
+      const gcalHint = !isAllDay && result.gcalSynced > 0
+        ? ' · added to Google Calendar'
+        : '';
+      setSuccess(
+        isAllDay
+          ? `Blocked ${newBlockDate} (all day)`
+          : `Blocked ${newBlockDate} ${newBlockStart}–${newBlockEnd}${gcalHint}`,
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to block');
     }
@@ -443,8 +481,28 @@ export default function AvailabilityEditor({ password }: Props) {
       {/* ─── Blocked Dates ────────────────────────────── */}
       {section === 'blocked' && (
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-[#F0ECE8] p-4">
-            <p className="text-xs font-semibold text-[#4A4A5C] mb-2">Block a specific date</p>
+          <div className="bg-white rounded-xl border border-[#F0ECE8] p-4 space-y-3">
+            <p className="text-xs font-semibold text-[#4A4A5C]">Block a date or time slot</p>
+
+            {/* Type toggle */}
+            <div className="flex gap-1 p-1 bg-[#FAF7F2] rounded-lg w-fit">
+              {(['all-day', 'time-range'] as const).map(type => (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setNewBlockType(type)}
+                  className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+                    newBlockType === type
+                      ? 'bg-white text-[#7A3B5E] shadow-sm'
+                      : 'text-[#8E8E9F] hover:text-[#4A4A5C]'
+                  }`}
+                >
+                  {type === 'all-day' ? 'All day' : 'Specific time'}
+                </button>
+              ))}
+            </div>
+
+            {/* Date + reason row */}
             <div className="flex flex-col sm:flex-row gap-2">
               <input
                 type="date"
@@ -457,18 +515,46 @@ export default function AvailabilityEditor({ password }: Props) {
                 type="text"
                 value={newBlockReason}
                 onChange={e => setNewBlockReason(e.target.value)}
-                placeholder="Reason (e.g. Holiday)"
+                placeholder={newBlockType === 'all-day' ? 'Reason (e.g. Holiday)' : 'Private note (optional)'}
                 className="flex-1 px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
               />
-              <button
-                onClick={addBlockedDate}
-                disabled={!newBlockDate}
-                className="px-4 py-2 rounded-lg bg-[#7A3B5E] text-white text-xs font-semibold hover:bg-[#6A2E4E] disabled:opacity-50 transition-all active:scale-95 inline-flex items-center gap-1.5"
-              >
-                <CalendarX className="w-3.5 h-3.5" />
-                Block
-              </button>
             </div>
+
+            {/* Time range row (only for time-range blocks) */}
+            {newBlockType === 'time-range' && (
+              <>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="time"
+                    value={newBlockStart}
+                    onChange={e => setNewBlockStart(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
+                  />
+                  <span className="text-xs text-[#8E8E9F]">→</span>
+                  <input
+                    type="time"
+                    value={newBlockEnd}
+                    onChange={e => setNewBlockEnd(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
+                  />
+                </div>
+                <p className="text-[10px] text-[#8E8E9F] italic leading-relaxed">
+                  Clients won&apos;t see this slot in the booking picker. A generic
+                  &ldquo;Unavailable&rdquo; event is added to Dr. Hala&apos;s Google Calendar — no
+                  details are exposed publicly. Times use the provider timezone from the
+                  Weekly Schedule tab.
+                </p>
+              </>
+            )}
+
+            <button
+              onClick={addBlockedDate}
+              disabled={!newBlockDate}
+              className="w-full px-4 py-2 rounded-lg bg-[#7A3B5E] text-white text-xs font-semibold hover:bg-[#6A2E4E] disabled:opacity-50 transition-all active:scale-95 inline-flex items-center justify-center gap-1.5"
+            >
+              <CalendarX className="w-3.5 h-3.5" />
+              Block
+            </button>
           </div>
 
           {blockedDates.length > 0 && (
@@ -479,10 +565,19 @@ export default function AvailabilityEditor({ password }: Props) {
                 </p>
               </div>
               <div className="divide-y divide-[#F0ECE8]">
-                {blockedDates.map(b => (
+                {blockedDates.map(b => {
+                  const slotLabel = !b.allDay && b.blockedSlots?.length
+                    ? b.blockedSlots.map(s => `${s.start}–${s.end}`).join(', ')
+                    : 'All day';
+                  return (
                   <div key={b.date} className="flex items-center justify-between px-4 py-2.5">
                     <div>
-                      <p className="text-sm font-mono text-[#2D2A33]">{b.date}</p>
+                      <p className="text-sm font-mono text-[#2D2A33]">
+                        {b.date}
+                        <span className="ml-2 text-[11px] text-[#7A3B5E] font-sans font-semibold">
+                          {slotLabel}
+                        </span>
+                      </p>
                       <p className="text-[10px] text-[#8E8E9F]">{b.reason}</p>
                     </div>
                     <button
@@ -492,7 +587,8 @@ export default function AvailabilityEditor({ password }: Props) {
                       Unblock
                     </button>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}

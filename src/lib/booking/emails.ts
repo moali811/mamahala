@@ -573,7 +573,12 @@ export async function sendBookingEmail(options: SendEmailOptions): Promise<strin
         }]
       : [];
 
-    const result = await resend.emails.send({
+    // Resend returns { data, error } — it does NOT throw on API errors.
+    // Must inspect `error` explicitly or failures silently disappear into
+    // the void. This was the root cause of the "no emails arriving" bug
+    // on 2026-04-15 after RESEND_FROM_EMAIL was switched to an unverified
+    // domain — every send returned error, nobody checked it.
+    const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: options.to,
       subject: options.subject,
@@ -582,9 +587,24 @@ export async function sendBookingEmail(options: SendEmailOptions): Promise<strin
       attachments: attachments as any,
     });
 
-    return (result as any)?.data?.id ?? null;
+    if (error) {
+      console.error('[EMAIL FAILURE] Booking email rejected by Resend:', {
+        to: options.to,
+        from: FROM_EMAIL,
+        subject: options.subject,
+        errorName: (error as any).name,
+        errorMessage: (error as any).message,
+      });
+      return null;
+    }
+
+    return (data as any)?.id ?? null;
   } catch (err) {
-    console.error('[Booking Email] Send failed:', err);
+    console.error('[EMAIL FAILURE] Booking email threw:', {
+      to: options.to,
+      from: FROM_EMAIL,
+      error: err instanceof Error ? err.message : String(err),
+    });
     return null;
   }
 }

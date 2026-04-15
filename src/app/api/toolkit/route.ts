@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         const fromEmail = process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboarding@resend.dev>';
 
         // 1. Notify admin
-        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
+        const adminSend = await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: fromEmail,
           to: process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca',
           subject: `Toolkit Download: ${toolkit?.en || toolkitId} — ${email}`,
@@ -87,9 +87,16 @@ export async function POST(request: Request) {
             </div>
           `),
         });
+        if (adminSend.error) {
+          console.error('[EMAIL FAILURE] Toolkit admin notify rejected:', {
+            to: process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca', from: fromEmail,
+            errorName: (adminSend.error as any).name,
+            errorMessage: (adminSend.error as any).message,
+          });
+        }
 
         // 2. Send toolkit email to user
-        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
+        const userSend = await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: fromEmail,
           to: email,
           subject: isAr
@@ -145,8 +152,15 @@ export async function POST(request: Request) {
             </div>
           `, { locale: isAr ? 'ar' : 'en' }),
         });
+        if (userSend.error) {
+          console.error('[EMAIL FAILURE] Toolkit user email rejected:', {
+            to: email, from: fromEmail,
+            errorName: (userSend.error as any).name,
+            errorMessage: (userSend.error as any).message,
+          });
+        }
       } catch (e) {
-        console.error('Toolkit email error:', e);
+        console.error('[EMAIL FAILURE] Toolkit threw:', e);
       }
     }
 

@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     // Send welcome email
     if (resend) {
       try {
-        await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
+        const send = await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
           from: FROM_EMAIL,
           to: normalizedEmail,
           subject: `Welcome to Mama Hala Academy!`,
@@ -84,7 +84,16 @@ export async function POST(request: NextRequest) {
             </div>
           `),
         });
-      } catch { /* don't fail enrollment over email */ }
+        if (send.error) {
+          console.error('[EMAIL FAILURE] Academy enroll welcome rejected:', {
+            to: normalizedEmail, from: FROM_EMAIL,
+            errorName: (send.error as any).name,
+            errorMessage: (send.error as any).message,
+          });
+        }
+      } catch (err) {
+        console.error('[EMAIL FAILURE] Academy enroll threw:', err);
+      }
     }
 
     return NextResponse.json({ success: true, enrolled: true, adminUnlocked: isAdminEmail(normalizedEmail) });

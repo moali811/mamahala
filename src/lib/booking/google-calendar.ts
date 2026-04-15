@@ -371,6 +371,105 @@ export async function deleteCalendarEvent(bookingId: string): Promise<boolean> {
   }
 }
 
+// ─── Busy Block Events (admin-created time blocks) ─────────────
+
+/**
+ * Create a generic "busy" event on Dr. Hala's calendar for an admin-
+ * created time block (e.g. a hospital appointment). The event appears
+ * only on her private calendar — clients never see it because:
+ *   1. The booking picker hides the slot via KV blockedSlots
+ *   2. The GCal event has no attendees, no Meet link, no description
+ *   3. It's marked private/opaque (shows as busy without exposing details)
+ *
+ * Returns the Google Calendar event ID so the caller can store it on
+ * the BlockedDate record for later deletion on unblock.
+ *
+ * Returns null on any failure (not configured, token revoked, API
+ * error) — failures NEVER block the KV write, matching the rest of
+ * the GCal integration's graceful-fallback pattern.
+ */
+export async function createBusyBlockEvent(opts: {
+  startIso: string;     // ISO UTC
+  endIso: string;       // ISO UTC
+  label?: string;       // Defaults to "Unavailable"
+}): Promise<string | null> {
+  if (!isConfigured()) {
+    console.warn('[GCal] Not configured — skipping busy block event');
+    return null;
+  }
+
+  try {
+    const event: Record<string, unknown> = {
+      summary: opts.label && opts.label.trim() ? opts.label.trim() : 'Unavailable',
+      start: { dateTime: opts.startIso, timeZone: 'UTC' },
+      end: { dateTime: opts.endIso, timeZone: 'UTC' },
+      // No attendees, no description, no conference data — generic busy block.
+      visibility: 'private',
+      transparency: 'opaque',  // blocks free/busy queries
+      colorId: '8',            // graphite — visually distinct from client sessions
+      status: 'confirmed',
+      reminders: { useDefault: false, overrides: [] },
+    };
+
+    const res = await calendarFetch(
+      `/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events`,
+      { method: 'POST', body: JSON.stringify(event) },
+    );
+
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '');
+      console.error(`[GCal] Busy block event failed: ${res.status}`, errBody);
+      return null;
+    }
+
+    const created = await res.json();
+
+    // Invalidate the busy cache for this date so the booking picker
+    // doesn't serve stale free/busy data.
+    const date = opts.startIso.slice(0, 10);
+    await setCachedBusySlots(date, []).catch(() => {});
+
+    return created.id ?? null;
+  } catch (err: any) {
+    console.error('[GCal] Busy block event error:', err?.message ?? err);
+    return null;
+  }
+}
+
+/**
+ * Delete a Google Calendar event by its raw event ID. Used when
+ * unblocking a time-slot block that was previously synced to GCal.
+ *
+ * Distinct from deleteCalendarEvent(bookingId), which looks up the
+ * event ID via the booking→event mapping in KV. Here we already have
+ * the event ID on the BlockedDate record.
+ *
+ * Returns true on success OR if the event was already gone (410).
+ * Returns false on any other failure — failures NEVER block the KV
+ * delete, matching the graceful-fallback pattern.
+ */
+export async function deleteCalendarEventById(eventId: string): Promise<boolean> {
+  if (!isConfigured()) return false;
+
+  try {
+    const res = await calendarFetch(
+      `/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events/${encodeURIComponent(eventId)}`,
+      { method: 'DELETE' },
+    );
+
+    // 204 No Content = success, 410 Gone = already deleted
+    if (!res.ok && res.status !== 410) {
+      console.error(`[GCal] Busy block deletion failed: ${res.status}`);
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error('[GCal] Busy block deletion error:', err);
+    return false;
+  }
+}
+
 // ─── Retry: Create event for bookings that missed initial creation ──
 
 /**

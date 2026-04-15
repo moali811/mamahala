@@ -144,6 +144,13 @@ export interface BlockedDate {
   allDay: boolean;
   /** Partial block: specific time ranges blocked. Only used if allDay is false. */
   blockedSlots?: { start: string; end: string }[];
+  /**
+   * Google Calendar event IDs for partial-block busy events, aligned by
+   * index with `blockedSlots`. Populated when the block is created with
+   * `allDay: false`, so the GCal event can be deleted on unblock.
+   * Left undefined for all-day blocks (which don't create GCal events).
+   */
+  gcalEventIds?: string[];
 }
 
 export interface DayOverride {
