@@ -42,6 +42,7 @@ import {
 } from 'lucide-react';
 import { services, serviceCategories } from '@/data/services';
 import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
+import { COUNTRIES } from '@/config/countries';
 import type { Service, ServiceCategory } from '@/types';
 import type { InvoiceDraft } from '@/lib/invoicing/types';
 import type { Booking } from '@/lib/booking/types';
@@ -880,13 +881,11 @@ function Step1Content(props: Step1Props) {
             onChange={e => props.setClientCountry(e.target.value)}
             className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 bg-white"
           >
-            <option value="CA">🇨🇦 Canada (e-Transfer locked on)</option>
-            <option value="US">🇺🇸 United States</option>
-            <option value="AE">🇦🇪 UAE</option>
-            <option value="SA">🇸🇦 Saudi Arabia</option>
-            <option value="GB">🇬🇧 United Kingdom</option>
-            <option value="FR">🇫🇷 France</option>
-            <option value="DE">🇩🇪 Germany</option>
+            {COUNTRIES.map(c => (
+              <option key={c.code} value={c.code}>
+                {c.flag} {c.name} ({c.code}){c.code === 'CA' ? ' — e-Transfer locked on' : ''}
+              </option>
+            ))}
           </select>
         </div>
       </div>
