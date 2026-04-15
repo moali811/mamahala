@@ -1,8 +1,31 @@
-/* POST /api/admin/booking/block-date — Block or unblock a date */
+/* ================================================================
+   GET  /api/admin/booking/block-date — List all blocked dates
+   POST /api/admin/booking/block-date — Block or unblock a date
+   ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { setBlockedDate, removeBlockedDate, getBlockedDate } from '@/lib/booking/booking-store';
+import {
+  setBlockedDate,
+  removeBlockedDate,
+  listBlockedDates,
+} from '@/lib/booking/booking-store';
 import { authorize } from '@/lib/invoicing/auth';
+
+// GET — list all blocked dates in KV, sorted ascending.
+// Used by the admin AvailabilityEditor to populate the Blocked Dates tab.
+export async function GET(request: NextRequest) {
+  if (!authorize(request)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const blockedDates = await listBlockedDates();
+    return NextResponse.json({ blockedDates });
+  } catch (err) {
+    console.error('[Admin Block Date] List error:', err);
+    return NextResponse.json({ error: 'Failed to list blocked dates' }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   if (!authorize(request)) {

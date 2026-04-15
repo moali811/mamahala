@@ -61,7 +61,7 @@ export default function AvailabilityEditor({ password }: Props) {
   const [dirty, setDirty] = useState(false);
   const [section, setSection] = useState<'schedule' | 'blocked' | 'rules'>('schedule');
 
-  // Blocked dates state — fetched lazily when the tab is opened
+  // Blocked dates state — loaded from KV on mount via loadBlockedDates()
   const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
   const [newBlockDate, setNewBlockDate] = useState('');
   const [newBlockReason, setNewBlockReason] = useState('Day off');
@@ -98,9 +98,24 @@ export default function AvailabilityEditor({ password }: Props) {
     }
   }, [headers]);
 
+  // Load blocked dates on mount — without this, the Blocked Dates tab
+  // shows an empty list even if KV has blocked records, so previously-
+  // blocked days can only be seen (and unblocked) by guessing dates.
+  const loadBlockedDates = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/booking/block-date', { headers });
+      if (!res.ok) throw new Error('Failed to load blocked dates');
+      const data = await res.json();
+      setBlockedDates(data.blockedDates ?? []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load blocked dates');
+    }
+  }, [headers]);
+
   useEffect(() => {
     loadRules();
-  }, [loadRules]);
+    loadBlockedDates();
+  }, [loadRules, loadBlockedDates]);
 
   // ─── Save ─────────────────────────────────────────────
   const saveRules = async () => {

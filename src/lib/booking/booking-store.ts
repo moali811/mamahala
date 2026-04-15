@@ -197,6 +197,27 @@ export async function removeBlockedDate(date: string): Promise<void> {
   await kv.del(KEY.blocked(date));
 }
 
+/**
+ * List all blocked dates currently in KV, sorted ascending by date.
+ * Uses kv.keys('availability:blocked:*') to enumerate — same pattern as
+ * `api/admin/booking/list` uses for bookings. Fine for our volume
+ * (blocked dates number in the tens, not thousands).
+ */
+export async function listBlockedDates(): Promise<BlockedDate[]> {
+  if (!KV_AVAILABLE) return [];
+
+  const keys = await kv.keys('availability:blocked:*');
+  if (keys.length === 0) return [];
+
+  const records = await Promise.all(
+    keys.map(key => kv.get<BlockedDate>(key)),
+  );
+
+  return records
+    .filter((r): r is BlockedDate => r !== null)
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
 // ─── Day Overrides ──────────────────────────────────────────────
 
 export async function getDayOverride(date: string): Promise<DayOverride | null> {
