@@ -78,17 +78,63 @@ export default function EmpathySlideshow({
   const [isActive, setIsActive] = useState<boolean[]>(new Array(slides.length).fill(false));
   const [isPaused, setIsPaused] = useState(false);
   const [progress, setProgress] = useState(0);
+  // Sticky flag: stays false until the section scrolls into view for the
+  // first time, then flips to true and never flips back. Before this is
+  // true, the slideshow stays frozen on slide 1 so users who land at
+  // the top of the page don't see frames advance below the fold.
+  const [hasEnteredView, setHasEnteredView] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
   const progressRef = useRef<NodeJS.Timeout | null>(null);
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
-  // Activate Ken Burns for current slide
+  // Watch for the section scrolling into view. `rootMargin: -10%` means
+  // we wait until ~10% of the section is actually inside the viewport
+  // before triggering, so an intersection with just the top edge peeking
+  // in doesn't count. Once triggered, we unobserve — this is one-shot.
   useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
+    // Fallback for environments without IntersectionObserver: start
+    // immediately so we don't permanently freeze the slideshow.
+    if (typeof IntersectionObserver === 'undefined') {
+      setHasEnteredView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setHasEnteredView(true);
+            observer.disconnect();
+            break;
+          }
+        }
+      },
+      {
+        // Fire when at least 15% of the section is visible — enough that
+        // the user is clearly looking at it, not just scrolling past a
+        // sliver at the top.
+        threshold: 0.15,
+      },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Activate Ken Burns for current slide — gated on hasEnteredView so
+  // the first frame's subtle zoom doesn't burn its animation budget
+  // while the user is still reading the hero above.
+  useEffect(() => {
+    if (!hasEnteredView) return;
     const newActive = new Array(slides.length).fill(false);
     newActive[current] = true;
     // Small delay to trigger CSS transition
     const t = setTimeout(() => setIsActive(newActive), 50);
     return () => clearTimeout(t);
-  }, [current]);
+  }, [current, hasEnteredView]);
 
   // Auto-advance
   const next = useCallback(() => {
@@ -97,14 +143,14 @@ export default function EmpathySlideshow({
   }, []);
 
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || !hasEnteredView) return;
     const timer = setInterval(next, SLIDE_DURATION);
     return () => clearInterval(timer);
-  }, [next, isPaused]);
+  }, [next, isPaused, hasEnteredView]);
 
   // Progress bar
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || !hasEnteredView) return;
     setProgress(0);
     const step = 50; // ms
     const increment = (step / SLIDE_DURATION) * 100;
@@ -114,7 +160,7 @@ export default function EmpathySlideshow({
     return () => {
       if (progressRef.current) clearInterval(progressRef.current);
     };
-  }, [current, isPaused]);
+  }, [current, isPaused, hasEnteredView]);
 
   const goTo = (i: number) => {
     setCurrent(i);
@@ -126,6 +172,7 @@ export default function EmpathySlideshow({
 
   return (
     <section
+      ref={sectionRef}
       className="relative w-full h-[55vh] sm:h-[60vh] md:h-[65vh] lg:h-[75vh] overflow-hidden"
     >
       {/* Image layers with Ken Burns */}
