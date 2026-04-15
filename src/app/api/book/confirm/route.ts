@@ -20,7 +20,7 @@ import { generateBookingId, saveBooking, createManageToken } from '@/lib/booking
 import { isSlotAvailable } from '@/lib/booking/availability';
 import { fetchBusySlots } from '@/lib/booking/google-calendar';
 import { createCalendarEvent } from '@/lib/booking/google-calendar';
-import { buildConfirmationEmail, sendBookingEmail, notifyAdmin } from '@/lib/booking/emails';
+import { buildConfirmationEmail, sendBookingEmail, notifyAdmin, __lastSendErrors } from '@/lib/booking/emails';
 import { generateSessionPrepTips } from '@/lib/booking/ai-session-prep';
 import { processBookingIntake } from '@/lib/invoicing/booking-intake';
 import { getCustomer } from '@/lib/invoicing/customer-store';
@@ -244,6 +244,7 @@ export async function POST(request: NextRequest) {
       __emailDebug: {
         clientMessageId,
         adminResults,
+        errors: { ...__lastSendErrors },
       },
     };
 

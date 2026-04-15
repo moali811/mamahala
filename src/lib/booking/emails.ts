@@ -555,9 +555,18 @@ interface SendEmailOptions {
   replyTo?: string;
 }
 
+// Global container for the most recent error per recipient, so the
+// booking confirm route can surface it in the __emailDebug response
+// field for launch-day triage. Keyed by recipient email.
+// TEMPORARY — remove once the admin@mamahala.ca delivery issue is
+// fully resolved.
+export const __lastSendErrors: Record<string, { phase: string; name?: string; message?: string }> = {};
+
 export async function sendBookingEmail(options: SendEmailOptions): Promise<string | null> {
+  delete __lastSendErrors[options.to];
   if (!RESEND_API_KEY) {
     console.warn('[Booking Email] RESEND_API_KEY not set — skipping');
+    __lastSendErrors[options.to] = { phase: 'no-api-key' };
     return null;
   }
 
@@ -575,9 +584,7 @@ export async function sendBookingEmail(options: SendEmailOptions): Promise<strin
 
     // Resend returns { data, error } — it does NOT throw on API errors.
     // Must inspect `error` explicitly or failures silently disappear into
-    // the void. This was the root cause of the "no emails arriving" bug
-    // on 2026-04-15 after RESEND_FROM_EMAIL was switched to an unverified
-    // domain — every send returned error, nobody checked it.
+    // the void.
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: options.to,
@@ -588,23 +595,28 @@ export async function sendBookingEmail(options: SendEmailOptions): Promise<strin
     });
 
     if (error) {
+      const name = (error as any).name;
+      const message = (error as any).message;
       console.error('[EMAIL FAILURE] Booking email rejected by Resend:', {
         to: options.to,
         from: FROM_EMAIL,
         subject: options.subject,
-        errorName: (error as any).name,
-        errorMessage: (error as any).message,
+        errorName: name,
+        errorMessage: message,
       });
+      __lastSendErrors[options.to] = { phase: 'resend-error', name, message };
       return null;
     }
 
     return (data as any)?.id ?? null;
   } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
     console.error('[EMAIL FAILURE] Booking email threw:', {
       to: options.to,
       from: FROM_EMAIL,
-      error: err instanceof Error ? err.message : String(err),
+      error: message,
     });
+    __lastSendErrors[options.to] = { phase: 'threw', message };
     return null;
   }
 }
