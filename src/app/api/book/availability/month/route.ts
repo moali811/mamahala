@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getMonthAvailability } from '@/lib/booking/availability';
 import { fetchMonthBusySlots } from '@/lib/booking/google-calendar';
+import { getAvailabilityRules } from '@/lib/booking/booking-store';
 import type { MonthAvailabilityResponse } from '@/lib/booking/types';
 
 export async function GET(request: NextRequest) {
@@ -18,12 +19,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // Load provider timezone from KV (admin-edited). Don't hardcode Toronto.
+    const rules = await getAvailabilityRules();
     const busySlotsMap = await fetchMonthBusySlots(month);
     const dates = await getMonthAvailability(month, duration, busySlotsMap);
 
     const response: MonthAvailabilityResponse = {
       month,
-      timezone: 'America/Toronto',
+      timezone: rules.timezone,
       dates,
     };
 

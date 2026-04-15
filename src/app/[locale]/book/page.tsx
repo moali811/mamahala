@@ -491,6 +491,11 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
   const [selectedDate, setSelectedDate] = useState(wizard.formData.selectedDate);
   const [loadingMonth, setLoadingMonth] = useState(false);
   const [loadingDay, setLoadingDay] = useState(false);
+  // Provider timezone comes from the availability API (admin-editable in KV).
+  // Fallback to Toronto is only used for the very first render before the
+  // month fetch resolves. Once the API responds, this updates to whatever
+  // Dr. Hala has set in the admin Availability editor (e.g. 'Asia/Dubai').
+  const [providerTimezone, setProviderTimezone] = useState<string>('America/Toronto');
   const slotsRef = useRef<HTMLDivElement>(null);
 
   const hasDateSelected = !!selectedDate;
@@ -500,7 +505,10 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
     setLoadingMonth(true);
     fetch(`/api/book/availability/month?month=${currentMonth}&duration=${wizard.formData.durationMinutes}`)
       .then(r => r.json())
-      .then(data => setMonthData(data.dates ?? []))
+      .then(data => {
+        setMonthData(data.dates ?? []);
+        if (data.timezone) setProviderTimezone(data.timezone);
+      })
       .catch(() => setMonthData([]))
       .finally(() => setLoadingMonth(false));
   }, [currentMonth, wizard.formData.durationMinutes]);
@@ -514,6 +522,9 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
       .then(r => r.json())
       .then(data => {
         setDaySlots(data.slots ?? []);
+        // Also refresh the provider timezone from the day fetch — in case
+        // the admin changed it between month and day loads.
+        if (data.timezone) setProviderTimezone(data.timezone);
         // Scroll to slots on mobile (delay for animation)
         setTimeout(() => {
           slotsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -602,7 +613,7 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
 
       {/* Timezones — show BOTH the client's and Dr. Hala's so neither
            party gets confused about session times. Dr. Hala's TZ comes
-           from the availability rules (defaults to America/Toronto). */}
+           from the availability API response (admin-editable in KV). */}
       {(() => {
         const formatTZName = (tz: string) => tz.replace(/_/g, ' ');
         const getOffset = (tz: string): string => {
@@ -619,8 +630,7 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
             return '';
           }
         };
-        // TODO Phase 2.4: read provider TZ from availability rules instead.
-        const providerTz = 'America/Toronto';
+        const providerTz = providerTimezone;
         const clientOffset = getOffset(wizard.formData.clientTimezone);
         const providerOffset = getOffset(providerTz);
         const sameTz = wizard.formData.clientTimezone === providerTz;
@@ -824,9 +834,9 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
                             minute: '2-digit',
                           });
                           // Secondary line: same moment rendered in Dr. Hala's
-                          // timezone. Only shown when the client isn't already
-                          // in Toronto, to keep the button lean.
-                          const providerTimezone = 'America/Toronto';
+                          // actual working timezone (from the availability API).
+                          // Hidden when the client shares her timezone, to keep
+                          // the button lean.
                           const sameTz = wizard.formData.clientTimezone === providerTimezone;
                           const providerTimeLabel = sameTz
                             ? null

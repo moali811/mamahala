@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAvailableSlots } from '@/lib/booking/availability';
 import { fetchBusySlots } from '@/lib/booking/google-calendar';
+import { getAvailabilityRules } from '@/lib/booking/booking-store';
 import type { AvailabilityResponse } from '@/lib/booking/types';
 
 export async function GET(request: NextRequest) {
@@ -26,15 +27,22 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // Load the current availability rules (admin-edited from /admin).
+    // Returning the provider timezone from rules — not hardcoded 'America/Toronto' —
+    // lets the booking page show the correct "Dr. Hala is in X" label when
+    // she's travelling (Toronto vs Dubai) and the slot "Hala: X:XX" subtitle
+    // renders in her actual working timezone.
+    const rules = await getAvailabilityRules();
+
     // Fetch GCal busy slots for the day
     const busySlots = await fetchBusySlots(date, date);
 
-    // Compute available slots
-    const slots = await getAvailableSlots(date, duration, busySlots);
+    // Compute available slots (uses the same rules internally)
+    const slots = await getAvailableSlots(date, duration, busySlots, rules);
 
     const response: AvailabilityResponse = {
       date,
-      timezone: 'America/Toronto',
+      timezone: rules.timezone,
       clientTimezone: clientTz,
       slots,
     };
