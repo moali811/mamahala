@@ -18,7 +18,31 @@
    ================================================================ */
 
 import http from 'http';
+import fs from 'fs';
+import path from 'path';
 import open from 'open';
+
+// ─── Auto-load .env.local ────────────────────────────────────
+// The script needs GOOGLE_CALENDAR_CLIENT_ID + _SECRET from .env.local.
+// Without this, running `npx tsx scripts/google-calendar-auth.ts` fails
+// with "YOUR_CLIENT_ID" even though the values are right there on disk.
+// Tiny inline parser — no dotenv dependency needed.
+const envPath = path.resolve(process.cwd(), '.env.local');
+if (fs.existsSync(envPath)) {
+  const contents = fs.readFileSync(envPath, 'utf8');
+  for (const rawLine of contents.split('\n')) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) continue;
+    const eq = line.indexOf('=');
+    if (eq === -1) continue;
+    const key = line.slice(0, eq).trim();
+    let value = line.slice(eq + 1).trim();
+    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+      value = value.slice(1, -1);
+    }
+    if (!(key in process.env)) process.env[key] = value;
+  }
+}
 
 // ─── Configuration (fill these in before running) ────────────
 
