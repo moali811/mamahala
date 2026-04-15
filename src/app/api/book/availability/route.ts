@@ -4,6 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAvailableSlots } from '@/lib/booking/availability';
 import { fetchBusySlots } from '@/lib/booking/google-calendar';
 import { getAvailabilityRules } from '@/lib/booking/booking-store';
+import { getEffectiveTimezone } from '@/lib/booking/provider-location';
 import type { AvailabilityResponse } from '@/lib/booking/types';
 
 export async function GET(request: NextRequest) {
@@ -28,27 +29,38 @@ export async function GET(request: NextRequest) {
 
   try {
     // Load the current availability rules (admin-edited from /admin).
-    // Returning the provider timezone from rules — not hardcoded 'America/Toronto' —
-    // lets the booking page show the correct "Dr. Hala is in X" label when
-    // she's travelling (Toronto vs Dubai) and the slot "Hala: X:XX" subtitle
-    // renders in her actual working timezone.
     const rules = await getAvailabilityRules();
+
+    // Resolve the effective timezone FOR THIS SPECIFIC DAY via the travel
+    // schedule + manual override resolver. `rules.timezone` is the
+    // home-base fallback; if Dr. Hala is travelling on this date (or has
+    // a manual override active), the effective tz is different.
+    //
+    // We pass midday UTC so the resolver lands squarely inside the
+    // target local day regardless of the timezone's UTC offset.
+    const midday = new Date(`${date}T12:00:00Z`);
+    const effectiveTimezone = await getEffectiveTimezone(midday);
 
     // Fetch GCal busy slots for the day
     const busySlots = await fetchBusySlots(date, date);
 
-    // Compute available slots (uses the same rules internally)
+    // Compute available slots (uses getEffectiveTimezone internally per day)
     const slots = await getAvailableSlots(date, duration, busySlots, rules);
 
     const response: AvailabilityResponse = {
       date,
-      timezone: rules.timezone,
+      // Return the EFFECTIVE timezone for this date so the booking page
+      // shows "Dr. Hala is in {effective}" — matching wherever she'll
+      // actually be when the session happens.
+      timezone: effectiveTimezone,
       clientTimezone: clientTz,
       slots,
     };
 
     return NextResponse.json(response, {
-      headers: { 'Cache-Control': 'public, max-age=60, s-maxage=60' },
+      // Cache-Control kept short (60s) because the effective timezone
+      // can flip when the admin edits the travel schedule or override.
+      headers: { 'Cache-Control': 'public, max-age=30, s-maxage=30' },
     });
   } catch (err) {
     console.error('[Availability] Error:', err);

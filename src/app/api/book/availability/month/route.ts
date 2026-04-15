@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getMonthAvailability } from '@/lib/booking/availability';
 import { fetchMonthBusySlots } from '@/lib/booking/google-calendar';
-import { getAvailabilityRules } from '@/lib/booking/booking-store';
+import { getEffectiveTimezone } from '@/lib/booking/provider-location';
 import type { MonthAvailabilityResponse } from '@/lib/booking/types';
 
 export async function GET(request: NextRequest) {
@@ -19,19 +19,27 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Load provider timezone from KV (admin-edited). Don't hardcode Toronto.
-    const rules = await getAvailabilityRules();
+    // Resolve the provider's "currently in" timezone for the label shown
+    // on the booking page ("Dr. Hala is in X"). We anchor this to "today"
+    // rather than the month's midpoint so that, when the user navigates
+    // to next month, the label continues to reflect Dr. Hala's PRESENT
+    // location — not a guess about where she'll be then. The per-day
+    // slot computation is already travel-schedule-aware, so opening a
+    // month that falls inside a trip still produces the right slots.
+    const effectiveTimezone = await getEffectiveTimezone(new Date());
     const busySlotsMap = await fetchMonthBusySlots(month);
     const dates = await getMonthAvailability(month, duration, busySlotsMap);
 
     const response: MonthAvailabilityResponse = {
       month,
-      timezone: rules.timezone,
+      timezone: effectiveTimezone,
       dates,
     };
 
     return NextResponse.json(response, {
-      headers: { 'Cache-Control': 'public, max-age=120, s-maxage=120' },
+      // Shorter cache (60s vs 120s) because the effective timezone can
+      // flip when the admin edits the travel schedule or override pill.
+      headers: { 'Cache-Control': 'public, max-age=60, s-maxage=60' },
     });
   } catch (err) {
     console.error('[Month Availability] Error:', err);
