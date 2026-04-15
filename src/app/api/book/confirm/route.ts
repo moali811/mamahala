@@ -208,22 +208,28 @@ export async function POST(request: NextRequest) {
     // Resend has confirmed acceptance for every send. Adds a few
     // hundred ms of latency but guarantees delivery. Wrapped in a
     // single Promise.all so both sends run in parallel, not serially.
-    await Promise.all([
+    const [clientMessageId, adminResults] = await Promise.all([
       sendBookingEmail({
         to: finalBooking.clientEmail,
         subject,
         html,
         icsContent: isFreeSession ? icsContent : undefined, // Only attach ICS for confirmed (free) sessions
-      }).catch(err => console.error('[Booking Confirm] Email failed:', err)),
+      }).catch(err => {
+        console.error('[Booking Confirm] Client email failed:', err);
+        return null;
+      }),
       // Notify Dr. Hala (with approve/decline links for paid sessions)
       notifyAdmin(
         isFreeSession ? 'new-booking' : 'pending-approval',
         finalBooking,
-      ).catch(err => console.error('[Booking Confirm] Admin notification failed:', err)),
+      ).catch(err => {
+        console.error('[Booking Confirm] Admin notification failed:', err);
+        return [] as Array<{ to: string; messageId: string | null }>;
+      }),
     ]);
 
     // ─── Build response ──────────────────────────────────────
-    const result: BookingConfirmationResult = {
+    const result: BookingConfirmationResult & { __emailDebug?: unknown } = {
       bookingId,
       draftId,
       manageToken,
@@ -232,6 +238,13 @@ export async function POST(request: NextRequest) {
       meetLink: finalBooking.meetLink,
       aiPrepTips: prepTips.length > 0 ? prepTips : undefined,
       aiConfirmationMessage: finalBooking.aiConfirmationMessage,
+      // Temporary diagnostic for 2026-04-15 launch-day triage — expose
+      // per-recipient send results so we can see them in the response
+      // body. Remove after the race/delivery issue is fully resolved.
+      __emailDebug: {
+        clientMessageId,
+        adminResults,
+      },
     };
 
     return NextResponse.json(result, { status: 201 });
