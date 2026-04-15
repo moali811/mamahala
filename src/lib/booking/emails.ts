@@ -622,9 +622,17 @@ export async function sendBookingEmail(options: SendEmailOptions): Promise<strin
 }
 
 /**
- * Send admin notification (to Dr. Hala).
- * Returns the per-recipient results so callers can surface them in
- * API responses or logs for end-to-end visibility.
+ * Send admin notification (to Dr. Hala and any other admin addresses).
+ *
+ * Uses Resend's batch API — sends ALL admin recipients in a single
+ * HTTP call, which counts as ONE rate limit slot instead of N. This
+ * sidesteps the 2-request/second rate limit that was silently
+ * dropping one of every two parallel admin sends on 2026-04-15.
+ *
+ * Batch API does NOT support attachments, but admin notifications
+ * never have attachments (no ICS, no PDF) so this is a good fit.
+ *
+ * Returns per-recipient results for end-to-end visibility.
  */
 export async function notifyAdmin(
   type: AdminNotificationType,
@@ -632,31 +640,68 @@ export async function notifyAdmin(
   extraInfo?: { oldBooking?: Booking },
 ): Promise<Array<{ to: string; messageId: string | null }>> {
   const { subject, html } = buildAdminNotificationEmail(type, booking, extraInfo);
-  // Log upfront so we can see the recipient list at runtime even if
-  // the Promise.all is somehow partial.
-  console.error('[Admin Notify] dispatching', {
+
+  if (!RESEND_API_KEY) {
+    console.warn('[Admin Notify] RESEND_API_KEY not set — skipping');
+    return ADMIN_EMAILS.map(to => ({ to, messageId: null }));
+  }
+
+  console.error('[Admin Notify] dispatching batch', {
     type,
     bookingId: booking.bookingId,
     adminEmails: ADMIN_EMAILS,
     adminEmailsLength: ADMIN_EMAILS.length,
   });
-  const results = await Promise.all(
-    ADMIN_EMAILS.map(async email => {
-      const id = await sendBookingEmail({
-        to: email,
-        subject,
-        html,
-        replyTo: booking.clientEmail || undefined,
+
+  try {
+    const { Resend } = await import('resend');
+    const resend = new Resend(RESEND_API_KEY);
+
+    const payload = ADMIN_EMAILS.map(email => ({
+      from: FROM_EMAIL,
+      to: email,
+      subject,
+      html,
+      replyTo: booking.clientEmail || REPLY_TO_EMAIL,
+    }));
+
+    const { data, error } = await resend.batch.send(payload as any);
+
+    if (error) {
+      const name = (error as any).name;
+      const message = (error as any).message;
+      console.error('[EMAIL FAILURE] Admin notify batch rejected by Resend:', {
+        bookingId: booking.bookingId,
+        errorName: name,
+        errorMessage: message,
       });
-      console.error('[Admin Notify] send result', { to: email, messageId: id });
-      return { to: email, messageId: id };
-    }),
-  );
-  const delivered = results.filter(r => r.messageId).length;
-  if (delivered < ADMIN_EMAILS.length) {
-    console.error('[Admin Notify] INCOMPLETE: only', delivered, 'of', ADMIN_EMAILS.length, 'sends succeeded', { results });
+      for (const to of ADMIN_EMAILS) {
+        __lastSendErrors[to] = { phase: 'batch-resend-error', name, message };
+      }
+      return ADMIN_EMAILS.map(to => ({ to, messageId: null }));
+    }
+
+    // Resend batch response: { data: { data: [{ id }, { id }] } }
+    // Map each result back to its recipient by index.
+    const batchData = (data as any)?.data ?? [];
+    const results = ADMIN_EMAILS.map((to, i) => ({
+      to,
+      messageId: batchData[i]?.id ?? null,
+    }));
+
+    console.error('[Admin Notify] batch result', results);
+    return results;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[EMAIL FAILURE] Admin notify batch threw:', {
+      bookingId: booking.bookingId,
+      error: message,
+    });
+    for (const to of ADMIN_EMAILS) {
+      __lastSendErrors[to] = { phase: 'batch-threw', message };
+    }
+    return ADMIN_EMAILS.map(to => ({ to, messageId: null }));
   }
-  return results;
 }
 
 // ─── 7. Payment Confirmation Email ──────────────────────────────
