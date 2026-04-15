@@ -6,11 +6,13 @@ import {
   Calendar, Clock, User, Mail, Phone, Check, X, Loader2,
   AlertCircle, RefreshCw, ChevronDown, Video, Building2,
   FileText, ExternalLink, MessageSquare, Trash2, ArrowUpDown,
+  Plus,
 } from 'lucide-react';
 import type { Booking, BookingStatus } from '@/lib/booking/types';
 import type { InvoiceDraft } from '@/lib/invoicing/types';
 import InvoiceReviewSheet from './InvoiceReviewSheet';
 import AvailabilityEditor from './AvailabilityEditor';
+import NewBookingModal from './NewBookingModal';
 import { toISO2 } from '@/config/countries';
 
 interface Props {
@@ -46,6 +48,9 @@ export default function BookingsModule({ password }: Props) {
 
   // Invoice review sheet state
   const [invoiceSheet, setInvoiceSheet] = useState<{ booking: Booking; draft: InvoiceDraft } | null>(null);
+
+  // "New Booking" modal — admin manually books a client
+  const [newBookingOpen, setNewBookingOpen] = useState(false);
 
   const headers = { Authorization: `Bearer ${password}`, 'Content-Type': 'application/json' };
 
@@ -339,15 +344,34 @@ export default function BookingsModule({ password }: Props) {
           <h2 className="text-xl font-bold text-[#2D2A33]">Bookings</h2>
           <p className="text-sm text-[#8E8E9F] mt-0.5">Manage session requests and approvals</p>
         </div>
-        <button
-          onClick={() => fetchBookings()}
-          disabled={loading}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F5F0EB] text-sm text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors"
-        >
-          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setNewBookingOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#7A3B5E] text-sm font-semibold text-white hover:bg-[#6A2E4E] transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            New Booking
+          </button>
+          <button
+            onClick={() => fetchBookings()}
+            disabled={loading}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F5F0EB] text-sm text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
       </div>
+
+      <NewBookingModal
+        open={newBookingOpen}
+        password={password}
+        onClose={() => setNewBookingOpen(false)}
+        onCreated={() => {
+          setSuccess('Booking created — client notified and invoice drafted if paid');
+          fetchBookings({ silent: true });
+        }}
+      />
 
       {/* Alerts */}
       {pendingCount > 0 && (
