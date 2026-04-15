@@ -192,18 +192,35 @@ export async function POST(request: NextRequest) {
       isFreeSession,
     });
 
-    sendBookingEmail({
-      to: finalBooking.clientEmail,
-      subject,
-      html,
-      icsContent: isFreeSession ? icsContent : undefined, // Only attach ICS for confirmed (free) sessions
-    }).catch(err => console.error('[Booking Confirm] Email failed:', err));
-
-    // ─── Notify Dr. Hala (with approve/decline links for paid sessions) ─
-    notifyAdmin(
-      isFreeSession ? 'new-booking' : 'pending-approval',
-      finalBooking,
-    ).catch(err => console.error('[Booking Confirm] Admin notification failed:', err));
+    // CRITICAL: these sends MUST be awaited, not fire-and-forget.
+    //
+    // Vercel's serverless runtime kills the Lambda as soon as the HTTP
+    // handler returns, with only a ~millisecond grace period for in-
+    // flight promises. If we fire notifyAdmin() without awaiting, its
+    // internal Promise.all([send to admin@mamahala.ca, send to gmail])
+    // launches two parallel Resend calls, and one of them almost always
+    // gets cut off mid-flight when the Lambda dies. Observed on
+    // 2026-04-15: across 24 admin notifications, only ONE recipient per
+    // booking landed in Resend's delivered log — the other was silently
+    // lost to the Lambda termination race. See commit for the hunt.
+    //
+    // Await both in parallel so the handler doesn't return until
+    // Resend has confirmed acceptance for every send. Adds a few
+    // hundred ms of latency but guarantees delivery. Wrapped in a
+    // single Promise.all so both sends run in parallel, not serially.
+    await Promise.all([
+      sendBookingEmail({
+        to: finalBooking.clientEmail,
+        subject,
+        html,
+        icsContent: isFreeSession ? icsContent : undefined, // Only attach ICS for confirmed (free) sessions
+      }).catch(err => console.error('[Booking Confirm] Email failed:', err)),
+      // Notify Dr. Hala (with approve/decline links for paid sessions)
+      notifyAdmin(
+        isFreeSession ? 'new-booking' : 'pending-approval',
+        finalBooking,
+      ).catch(err => console.error('[Booking Confirm] Admin notification failed:', err)),
+    ]);
 
     // ─── Build response ──────────────────────────────────────
     const result: BookingConfirmationResult = {

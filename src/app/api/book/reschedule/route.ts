@@ -106,19 +106,22 @@ export async function POST(request: NextRequest) {
     // Generate new manage token
     const newManageToken = await createManageToken(newBookingId);
 
-    // Send reschedule email
+    // Send reschedule email + admin notification in parallel, awaited.
+    // MUST be awaited — see /api/book/confirm/route.ts for the full
+    // explanation of the Vercel serverless Lambda termination race
+    // that silently drops fire-and-forget email sends.
     const { subject, html, icsContent } = buildRescheduleEmail(oldBooking, newBooking, newManageToken);
-    sendBookingEmail({
-      to: newBooking.clientEmail,
-      subject,
-      html,
-      icsContent,
-    }).catch(err => console.error('[Reschedule] Email failed:', err));
-
-    // Notify admin
-    notifyAdmin('reschedule', newBooking, { oldBooking }).catch(err =>
-      console.error('[Reschedule] Admin notification failed:', err),
-    );
+    await Promise.all([
+      sendBookingEmail({
+        to: newBooking.clientEmail,
+        subject,
+        html,
+        icsContent,
+      }).catch(err => console.error('[Reschedule] Email failed:', err)),
+      notifyAdmin('reschedule', newBooking, { oldBooking }).catch(err =>
+        console.error('[Reschedule] Admin notification failed:', err),
+      ),
+    ]);
 
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 

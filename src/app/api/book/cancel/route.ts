@@ -59,20 +59,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send cancellation email
+    // Send cancellation email + admin notification in parallel, awaited.
+    // MUST be awaited — see /api/book/confirm/route.ts for the full
+    // explanation of the Vercel serverless Lambda termination race
+    // that silently drops fire-and-forget email sends.
     const cancelledBooking = updated ?? { ...booking, status: 'cancelled' as const, cancelReason: reason };
     const { subject, html, icsContent } = buildCancellationEmail(cancelledBooking);
-    sendBookingEmail({
-      to: booking.clientEmail,
-      subject,
-      html,
-      icsContent,
-    }).catch(err => console.error('[Cancel] Email failed:', err));
-
-    // Notify admin
-    notifyAdmin('cancellation', cancelledBooking).catch(err =>
-      console.error('[Cancel] Admin notification failed:', err),
-    );
+    await Promise.all([
+      sendBookingEmail({
+        to: booking.clientEmail,
+        subject,
+        html,
+        icsContent,
+      }).catch(err => console.error('[Cancel] Email failed:', err)),
+      notifyAdmin('cancellation', cancelledBooking).catch(err =>
+        console.error('[Cancel] Admin notification failed:', err),
+      ),
+    ]);
 
     return NextResponse.json({ cancelled: true, message: 'Booking has been cancelled.' });
   } catch (err) {
