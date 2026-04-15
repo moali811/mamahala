@@ -24,6 +24,7 @@ const KEY = {
   upcoming: 'bookings:upcoming',
   byCustomer: (email: string) => `bookings:by-customer:${email.toLowerCase()}`,
   byDate: (date: string) => `bookings:by-date:${date}`,
+  bySeries: (seriesId: string) => `bookings:by-series:${seriesId}`,
   rules: 'availability:rules',
   blocked: (date: string) => `availability:blocked:${date}`,
   override: (date: string) => `availability:overrides:${date}`,
@@ -58,6 +59,11 @@ export async function saveBooking(booking: Booking): Promise<void> {
     addToIndex(KEY.byCustomer(booking.clientEmail), booking.bookingId),
     booking.status === 'confirmed'
       ? addToSortedIndex(KEY.upcoming, booking.bookingId, booking.startTime)
+      : Promise.resolve(),
+    // If this booking is part of a recurring series, add it to the
+    // series index so cancel/reschedule flows can find siblings.
+    booking.series?.seriesId
+      ? addToIndex(KEY.bySeries(booking.series.seriesId), booking.bookingId)
       : Promise.resolve(),
   ]);
 }
@@ -143,6 +149,33 @@ export async function getConfirmedBookingsForDate(date: string): Promise<Booking
 }
 
 /**
+ * Return every booking that should be treated as "holding a slot"
+ * for availability purposes: confirmed + approved bookings, plus
+ * any pending-review bookings whose `pendingReviewExpiresAt` is
+ * still in the future.
+ *
+ * Pending-review bookings are held while an admin reviews the
+ * invoice in Step 2 of the new-booking flow. If the admin walks
+ * away and the hold expires, the slot is implicitly freed on the
+ * next read — no mutation, no background sweep needed.
+ */
+export async function getHeldBookingsForDate(date: string): Promise<Booking[]> {
+  const all = await getBookingsByDate(date);
+  const nowIso = new Date().toISOString();
+
+  return all.filter(b => {
+    if (b.status === 'confirmed' || b.status === 'approved') return true;
+    if (b.status === 'pending-review') {
+      // Active hold only if the expiry timestamp is in the future.
+      // Missing expiry defaults to "not holding" — safer than a
+      // runaway hold that never frees.
+      return !!b.pendingReviewExpiresAt && b.pendingReviewExpiresAt > nowIso;
+    }
+    return false;
+  });
+}
+
+/**
  * Count confirmed bookings for a specific date.
  * Used by availability engine to enforce maxSessionsPerDay.
  */
@@ -158,6 +191,28 @@ export async function findBookingByDraftId(draftId: string): Promise<Booking | n
   // Scan upcoming bookings (most likely place for a draft-linked booking)
   const upcoming = await getUpcomingBookings(200);
   return upcoming.find(b => b.draftId === draftId) ?? null;
+}
+
+// ─── Recurring Series Lookup ────────────────────────────────────
+
+/**
+ * Return every booking that shares the given `seriesId`, sorted by
+ * `seriesIndex`. Used by the cancel/reschedule flows and by
+ * `recomputeBundleInvoice()` in booking-intake.ts.
+ */
+export async function getBookingsBySeriesId(seriesId: string): Promise<Booking[]> {
+  if (!KV_AVAILABLE) return [];
+  const ids = await kv.get<string[]>(KEY.bySeries(seriesId)) ?? [];
+  if (ids.length === 0) return [];
+
+  const bookings = await Promise.all(ids.map(id => getBooking(id)));
+  return bookings
+    .filter((b): b is Booking => b !== null)
+    .sort((a, b) => (a.series?.seriesIndex ?? 0) - (b.series?.seriesIndex ?? 0));
+}
+
+export function generateSeriesId(): string {
+  return `ser_${crypto.randomUUID().replace(/-/g, '').slice(0, 16)}`;
 }
 
 // ─── Availability Rules ─────────────────────────────────────────

@@ -1,90 +1,206 @@
 /* ================================================================
-   Payment Instructions Builder
+   Payment Instructions Builder — Region-aware primary/secondary
    ================================================================
-   Builds the payment-methods block that appears in the PDF footer
-   and the email body. Returns structured data so both renderers
-   can style it consistently.
+   Returns one PRIMARY payment method (the clear headline) and an
+   optional array of SECONDARY methods, so the PDF and email
+   templates can render a single dominant call-to-action without
+   drowning the client in choices.
+
+   Selection logic:
+     - Canadian clients (country === 'CA'):
+         primary = Interac e-Transfer (locked on at the intake stage)
+         secondary = []                // nothing else to show
+     - International clients:
+         primary = Stripe link > wire > PayPal > contact fallback
+         secondary = []                // we pick one and commit
+
+   This replaces the old 4-option "Dr. Hala can arrange any of these
+   payment methods…" fallback that Mo flagged as redundant. When an
+   international client has no configured Stripe/wire/PayPal, we
+   now show a single contact-block instead of a wall of options.
+
+   The primary/secondary shape is kept so callers can re-introduce
+   multi-method scenarios later (e.g., "primary: Stripe; secondary:
+   wire") without a schema change. Today's code pins secondary = [].
    ================================================================ */
 
 import type { StoredInvoice, InvoiceSettings } from './types';
 
+export type PaymentMethodKind =
+  | 'etransfer'
+  | 'stripe'
+  | 'wire'
+  | 'paypal'
+  | 'contact';
+
 export interface PaymentMethodBlock {
-  kind: 'e-transfer' | 'wire' | 'paypal';
+  kind: PaymentMethodKind;
   heading: string;
-  lines: string[];
+  /** Plain-text body lines (for both PDF and email rendering). */
+  bodyLines: string[];
+  /** Optional CTA link (e.g. Stripe Payment Link, PayPal.me URL). */
+  linkUrl?: string;
+  /** Label for the CTA button when `linkUrl` is present. */
+  linkLabel?: string;
+}
+
+export interface PaymentInstructionsResult {
+  primary: PaymentMethodBlock;
+  /**
+   * Additional methods to display below the primary block.
+   * Typically empty under the new region-aware logic. Retained as
+   * an array so future callers can bolt on multi-method scenarios
+   * without a type change.
+   */
+  secondary: PaymentMethodBlock[];
+  region: 'CA' | 'INTL';
 }
 
 /**
- * Build a list of payment method blocks appropriate for the client's
- * country + the composer's settings + the draft's e-Transfer toggle.
+ * Legacy export — older callers import `PaymentMethodBlock` directly
+ * without knowing about the new wrapper. Kept as a type alias so the
+ * old imports don't break during the rollout.
+ */
+export type { PaymentMethodBlock as PaymentBlock };
+
+/**
+ * Build the region-aware payment instructions for an invoice.
+ *
+ * This replaces the old multi-block builder. Calls that expect an
+ * array should use `[result.primary, ...result.secondary]` to get a
+ * flat list.
  */
 export function buildPaymentInstructions(
   invoice: StoredInvoice,
   settings: InvoiceSettings,
-): PaymentMethodBlock[] {
-  const blocks: PaymentMethodBlock[] = [];
+): PaymentInstructionsResult {
   const country = invoice.draft.client.country.toUpperCase();
-  const isCA = country === 'CA';
+  const region: 'CA' | 'INTL' = country === 'CA' ? 'CA' : 'INTL';
 
-  // Canadian e-Transfer block
-  // NOTE: PDF uses jspdf with Windows-1252 encoding — em-dash (U+2014) is
-  // not supported. Use ASCII hyphen-minus (-) instead so the PDF renders
-  // cleanly. The email HTML version can use em-dashes freely.
-  if (isCA && invoice.draft.allowETransfer) {
-    blocks.push({
-      kind: 'e-transfer',
-      heading: 'Canadian clients - Interac e-Transfer',
-      lines: [
-        `Send to: ${settings.eTransferEmail}`,
-        'Auto-deposit is enabled - no security question needed.',
-        `Please reference: ${invoice.invoiceNumber}`,
-      ],
-    });
+  if (region === 'CA') {
+    return {
+      region,
+      primary: buildETransferBlock(invoice, settings),
+      secondary: [],
+    };
   }
 
-  // International wire block (always shown for non-CA, optional for CA if configured)
-  if (!isCA && settings.wireInstructions && settings.wireInstructions.trim()) {
-    blocks.push({
-      kind: 'wire',
-      heading: 'International wire transfer',
-      lines: settings.wireInstructions
-        .split('\n')
-        .map((l) => l.trim())
-        .filter(Boolean),
-    });
+  // International cascade: Stripe > wire > PayPal > contact fallback
+  if (hasStripeLink(invoice)) {
+    return {
+      region,
+      primary: buildStripeBlock(invoice),
+      secondary: [],
+    };
   }
 
-  // PayPal block (always shown for non-CA if configured)
-  if (!isCA && settings.paypalLink && settings.paypalLink.trim()) {
-    blocks.push({
-      kind: 'paypal',
-      heading: 'PayPal',
-      lines: [settings.paypalLink.trim()],
-    });
+  if (hasWireDetails(settings)) {
+    return {
+      region,
+      primary: buildWireBlock(settings),
+      secondary: [],
+    };
   }
 
-  // Fallback: when neither wire nor PayPal is configured for an international
-  // client (and they're not Canadian), show a richer multi-option block so
-  // the invoice doesn't look thin or confusing.
-  if (blocks.length === 0) {
-    blocks.push({
-      kind: 'wire',
-      heading: 'Payment Options',
-      lines: [
-        'Dr. Hala can arrange any of these payment methods for this invoice:',
-        '• Interac e-Transfer (Canadian clients)',
-        '• International wire transfer',
-        '• PayPal',
-        '• Credit card via secure link',
-        '',
-        'Please reply to this invoice email or contact us directly to confirm',
-        'your preferred method.',
-        '',
-        `Contact: ${settings.issuerBlock.email} | ${settings.issuerBlock.phone}`,
-        `Reference: ${invoice.invoiceNumber}`,
-      ],
-    });
+  if (hasPaypalLink(settings)) {
+    return {
+      region,
+      primary: buildPaypalBlock(settings),
+      secondary: [],
+    };
   }
 
-  return blocks;
+  return {
+    region,
+    primary: buildContactBlock(invoice, settings),
+    secondary: [],
+  };
+}
+
+// ─── Block Builders ─────────────────────────────────────────────
+
+function buildETransferBlock(
+  invoice: StoredInvoice,
+  settings: InvoiceSettings,
+): PaymentMethodBlock {
+  // NOTE: PDF uses jspdf with Windows-1252 encoding — em-dash (U+2014)
+  // is not supported. Use ASCII hyphen-minus (-) for PDF lines so the
+  // email HTML can use em-dashes freely but the PDF stays clean.
+  return {
+    kind: 'etransfer',
+    heading: 'Pay by Interac e-Transfer',
+    bodyLines: [
+      `Send to: ${settings.eTransferEmail}`,
+      'Auto-deposit is enabled - no security question needed.',
+      `Please include reference: ${invoice.invoiceNumber}`,
+    ],
+  };
+}
+
+function buildStripeBlock(invoice: StoredInvoice): PaymentMethodBlock {
+  const link = invoice.draft.stripePaymentLink!;
+  return {
+    kind: 'stripe',
+    heading: 'Pay by credit card',
+    bodyLines: [
+      'Secure checkout via Stripe.',
+      `Reference: ${invoice.invoiceNumber}`,
+    ],
+    linkUrl: link,
+    linkLabel: 'Pay now',
+  };
+}
+
+function buildWireBlock(settings: InvoiceSettings): PaymentMethodBlock {
+  // Caller (`hasWireDetails`) already verified this is non-empty —
+  // fallback to empty string is unreachable but keeps TS happy.
+  const wireText = settings.wireInstructions ?? '';
+  return {
+    kind: 'wire',
+    heading: 'International wire transfer',
+    bodyLines: wireText
+      .split('\n')
+      .map(l => l.trim())
+      .filter(Boolean),
+  };
+}
+
+function buildPaypalBlock(settings: InvoiceSettings): PaymentMethodBlock {
+  return {
+    kind: 'paypal',
+    heading: 'Pay by PayPal',
+    bodyLines: ['Use the link below to complete payment.'],
+    linkUrl: settings.paypalLink ?? undefined,
+    linkLabel: 'Open PayPal',
+  };
+}
+
+function buildContactBlock(
+  invoice: StoredInvoice,
+  settings: InvoiceSettings,
+): PaymentMethodBlock {
+  return {
+    kind: 'contact',
+    heading: 'Arrange payment with Dr. Hala',
+    bodyLines: [
+      `Please reply to this invoice email to arrange payment.`,
+      `Email: ${settings.issuerBlock.email}`,
+      settings.issuerBlock.phone ? `Phone: ${settings.issuerBlock.phone}` : '',
+      `Reference: ${invoice.invoiceNumber}`,
+    ].filter(Boolean),
+  };
+}
+
+// ─── Availability Predicates ────────────────────────────────────
+
+function hasStripeLink(invoice: StoredInvoice): boolean {
+  return !!invoice.draft.stripePaymentLink && invoice.draft.stripePaymentLink.trim().length > 0;
+}
+
+function hasWireDetails(settings: InvoiceSettings): boolean {
+  return !!settings.wireInstructions && settings.wireInstructions.trim().length > 0;
+}
+
+function hasPaypalLink(settings: InvoiceSettings): boolean {
+  return !!settings.paypalLink && settings.paypalLink.trim().length > 0;
 }

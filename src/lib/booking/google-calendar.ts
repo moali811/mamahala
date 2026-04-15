@@ -20,6 +20,7 @@ import {
   setCalendarEventId,
   getCalendarEventId,
 } from './booking-store';
+import { getEffectiveLocation } from './provider-location';
 
 // ─── Config ─────────────────────────────────────────────────────
 
@@ -196,11 +197,21 @@ export async function createCalendarEvent(
     const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
     const modeLabel = booking.sessionMode === 'online' ? 'Online' : 'In-Person';
 
+    // Resolve Dr. Hala's effective location for this booking's start
+    // time — checks manual override first, then travel schedule, then
+    // home-base from AvailabilityRules. Prefer the snapshot on the
+    // booking record (captured at create time) when present, so later
+    // travel-schedule edits don't mutate issued calendar events.
+    const effective = await getEffectiveLocation(booking.startTime);
+    const providerTimezone = effective.timezone;
+    const providerLocationLabel = booking.effectiveLocationLabel || effective.locationLabel;
+
     const description = [
       `Client: ${booking.clientName}`,
       booking.clientEmail ? `Email: ${booking.clientEmail}` : null,
       booking.clientPhone ? `Phone: ${booking.clientPhone}` : null,
-      `Timezone: ${booking.clientTimezone}`,
+      `Client timezone: ${booking.clientTimezone}`,
+      `Session from: ${providerLocationLabel} (${providerTimezone})`,
       `Mode: ${modeLabel}`,
       `Duration: ${booking.durationMinutes} minutes`,
       booking.clientNotes ? `\nClient Notes:\n${booking.clientNotes}` : null,
@@ -215,13 +226,17 @@ export async function createCalendarEvent(
     const event: Record<string, unknown> = {
       summary: `Session: ${booking.clientName} — ${serviceName}`,
       description,
+      // startTime / endTime on the booking are ISO UTC. We attach the
+      // provider's effective IANA timezone so Google Calendar displays
+      // the event in Dr. Hala's current local time (Toronto or Dubai),
+      // which is especially important for in-person sessions.
       start: {
         dateTime: booking.startTime,
-        timeZone: 'UTC',
+        timeZone: providerTimezone,
       },
       end: {
         dateTime: booking.endTime,
-        timeZone: 'UTC',
+        timeZone: providerTimezone,
       },
       attendees: booking.clientEmail
         ? [{ email: booking.clientEmail, displayName: booking.clientName }]
@@ -244,7 +259,10 @@ export async function createCalendarEvent(
           },
         },
       } : {
-        location: '430 Hazeldean Rd, K2L 1E8, Ottawa, Ontario, Canada',
+        // For in-person, prefix the physical office address with the
+        // current city so a Dubai pop-up on Dr. Hala's phone reads as
+        // such and not as a mis-geocoded Ottawa address.
+        location: `${providerLocationLabel} — 430 Hazeldean Rd, K2L 1E8, Ottawa, Ontario, Canada`,
       }),
     };
 

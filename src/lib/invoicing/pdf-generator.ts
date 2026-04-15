@@ -327,15 +327,20 @@ export async function generateInvoicePdf(
     y = ctaY + ctaH + 6;
   }
 
-  // ─── PAYMENT INSTRUCTIONS (text only, no colored boxes) ────
+  // ─── PAYMENT INSTRUCTIONS (region-aware, single-block primary) ─
+  // Canadian clients see one locked e-Transfer block. International
+  // clients see one block from the cascade (Stripe > wire > PayPal
+  // > contact fallback). The old "Dr. Hala can arrange any of these"
+  // four-option fallback is gone.
+  const paymentResult = buildPaymentInstructions(invoice, settings);
+  const allBlocks = [paymentResult.primary, ...paymentResult.secondary];
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
   doc.setTextColor(...MUTED);
-  doc.text('OTHER PAYMENT METHODS', MARGIN, y);
+  doc.text('HOW TO PAY', MARGIN, y);
   y += 5;
 
-  const blocks = buildPaymentInstructions(invoice, settings);
-  for (const block of blocks) {
+  for (const block of allBlocks) {
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(9);
     doc.setTextColor(...DARK);
@@ -344,11 +349,25 @@ export async function generateInvoicePdf(
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(8);
     doc.setTextColor(...TEXT);
-    for (const line of block.lines) {
+    for (const line of block.bodyLines) {
       for (const wl of wrap(doc, line, CONTENT_WIDTH)) {
         doc.text(wl, MARGIN, y);
         y += 3.5;
       }
+    }
+    // If the block has a CTA link, render it as a clickable line.
+    // jsPDF/Windows-1252 can't render em-dashes, so keep this ASCII.
+    if (block.linkUrl && block.linkLabel) {
+      doc.setTextColor(...PLUM);
+      doc.setFont('helvetica', 'bold');
+      try {
+        doc.textWithLink(`${block.linkLabel}: ${block.linkUrl}`, MARGIN, y, { url: block.linkUrl });
+      } catch {
+        doc.text(`${block.linkLabel}: ${block.linkUrl}`, MARGIN, y);
+      }
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(...TEXT);
+      y += 3.5;
     }
     y += 2;
   }

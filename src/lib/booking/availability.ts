@@ -5,7 +5,13 @@
    Google Calendar busy slots, and existing bookings to produce
    a list of available time slots for any given day.
 
-   All rules are stored in the provider's timezone (America/Toronto).
+   Weekly schedule is stored in the provider's home-base timezone,
+   but the effective tz for any individual date is resolved via
+   `getEffectiveTimezone(date)` which checks Dr. Hala's travel
+   schedule + manual override first. This means a booking on
+   Apr 25 during a Dubai trip uses Asia/Dubai for slot computation
+   even though rules.timezone is still America/Toronto.
+
    Slots are returned in ISO 8601 UTC for universal consumption.
    ================================================================ */
 
@@ -20,9 +26,9 @@ import {
   getAvailabilityRules,
   getBlockedDate,
   getDayOverride,
-  getConfirmedBookingsForDate,
-  countConfirmedForDate,
+  getHeldBookingsForDate,
 } from './booking-store';
+import { getEffectiveTimezone } from './provider-location';
 
 // ─── Timezone Utilities ─────────────────────────────────────────
 
@@ -147,7 +153,14 @@ export async function getAvailableSlots(
   rules?: AvailabilityRules,
 ): Promise<TimeSlot[]> {
   const effectiveRules = rules ?? await getAvailabilityRules();
-  const { timezone } = effectiveRules;
+
+  // Resolve the effective timezone for THIS specific day via the
+  // travel-schedule / override resolver. Home-base is the fallback.
+  // We pass midday UTC so the resolver lands squarely inside the
+  // target local day no matter how wide the UTC offset is.
+  const midday = new Date(`${date}T12:00:00Z`);
+  const timezone = await getEffectiveTimezone(midday);
+
   const now = new Date();
 
   // 1. Check if date is blocked
@@ -199,8 +212,12 @@ export async function getAvailableSlots(
 
   if (candidates.length === 0) return [];
 
-  // 5. Get existing confirmed bookings for this date
-  const existingBookings = await getConfirmedBookingsForDate(date);
+  // 5. Get existing bookings that occupy this date — confirmed ones
+  //    AND unexpired pending-review holds from the admin Step 2 flow.
+  //    Pending-review bookings hold their slot while an admin reviews
+  //    the invoice; if the hold expires, the slot is freed without
+  //    mutating the record (lazy sweep).
+  const existingBookings = await getHeldBookingsForDate(date);
   const bookedRanges: TimeRange[] = existingBookings.map(b => ({
     start: b.startTime,
     // Extend by buffer on both sides for gap enforcement

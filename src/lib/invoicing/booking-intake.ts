@@ -50,13 +50,36 @@ export interface BookingIntakeInput {
   endTime?: string;
   /** Any free-text notes the client provided at booking time. */
   customerNotes?: string;
+  /**
+   * When this booking is part of a recurring series, describes how the
+   * draft should be created:
+   * - `per-session`: unchanged behavior, one draft per bookingId.
+   * - `bundled` + `isAnchor: true`: create a single draft covering
+   *   all `seriesTotal` sessions as line items. Only the anchor
+   *   (seriesIndex === 1) produces a draft in this mode.
+   * - `bundled` + `isAnchor: false`: skip draft creation entirely.
+   *   Caller should store `bundleAnchorBookingId` on the sibling booking
+   *   so it can find the draft later.
+   */
+  seriesContext?: {
+    mode: 'per-session' | 'bundled';
+    isAnchor: boolean;
+    seriesTotal: number;
+    seriesId: string;
+  };
 }
 
 export interface BookingIntakeResult {
   customerEmail: string;
+  /** Empty string when bundled + non-anchor (draft lives on the anchor). */
   draftId: string;
   serviceSlugMapping: CalServiceMapResult;
   createdNewCustomer: boolean;
+  /**
+   * True when this call created a bundled-series anchor draft containing
+   * `seriesTotal` line items (not a single-session draft).
+   */
+  createdBundledDraft?: boolean;
 }
 
 /**
@@ -177,15 +200,44 @@ export async function processBookingIntake(
   // ─── 4. Map event type to canonical service slug ────────────────
   const slugMapping = mapCalSlugToService(input.eventTypeSlug);
 
-  // ─── 5. Build the draft invoice ─────────────────────────────────
+  // ─── 5. Bundled series, non-anchor: skip draft creation ─────────
+  // The anchor (seriesIndex === 1) owns the draft for the whole series.
+  // Non-anchor siblings point back to it via bundleAnchorBookingId on
+  // the Booking record.
+  if (
+    input.seriesContext
+    && input.seriesContext.mode === 'bundled'
+    && !input.seriesContext.isAnchor
+  ) {
+    return {
+      customerEmail: effectiveEmail,
+      draftId: '',
+      serviceSlugMapping: slugMapping,
+      createdNewCustomer,
+    };
+  }
+
+  // ─── 6. Build the draft invoice ─────────────────────────────────
   const now = new Date().toISOString();
   const bookingLabel = formatBookingDate(input.startTime);
-  const subjectText = `Session booked for ${bookingLabel}`;
+  const isBundledAnchor =
+    input.seriesContext?.mode === 'bundled'
+    && input.seriesContext.isAnchor === true;
+  const seriesTotal = input.seriesContext?.seriesTotal ?? 1;
+
+  const subjectText = isBundledAnchor
+    ? `${seriesTotal}-session series starting ${bookingLabel}`
+    : `Session booked for ${bookingLabel}`;
 
   const adminNoteParts: string[] = [
     `Source: ${input.source}`,
     `Booking ID: ${input.bookingId}`,
   ];
+  if (isBundledAnchor && input.seriesContext) {
+    adminNoteParts.push(
+      `Bundled series: ${seriesTotal} sessions (series ${input.seriesContext.seriesId})`,
+    );
+  }
   if (!slugMapping.matched && slugMapping.original) {
     adminNoteParts.push(
       `⚠ Unknown Cal.com event type "${slugMapping.original}" — fell back to anxiety-counseling. Edit the service below if needed.`,
@@ -200,6 +252,20 @@ export async function processBookingIntake(
     );
   }
 
+  // Build line items for a bundled-anchor draft so the invoice shows
+  // one row per session. Non-bundled drafts leave lineItems undefined
+  // and fall back to the single-service pricing engine.
+  const lineItems = isBundledAnchor
+    ? Array.from({ length: seriesTotal }, (_, i) => ({
+        id: `seriesitem_${i + 1}`,
+        description: `${input.eventTypeSlug} — session ${i + 1} of ${seriesTotal}`,
+        quantity: 1,
+        // Unit price is populated by the rate-breakdown engine downstream;
+        // 0 here is a sentinel meaning "use the draft's computed rate".
+        unitPriceLocal: 0,
+      }))
+    : undefined;
+
   const draft: InvoiceDraft = {
     draftId: generateDraftId(),
     client: {
@@ -213,10 +279,16 @@ export async function processBookingIntake(
     package: 'single',
     slidingScalePercent: 0,
     taxMode: settings.defaultTaxMode,
-    allowETransfer: country === 'CA' ? settings.defaultAllowETransfer : false,
+    // Canadian clients ALWAYS get e-Transfer enabled. This is a hard
+    // assignment, not a default — the UI also locks the toggle. Drops
+    // the redundant "Dr. Hala can arrange any of these" fallback.
+    // Non-CA: never e-Transfer by default (they get Stripe/wire/PayPal
+    // via the region-aware payment-instructions builder).
+    allowETransfer: country === 'CA',
     daysUntilDue: settings.defaultDaysUntilDue,
     subject: subjectText,
     adminNote: adminNoteParts.join('\n'),
+    ...(lineItems ? { lineItems } : {}),
     createdAt: now,
     updatedAt: now,
   };
@@ -228,5 +300,68 @@ export async function processBookingIntake(
     draftId: draft.draftId,
     serviceSlugMapping: slugMapping,
     createdNewCustomer,
+    createdBundledDraft: isBundledAnchor,
   };
+}
+
+/**
+ * Recompute a bundled-series draft's line items after a cancellation,
+ * reschedule, or status change. Reads all non-cancelled siblings from
+ * KV, rebuilds `lineItems`, and patches the anchor draft. Idempotent.
+ *
+ * Used by the cancel-one flow and the full series-cancel flow. Safe
+ * to call even if the series is `per-session` (it becomes a no-op).
+ */
+export async function recomputeBundleInvoice(seriesId: string): Promise<{
+  updated: boolean;
+  remainingSessions: number;
+}> {
+  const { getBookingsBySeriesId } = await import('@/lib/booking/booking-store');
+  const { getDraft, saveDraft } = await import('./kv-store');
+
+  const siblings = await getBookingsBySeriesId(seriesId);
+  if (siblings.length === 0) {
+    return { updated: false, remainingSessions: 0 };
+  }
+
+  // Find the anchor (seriesIndex === 1 with bundleInvoiceDraftId)
+  const anchor = siblings.find(
+    b => b.series?.seriesIndex === 1 && !!b.series?.bundleInvoiceDraftId,
+  );
+  if (!anchor || !anchor.series?.bundleInvoiceDraftId) {
+    // Not a bundled series — nothing to recompute
+    return { updated: false, remainingSessions: siblings.length };
+  }
+
+  const draft = await getDraft(anchor.series.bundleInvoiceDraftId);
+  if (!draft) {
+    return { updated: false, remainingSessions: 0 };
+  }
+
+  // Active siblings are those not in cancelled/declined/no-show
+  const isActive = (b: typeof siblings[number]) =>
+    b.status !== 'cancelled'
+    && b.status !== 'declined'
+    && b.status !== 'no-show'
+    && b.status !== 'rescheduled';
+  const active = siblings.filter(isActive);
+  const remaining = active.length;
+
+  const lineItems = active
+    .slice()
+    .sort((a, b) => (a.series?.seriesIndex ?? 0) - (b.series?.seriesIndex ?? 0))
+    .map((b, idx) => ({
+      id: `seriesitem_${b.series?.seriesIndex ?? idx + 1}`,
+      description: `${b.serviceSlug} — session ${b.series?.seriesIndex ?? idx + 1}`,
+      quantity: 1,
+      unitPriceLocal: 0,
+    }));
+
+  await saveDraft({
+    ...draft,
+    lineItems,
+    updatedAt: new Date().toISOString(),
+  });
+
+  return { updated: true, remainingSessions: remaining };
 }

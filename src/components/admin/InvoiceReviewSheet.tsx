@@ -42,7 +42,38 @@ interface InvoiceReviewSheetProps {
   draft: InvoiceDraft;
   password: string;
   onClose: () => void;
+  /**
+   * Fired after a successful send via /api/admin/invoices/create.
+   * In `inline` mode this is only called when `onConfirm` is NOT
+   * provided — see `onConfirm` below.
+   */
   onSent: (invoiceNumber: string) => void;
+  /**
+   * Rendering mode:
+   * - `sheet` (default) — slide-up bottom sheet with backdrop.
+   * - `inline` — render contents in-place with no wrapper/backdrop.
+   *   Used by NewBookingModal Step 2 to embed the review UI.
+   */
+  mode?: 'sheet' | 'inline';
+  /**
+   * Only relevant in `inline` mode. When provided, the primary
+   * footer button calls this instead of `/api/admin/invoices/create`.
+   * The latest draft is auto-saved via `/api/admin/invoices/drafts`
+   * before `onConfirm` fires so the parent can trigger downstream
+   * work (e.g. `/api/admin/booking/[id]/confirm-and-send`) against
+   * the fresh KV state. `onSent` is NOT called in this flow.
+   */
+  onConfirm?: (draft: InvoiceDraft) => Promise<void> | void;
+  /** Override the primary footer button label (default: "Send Invoice"). */
+  onConfirmLabel?: string;
+  /**
+   * Optional secondary action — rendered as a muted button next to
+   * the confirm button. Used by NewBookingModal for "Skip & Send Later".
+   */
+  onSecondaryAction?: {
+    label: string;
+    handler: (draft: InvoiceDraft) => Promise<void> | void;
+  };
 }
 
 export default function InvoiceReviewSheet({
@@ -52,13 +83,24 @@ export default function InvoiceReviewSheet({
   password,
   onClose,
   onSent,
+  mode = 'sheet',
+  onConfirm,
+  onConfirmLabel,
+  onSecondaryAction,
 }: InvoiceReviewSheetProps) {
   // Normalize the initial country to ISO-2 so the dropdown pre-selects
-  // correctly even when the booking stored a raw display name.
-  const [localDraft, setLocalDraft] = useState<InvoiceDraft>(() => ({
-    ...initialDraft,
-    client: { ...initialDraft.client, country: toISO2(initialDraft.client.country) },
-  }));
+  // correctly even when the booking stored a raw display name. Also
+  // force allowETransfer to true for Canadian clients — this is a
+  // defense-in-depth assignment; booking-intake also sets it, but
+  // legacy drafts may have been saved with the old default.
+  const [localDraft, setLocalDraft] = useState<InvoiceDraft>(() => {
+    const countryIso = toISO2(initialDraft.client.country);
+    return {
+      ...initialDraft,
+      client: { ...initialDraft.client, country: countryIso },
+      allowETransfer: countryIso === 'CA' ? true : initialDraft.allowETransfer,
+    };
+  });
   const [settings, setSettings] = useState<InvoiceSettings | null>(null);
   const [sending, setSending] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -85,16 +127,29 @@ export default function InvoiceReviewSheet({
       .catch(() => {});
   }, [open, headers]);
 
-  // Reset local draft when initial draft changes (normalize country on reset too)
+  // Reset local draft when initial draft changes (normalize country on
+  // reset too, and re-force CA e-Transfer lock).
   useEffect(() => {
+    const countryIso = toISO2(initialDraft.client.country);
     setLocalDraft({
       ...initialDraft,
-      client: { ...initialDraft.client, country: toISO2(initialDraft.client.country) },
+      client: { ...initialDraft.client, country: countryIso },
+      allowETransfer: countryIso === 'CA' ? true : initialDraft.allowETransfer,
     });
     setError(null);
     setConfirmSend(false);
     setPreviewUrl(null);
   }, [initialDraft]);
+
+  // When the admin flips the country to CA mid-review, force-enable
+  // e-Transfer. This keeps the UI and KV state consistent with the
+  // locked-for-CA rule without surprising the admin.
+  useEffect(() => {
+    const countryIso = localDraft.client.country?.toUpperCase();
+    if (countryIso === 'CA' && !localDraft.allowETransfer) {
+      setLocalDraft(prev => ({ ...prev, allowETransfer: true }));
+    }
+  }, [localDraft.client.country, localDraft.allowETransfer]);
 
   // Compute breakdown
   const breakdown = useMemo<InvoiceRateBreakdown | null>(() => {
@@ -140,11 +195,35 @@ export default function InvoiceReviewSheet({
     hour: 'numeric', minute: '2-digit',
   });
 
+  // Save the current draft to KV. Used by inline mode before firing
+  // onConfirm so the parent's downstream endpoint reads the fresh state.
+  const persistDraft = async () => {
+    const res = await fetch('/api/admin/invoices/drafts', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ draft: localDraft }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || 'Failed to save draft');
+    }
+  };
+
   // Send invoice
   const handleSend = async () => {
     setSending(true);
     setError(null);
     try {
+      // Inline mode: parent controls the send via onConfirm. Save the
+      // latest draft first so the parent's endpoint reads fresh KV
+      // state, then hand off.
+      if (mode === 'inline' && onConfirm) {
+        await persistDraft();
+        await onConfirm(localDraft);
+        return;
+      }
+
+      // Sheet mode (legacy): call /api/admin/invoices/create directly.
       const res = await fetch('/api/admin/invoices/create', {
         method: 'POST',
         headers,
@@ -163,6 +242,21 @@ export default function InvoiceReviewSheet({
     } finally {
       setSending(false);
       setConfirmSend(false);
+    }
+  };
+
+  // Secondary action (inline mode only): "Skip & Send Later"
+  const handleSecondaryAction = async () => {
+    if (!onSecondaryAction) return;
+    setSending(true);
+    setError(null);
+    try {
+      await persistDraft();
+      await onSecondaryAction.handler(localDraft);
+    } catch (err: any) {
+      setError(err.message || onSecondaryAction.label + ' failed');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -197,49 +291,59 @@ export default function InvoiceReviewSheet({
 
   if (!open) return null;
 
-  return (
-    <AnimatePresence>
-      {open && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            className="fixed inset-0 z-50 bg-black/40"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+  // ─── Shared body (sticky header + scroll + footer) ─────────
+  // The same JSX is rendered inside a Sheet wrapper (mode='sheet')
+  // or directly in the parent's flow layout (mode='inline'). The
+  // inline variant drops the fixed positioning, backdrop, drag
+  // handle, and close-X button.
+  const isInline = mode === 'inline';
+
+  const bodyContent = (
+    <div
+      className={
+        isInline
+          ? 'flex flex-col w-full bg-[#FAF7F2] rounded-xl border border-[#EDE8DF]'
+          : 'fixed inset-x-0 bottom-0 z-50 bg-[#FAF7F2] rounded-t-2xl md:rounded-2xl md:inset-auto md:top-[5vh] md:left-1/2 md:w-full md:max-w-2xl md:-translate-x-1/2 md:bottom-auto md:max-h-[90vh] flex flex-col'
+      }
+      style={isInline ? undefined : { maxHeight: '90vh' }}
+    >
+      {/* Drag handle (mobile) — sheet mode only */}
+      {!isInline && (
+        <div className="flex justify-center pt-2 pb-1 md:hidden">
+          <div className="w-10 h-1 rounded-full bg-[#E8E0D8]" />
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDE8DF]">
+        <div>
+          <h2 className="text-base font-bold text-[#2D2A33]">
+            {isInline ? 'Step 2 · Review Invoice' : 'Review Invoice'}
+          </h2>
+          <p className="text-xs text-[#8E8E9F]">
+            {isInline
+              ? 'Auto-priced from the booking. Edit anything, then confirm to send.'
+              : 'Review and adjust before sending'}
+          </p>
+        </div>
+        {!isInline && (
+          <button
             onClick={onClose}
-          />
-
-          {/* Sheet */}
-          <motion.div
-            className="fixed inset-x-0 bottom-0 z-50 bg-[#FAF7F2] rounded-t-2xl md:rounded-2xl md:inset-auto md:top-[5vh] md:left-1/2 md:w-full md:max-w-2xl md:-translate-x-1/2 md:bottom-auto md:max-h-[90vh] flex flex-col"
-            style={{ maxHeight: '90vh' }}
-            initial={{ y: '100%', opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: '100%', opacity: 0 }}
-            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            className="p-2 rounded-full hover:bg-[#EDE6DF] transition-colors"
           >
-            {/* Drag handle (mobile) */}
-            <div className="flex justify-center pt-2 pb-1 md:hidden">
-              <div className="w-10 h-1 rounded-full bg-[#E8E0D8]" />
-            </div>
+            <X className="w-5 h-5 text-[#8E8E9F]" />
+          </button>
+        )}
+      </div>
 
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDE8DF]">
-              <div>
-                <h2 className="text-base font-bold text-[#2D2A33]">Review Invoice</h2>
-                <p className="text-xs text-[#8E8E9F]">Review and adjust before sending</p>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-2 rounded-full hover:bg-[#EDE6DF] transition-colors"
-              >
-                <X className="w-5 h-5 text-[#8E8E9F]" />
-              </button>
-            </div>
-
-            {/* Scrollable content */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+      {/* Scrollable content */}
+      <div
+        className={
+          isInline
+            ? 'overflow-y-auto px-4 py-4 space-y-4 max-h-[60vh]'
+            : 'flex-1 overflow-y-auto px-4 py-4 space-y-4'
+        }
+      >
               {/* Booking context — read-only */}
               <div className="bg-white rounded-xl border border-[#EDE8DF] p-4">
                 <div className="flex items-center gap-3 mb-3">
@@ -447,15 +551,35 @@ export default function InvoiceReviewSheet({
                     />
                     HST (13%)
                   </label>
-                  <label className="flex items-center gap-2 text-xs text-[#4A4A5C] cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={localDraft.allowETransfer}
-                      onChange={e => updateDraft({ allowETransfer: e.target.checked })}
-                      className="w-4 h-4 rounded accent-[#7A3B5E]"
-                    />
-                    e-Transfer
-                  </label>
+                  {/* e-Transfer: always on for Canadian clients (locked),
+                      manual opt-in for everyone else. */}
+                  {localDraft.client.country?.toUpperCase() === 'CA' ? (
+                    <label
+                      className="flex items-center gap-2 text-xs text-[#4A4A5C] cursor-not-allowed"
+                      title="Always on for Canadian clients"
+                    >
+                      <input
+                        type="checkbox"
+                        checked
+                        disabled
+                        className="w-4 h-4 rounded accent-[#7A3B5E] cursor-not-allowed"
+                      />
+                      <span>e-Transfer</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[#3B8A6E]/10 text-[#3B8A6E] font-semibold uppercase tracking-wide">
+                        CA locked
+                      </span>
+                    </label>
+                  ) : (
+                    <label className="flex items-center gap-2 text-xs text-[#4A4A5C] cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={localDraft.allowETransfer}
+                        onChange={e => updateDraft({ allowETransfer: e.target.checked })}
+                        className="w-4 h-4 rounded accent-[#7A3B5E]"
+                      />
+                      e-Transfer
+                    </label>
+                  )}
                 </div>
               </Section>
 
@@ -512,66 +636,111 @@ export default function InvoiceReviewSheet({
               )}
             </div>
 
-            {/* Footer actions — sticky at bottom */}
-            <div className="border-t border-[#EDE8DF] bg-white px-4 py-3 space-y-2">
-              {confirmSend ? (
-                <div className="space-y-2">
-                  <p className="text-sm text-[#4A4A5C] text-center">
-                    Send invoice for <strong>{breakdown?.formattedTotal || '...'}</strong> to {booking.clientEmail}?
-                  </p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setConfirmSend(false)}
-                      className="flex-1 py-2.5 rounded-xl bg-[#F5F0EB] text-sm font-semibold text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors active:scale-[0.97]"
-                    >
-                      Go Back
-                    </button>
-                    <button
-                      onClick={handleSend}
-                      disabled={sending}
-                      className="flex-1 py-2.5 rounded-xl bg-[#3B8A6E] text-sm font-semibold text-white hover:bg-[#2F7A5E] disabled:opacity-50 transition-colors active:scale-[0.97] flex items-center justify-center gap-2"
-                    >
-                      {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                      Confirm & Send
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex gap-2">
-                  <button
-                    onClick={handlePreview}
-                    className="flex-1 py-2.5 rounded-xl bg-[#F5F0EB] text-sm font-semibold text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors active:scale-[0.97] flex items-center justify-center gap-2"
-                  >
-                    <Eye className="w-4 h-4" /> Preview PDF
-                  </button>
-                  <button
-                    onClick={() => setConfirmSend(true)}
-                    disabled={!breakdown || !localDraft.serviceSlug}
-                    className="flex-1 py-2.5 rounded-xl bg-[#7A3B5E] text-sm font-semibold text-white hover:bg-[#6A2E4E] disabled:opacity-50 transition-colors active:scale-[0.97] flex items-center justify-center gap-2"
-                  >
-                    <Send className="w-4 h-4" /> Send Invoice
-                  </button>
-                </div>
-              )}
+      {/* Footer actions — sticky at bottom */}
+      <div className="border-t border-[#EDE8DF] bg-white px-4 py-3 space-y-2">
+        {confirmSend ? (
+          <div className="space-y-2">
+            <p className="text-sm text-[#4A4A5C] text-center">
+              {isInline
+                ? <>Activate booking and send invoice for <strong>{breakdown?.formattedTotal || '...'}</strong> to {booking.clientEmail}?</>
+                : <>Send invoice for <strong>{breakdown?.formattedTotal || '...'}</strong> to {booking.clientEmail}?</>
+              }
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setConfirmSend(false)}
+                className="flex-1 py-2.5 rounded-xl bg-[#F5F0EB] text-sm font-semibold text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors active:scale-[0.97]"
+              >
+                Go Back
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={sending}
+                className="flex-1 py-2.5 rounded-xl bg-[#3B8A6E] text-sm font-semibold text-white hover:bg-[#2F7A5E] disabled:opacity-50 transition-colors active:scale-[0.97] flex items-center justify-center gap-2"
+              >
+                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                {onConfirmLabel ?? 'Confirm & Send'}
+              </button>
             </div>
-
-            {/* PDF Preview overlay */}
-            {previewUrl && (
-              <div className="fixed inset-0 z-[60] bg-black/50 flex items-end md:items-center justify-center" onClick={() => { URL.revokeObjectURL(previewUrl); setPreviewUrl(null); }}>
-                <div className="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-3xl h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDE8DF]">
-                    <h3 className="text-sm font-semibold text-[#2D2A33]">Invoice Preview</h3>
-                    <button
-                      onClick={() => { URL.revokeObjectURL(previewUrl); setPreviewUrl(null); }}
-                      className="p-2 rounded-full hover:bg-[#EDE6DF] transition-colors"
-                    >
-                      <X className="w-4 h-4 text-[#8E8E9F]" />
-                    </button>
-                  </div>
-                  <iframe src={previewUrl} className="flex-1 w-full" title="Invoice Preview" />
-                </div>
-              </div>
+          </div>
+        ) : (
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={handlePreview}
+              className="flex-1 min-w-[140px] py-2.5 rounded-xl bg-[#F5F0EB] text-sm font-semibold text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors active:scale-[0.97] flex items-center justify-center gap-2"
+            >
+              <Eye className="w-4 h-4" /> Preview PDF
+            </button>
+            {isInline && onSecondaryAction && (
+              <button
+                onClick={handleSecondaryAction}
+                disabled={sending}
+                className="flex-1 min-w-[140px] py-2.5 rounded-xl bg-[#FFFAF5] border border-[#C8A97D]/40 text-sm font-semibold text-[#7A3B5E] hover:bg-[#FCF3E8] disabled:opacity-50 transition-colors active:scale-[0.97] flex items-center justify-center gap-2"
+              >
+                {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                {onSecondaryAction.label}
+              </button>
             )}
+            <button
+              onClick={() => setConfirmSend(true)}
+              disabled={!breakdown || !localDraft.serviceSlug}
+              className="flex-1 min-w-[140px] py-2.5 rounded-xl bg-[#7A3B5E] text-sm font-semibold text-white hover:bg-[#6A2E4E] disabled:opacity-50 transition-colors active:scale-[0.97] flex items-center justify-center gap-2"
+            >
+              <Send className="w-4 h-4" />
+              {onConfirmLabel ?? 'Send Invoice'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* PDF Preview overlay */}
+      {previewUrl && (
+        <div className="fixed inset-0 z-[60] bg-black/50 flex items-end md:items-center justify-center" onClick={() => { URL.revokeObjectURL(previewUrl); setPreviewUrl(null); }}>
+          <div className="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-3xl h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDE8DF]">
+              <h3 className="text-sm font-semibold text-[#2D2A33]">Invoice Preview</h3>
+              <button
+                onClick={() => { URL.revokeObjectURL(previewUrl); setPreviewUrl(null); }}
+                className="p-2 rounded-full hover:bg-[#EDE6DF] transition-colors"
+              >
+                <X className="w-4 h-4 text-[#8E8E9F]" />
+              </button>
+            </div>
+            <iframe src={previewUrl} className="flex-1 w-full" title="Invoice Preview" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // Inline mode: render body directly, no motion/backdrop.
+  if (isInline) {
+    return bodyContent;
+  }
+
+  // Sheet mode: wrap in AnimatePresence + backdrop + slide-up motion.
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            className="fixed inset-0 z-50 bg-black/40"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+
+          {/* Sheet body (with slide-up animation) */}
+          <motion.div
+            className="contents"
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: '100%', opacity: 0 }}
+            transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+          >
+            {bodyContent}
           </motion.div>
         </>
       )}

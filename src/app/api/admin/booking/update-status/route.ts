@@ -6,7 +6,12 @@
    to the client based on the new status. */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getBooking, updateBooking, createManageToken } from '@/lib/booking/booking-store';
+import {
+  getBooking,
+  updateBooking,
+  getBookingsBySeriesId,
+  createManageToken,
+} from '@/lib/booking/booking-store';
 import { authorize } from '@/lib/invoicing/auth';
 import {
   sendBookingEmail,
@@ -15,7 +20,8 @@ import {
   buildStatusCompletedEmail,
   buildStatusNoShowEmail,
 } from '@/lib/booking/emails';
-import type { BookingStatus } from '@/lib/booking/types';
+import { recomputeBundleInvoice } from '@/lib/invoicing/booking-intake';
+import type { Booking, BookingStatus } from '@/lib/booking/types';
 
 const VALID_STATUSES: BookingStatus[] = [
   'pending_approval', 'approved', 'confirmed', 'completed', 'cancelled', 'declined', 'rescheduled', 'no-show',
@@ -47,6 +53,60 @@ export async function POST(request: NextRequest) {
       ...(status === 'cancelled' ? { cancelledAt: new Date().toISOString() } : {}),
       ...(status === 'completed' ? { completedAt: new Date().toISOString() } : {}),
     });
+
+    // ─── Series cascade: cancel-one ────────────────────────────
+    // If this booking is part of a recurring series AND the new status
+    // removes it from the series (cancelled / declined / no-show), we:
+    //   1. Record the cancelled index on every sibling so the UI can
+    //      render "2 of 8 (1 cancelled)" without re-scanning the store.
+    //   2. For bundled series, recompute the anchor draft's line items
+    //      so the bill reflects only the remaining sessions.
+    const removesFromSeries =
+      status === 'cancelled' || status === 'declined' || status === 'no-show';
+    if (removesFromSeries && booking.series?.seriesId) {
+      try {
+        const seriesId = booking.series.seriesId;
+        const cancelledIndex = booking.series.seriesIndex;
+        const siblings = await getBookingsBySeriesId(seriesId);
+        await Promise.all(
+          siblings.map(async (sib: Booking) => {
+            if (sib.bookingId === bookingId) return; // already patched above
+            if (!sib.series) return;
+            const existing = sib.series.seriesCancelledIndices ?? [];
+            if (existing.includes(cancelledIndex)) return;
+            await updateBooking(sib.bookingId, {
+              series: {
+                ...sib.series,
+                seriesCancelledIndices: [...existing, cancelledIndex],
+              },
+            });
+          }),
+        );
+
+        // Also patch the cancelled booking's own record so it sees the
+        // same cancellation list (consistency for client-side reads).
+        const selfExisting = booking.series.seriesCancelledIndices ?? [];
+        if (!selfExisting.includes(cancelledIndex)) {
+          await updateBooking(bookingId, {
+            series: {
+              ...booking.series,
+              seriesCancelledIndices: [...selfExisting, cancelledIndex],
+            },
+          });
+        }
+
+        // Bundled series: rebuild the anchor invoice so it reflects
+        // the remaining active sessions (e.g. 8 → 7 line items).
+        if (booking.series.invoiceMode === 'bundled') {
+          await recomputeBundleInvoice(seriesId).catch(err =>
+            console.error('[Update Status] recomputeBundleInvoice failed:', err),
+          );
+        }
+      } catch (seriesErr) {
+        console.error('[Update Status] Series cascade failed:', seriesErr);
+        // Don't block the cancel — main booking update already succeeded
+      }
+    }
 
     // Send client notification if requested
     let emailSent = false;

@@ -8,6 +8,7 @@
 // ─── Status & Mode Enums ────────────────────────────────────────
 
 export type BookingStatus =
+  | 'pending-review'    // Admin created but holding for inline Step 2 invoice review — no emails, no GCal yet
   | 'pending_approval'  // Client submitted — waiting for Dr. Hala to review
   | 'approved'          // Dr. Hala approved — invoice sent, waiting for payment
   | 'confirmed'         // Payment received — session is locked in
@@ -20,6 +21,31 @@ export type BookingStatus =
 export type BookingSource = 'native' | 'cal-com' | 'manual';
 export type SessionMode = 'online' | 'inPerson';
 export type ReminderType = '24h' | '1h';
+
+// ─── Recurrence (series of bookings) ────────────────────────────
+
+export type RecurrenceFrequency = 'weekly' | 'biweekly';
+
+export interface RecurrenceSeriesMeta {
+  /** Unique series id (`ser_{uuid}`), shared across all siblings. */
+  seriesId: string;
+  /** 1-based index (e.g. 1 of 8). */
+  seriesIndex: number;
+  /**
+   * Total sessions in the series, kept immutable even after cancellations so
+   * UI can show "2 of 8 (1 cancelled)".
+   */
+  seriesTotal: number;
+  frequency: RecurrenceFrequency;
+  /** How the series is billed — admin picks per booking in the new-booking modal. */
+  invoiceMode: 'per-session' | 'bundled';
+  /** Only set on the anchor (seriesIndex === 1) when invoiceMode === 'bundled'. */
+  bundleInvoiceDraftId?: string;
+  /** Siblings of a bundled series point back to the anchor for draft lookup. */
+  bundleAnchorBookingId?: string;
+  /** Indices that have been cancelled. Maintained on every sibling for UI display. */
+  seriesCancelledIndices?: number[];
+}
 
 // ─── Core Booking Record ────────────────────────────────────────
 
@@ -86,6 +112,23 @@ export interface Booking {
   reminder24hSentAt?: string;
   reminder1hSentAt?: string;
   followUpSentAt?: string;
+
+  // Recurring series metadata — undefined for one-off bookings
+  series?: RecurrenceSeriesMeta;
+
+  /**
+   * Snapshot of Dr. Hala's effective location label at booking creation
+   * time (e.g. "Toronto, Canada" or "Dubai, UAE"). Stored so later
+   * travel-schedule edits don't mutate issued bookings.
+   */
+  effectiveLocationLabel?: string;
+
+  /**
+   * For status === 'pending-review' only. ISO timestamp after which
+   * availability treats this booking as free (admin hasn't returned
+   * to Step 2 to confirm-and-send). Default hold is 24h from create.
+   */
+  pendingReviewExpiresAt?: string;
 
   createdAt: string;
   updatedAt: string;

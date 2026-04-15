@@ -107,6 +107,19 @@ export const PRICING_TIERS = {
       AED: { online: 300, inPerson: 500 },
     },
   },
+  /**
+   * Flexible 45-min online/phone consultation. Used for returning clients,
+   * quick check-ins, or any topic that doesn't fit a specific category.
+   * Online/phone-only by design — in-person is null.
+   */
+  consultation45min: {
+    key: 'consultation45min',
+    durationMinutes: 45,
+    anchors: {
+      CAD: { online: 100, inPerson: null },
+      AED: { online: 300, inPerson: null },
+    },
+  },
 } as const satisfies Record<string, PricingTierDef>;
 
 export type PricingTierKey = keyof typeof PRICING_TIERS;

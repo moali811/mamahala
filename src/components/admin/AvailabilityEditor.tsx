@@ -25,8 +25,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Clock, Plus, Trash2, Save, Loader2, Check, AlertCircle,
   Globe, CalendarX, Settings as SettingsIcon, ChevronDown,
+  Plane, MapPin,
 } from 'lucide-react';
 import type { AvailabilityRules, DaySchedule, BlockedDate } from '@/lib/booking/types';
+import type {
+  TravelScheduleEntry,
+  ProviderTravelSchedule,
+} from '@/lib/booking/provider-location';
 
 interface Props {
   password: string;
@@ -59,7 +64,7 @@ export default function AvailabilityEditor({ password }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
-  const [section, setSection] = useState<'schedule' | 'blocked' | 'rules'>('schedule');
+  const [section, setSection] = useState<'schedule' | 'travel' | 'blocked' | 'rules'>('schedule');
 
   // Blocked dates state — loaded from KV on mount via loadBlockedDates()
   const [blockedDates, setBlockedDates] = useState<BlockedDate[]>([]);
@@ -68,6 +73,17 @@ export default function AvailabilityEditor({ password }: Props) {
   const [newBlockType, setNewBlockType] = useState<'all-day' | 'time-range'>('all-day');
   const [newBlockStart, setNewBlockStart] = useState('20:00');
   const [newBlockEnd, setNewBlockEnd] = useState('21:00');
+
+  // Travel schedule state
+  const [travelSchedule, setTravelSchedule] = useState<ProviderTravelSchedule | null>(null);
+  const [travelSaving, setTravelSaving] = useState(false);
+  const [travelWarnings, setTravelWarnings] = useState<Array<{ entryId: string; affectedBookings: number }>>([]);
+  // Local new-entry form
+  const [newTripStart, setNewTripStart] = useState('');
+  const [newTripEnd, setNewTripEnd] = useState('');
+  const [newTripTz, setNewTripTz] = useState('Asia/Dubai');
+  const [newTripLabel, setNewTripLabel] = useState('Dubai, UAE');
+  const [newTripNotes, setNewTripNotes] = useState('');
 
   const headers = useMemo(
     () => ({
@@ -115,10 +131,82 @@ export default function AvailabilityEditor({ password }: Props) {
     }
   }, [headers]);
 
+  // Load travel schedule on mount
+  const loadTravelSchedule = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/provider-travel-schedule', { headers });
+      if (!res.ok) throw new Error('Failed to load travel schedule');
+      const data = await res.json();
+      setTravelSchedule(data.schedule ?? { entries: [], updatedAt: new Date().toISOString() });
+    } catch (err) {
+      // Non-fatal — travel schedule is optional
+      console.error('[AvailabilityEditor] loadTravelSchedule:', err);
+    }
+  }, [headers]);
+
+  // Save the full travel schedule back to KV. Surfaces any overlapping-
+  // booking warnings the server returns so the admin can review.
+  const saveTravelSchedule = useCallback(async (next: ProviderTravelSchedule) => {
+    setTravelSaving(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/admin/provider-travel-schedule', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ entries: next.entries }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to save travel schedule');
+      setTravelSchedule(data.schedule);
+      setTravelWarnings(data.warnings ?? []);
+      setSuccess('Travel schedule saved');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save travel schedule');
+    } finally {
+      setTravelSaving(false);
+    }
+  }, [headers]);
+
+  const handleAddTrip = useCallback(() => {
+    if (!travelSchedule || !newTripStart || !newTripEnd || !newTripTz || !newTripLabel.trim()) {
+      setError('Start date, end date, timezone, and label are all required');
+      return;
+    }
+    const next: ProviderTravelSchedule = {
+      entries: [
+        ...travelSchedule.entries,
+        {
+          id: `temp_${Date.now()}`,
+          startDate: newTripStart,
+          endDate: newTripEnd,
+          timezone: newTripTz,
+          locationLabel: newTripLabel.trim(),
+          notes: newTripNotes.trim() || undefined,
+        },
+      ],
+      updatedAt: new Date().toISOString(),
+    };
+    saveTravelSchedule(next);
+    setNewTripStart('');
+    setNewTripEnd('');
+    setNewTripNotes('');
+  }, [travelSchedule, newTripStart, newTripEnd, newTripTz, newTripLabel, newTripNotes, saveTravelSchedule]);
+
+  const handleDeleteTrip = useCallback((id: string) => {
+    if (!travelSchedule) return;
+    const next: ProviderTravelSchedule = {
+      ...travelSchedule,
+      entries: travelSchedule.entries.filter(e => e.id !== id),
+      updatedAt: new Date().toISOString(),
+    };
+    saveTravelSchedule(next);
+  }, [travelSchedule, saveTravelSchedule]);
+
   useEffect(() => {
     loadRules();
     loadBlockedDates();
-  }, [loadRules, loadBlockedDates]);
+    loadTravelSchedule();
+  }, [loadRules, loadBlockedDates, loadTravelSchedule]);
 
   // ─── Save ─────────────────────────────────────────────
   const saveRules = async () => {
@@ -356,6 +444,7 @@ export default function AvailabilityEditor({ password }: Props) {
       <div className="flex gap-1.5 p-1 bg-[#F5F0EB] rounded-xl">
         {([
           { key: 'schedule' as const, label: 'Weekly Schedule', icon: Clock },
+          { key: 'travel' as const, label: 'Travel Schedule', icon: Plane },
           { key: 'blocked' as const, label: 'Blocked Dates', icon: CalendarX },
           { key: 'rules' as const, label: 'Global Rules', icon: SettingsIcon },
         ]).map(tab => {
@@ -474,6 +563,146 @@ export default function AvailabilityEditor({ password }: Props) {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* ─── Travel Schedule ──────────────────────────── */}
+      {section === 'travel' && (
+        <div className="space-y-4">
+          <div className="bg-white rounded-xl border border-[#F0ECE8] p-4 space-y-3">
+            <div className="flex items-start gap-2">
+              <Plane className="w-4 h-4 text-[#C8A97D] mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-bold text-[#2D2A33]">Travel schedule</h3>
+                <p className="text-[11px] text-[#8E8E9F] leading-relaxed mt-1">
+                  Add date ranges for when Dr. Hala is travelling (e.g. Dubai for two weeks).
+                  The availability engine, Google Calendar events, and invoice PDFs
+                  automatically use the destination timezone for any date inside an entry.
+                  The home-base timezone from the Weekly Schedule tab remains the fallback.
+                </p>
+              </div>
+            </div>
+
+            {/* Existing trips */}
+            {travelSchedule?.entries.length ? (
+              <div className="space-y-1.5">
+                {travelSchedule.entries.map(entry => {
+                  const warning = travelWarnings.find(w => w.entryId === entry.id);
+                  return (
+                    <div
+                      key={entry.id}
+                      className="flex items-start gap-2 px-3 py-2 rounded-lg border border-[#F0ECE8] bg-[#FAF7F2]"
+                    >
+                      <MapPin className="w-3.5 h-3.5 text-[#C8A97D] mt-1 shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-[#2D2A33]">
+                          {entry.locationLabel}{' '}
+                          <span className="text-[10px] text-[#8E8E9F] font-mono font-normal">
+                            ({entry.timezone})
+                          </span>
+                        </p>
+                        <p className="text-[11px] text-[#6B6580]">
+                          {entry.startDate} → {entry.endDate}
+                        </p>
+                        {entry.notes && (
+                          <p className="text-[10px] text-[#8E8E9F] italic mt-0.5">{entry.notes}</p>
+                        )}
+                        {warning && warning.affectedBookings > 0 && (
+                          <p className="text-[10px] text-[#C8A97D] mt-0.5 flex items-center gap-1">
+                            <AlertCircle className="w-3 h-3" />
+                            {warning.affectedBookings} existing booking{warning.affectedBookings === 1 ? '' : 's'} fall in this range — review them manually
+                          </p>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteTrip(entry.id)}
+                        disabled={travelSaving}
+                        className="p-1.5 rounded-md hover:bg-red-50 text-[#8E8E9F] hover:text-red-600 transition-colors disabled:opacity-40"
+                        aria-label="Delete trip"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <p className="text-[11px] text-[#8E8E9F] italic">
+                No trips scheduled. Add one below to automatically switch timezones when Dr. Hala travels.
+              </p>
+            )}
+
+            {/* Add new trip form */}
+            <div className="pt-3 border-t border-[#F3EFE8] space-y-2">
+              <p className="text-[10px] font-semibold text-[#4A4A5C] uppercase tracking-wide">
+                Add trip
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] text-[#8E8E9F] mb-1">Start date</label>
+                  <input
+                    type="date"
+                    value={newTripStart}
+                    onChange={e => setNewTripStart(e.target.value)}
+                    className="w-full px-2 py-1.5 rounded-md border border-[#E8E4DE] text-xs bg-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-[#8E8E9F] mb-1">End date (inclusive)</label>
+                  <input
+                    type="date"
+                    value={newTripEnd}
+                    onChange={e => setNewTripEnd(e.target.value)}
+                    className="w-full px-2 py-1.5 rounded-md border border-[#E8E4DE] text-xs bg-white"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] text-[#8E8E9F] mb-1">Timezone</label>
+                  <select
+                    value={newTripTz}
+                    onChange={e => setNewTripTz(e.target.value)}
+                    className="w-full px-2 py-1.5 rounded-md border border-[#E8E4DE] text-xs bg-white"
+                  >
+                    {COMMON_TIMEZONES.map(tz => (
+                      <option key={tz} value={tz}>{tz.replace(/_/g, ' ')}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[10px] text-[#8E8E9F] mb-1">Location label</label>
+                  <input
+                    type="text"
+                    value={newTripLabel}
+                    onChange={e => setNewTripLabel(e.target.value)}
+                    placeholder="Dubai, UAE"
+                    className="w-full px-2 py-1.5 rounded-md border border-[#E8E4DE] text-xs bg-white"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[10px] text-[#8E8E9F] mb-1">Notes (optional)</label>
+                <input
+                  type="text"
+                  value={newTripNotes}
+                  onChange={e => setNewTripNotes(e.target.value)}
+                  placeholder="Family visit, conference, etc."
+                  className="w-full px-2 py-1.5 rounded-md border border-[#E8E4DE] text-xs bg-white"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleAddTrip}
+                disabled={travelSaving || !newTripStart || !newTripEnd || !newTripTz || !newTripLabel.trim()}
+                className="w-full px-3 py-2 rounded-lg bg-[#7A3B5E] text-white text-xs font-semibold hover:bg-[#6A2E4E] disabled:opacity-50 transition-colors inline-flex items-center justify-center gap-2"
+              >
+                {travelSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+                Add trip
+              </button>
+            </div>
           </div>
         </div>
       )}

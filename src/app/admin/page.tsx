@@ -20,6 +20,7 @@ import QuizResultsModule from '@/components/admin/QuizResultsModule';
 import SettingsModule from '@/components/admin/SettingsModule';
 import InvoicesModule from '@/components/admin/InvoicesModule';
 import BookingsModule from '@/components/admin/BookingsModule';
+import LocationPill from '@/components/admin/LocationPill';
 
 interface DashboardStats {
   totals: Record<string, number>;
@@ -456,6 +457,12 @@ export default function AdminCommandCenter() {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Dr. Hala's effective location pill — reflects travel
+                  schedule + manual override from /api/admin/provider-location */}
+              <LocationPill
+                password={password}
+                onOpenTravelSchedule={() => setActiveModule('bookings')}
+              />
               {/* Quick stats badges */}
               {stats && (
                 <div className="hidden sm:flex items-center gap-2 mr-2">

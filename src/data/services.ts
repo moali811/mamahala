@@ -99,6 +99,47 @@ export const services: Service[] = [
     approachAr: 'محادثةٌ مريحةٌ لفهمِ احتياجاتِك وكيف يمكنُ لد. هالة أن تدعمَك بأفضلِ طريقة.',
     faqs: [],
   },
+  // ---- FLEXIBLE PAID CONSULTATION (returning clients, quick check-ins) ----
+  {
+    slug: 'online-phone-consultation',
+    name: 'Online/Phone Consultation',
+    nameAr: 'استشارة عبر الإنترنت أو الهاتف',
+    description: 'A flexible 45-minute paid session via video call or phone — designed for returning clients, quick check-ins, or any topic that doesn\'t fit a specific category. Book in the timezone that works for you; Dr. Hala will meet you where you are.',
+    descriptionAr: 'جلسةٌ مرنةٌ مدفوعةٌ لمدّةِ ٤٥ دقيقةً عبرَ مكالمةِ فيديو أو هاتف — مُصمَّمةٌ للعملاءِ العائدينَ أو الاطمئناناتِ السّريعةِ أو أيِّ موضوعٍ لا يندرجُ تحتَ فئةٍ محدّدة. احجزْ في المنطقةِ الزّمنيّةِ التي تُناسبُك؛ ستلتقيكَ د. هالة أينما كنت.',
+    shortDesc: 'Flexible 45-min paid consult for returning clients and quick check-ins.',
+    shortDescAr: 'جلسةٌ مدفوعةٌ مرنةٌ ٤٥ دقيقة للعملاءِ العائدينَ والاطمئناناتِ السّريعة.',
+    category: 'adults',
+    priceFrom: 100,
+    currency: 'CAD',
+    duration: '45 min',
+    pricingTierKey: 'consultation45min',
+    icon: 'MessageCircle',
+    whoIsThisFor: [
+      'Returning clients who need a flexible follow-up',
+      'Anyone wanting a quick, topic-agnostic consultation',
+      'Clients booking from across timezones (Dubai, Toronto, or anywhere in between)',
+      'People who prefer phone over video',
+    ],
+    whoIsThisForAr: [
+      'العملاءُ العائدونَ الذين يحتاجونَ متابعةً مرنة',
+      'أيُّ شخصٍ يرغبُ في استشارةٍ سريعةٍ بدونِ التقيُّدِ بموضوعٍ محدّد',
+      'العملاءُ الذين يحجزونَ من مناطقَ زمنيّةٍ مختلفة (دبي، تورنتو، وما بينَهما)',
+      'الأشخاصُ الذين يُفضّلونَ الهاتفَ على الفيديو',
+    ],
+    whatToExpect: [
+      'Open conversation in your preferred mode (video or phone)',
+      'Focused 45-minute session tailored to whatever you need to discuss',
+      'Automatic timezone matching — the session appears in your local time',
+    ],
+    whatToExpectAr: [
+      'محادثةٌ مفتوحةٌ في الوضعِ الذي تُفضّلُهُ (فيديو أو هاتف)',
+      'جلسةٌ مُركَّزةٌ لمدّةِ ٤٥ دقيقةً مُصمَّمةٌ وفقَ ما تحتاجُ مناقشتَه',
+      'مطابقةُ المنطقةِ الزّمنيّةِ تلقائيًّا — تظهرُ الجلسةُ بتوقيتِك المحلّي',
+    ],
+    approach: 'A flexible, no-agenda session format — bring whatever\'s on your mind and Dr. Hala will meet you there.',
+    approachAr: 'جلسةٌ مرنةٌ دونَ جدولِ أعمالٍ مُسبَق — أحضرْ ما يشغلُ بالَكَ وستلتقيكَ د. هالة هناك.',
+    faqs: [],
+  },
 
   // ---- YOUTH ----
   {

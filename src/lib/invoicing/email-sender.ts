@@ -42,22 +42,32 @@ function buildInvoiceEmailHtml(
   const service = services.find((s) => s.slug === invoice.draft.serviceSlug);
   const serviceName = service?.name ?? invoice.draft.serviceSlug;
 
-  const blocks = buildPaymentInstructions(invoice, settings);
-  const blocksHtml = blocks
-    .map((b) => {
-      const lines = b.lines
-        .map(
-          (l) =>
-            `<p style="margin:0 0 4px;color:#4A4A5C;font-size:13px;line-height:1.6;">${escapeHtml(l)}</p>`,
-        )
-        .join('');
-      return `
-        <div style="margin-bottom:16px;padding:14px;background:white;border-radius:8px;border-left:3px solid #C8A97D;">
-          <p style="margin:0 0 8px;color:#7A3B5E;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">${escapeHtml(b.heading)}</p>
+  const paymentResult = buildPaymentInstructions(invoice, settings);
+  // Flatten primary + secondary into a single rendering list. Today
+  // `secondary` is always empty under the region-aware logic, but
+  // rendering it keeps the template ready for future multi-method
+  // scenarios without another edit.
+  const allBlocks = [paymentResult.primary, ...paymentResult.secondary];
+  const renderBlock = (b: typeof paymentResult.primary, isPrimary: boolean) => {
+    const lines = b.bodyLines
+      .map(
+        (l) =>
+          `<p style="margin:0 0 4px;color:#4A4A5C;font-size:13px;line-height:1.6;">${escapeHtml(l)}</p>`,
+      )
+      .join('');
+    const cta = b.linkUrl && b.linkLabel
+      ? `<p style="margin:10px 0 0;"><a href="${escapeHtml(b.linkUrl)}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:700;">${escapeHtml(b.linkLabel)}</a></p>`
+      : '';
+    const accent = isPrimary ? '#3B8A6E' : '#C8A97D';
+    const bg = isPrimary ? '#F0FAF5' : 'white';
+    return `
+        <div style="margin-bottom:12px;padding:16px;background:${bg};border-radius:10px;border-left:3px solid ${accent};">
+          <p style="margin:0 0 8px;color:#7A3B5E;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">${escapeHtml(b.heading)}</p>
           ${lines}
+          ${cta}
         </div>`;
-    })
-    .join('');
+  };
+  const blocksHtml = allBlocks.map((b, i) => renderBlock(b, i === 0)).join('');
 
   const innerContent = `
       <!-- Greeting -->
