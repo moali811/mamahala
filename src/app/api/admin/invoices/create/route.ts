@@ -5,7 +5,7 @@
    1. Validates the draft
    2. Recomputes the breakdown on the server (frontend value ignored)
    3. Ensures the customer record exists + has effectiveInitials
-   4. Generates the invoice number in the new MCH-YYYYMM-INIT-N format
+   4. Generates the invoice number in the MHC-YYYYMM-INIT-N format
    5. Generates the PDF via jspdf
    6. Sends the email via Resend (unless Dry Run mode)
    7. Persists StoredInvoice to KV with all immutable snapshots

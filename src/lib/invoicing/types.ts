@@ -101,14 +101,14 @@ export interface InvoiceDraft {
   /**
    * Optional issue date override as a YYYY-MM-DD string. When set, the
    * invoice is stamped with this date instead of `now`. Also drives the
-   * invoice-number YYYYMM prefix (so MCH-202604-HA-3 stays consistent
+   * invoice-number YYYYMM prefix (so MHC-202604-HA-3 stays consistent
    * with the issue month). The due date is computed as
    * `issueDate + daysUntilDue` when this is set.
    */
   issueDate?: string;
   /**
    * Optional override for the invoice number. When set, the server uses
-   * this string verbatim instead of the auto-generated MCH-YYYYMM-{Init}-{N}
+   * this string verbatim instead of the auto-generated MHC-YYYYMM-{Init}-{N}
    * format. Does NOT bump the customer's nextInvoiceSeq counter — the next
    * auto-generated invoice for the same customer will use the expected seq.
    */
@@ -197,10 +197,11 @@ export interface StoredInvoice {
   /** Internal stable ID: inv_{uuid}. */
   invoiceId: string;
   /**
-   * Human-readable invoice number. Format: `MCH-YYYYMM-{Initials}-{N}`
+   * Human-readable invoice number. Format: `MHC-YYYYMM-{Initials}-{N}`
    * where `Initials` is derived from the customer name and `N` is the
    * per-customer sequential session counter. Legacy invoices from Phase 2
-   * use the older `INV-YYYYMM-NNNN` scheme — both formats coexist.
+   * use the older `INV-YYYYMM-NNNN` scheme, and early-2026 invoices used
+   * the typo'd `MCH-` prefix — migrated via the migrate-prefix endpoint.
    */
   invoiceNumber: string;
   /** Immutable snapshot of the draft at send time. */
@@ -350,7 +351,7 @@ export interface Customer {
   /**
    * Next sequential invoice counter for this customer. Starts at 1 and
    * increments atomically on each new invoice. Feeds into the invoice
-   * number: `MCH-YYYYMM-{effectiveInitials}-{nextInvoiceSeq}`.
+   * number: `MHC-YYYYMM-{effectiveInitials}-{nextInvoiceSeq}`.
    */
   nextInvoiceSeq?: number;
   address?: {

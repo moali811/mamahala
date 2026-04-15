@@ -1185,7 +1185,7 @@ function ComposeTab({
                   onChange={(e) => updateDraft('invoiceNumberOverride', e.target.value || undefined)}
                   placeholder={
                     selectedCustomer?.effectiveInitials
-                      ? `MCH-${(draft.issueDate || new Date().toISOString().slice(0, 10)).slice(0, 7).replace('-', '')}-${selectedCustomer.effectiveInitials}-${selectedCustomer.nextInvoiceSeq ?? 1}`
+                      ? `MHC-${(draft.issueDate || new Date().toISOString().slice(0, 10)).slice(0, 7).replace('-', '')}-${selectedCustomer.effectiveInitials}-${selectedCustomer.nextInvoiceSeq ?? 1}`
                       : 'Auto-generated on send'
                   }
                   className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"

@@ -1,8 +1,8 @@
 /* ================================================================
-   Invoice Number Generator — MCH-YYYYMM-{Initials}-{N}
+   Invoice Number Generator — MHC-YYYYMM-{Initials}-{N}
    ================================================================
-   New format (Phase 3+): `MCH-{YYYYMM}-{Initials}-{N}` where:
-   - `MCH` = Mama Hala Consulting company prefix
+   Current format: `MHC-{YYYYMM}-{Initials}-{N}` where:
+   - `MHC` = Mama Hala Consulting company prefix
    - `YYYYMM` = invoice issue month (e.g., "202604" for April 2026)
    - `Initials` = 2-4 letter collision-safe initials derived from
      the customer's name (computed once, persisted on Customer.effectiveInitials)
@@ -10,9 +10,9 @@
      (stored as Customer.nextInvoiceSeq, auto-incremented on write)
 
    Examples:
-   - MCH-202301-HA-1  (Hala Ali, first 2023 session)
-   - MCH-202306-NE-12 (Norhan Eloseily, 12th session, June 2023)
-   - MCH-202603-TB-47 (Talia Al Bustanji, 47th session, March 2026)
+   - MHC-202301-HA-1  (Hala Ali, first 2023 session)
+   - MHC-202306-NE-12 (Norhan Eloseily, 12th session, June 2023)
+   - MHC-202603-TB-47 (Talia Al Bustanji, 47th session, March 2026)
 
    Collision handling:
    - 2-letter initials by default
@@ -21,8 +21,11 @@
      ('a', 'b', 'c', …)
 
    Legacy compat:
-   - Phase 2 invoices with the old INV-YYYYMM-NNNN format are
-     untouched; `invoiceNumber` is immutable once written
+   - Early 2026 invoices used the MCH- prefix (typo of the company
+     initials). A one-time migration via
+     POST /api/admin/invoices/migrate-prefix rewrites them to MHC-.
+   - Phase 2 invoices with the even-older INV-YYYYMM-NNNN format
+     are untouched (different scheme).
    - Phase 2.5's Zoho customer import already computes
      effectiveInitials at upsert time via ensureInitialsForCustomer
    ================================================================ */
@@ -241,7 +244,7 @@ export function formatYearMonth(date: Date): string {
 
 /**
  * Generate the next invoice number for a specific customer.
- * Format: `MCH-{YYYYMM}-{effectiveInitials}-{nextInvoiceSeq}`
+ * Format: `MHC-{YYYYMM}-{effectiveInitials}-{nextInvoiceSeq}`
  *
  * Requires `customer.effectiveInitials` and `customer.nextInvoiceSeq`
  * to be set. Callers should call `ensureInitialsForCustomer()` from
@@ -258,7 +261,7 @@ export function formatInvoiceNumber(
   const ym = formatYearMonth(date);
   const initials = customer.effectiveInitials || 'XX';
   const seq = customer.nextInvoiceSeq || 1;
-  return `MCH-${ym}-${initials}-${seq}`;
+  return `MHC-${ym}-${initials}-${seq}`;
 }
 
 /**

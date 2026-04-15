@@ -225,7 +225,7 @@ export default function CustomerSnapshot({
           <CheckCircle2 className="w-3 h-3 text-emerald-600" />
           {isRTL ? 'رقم الفاتورة التالي: ' : 'Next invoice number: '}
           <span className="font-mono font-semibold text-[#7A3B5E]">
-            MCH-{new Date().toISOString().slice(0, 7).replace('-', '')}-
+            MHC-{new Date().toISOString().slice(0, 7).replace('-', '')}-
             {customer.effectiveInitials}-{customer.nextInvoiceSeq ?? 1}
           </span>
         </div>

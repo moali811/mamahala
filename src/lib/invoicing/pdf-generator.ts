@@ -36,12 +36,19 @@ export async function generateInvoicePdf(
   const isPaid = invoice.status === 'paid';
   const rightEdge = PAGE_WIDTH - MARGIN;
 
-  // ─── Subtle watermark (bottom-right, ultra-faded) ──────────
+  // ─── Subtle watermark (centered, ultra-faded) ─────────────
+  // jsPDF's addImage uses the top-left corner of the image as the
+  // anchor, so we compute the top-left coordinates that make the
+  // 75×75 watermark land in the horizontal + vertical centre of the
+  // page (A4 = 210×297mm).
   const watermarkDataUrl = getWatermarkLogoDataUrl();
   if (watermarkDataUrl) {
     try {
+      const wmSize = 75;
+      const wmX = (PAGE_WIDTH - wmSize) / 2;
+      const wmY = (PAGE_HEIGHT - wmSize) / 2;
       doc.setGState(new GState({ opacity: 0.025 }));
-      doc.addImage(watermarkDataUrl, 'PNG', PAGE_WIDTH - 80, PAGE_HEIGHT - 100, 75, 75, undefined, 'FAST');
+      doc.addImage(watermarkDataUrl, 'PNG', wmX, wmY, wmSize, wmSize, undefined, 'FAST');
       doc.setGState(new GState({ opacity: 1 }));
     } catch { /* skip */ }
   }

@@ -385,7 +385,7 @@ async function assignInvoiceNumbers(
       const seq = startSeq + idx;
       const invoiceDate = parseInvoiceDate(group.primary);
       const ym = formatYearMonth(invoiceDate);
-      const newNumber = `MCH-${ym}-${pm.effectiveInitials}-${seq}`;
+      const newNumber = `MHC-${ym}-${pm.effectiveInitials}-${seq}`;
 
       results.push({
         group,
