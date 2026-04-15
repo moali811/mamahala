@@ -806,11 +806,35 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
                     </div>
                   </div>
 
-                  {[
-                    { label: isRTL ? 'صباحاً' : 'Morning', sublabel: '9 AM – 12 PM', slots: morningSlots, bg: 'bg-amber-50', accent: 'text-amber-600', icon: '☀️' },
-                    { label: isRTL ? 'بعد الظهر' : 'Afternoon', sublabel: '12 – 5 PM', slots: afternoonSlots, bg: 'bg-sky-50', accent: 'text-sky-600', icon: '🌤' },
-                    { label: isRTL ? 'مساءً' : 'Evening', sublabel: '5 – 8 PM', slots: eveningSlots, bg: 'bg-indigo-50', accent: 'text-indigo-600', icon: '🌙' },
-                  ].filter(group => group.slots.length > 0).map((group, gi) => (
+                  {(() => {
+                    // Dynamic sublabel: show the actual first-to-last available
+                    // time in each bucket (client-local), rounded to whole-hour
+                    // strings. Empty buckets are filtered out below so they
+                    // never render.
+                    //
+                    // Why dynamic: previously the labels were hardcoded
+                    // ("9 AM – 12 PM", "12 – 5 PM", "5 – 8 PM") which didn't
+                    // match reality when Dr. Hala sets custom hours or the
+                    // minimum-notice filter eats the earliest slots.
+                    const fmtTime = (iso: string) =>
+                      new Date(iso).toLocaleTimeString(isRTL ? 'ar' : 'en-US', {
+                        timeZone: wizard.formData.clientTimezone,
+                        hour: 'numeric',
+                        minute: '2-digit',
+                      });
+                    const slotRange = (slots: TimeSlot[]): string => {
+                      if (slots.length === 0) return '';
+                      if (slots.length === 1) return fmtTime(slots[0].start);
+                      const first = fmtTime(slots[0].start);
+                      const last = fmtTime(slots[slots.length - 1].start);
+                      return `${first} – ${last}`;
+                    };
+                    return [
+                      { label: isRTL ? 'صباحاً' : 'Morning', sublabel: slotRange(morningSlots), slots: morningSlots, bg: 'bg-amber-50', accent: 'text-amber-600', icon: '☀️' },
+                      { label: isRTL ? 'بعد الظهر' : 'Afternoon', sublabel: slotRange(afternoonSlots), slots: afternoonSlots, bg: 'bg-sky-50', accent: 'text-sky-600', icon: '🌤' },
+                      { label: isRTL ? 'مساءً' : 'Evening', sublabel: slotRange(eveningSlots), slots: eveningSlots, bg: 'bg-indigo-50', accent: 'text-indigo-600', icon: '🌙' },
+                    ];
+                  })().filter(group => group.slots.length > 0).map((group, gi) => (
                     <motion.div
                       key={group.label}
                       initial={{ opacity: 0, y: 12 }}
