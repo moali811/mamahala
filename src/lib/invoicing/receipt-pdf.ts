@@ -24,6 +24,7 @@ import {
   PAGE_WIDTH, PAGE_HEIGHT, MARGIN, CONTENT_WIDTH,
   formatDate, hr, sectionLabel, wrap,
 } from './pdf-shared';
+import { BUSINESS } from '@/config/business';
 
 export interface ReceiptInput {
   invoice: StoredInvoice;
@@ -395,7 +396,7 @@ export async function generateReceiptPdf(
   doc.setFontSize(9.5);
   doc.setTextColor(...PLUM);
   doc.text(
-    'For a life full of love, tranquility & peace',
+    BUSINESS.tagline,
     PAGE_WIDTH / 2,
     footerBandY + 4.5,
     { align: 'center' },

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 
 export const dynamic = 'force-dynamic';
 
@@ -160,15 +161,17 @@ export async function POST(req: NextRequest) {
         subject: levelNumber != null
           ? `Level ${levelNumber} Unlocked — Payment Confirmed!`
           : 'Payment Confirmed!',
-        html: `
-          <div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 500px; margin: 0 auto; padding: 30px;">
-            <h1 style="color: #7A3B5E; font-size: 24px;">${levelNumber != null ? `Level ${levelNumber} Unlocked!` : 'Payment Confirmed!'}</h1>
-            <p style="color: #4A4A5C; line-height: 1.6;">Your payment for <strong>${programTitle}</strong> has been confirmed. ${levelNumber != null ? `All modules in Level ${levelNumber}` : 'Your content'} are now unlocked and ready for you.</p>
-            <p style="color: #4A4A5C; line-height: 1.6;">Log in with your email to continue learning.</p>
-            <a href="https://mamahala.ca/en/programs/${programSlug}" style="display: inline-block; background: #7A3B5E; color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; margin-top: 16px;">Continue Learning</a>
-            <p style="color: #8E8E9F; font-size: 12px; margin-top: 30px;">— Dr. Hala & the Mama Hala Team</p>
+        html: emailWrapper(`
+          <div style="${emailStyles.card}">
+            <h1 style="${emailStyles.heading}">${levelNumber != null ? `Level ${levelNumber} Unlocked!` : 'Payment Confirmed!'}</h1>
+            <p style="${emailStyles.text}">Your payment for <strong>${programTitle}</strong> has been confirmed. ${levelNumber != null ? `All modules in Level ${levelNumber}` : 'Your content'} are now unlocked and ready for you.</p>
+            <p style="${emailStyles.text}">Log in with your email to continue learning.</p>
+            <div style="text-align:center;margin:24px 0 8px;">
+              <a href="https://mamahala.ca/en/programs/${programSlug}" style="${emailStyles.button}">Continue Learning</a>
+            </div>
+            <p style="${emailStyles.muted};margin-top:16px;">— Dr. Hala &amp; the Mama Hala Team</p>
           </div>
-        `,
+        `),
       });
     } catch { /* email send failure is non-critical */ }
   }

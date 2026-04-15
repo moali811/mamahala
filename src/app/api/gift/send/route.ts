@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getServiceBySlug, getCategoryInfo } from '@/data/services';
 import { generateGiftEmail } from '@/lib/email/gift-template';
+import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 
 interface GiftRequest {
   gifterName: string;
@@ -115,9 +116,9 @@ export async function POST(request: Request) {
           to: process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca',
           replyTo: gifterEmail,
           subject: `New Gift of Care: ${gifterName} → ${recipientName}`,
-          html: `
-            <div style="font-family:sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#FAF7F2;border-radius:12px;">
-              <h2 style="color:#7A3B5E;">New Gift of Care</h2>
+          html: emailWrapper(`
+            <div style="${emailStyles.card}">
+              <h2 style="${emailStyles.heading}">New Gift of Care</h2>
               <table style="width:100%;border-collapse:collapse;">
                 <tr><td style="padding:8px 0;color:#8E8E9F;width:140px;">Gifter</td><td style="color:#2D2A33;font-weight:600;">${gifterName} (${gifterEmail})</td></tr>
                 <tr><td style="padding:8px 0;color:#8E8E9F;">Recipient</td><td style="color:#2D2A33;">${recipientName} (${recipientEmail})</td></tr>
@@ -127,7 +128,7 @@ export async function POST(request: Request) {
               </table>
               <p style="margin-top:20px;color:#8E8E9F;font-size:12px;">Email to recipient: ${emailSent ? 'Sent ✓' : 'Not sent (no Resend key)'}</p>
             </div>
-          `,
+          `),
         });
       } catch {
         // Non-critical

@@ -18,9 +18,9 @@ export const BUSINESS = {
   // Canonical formatted string (single line). Update here if HQ moves.
   address: '430 Hazeldean Rd, Ottawa, ON K2L 1E8',
 
-  // Brand tagline — appears in email footers + PDF invoice footer.
+  // Brand tagline — appears in website footer, email footers, PDF invoice footer.
   tagline: 'For a life full of love, tranquility & peace',
-  taglineAr: 'لحياة مليئة بالحب والسكينة والسلام',
+  taglineAr: 'لحياةٍ مُفعَمةٍ بالحبِّ والسّكينةِ والسّلام',
 
   // All admin email recipients — single source of truth.
   // Used for BCC on client-facing emails (invoices, receipts) and

@@ -9,6 +9,7 @@ import { sendBookingEmail } from '@/lib/booking/emails';
 import { authorize } from '@/lib/invoicing/auth';
 import { deleteDraft } from '@/lib/invoicing/kv-store';
 import { BUSINESS } from '@/config/business';
+import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
@@ -73,39 +74,22 @@ async function processDecline(bookingId: string, reason?: string): Promise<{
   const firstName = booking.clientName.split(' ')[0];
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
 
-  const html = `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#FAF7F2;font-family:'Segoe UI',Tahoma,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F2;padding:32px 16px;">
-<tr><td align="center">
-<table width="500" cellpadding="0" cellspacing="0" style="max-width:500px;width:100%;">
-  <tr><td style="text-align:center;padding:24px 0 16px;">
-    <p style="margin:0;font-size:18px;font-weight:700;color:#7A3B5E;">Mama Hala Consulting</p>
-    <div style="width:60px;height:2px;background:#C8A97D;margin:16px auto 0;"></div>
-  </td></tr>
-  <tr><td style="padding:0 0 24px;">
-    <div style="background:white;border-radius:12px;padding:28px 24px;">
-      <h2 style="margin:0 0 16px;font-size:18px;font-weight:700;color:#4A4A5C;">Regarding Your Session Request</h2>
-      <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#4A4A5C;">Hi ${firstName},</p>
-      <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#4A4A5C;">Thank you for your interest in booking a ${serviceName} session. Unfortunately, we are unable to accommodate this particular time slot.</p>
-      <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#4A4A5C;">We would love to find a time that works for both of us. Please feel free to:</p>
-      <div style="background:#FFFAF5;border-left:3px solid #C8A97D;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">
+  const html = emailWrapper(`
+    <div style="${emailStyles.card}">
+      <h2 style="${emailStyles.heading}">Regarding Your Session Request</h2>
+      <p style="${emailStyles.text}">Hi ${firstName},</p>
+      <p style="${emailStyles.text}">Thank you for your interest in booking a ${serviceName} session. Unfortunately, we are unable to accommodate this particular time slot.</p>
+      <p style="${emailStyles.text}">We would love to find a time that works for both of us. Please feel free to:</p>
+      <div style="${emailStyles.goldAccent}">
         <p style="margin:0 0 6px;font-size:13px;color:#4A4A5C;">&#8226; Book a different time on our website</p>
-        <p style="margin:0 0 6px;font-size:13px;color:#4A4A5C;">&#8226; Reach out to us directly at ${BUSINESS.phone}</p>
-        <p style="margin:0;font-size:13px;color:#4A4A5C;">&#8226; Send us a WhatsApp message anytime</p>
+        <p style="margin:0 0 6px;font-size:13px;color:#4A4A5C;">&#8226; Message us on <a href="${BUSINESS.whatsappUrl}" style="color:#7A3B5E;font-weight:600;">WhatsApp</a> at ${BUSINESS.phone}</p>
+        <p style="margin:0;font-size:13px;color:#4A4A5C;">&#8226; We typically reply within a few hours</p>
       </div>
-      <div style="text-align:center;padding:16px 0 4px;">
-        <a href="${SITE_URL}/en/book" style="display:inline-block;padding:14px 32px;background:#7A3B5E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600;">Book Another Time</a>
+      <div style="text-align:center;margin:20px 0 4px;">
+        <a href="${SITE_URL}/en/book" style="${emailStyles.button}">Book Another Time</a>
       </div>
     </div>
-  </td></tr>
-  <tr><td style="text-align:center;padding:16px 0;">
-    <p style="margin:0;font-size:11px;color:#B0B0B0;">Mama Hala Consulting</p>
-  </td></tr>
-</table>
-</td></tr>
-</table>
-</body></html>`;
+  `);
 
   await sendBookingEmail({
     to: booking.clientEmail,

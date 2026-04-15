@@ -20,7 +20,7 @@ import { getBooking, updateBooking, createManageToken } from '@/lib/booking/book
 import { createCalendarEvent } from '@/lib/booking/google-calendar';
 import { sendBookingEmail } from '@/lib/booking/emails';
 import { authorize } from '@/lib/invoicing/auth';
-import { BUSINESS } from '@/config/business';
+import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
@@ -108,44 +108,27 @@ async function processApproval(bookingId: string): Promise<{
     hour: 'numeric', minute: '2-digit',
   });
 
-  const html = `<!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#FAF7F2;font-family:'Segoe UI',Tahoma,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F2;padding:32px 16px;">
-<tr><td align="center">
-<table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
-  <tr><td style="text-align:center;padding:24px 0 16px;">
-    <p style="margin:0;font-size:18px;font-weight:700;color:#7A3B5E;">Mama Hala Consulting</p>
-    <div style="width:60px;height:2px;background:#C8A97D;margin:14px auto 0;"></div>
-  </td></tr>
-  <tr><td>
-    <div style="background:white;border-radius:12px;padding:28px 24px;">
+  const html = emailWrapper(`
+    <div style="${emailStyles.card}">
       <div style="text-align:center;margin:0 0 16px;">
         <div style="display:inline-block;width:48px;height:48px;border-radius:50%;background:#F0FAF5;line-height:48px;font-size:24px;text-align:center;">&#10003;</div>
       </div>
-      <h2 style="margin:0 0 16px;font-size:20px;font-weight:700;color:#7A3B5E;text-align:center;">Good News, ${firstName}!</h2>
-      <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#4A4A5C;">Dr. Hala has approved your session request for <strong>${serviceName}</strong> on <strong>${dateTime}</strong>.</p>
-      <p style="margin:0 0 12px;font-size:14px;line-height:1.6;color:#4A4A5C;">You will receive an invoice with payment details shortly. Once payment is complete, your session is fully confirmed.</p>
+      <h2 style="${emailStyles.heading};text-align:center;">Good News, ${firstName}!</h2>
+      <p style="${emailStyles.text}">Dr. Hala has approved your session request for <strong>${serviceName}</strong> on <strong>${dateTime}</strong>.</p>
+      <p style="${emailStyles.text}">You will receive an invoice with payment details shortly. Once payment is complete, your session is fully confirmed.</p>
       ${meetLink ? `
       <div style="background:#F0FAF5;border-left:3px solid #3B8A6E;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">
         <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">Your Google Meet Link</p>
-        <p style="margin:0;font-size:12px;color:#4A4A5C;">This link will be active when your session starts.</p>
-        <a href="${meetLink}" style="display:inline-block;margin-top:8px;padding:8px 20px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Google Meet</a>
+        <p style="margin:0 0 8px;font-size:12px;color:#4A4A5C;">This link will be active when your session starts.</p>
+        <a href="${meetLink}" style="display:inline-block;padding:8px 20px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Google Meet</a>
       </div>
       ` : (booking.sessionMode === 'online' ? `
-      <div style="background:#FFFAF5;border-left:3px solid #C8A97D;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">
+      <div style="${emailStyles.goldAccent}">
         <p style="margin:0;font-size:13px;color:#4A4A5C;">Your video call link will be shared before the session via email and calendar invite.</p>
       </div>
       ` : '')}
     </div>
-  </td></tr>
-  <tr><td style="text-align:center;padding:20px 0;">
-    <p style="margin:0;font-size:11px;color:#B0B0B0;">Mama Hala Consulting | <a href="${BUSINESS.whatsappUrl}" style="color:#B0B0B0;text-decoration:none;">WhatsApp: ${BUSINESS.phone}</a></p>
-  </td></tr>
-</table>
-</td></tr>
-</table>
-</body></html>`;
+  `);
 
   await sendBookingEmail({
     to: booking.clientEmail,

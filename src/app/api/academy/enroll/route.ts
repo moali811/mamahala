@@ -3,6 +3,7 @@ import { kv } from '@vercel/kv';
 import { Resend } from 'resend';
 import { trackEvent } from '@/lib/analytics';
 import { isAdminEmail } from '@/lib/admin';
+import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -71,23 +72,17 @@ export async function POST(request: NextRequest) {
           from: FROM_EMAIL,
           to: normalizedEmail,
           subject: `Welcome to Mama Hala Academy!`,
-          html: `
-            <div style="font-family:'Segoe UI',sans-serif;max-width:500px;margin:0 auto;padding:20px;background:#FAF7F2;">
-              <div style="text-align:center;padding:20px 0;">
-                <h1 style="color:#7A3B5E;font-family:Georgia,serif;margin:0;">Welcome to the Academy!</h1>
-                <p style="color:#8E8E9F;margin:8px 0 0;">Mama Hala Consulting</p>
+          html: emailWrapper(`
+            <div style="${emailStyles.card}">
+              <h1 style="${emailStyles.heading};text-align:center;">Welcome to the Academy!</h1>
+              <p style="${emailStyles.text}">Hi ${name || 'there'},</p>
+              <p style="${emailStyles.text}">You're now enrolled! Your learning journey is ready to begin.</p>
+              <p style="${emailStyles.text}">Take your time with each module — real growth happens when we reflect, not just read.</p>
+              <div style="text-align:center;margin:24px 0 8px;">
+                <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app'}/en/programs/${programSlug}#curriculum" style="${emailStyles.button}">Start Learning</a>
               </div>
-              <div style="background:white;border-radius:12px;padding:24px;margin:16px 0;">
-                <p style="color:#4A4A5C;">Hi ${name || 'there'},</p>
-                <p style="color:#4A4A5C;">You're now enrolled! Your learning journey is ready to begin.</p>
-                <p style="color:#4A4A5C;">Take your time with each module — real growth happens when we reflect, not just read.</p>
-                <div style="text-align:center;margin:24px 0;">
-                  <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app'}/en/programs/${programSlug}#curriculum" style="display:inline-block;padding:12px 28px;background:#7A3B5E;color:white;text-decoration:none;border-radius:10px;font-weight:600;">Start Learning</a>
-                </div>
-              </div>
-              <p style="text-align:center;color:#8E8E9F;font-size:12px;">Mama Hala Consulting — Guidance with Heart</p>
             </div>
-          `,
+          `),
         });
       } catch { /* don't fail enrollment over email */ }
     }

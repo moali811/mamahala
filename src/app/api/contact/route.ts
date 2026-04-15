@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 
 export async function POST(request: Request) {
   try {
@@ -43,9 +44,9 @@ export async function POST(request: Request) {
           to: process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca',
           replyTo: email,
           subject: `${subjectPrefix}: ${name} — Mama Hala Consulting`,
-          html: `
-            <div style="font-family:'Segoe UI',Tahoma,sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#FAF7F2;border-radius:12px;">
-              <h2 style="color:#7A3B5E;margin:0 0 24px;font-size:20px;">${subjectPrefix}</h2>
+          html: emailWrapper(`
+            <div style="${emailStyles.card}">
+              <h2 style="${emailStyles.heading}">${subjectPrefix}</h2>
               <table style="width:100%;border-collapse:collapse;">
                 <tr><td style="padding:8px 0;color:#8E8E9F;font-size:13px;vertical-align:top;width:140px;">Name</td><td style="padding:8px 0;color:#2D2A33;font-size:14px;font-weight:600;">${name}</td></tr>
                 <tr><td style="padding:8px 0;color:#8E8E9F;font-size:13px;vertical-align:top;">Email</td><td style="padding:8px 0;color:#2D2A33;font-size:14px;"><a href="mailto:${email}" style="color:#7A3B5E;">${email}</a></td></tr>
@@ -55,13 +56,13 @@ export async function POST(request: Request) {
                 ${extraFields}
               </table>
               ${message ? `
-              <div style="margin-top:20px;padding:16px;background:white;border-radius:8px;border-left:3px solid #C8A97D;">
+              <div style="margin-top:20px;padding:16px;background:#FAF7F2;border-radius:8px;border-left:3px solid #C8A97D;">
                 <p style="margin:0 0 8px;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Message</p>
                 <p style="margin:0;color:#2D2A33;font-size:14px;line-height:1.7;white-space:pre-wrap;">${String(message).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
               </div>` : ''}
               <p style="margin-top:24px;color:#C4C0BC;font-size:11px;">Sent from mamahala.ca ${formType || 'contact'} form</p>
             </div>
-          `,
+          `),
         });
         if (!error) emailSent = true;
         else console.error('Resend error:', error);

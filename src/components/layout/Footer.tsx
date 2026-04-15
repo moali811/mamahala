@@ -95,9 +95,7 @@ export default function Footer({ locale, messages }: FooterProps) {
                 </span>
               </Link>
               <p className="text-sm text-[#6B6580] leading-relaxed mb-6">
-                {isRTL
-                  ? 'لحياةٍ مُفعَمةٍ بالحبِّ والسّكينةِ والسّلام.'
-                  : 'For a life full of love, tranquility & peace.'}
+                {isRTL ? `${BUSINESS.taglineAr}.` : `${BUSINESS.tagline}.`}
               </p>
               <div className="flex items-center gap-2">
                 {socials.map(({ icon: Icon, href, label }) => (

@@ -49,19 +49,17 @@ export function emailHeader(options?: { locale?: string }): string {
 
 // ─── Branded Footer ─────────────────────────────────────────────
 
-export function emailFooter(options?: { locale?: string; showAddress?: boolean }): string {
+export function emailFooter(options?: { locale?: string }): string {
   const isAr = options?.locale === 'ar';
   const dir = isAr ? 'rtl' : 'ltr';
-  const tagline = isAr
-    ? 'لحياة مليئة بالحب والسكينة والسلام'
-    : 'For a life full of love, tranquility & peace';
+  const tagline = isAr ? BUSINESS.taglineAr : BUSINESS.tagline;
 
   return `<tr><td style="text-align:center;padding:20px 0 8px;" dir="${dir}">
     <div style="width:40px;height:1px;background:#EDE8DF;margin:0 auto 14px;"></div>
     <p style="margin:0 0 8px;font-size:12px;color:#7A3B5E;font-style:italic;">${tagline}</p>
     <p style="margin:0 0 4px;font-size:11px;color:#B0B0B0;">${BUSINESS.name} | <a href="${BUSINESS.whatsappUrl}" style="color:#B0B0B0;text-decoration:none;">WhatsApp: ${BUSINESS.phone}</a></p>
     <p style="margin:0 0 4px;font-size:11px;color:#B0B0B0;"><a href="mailto:${BUSINESS.email}" style="color:#B0B0B0;text-decoration:none;">${BUSINESS.email}</a> · <a href="${SITE_URL}" style="color:#B0B0B0;text-decoration:none;">mamahala.ca</a></p>
-    ${options?.showAddress ? `<p style="margin:4px 0 0;font-size:10px;color:#C0C0C0;">430 Hazeldean Rd, Ottawa, ON K2L 1E8</p>` : ''}
+    <p style="margin:4px 0 0;font-size:10px;color:#C0C0C0;">${BUSINESS.address}</p>
   </td></tr>`;
 }
 
@@ -69,7 +67,7 @@ export function emailFooter(options?: { locale?: string; showAddress?: boolean }
 
 export function emailWrapper(
   content: string,
-  options?: { locale?: string; showAddress?: boolean },
+  options?: { locale?: string },
 ): string {
   const isAr = options?.locale === 'ar';
   const dir = isAr ? 'rtl' : 'ltr';

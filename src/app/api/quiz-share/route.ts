@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { Resend } from 'resend';
 import { trackEvent } from '@/lib/analytics';
+import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const ADMIN_EMAIL = process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca';
@@ -22,8 +23,6 @@ function buildResultsEmailHtml(data: {
   locale: string;
 }) {
   const isAr = data.locale === 'ar';
-  const dir = isAr ? 'rtl' : 'ltr';
-  const align = isAr ? 'right' : 'left';
   const pct = data.maxScore > 0 ? Math.round((data.score / data.maxScore) * 100) : 0;
 
   let dimensionRows = '';
@@ -34,98 +33,64 @@ function buildResultsEmailHtml(data: {
     }).join('');
   }
 
-  return `
-<!DOCTYPE html>
-<html lang="${data.locale}" dir="${dir}">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#FAF7F2;font-family:system-ui,-apple-system,sans-serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F2;padding:40px 20px;">
-<tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+  const content = `
+    <div style="${emailStyles.card};text-align:center;">
+      <p style="margin:0 0 8px;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#C8A97D;font-weight:600;">
+        ${isAr ? 'نتائجُ التقييم' : 'Assessment Results'}
+      </p>
+      <h1 style="margin:0 0 20px;font-size:22px;color:#7A3B5E;font-family:Georgia,serif;">
+        ${data.quizName}
+      </h1>
 
-<!-- Header -->
-<tr><td style="background:linear-gradient(135deg,#E8C4C0,#F0D5CA);padding:32px 40px;text-align:center;">
-  <p style="margin:0 0 8px;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:#C8A97D;">
-    ${isAr ? 'نتائجُ التقييم' : 'ASSESSMENT RESULTS'}
-  </p>
-  <h1 style="margin:0;font-size:24px;color:#2D2A33;font-family:Georgia,serif;">
-    ${data.quizName}
-  </h1>
-</td></tr>
+      <div style="display:inline-block;width:80px;height:80px;border-radius:50%;border:3px solid #C8A97D;line-height:80px;font-size:28px;font-weight:700;color:#7A3B5E;">
+        ${pct}%
+      </div>
+      <p style="margin:12px 0 4px;font-size:20px;font-weight:700;color:#2D2A33;font-family:Georgia,serif;">
+        ${data.tierTitle}
+      </p>
+      <p style="margin:0 0 20px;font-size:14px;color:#8E8E9F;">
+        ${data.score} / ${data.maxScore}
+        ${data.dominantStyle ? ` · ${data.dominantStyle}` : ''}
+      </p>
 
-<!-- Score -->
-<tr><td style="padding:32px 40px;text-align:center;">
-  <div style="display:inline-block;width:80px;height:80px;border-radius:50%;border:3px solid #C8A97D;line-height:80px;font-size:28px;font-weight:700;color:#7A3B5E;">
-    ${pct}%
-  </div>
-  <p style="margin:12px 0 4px;font-size:20px;font-weight:700;color:#2D2A33;font-family:Georgia,serif;">
-    ${data.tierTitle}
-  </p>
-  <p style="margin:0;font-size:14px;color:#8E8E9F;">
-    ${data.score} / ${data.maxScore}
-    ${data.dominantStyle ? ` · ${data.dominantStyle}` : ''}
-  </p>
-</td></tr>
+      ${data.isAdmin ? `
+      <table width="100%" style="background:#FAF7F2;border-radius:12px;padding:16px;margin:0 0 20px;">
+        <tr><td style="font-size:13px;color:#8E8E9F;text-align:${isAr ? 'right' : 'left'};">${isAr ? 'الاسم' : 'Name'}</td><td style="font-size:14px;font-weight:600;color:#2D2A33;text-align:${isAr ? 'left' : 'right'};">${data.name}</td></tr>
+      </table>
+      ` : ''}
 
-<!-- Client Info (admin view only) -->
-${data.isAdmin ? `
-<tr><td style="padding:0 40px 24px;">
-  <table width="100%" style="background:#FAF7F2;border-radius:12px;padding:16px;">
-    <tr><td style="font-size:13px;color:#8E8E9F;">${isAr ? 'الاسم' : 'Name'}</td><td style="font-size:14px;font-weight:600;color:#2D2A33;text-align:${isAr ? 'left' : 'right'};">${data.name}</td></tr>
-  </table>
-</td></tr>
-` : ''}
+      ${dimensionRows ? `
+      <div style="margin:0 0 20px;">
+        <p style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#C8A97D;margin:0 0 12px;text-align:${isAr ? 'right' : 'left'};font-weight:600;">
+          ${isAr ? 'التفاصيل' : 'Breakdown'}
+        </p>
+        <table width="100%" style="border-collapse:collapse;">${dimensionRows}</table>
+      </div>
+      ` : ''}
 
-<!-- Dimensions -->
-${dimensionRows ? `
-<tr><td style="padding:0 40px 24px;">
-  <p style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#C8A97D;margin:0 0 12px;">
-    ${isAr ? 'التفاصيل' : 'BREAKDOWN'}
-  </p>
-  <table width="100%" style="border-collapse:collapse;">
-    ${dimensionRows}
-  </table>
-</td></tr>
-` : ''}
+      <div style="margin:16px 0 12px;">
+        <a href="${data.shareUrl}" style="${emailStyles.button}">
+          ${isAr ? 'عرضُ النتائجِ الكاملة وتحميلُ PDF' : 'View Full Results & Download PDF'}
+        </a>
+      </div>
+      <p style="margin:8px 0 16px;font-size:12px;color:#8E8E9F;">
+        ${isAr
+          ? 'انقُرْ أعلاه لعرضِ التحليلِ التفصيليِّ وتحميلِ نسخةِ PDF.'
+          : 'Click above to view the detailed breakdown and download a PDF copy.'}
+      </p>
 
-<!-- CTA -->
-<tr><td style="padding:16px 40px 12px;text-align:center;">
-  <a href="${data.shareUrl}" style="display:inline-block;background:#7A3B5E;color:#ffffff;padding:16px 40px;border-radius:30px;font-size:15px;font-weight:700;text-decoration:none;letter-spacing:0.5px;">
-    ${isAr ? 'عرضُ النتائجِ الكاملة وتحميلُ PDF' : 'View Full Results & Download PDF'}
-  </a>
-</td></tr>
-<tr><td style="padding:0 40px 32px;text-align:center;">
-  <p style="margin:8px 0 0;font-size:12px;color:#8E8E9F;">
-    ${isAr
-      ? 'انقُرْ أعلاه لعرضِ التحليلِ التفصيليِّ وتحميلِ نسخةِ PDF.'
-      : 'Click above to view the detailed breakdown and download a PDF copy.'}
-  </p>
-</td></tr>
+      <p style="font-size:11px;color:#B0B0C0;line-height:1.6;margin:0 0 8px;">
+        ${isAr
+          ? 'هذا التقييمُ أداةٌ تعليميّةٌ للتأمُّلِ الذاتيّ وليسَ تشخيصًا سريريًّا.'
+          : 'This assessment is an educational self-reflection tool, not a clinical diagnosis.'}
+      </p>
+      <p style="margin:0;font-size:10px;color:#C0C0C0;">
+        Session ID: ${data.sessionId}
+      </p>
+    </div>
+  `;
 
-<!-- Disclaimer -->
-<tr><td style="padding:0 40px 24px;">
-  <p style="font-size:11px;color:#B0B0C0;text-align:center;line-height:1.6;">
-    ${isAr
-      ? 'هذا التقييمُ أداةٌ تعليميّةٌ للتأمُّلِ الذاتيّ وليسَ تشخيصًا سريريًّا.'
-      : 'This assessment is an educational self-reflection tool, not a clinical diagnosis.'}
-  </p>
-</td></tr>
-
-<!-- Footer -->
-<tr><td style="background:#FAF7F2;padding:20px 40px;text-align:center;border-top:1px solid #F3EFE8;">
-  <p style="margin:0;font-size:12px;color:#8E8E9F;">
-    Mama Hala Consulting · mamahala.ca
-  </p>
-  <p style="margin:4px 0 0;font-size:11px;color:#B0B0C0;">
-    Session ID: ${data.sessionId}
-  </p>
-</td></tr>
-
-</table>
-</td></tr>
-</table>
-</body>
-</html>`;
+  return emailWrapper(content, { locale: isAr ? 'ar' : 'en' });
 }
 
 export async function POST(request: Request) {
