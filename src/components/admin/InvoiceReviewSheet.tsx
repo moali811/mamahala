@@ -4,13 +4,19 @@
    InvoiceReviewSheet — slide-up bottom sheet for reviewing and
    editing an invoice before sending. Opened from BookingsModule
    after approving a booking.
+
+   Editable: client name/email/country, service, pricing controls,
+   subject, Stripe payment link. Country normalization + live band
+   preview ensures the admin always sees the exact pricing math
+   before clicking Send.
    ================================================================ */
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Send, Loader2, Calendar, Clock, Video, Building2,
-  User, Globe, ChevronDown, Eye, AlertCircle,
+  User, Globe, ChevronDown, Eye, AlertCircle, CreditCard,
+  Mail, Tag,
 } from 'lucide-react';
 import { services, serviceCategories } from '@/data/services';
 import {
@@ -27,6 +33,8 @@ import type {
 import { computeRateBreakdown } from '@/lib/invoicing/rate-breakdown';
 import { Section, Field, BreakdownCard, inputClass } from './invoice-shared';
 import type { Booking } from '@/lib/booking/types';
+import { COUNTRIES, toISO2, COUNTRIES_BY_CODE } from '@/config/countries';
+import { getBandForCountry, BAND_MULTIPLIERS, getCurrencyForCountry } from '@/config/pricing';
 
 interface InvoiceReviewSheetProps {
   open: boolean;
@@ -45,12 +53,23 @@ export default function InvoiceReviewSheet({
   onClose,
   onSent,
 }: InvoiceReviewSheetProps) {
-  const [localDraft, setLocalDraft] = useState<InvoiceDraft>(initialDraft);
+  // Normalize the initial country to ISO-2 so the dropdown pre-selects
+  // correctly even when the booking stored a raw display name.
+  const [localDraft, setLocalDraft] = useState<InvoiceDraft>(() => ({
+    ...initialDraft,
+    client: { ...initialDraft.client, country: toISO2(initialDraft.client.country) },
+  }));
   const [settings, setSettings] = useState<InvoiceSettings | null>(null);
   const [sending, setSending] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [confirmSend, setConfirmSend] = useState(false);
+  // Expand client-details section by default if the booking came in with
+  // an unresolved country — signals "please fix this before sending".
+  const [clientExpanded, setClientExpanded] = useState(
+    !initialDraft.client.country ||
+      toISO2(initialDraft.client.country) !== initialDraft.client.country.toUpperCase(),
+  );
 
   const headers = useMemo(() => ({
     Authorization: `Bearer ${password}`,
@@ -66,9 +85,12 @@ export default function InvoiceReviewSheet({
       .catch(() => {});
   }, [open, headers]);
 
-  // Reset local draft when initial draft changes
+  // Reset local draft when initial draft changes (normalize country on reset too)
   useEffect(() => {
-    setLocalDraft(initialDraft);
+    setLocalDraft({
+      ...initialDraft,
+      client: { ...initialDraft.client, country: toISO2(initialDraft.client.country) },
+    });
     setError(null);
     setConfirmSend(false);
     setPreviewUrl(null);
@@ -80,8 +102,34 @@ export default function InvoiceReviewSheet({
     return computeRateBreakdown(localDraft, settings);
   }, [localDraft, settings]);
 
+  // Pricing band preview — shows what the country → band → multiplier → currency
+  // chain resolves to. Helps the admin verify the right price is being billed.
+  const bandPreview = useMemo(() => {
+    const country = localDraft.client.country?.toUpperCase() || 'CA';
+    const band = getBandForCountry(country);
+    const multiplier = BAND_MULTIPLIERS[band];
+    const currency = localDraft.displayCurrency || getCurrencyForCountry(country);
+    const countryInfo = COUNTRIES_BY_CODE[country];
+    return {
+      country,
+      countryName: countryInfo?.name ?? country,
+      flag: countryInfo?.flag ?? '🌐',
+      band,
+      multiplier,
+      currency,
+    };
+  }, [localDraft.client.country, localDraft.displayCurrency]);
+
   const updateDraft = (updates: Partial<InvoiceDraft>) => {
     setLocalDraft(prev => ({ ...prev, ...updates, updatedAt: new Date().toISOString() }));
+  };
+
+  const updateClient = (patch: Partial<InvoiceDraft['client']>) => {
+    setLocalDraft(prev => ({
+      ...prev,
+      client: { ...prev.client, ...patch },
+      updatedAt: new Date().toISOString(),
+    }));
   };
 
   const serviceName = booking.serviceName || booking.serviceSlug?.replace(/-/g, ' ') || '';
@@ -104,10 +152,12 @@ export default function InvoiceReviewSheet({
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to send');
-      const emailNote = data.emailError
-        ? ` (email issue: ${data.emailError})`
-        : '';
-      onSent(`${data.invoice?.invoiceNumber || ''}${emailNote}`);
+      // Assemble the success note: email issue + stripe warning.
+      const notes: string[] = [];
+      if (data.emailError) notes.push(`email: ${data.emailError}`);
+      if (data.stripeWarning) notes.push(`stripe: ${data.stripeWarning}`);
+      const note = notes.length ? ` (${notes.join(' · ')})` : '';
+      onSent(`${data.invoice?.invoiceNumber || ''}${note}`);
     } catch (err: any) {
       setError(err.message || 'Failed to send invoice');
     } finally {
@@ -223,6 +273,83 @@ export default function InvoiceReviewSheet({
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* ─── Client details — editable ─────────────────── */}
+              <div className="bg-white rounded-xl border border-[#EDE8DF] overflow-hidden">
+                <button
+                  type="button"
+                  onClick={() => setClientExpanded(e => !e)}
+                  className="w-full flex items-center justify-between px-4 py-3 hover:bg-[#FAF7F2] transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <User className="w-4 h-4 text-[#7A3B5E]" />
+                    <span className="text-sm font-semibold text-[#2D2A33]">Client details</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F5F0EB] text-[#8E8E9F] font-mono uppercase">
+                      {bandPreview.flag} {bandPreview.country}
+                    </span>
+                  </div>
+                  <ChevronDown
+                    className={`w-4 h-4 text-[#8E8E9F] transition-transform ${clientExpanded ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                {clientExpanded && (
+                  <div className="px-4 pb-4 space-y-3 border-t border-[#F3EFE8]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
+                      <Field label="Name">
+                        <input
+                          value={localDraft.client.name}
+                          onChange={e => updateClient({ name: e.target.value })}
+                          className={inputClass}
+                          placeholder="Full name"
+                        />
+                      </Field>
+                      <Field label="Email">
+                        <input
+                          type="email"
+                          value={localDraft.client.email}
+                          onChange={e => updateClient({ email: e.target.value })}
+                          className={inputClass}
+                          placeholder="client@email.com"
+                        />
+                      </Field>
+                    </div>
+                    <Field label="Country (drives pricing band + currency)">
+                      <select
+                        value={localDraft.client.country.toUpperCase()}
+                        onChange={e => updateClient({ country: e.target.value })}
+                        className={inputClass}
+                      >
+                        {COUNTRIES.map(c => (
+                          <option key={c.code} value={c.code}>
+                            {c.flag} {c.name} ({c.code})
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+
+                    {/* Pricing band preview — shows the exact pricing engine math */}
+                    <div className="mt-2 p-3 rounded-lg bg-gradient-to-r from-[#FFFAF5] to-[#F5F0EB] border border-[#C8A97D]/30">
+                      <div className="flex items-start gap-2">
+                        <Tag className="w-3.5 h-3.5 text-[#C8A97D] mt-0.5 shrink-0" />
+                        <div className="flex-1 min-w-0 text-[11px] text-[#4A4A5C] leading-relaxed">
+                          <div className="font-semibold text-[#7A3B5E] mb-0.5">
+                            Pricing band: <span className="capitalize">{bandPreview.band}</span> ({bandPreview.multiplier.toFixed(2)}×)
+                          </div>
+                          {breakdown ? (
+                            <div className="font-mono text-[10px] text-[#8E8E9F]">
+                              {breakdown.formulaLine}
+                            </div>
+                          ) : (
+                            <div className="text-[#8E8E9F]">
+                              Select a service to see the full formula
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Service */}
@@ -341,6 +468,28 @@ export default function InvoiceReviewSheet({
                   placeholder="e.g. Session: Anxiety Counseling on Apr 20"
                   className={inputClass}
                 />
+              </Section>
+
+              {/* ─── Stripe Payment Link (optional) ─────────────
+                  Used when STRIPE_SECRET_KEY is unavailable: the admin
+                  creates a one-time Payment Link in the Stripe dashboard
+                  and pastes the URL here. The payment concierge page
+                  routes the "Pay with Card" button to this link.
+                  Leave empty to rely on dynamic sessions (when available)
+                  or fall back to e-Transfer / wire / PayPal only. */}
+              <Section title="Card payment link (optional)" icon={<CreditCard className="w-4 h-4" />}>
+                <input
+                  type="url"
+                  value={localDraft.stripePaymentLink ?? ''}
+                  onChange={e => updateDraft({ stripePaymentLink: e.target.value.trim() || undefined })}
+                  placeholder="https://buy.stripe.com/..."
+                  className={inputClass}
+                />
+                <p className="text-[10px] text-[#8E8E9F] mt-1.5 leading-relaxed">
+                  Paste a Stripe Payment Link for this invoice. Overrides the dynamic checkout session
+                  if configured. Leave empty to use automatic Stripe sessions (or fall back to e-Transfer
+                  / wire / PayPal).
+                </p>
               </Section>
 
               {/* Breakdown */}

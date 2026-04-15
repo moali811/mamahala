@@ -665,12 +665,21 @@ function ComposeTab({
         return;
       }
 
-      onBanner({
-        kind: 'success',
-        text: settings.dryRun
-          ? `Invoice ${data.invoice.invoiceNumber} created (dry run — no email sent)`
-          : `Invoice ${data.invoice.invoiceNumber} sent to ${draft.client.email}`,
-      });
+      // Surface Stripe tier warnings as an info banner so the admin knows
+      // which payment methods the client will see.
+      if (data.stripeWarning) {
+        onBanner({
+          kind: 'info',
+          text: `Invoice ${data.invoice.invoiceNumber} sent — ${data.stripeWarning}`,
+        });
+      } else {
+        onBanner({
+          kind: 'success',
+          text: settings.dryRun
+            ? `Invoice ${data.invoice.invoiceNumber} created (dry run — no email sent)`
+            : `Invoice ${data.invoice.invoiceNumber} sent to ${draft.client.email}`,
+        });
+      }
       // Reset form
       setDraft(makeEmptyDraft());
     } catch {
@@ -785,6 +794,28 @@ function ComposeTab({
           </Field>
           <p className="text-[10px] text-[#8E8E9F] mt-1">
             Shown on the PDF below the Billed To block and in the invoice email body.
+          </p>
+        </Section>
+
+        {/* Stripe Payment Link (optional) — works without STRIPE_SECRET_KEY */}
+        <Section title="Card payment link (optional)" icon={<DollarSign className="w-4 h-4" />}>
+          <Field label="Stripe Payment Link URL">
+            <input
+              type="url"
+              value={draft.stripePaymentLink ?? ''}
+              onChange={(e) =>
+                updateDraft('stripePaymentLink', e.target.value.trim() || undefined)
+              }
+              className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
+              placeholder="https://buy.stripe.com/..."
+            />
+          </Field>
+          <p className="text-[10px] text-[#8E8E9F] mt-1 leading-relaxed">
+            Paste a Stripe Payment Link for this invoice (create one in the Stripe
+            dashboard). Used by the payment concierge page for card payments when
+            the automatic Stripe Checkout session isn&apos;t available. Leave empty
+            to rely on dynamic sessions (when configured) or fall back to e-Transfer
+            / wire / PayPal only.
           </p>
         </Section>
 
@@ -2871,6 +2902,27 @@ function SettingsDrawer({
               className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm"
               placeholder="https://paypal.me/mamahala"
             />
+          </Field>
+
+          <Field label="Default Stripe Payment Link (fallback for all invoices)">
+            <input
+              type="url"
+              value={local.defaultStripePaymentLink ?? ''}
+              onChange={(e) =>
+                setLocal({
+                  ...local,
+                  defaultStripePaymentLink: e.target.value.trim() || undefined,
+                })
+              }
+              className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm"
+              placeholder="https://buy.stripe.com/..."
+            />
+            <p className="text-[10px] text-[#8E8E9F] mt-1.5 leading-relaxed">
+              Paste your &quot;customer chooses what to pay&quot; Stripe Payment Link here.
+              Every invoice will automatically get a &quot;Pay with Card&quot; button on
+              the payment concierge page that routes to this link. Per-invoice overrides
+              and dynamic Stripe sessions both take precedence when available.
+            </p>
           </Field>
 
           <Field label="HST/GST registration # (optional)">

@@ -11,6 +11,7 @@ import { services } from '@/data/services';
 import { buildPaymentInstructions } from './payment-instructions';
 import { BUSINESS } from '@/config/business';
 import { emailWrapper } from '@/lib/email/shared-email-components';
+import { buildPaymentConciergeUrl } from './stripe-checkout';
 
 /** All admin emails that should receive BCC copies of invoices/receipts. */
 const ADMIN_BCC = BUSINESS.adminEmails;
@@ -104,14 +105,15 @@ function buildInvoiceEmailHtml(
         </table>
       </div>
 
-      ${invoice.stripeCheckoutUrl ? `
-      <!-- Pay Online — dynamic checkout with exact invoice amount -->
+      <!-- Pay Online — always rendered. Routes through the payment
+           concierge page at /pay/{token}, which picks the best tier at
+           click time (dynamic Stripe session → pasted Payment Link →
+           e-Transfer/wire/PayPal fallback). -->
       <div style="background:#F0FAF5;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;">
         <p style="margin:0 0 4px;color:#3B8A6E;font-size:14px;font-weight:700;">Pay Securely Online</p>
-        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;">Pay <strong>${escapeHtml(bd.formattedTotal)}</strong> securely with card</p>
-        <a href="${invoice.stripeCheckoutUrl}" style="display:inline-block;padding:16px 48px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:12px;font-size:16px;font-weight:700;letter-spacing:0.3px;">Pay ${escapeHtml(bd.formattedTotal)}</a>
+        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;">Pay <strong>${escapeHtml(bd.formattedTotal)}</strong> — card, Interac, wire, or PayPal</p>
+        <a href="${buildPaymentConciergeUrl(invoice)}" style="display:inline-block;padding:16px 48px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:12px;font-size:16px;font-weight:700;letter-spacing:0.3px;">Pay ${escapeHtml(bd.formattedTotal)}</a>
       </div>
-      ` : ''}
 
       <!-- Other payment methods -->
       <div style="margin-bottom:20px;">
@@ -129,7 +131,7 @@ function buildInvoiceEmailHtml(
 
       <p style="margin:16px 0 0;color:#2D2A33;font-size:14px;">With care,<br><strong>Dr. Hala Ali</strong></p>`;
 
-  return emailWrapper(innerContent, { showAddress: true });
+  return emailWrapper(innerContent);
 }
 
 /**
@@ -311,5 +313,5 @@ function buildReceiptEmailHtml(
       <p style="margin:16px 0 4px;color:#2D2A33;font-size:14px;">With care,</p>
       <p style="margin:0;color:#2D2A33;font-size:14px;font-weight:600;">Dr. Hala Ali</p>`;
 
-  return emailWrapper(receiptContent, { showAddress: true });
+  return emailWrapper(receiptContent);
 }

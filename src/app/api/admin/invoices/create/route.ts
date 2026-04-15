@@ -18,7 +18,11 @@ import { authorize } from '@/lib/invoicing/auth';
 import { computeRateBreakdown } from '@/lib/invoicing/rate-breakdown';
 import { generateInvoicePdf } from '@/lib/invoicing/pdf-generator';
 import { sendInvoiceEmail } from '@/lib/invoicing/email-sender';
-import { createInvoiceCheckoutSession } from '@/lib/invoicing/stripe-checkout';
+import {
+  createInvoiceCheckoutSession,
+  isStripeSessionAvailable,
+} from '@/lib/invoicing/stripe-checkout';
+import { toISO2 } from '@/config/countries';
 import {
   generateInvoiceId,
   formatInvoiceNumber,
@@ -67,12 +71,19 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-    if (!draft.client?.country || draft.client.country.length !== 2) {
+    // Normalize country — accept ISO-2, English name, or Arabic name.
+    // This is a defensive backstop: the compose UI always sends ISO-2,
+    // but legacy drafts and the approve-and-invoice shortcut may send names.
+    const rawCountry = draft.client?.country ?? '';
+    const normalizedISO2 = toISO2(rawCountry);
+    if (!normalizedISO2 || normalizedISO2.length !== 2) {
       return NextResponse.json(
-        { error: 'Country must be a 2-letter ISO code' },
+        { error: `Country "${rawCountry}" could not be resolved to an ISO-2 code` },
         { status: 400 },
       );
     }
+    // Mutate the draft in place so downstream breakdown math sees the ISO-2.
+    draft.client.country = normalizedISO2;
     if (!draft.serviceSlug) {
       return NextResponse.json(
         { error: 'Service is required' },
@@ -175,6 +186,11 @@ export async function POST(req: NextRequest) {
       updatedAt: now.toISOString(),
     };
 
+    // Generate an opaque payment token for the concierge page URL.
+    // Uses crypto.randomUUID() — stored verbatim, indexed in KV via
+    // saveInvoiceRecord() so /pay/[token] can look it up.
+    const paymentToken = crypto.randomUUID();
+
     const stored: StoredInvoice = {
       invoiceId,
       invoiceNumber,
@@ -188,29 +204,55 @@ export async function POST(req: NextRequest) {
       updatedAt: now.toISOString(),
       dryRun: settings.dryRun,
       origin: 'native',
+      paymentToken,
     };
 
-    // Create dynamic Stripe Checkout Session with the exact invoice amount
-    try {
-      const service = (await import('@/data/services')).services.find(
-        (s: { slug: string }) => s.slug === stored.draft.serviceSlug,
-      );
-      const checkoutUrl = await createInvoiceCheckoutSession({
-        invoiceId: stored.invoiceId,
-        invoiceNumber: stored.invoiceNumber,
-        clientEmail: stored.draft.client.email,
-        clientName: stored.draft.client.name,
-        serviceName: service?.name || stored.draft.serviceSlug,
-        totalCAD: breakdown.totalCAD,
-        displayTotal: breakdown.formattedTotal,
-        displayCurrency: breakdown.displayCurrency,
-      });
-      if (checkoutUrl) {
-        stored.stripeCheckoutUrl = checkoutUrl;
+    // Tier 1: Dynamic Stripe Checkout Session (requires STRIPE_SECRET_KEY).
+    // On failure or when the secret key is missing/placeholder, we fall
+    // through to Tier 2 (admin-pasted draft.stripePaymentLink) and finally
+    // Tier 3 (concierge page shows e-Transfer/wire/PayPal only).
+    // `stripeWarning` is surfaced to the admin UI so they know which tier
+    // the invoice shipped with.
+    let stripeWarning: string | null = null;
+    if (!isStripeSessionAvailable()) {
+      if (normalizedDraft.stripePaymentLink) {
+        stripeWarning =
+          'Stripe dynamic checkout not configured — using your pasted Payment Link for card payments on this invoice.';
+      } else if (settings.defaultStripePaymentLink?.trim()) {
+        stripeWarning =
+          'Stripe dynamic checkout not configured — using the global default Payment Link from Settings for card payments.';
+      } else {
+        stripeWarning =
+          'Stripe dynamic checkout not configured and no Payment Link fallback set. The client can still pay via e-Transfer / wire / PayPal from the concierge page. Tip: add a global default in Invoice Settings so every invoice gets a card button.';
       }
-    } catch (stripeErr) {
-      console.error('Stripe checkout session creation failed:', stripeErr);
-      // Non-blocking — invoice still sends with fallback static link
+    } else {
+      try {
+        const service = (await import('@/data/services')).services.find(
+          (s: { slug: string }) => s.slug === stored.draft.serviceSlug,
+        );
+        const checkoutUrl = await createInvoiceCheckoutSession({
+          invoiceId: stored.invoiceId,
+          invoiceNumber: stored.invoiceNumber,
+          clientEmail: stored.draft.client.email,
+          clientName: stored.draft.client.name,
+          serviceName: service?.name || stored.draft.serviceSlug,
+          totalCAD: breakdown.totalCAD,
+          displayTotal: breakdown.formattedTotal,
+          displayCurrency: breakdown.displayCurrency,
+        });
+        if (checkoutUrl) {
+          stored.stripeCheckoutUrl = checkoutUrl;
+        } else {
+          stripeWarning =
+            'Stripe session creation returned no URL — check server logs. Invoice sent anyway.';
+        }
+      } catch (stripeErr) {
+        console.error('Stripe checkout session creation failed:', stripeErr);
+        stripeWarning =
+          stripeErr instanceof Error
+            ? `Stripe session failed: ${stripeErr.message}`
+            : 'Stripe session failed with unknown error.';
+      }
     }
 
     // Generate the PDF
@@ -252,6 +294,7 @@ export async function POST(req: NextRequest) {
       invoice: stored,
       dryRun: settings.dryRun,
       emailError,
+      stripeWarning,
     });
   } catch (err) {
     console.error('Invoice create error:', err);

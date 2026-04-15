@@ -14,6 +14,14 @@ export const BUSINESS = {
   email: 'admin@mamahala.ca',
   whatsappUrl: 'https://wa.me/16132222104',
 
+  // Official street address — used in email footers + PDF invoice footer.
+  // Canonical formatted string (single line). Update here if HQ moves.
+  address: '430 Hazeldean Rd, Ottawa, ON K2L 1E8',
+
+  // Brand tagline — appears in email footers + PDF invoice footer.
+  tagline: 'For a life full of love, tranquility & peace',
+  taglineAr: 'لحياة مليئة بالحب والسكينة والسلام',
+
   // All admin email recipients — single source of truth.
   // Used for BCC on client-facing emails (invoices, receipts) and
   // direct delivery for admin notifications (booking alerts).
@@ -71,11 +79,18 @@ export const BUSINESS = {
   // 'cal-com' = legacy Cal.com iframe at /[locale]/book-a-session
   bookingMode: 'native' as 'native' | 'cal-com',
 
-  // ─── ONLINE PAYMENT — Stripe Payment Link ──────────────────
-  // Created in Stripe Dashboard → Payment Links → "Session Payment"
-  // Set up as a customer-chooses-amount link, or a fixed-amount link per tier.
-  // Clients see a branded Stripe page, pay by card, and Dr. Hala sees it in Stripe.
-  // No API key needed — this is just a URL.
+  // ─── LEGACY ONLINE PAYMENT LINK — DEPRECATED ───────────────
+  // @deprecated As of Apr 2026 this field is NOT referenced by invoice
+  // emails or the invoice PDF generator. It was a fixed $150 CAD link
+  // that clients were clicking regardless of their actual invoice amount.
+  // Replaced by the per-invoice payment concierge flow:
+  //   1. Admin pastes a per-invoice Stripe Payment Link in
+  //      InvoiceReviewSheet / InvoicesModule → stored on the draft.
+  //   2. Email/PDF link to /pay/{token} (the concierge page).
+  //   3. Concierge page routes to the best-available payment method
+  //      (dynamic session → pasted link → e-Transfer/wire/PayPal).
+  // Leaving the constant here only so any unrelated legacy import
+  // doesn't break at compile time. DO NOT reference this for new code.
   stripePaymentLink: 'https://buy.stripe.com/bJebJ0dNk6857ohdYJawo0d',
 } as const;
 

@@ -10,6 +10,8 @@ import {
 import type { Booking, BookingStatus } from '@/lib/booking/types';
 import type { InvoiceDraft } from '@/lib/invoicing/types';
 import InvoiceReviewSheet from './InvoiceReviewSheet';
+import AvailabilityEditor from './AvailabilityEditor';
+import { toISO2 } from '@/config/countries';
 
 interface Props {
   password: string;
@@ -28,7 +30,13 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string; b
   'no-show': { bg: 'bg-gray-50', text: 'text-gray-500', label: 'No-Show', border: 'border-l-gray-400' },
 };
 
+type TopTab = 'bookings' | 'availability';
+
 export default function BookingsModule({ password }: Props) {
+  // Top-level tab switches between the booking list and the availability editor.
+  // Keeps the UI simple — availability lives with bookings because both are the
+  // "when sessions happen" domain.
+  const [topTab, setTopTab] = useState<TopTab>('bookings');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterStatus>('pending_approval');
@@ -106,10 +114,19 @@ export default function BookingsModule({ password }: Props) {
         draft = draftData.draft;
       }
 
-      // Step 3: If no draft exists, create one from the booking data
+      // Step 3: If no draft exists, create one from the booking data.
+      // Normalize country through toISO2 so legacy bookings that stored the
+      // full country name (e.g. "United States", "الإمارات") still land on
+      // the correct pricing band when sent to /api/admin/invoices/create.
       if (!draft) {
         const now = new Date().toISOString();
-        const country = booking.clientCountry || 'CA';
+        const country = toISO2(booking.clientCountry);
+        const adminNoteParts = [`Auto-generated from booking ${booking.bookingId}`];
+        if (booking.clientCountry && toISO2(booking.clientCountry) === 'CA' && booking.clientCountry.toUpperCase() !== 'CA') {
+          adminNoteParts.push(
+            `⚠ Country could not be resolved from "${booking.clientCountry}" — defaulted to CA. Please verify in the Client details section above before sending.`,
+          );
+        }
         draft = {
           draftId: `draft_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 10)}`,
           client: {
@@ -126,7 +143,7 @@ export default function BookingsModule({ password }: Props) {
           allowETransfer: country === 'CA',
           daysUntilDue: 7,
           subject: `Session: ${booking.serviceName || booking.serviceSlug} on ${new Date(booking.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
-          adminNote: `Auto-generated from booking ${booking.bookingId}`,
+          adminNote: adminNoteParts.join('\n'),
           createdAt: now,
           updatedAt: now,
         } as InvoiceDraft;
@@ -264,6 +281,35 @@ export default function BookingsModule({ password }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* ─── Top-level tab switch: Bookings list vs Availability editor ─── */}
+      <div className="flex gap-1.5 p-1 bg-[#F5F0EB] rounded-xl max-w-md">
+        {([
+          { key: 'bookings' as const, label: 'Booking Requests' },
+          { key: 'availability' as const, label: 'Availability' },
+        ]).map(tab => {
+          const isActive = topTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              onClick={() => setTopTab(tab.key)}
+              className={`flex-1 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
+                isActive
+                  ? 'bg-white text-[#7A3B5E] shadow-sm'
+                  : 'text-[#8E8E9F] hover:text-[#4A4A5C]'
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Availability editor (alternative view) */}
+      {topTab === 'availability' && <AvailabilityEditor password={password} />}
+
+      {/* Bookings list (default view) */}
+      {topTab === 'bookings' && (
+      <>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -585,6 +631,8 @@ export default function BookingsModule({ password }: Props) {
             })}
           </AnimatePresence>
         </div>
+      )}
+      </>
       )}
       {/* ─── Invoice Review Sheet ─── */}
       {invoiceSheet && (

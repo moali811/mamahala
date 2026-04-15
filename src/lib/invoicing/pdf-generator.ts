@@ -23,6 +23,7 @@ import {
   formatDate, hr, wrap,
 } from './pdf-shared';
 import { BUSINESS } from '@/config/business';
+import { buildPaymentConciergeUrl } from './stripe-checkout';
 
 export async function generateInvoicePdf(
   invoice: StoredInvoice,
@@ -294,12 +295,16 @@ export async function generateInvoicePdf(
 
   y += 4;
 
-  // ─── PAY ONLINE — Stripe CTA inside the PDF ───────────────
-  // Only show when a dynamic checkout URL exists (exact invoice amount).
-  // Never fall back to the static BUSINESS.stripePaymentLink (fixed $150).
-  if (invoice.stripeCheckoutUrl && !isPaid) {
+  // ─── PAY ONLINE — Payment Concierge CTA inside the PDF ────
+  // Always rendered when unpaid. Links to the payment concierge page
+  // at /pay/{token}, which routes to the best available tier at click
+  // time: dynamic Stripe session → admin-pasted Payment Link →
+  // e-Transfer/wire/PayPal fallback. Never references the legacy
+  // static BUSINESS.stripePaymentLink (fixed $150 CAD).
+  if (!isPaid) {
     const ctaY = y;
     const ctaH = 14;
+    const conciergeUrl = buildPaymentConciergeUrl(invoice);
 
     // Plum rounded rect
     doc.setFillColor(...PLUM);
@@ -312,11 +317,11 @@ export async function generateInvoicePdf(
 
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7.5);
-    doc.text('Click here to pay the exact invoice amount securely via Stripe', PAGE_WIDTH / 2, ctaY + 10.5, { align: 'center' });
+    doc.text('Tap to pay by card, Interac, wire, or PayPal - exact invoice amount', PAGE_WIDTH / 2, ctaY + 10.5, { align: 'center' });
 
     // Make the entire area a clickable link
     try {
-      doc.link(MARGIN, ctaY, CONTENT_WIDTH, ctaH, { url: invoice.stripeCheckoutUrl });
+      doc.link(MARGIN, ctaY, CONTENT_WIDTH, ctaH, { url: conciergeUrl });
     } catch { /* link API may vary */ }
 
     y = ctaY + ctaH + 6;
@@ -393,15 +398,34 @@ export async function generateInvoicePdf(
   }
 
   // ─── FOOTER ────────────────────────────────────────────────
-  const footY = PAGE_HEIGHT - MARGIN - 6;
+  // Reserve ~22mm at the page bottom for 4 lines + divider + tagline.
+  const footTop = PAGE_HEIGHT - 22;
+
+  // Thin horizontal divider above the footer block
+  doc.setDrawColor(...LIGHT);
+  doc.setLineWidth(0.2);
+  doc.line(MARGIN, footTop, PAGE_WIDTH - MARGIN, footTop);
+
+  // Tagline (italic plum)
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(8);
-  doc.setTextColor(...MUTED);
-  doc.text('Thank you for choosing Mama Hala Consulting', PAGE_WIDTH / 2, footY, { align: 'center' });
-  doc.setFontSize(7);
-  doc.text(`${issuer.email}  |  ${issuer.phone}  |  mamahala.ca`, PAGE_WIDTH / 2, footY + 4, { align: 'center' });
+  doc.setTextColor(...PLUM);
+  doc.text(BUSINESS.tagline, PAGE_WIDTH / 2, footTop + 5, { align: 'center' });
 
-  // Thin bottom line
+  // Address + Company ID + contact line (muted gray, 7pt)
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.text(BUSINESS.address, PAGE_WIDTH / 2, footTop + 10, { align: 'center' });
+  doc.text(`Company ID: ${settings.companyId}`, PAGE_WIDTH / 2, footTop + 14, { align: 'center' });
+  doc.text(
+    `${issuer.email}  |  ${issuer.phone}  |  mamahala.ca`,
+    PAGE_WIDTH / 2,
+    footTop + 18,
+    { align: 'center' },
+  );
+
+  // Thin bottom line (plum accent)
   doc.setFillColor(...PLUM);
   doc.rect(0, PAGE_HEIGHT - 1.5, PAGE_WIDTH, 1.5, 'F');
 

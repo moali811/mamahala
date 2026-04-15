@@ -203,6 +203,85 @@ export function buildConfirmationEmail(data: ConfirmationEmailData): {
   };
 }
 
+// ─── 1b. Session Locked In Email — fires after payment ─────────
+// Sent when the mark-paid route transitions a paid booking from
+// 'approved' → 'confirmed'. This is the first email where the
+// client sees their Meet link front-and-center, along with an ICS
+// attachment so they can block the time on their calendar.
+
+export interface SessionLockedInEmailData {
+  booking: Booking;
+  manageToken: string;
+  prepTips?: string[];
+  aiMessage?: string;
+}
+
+export function buildSessionLockedInEmail(
+  data: SessionLockedInEmailData,
+): { subject: string; html: string; icsContent: string } {
+  const { booking, manageToken, prepTips, aiMessage } = data;
+  const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
+  const firstName = booking.clientName.split(' ')[0];
+
+  // Prominent "Join Google Meet" card — the single most important element.
+  // For in-person sessions, show the Ottawa address instead.
+  const joinHtml = booking.meetLink
+    ? `<div style="${styles.card};background:#F0FAF5;border-left:4px solid #3B8A6E;">
+        <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#3B8A6E;">Your Google Meet Link</p>
+        <p style="margin:0 0 14px;font-size:13px;color:#4A4A5C;">Bookmark this link now — you&apos;ll use it to join your session.</p>
+        <a href="${booking.meetLink}" style="display:inline-block;padding:12px 32px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:14px;font-weight:700;">Open Google Meet</a>
+      </div>`
+    : booking.sessionMode === 'inPerson'
+      ? `<div style="${styles.card};background:#FFFAF5;border-left:4px solid #C8A97D;">
+          <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#7A3B5E;">Office Location</p>
+          <p style="margin:0 0 10px;font-size:13px;color:#4A4A5C;">430 Hazeldean Rd, Ottawa, ON K2L 1E8 — Canada. Please arrive 5 minutes early.</p>
+        </div>`
+      : `<div style="${styles.card};background:#FFFAF5;border-left:4px solid #C8A97D;">
+          <p style="margin:0;font-size:13px;color:#4A4A5C;">Your video call link will be shared via email and calendar invite before the session.</p>
+        </div>`;
+
+  const tipsHtml = prepTips?.length
+    ? `<div style="${styles.goldAccent}">
+        <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#7A3B5E;">Prepare for Your Session</p>
+        ${prepTips.map(t => `<p style="margin:0 0 4px;font-size:13px;color:#4A4A5C;">&#8226; ${t}</p>`).join('')}
+      </div>`
+    : '';
+
+  const aiMessageHtml = aiMessage
+    ? `<p style="${styles.text};font-style:italic;color:#7A3B5E;">${aiMessage}</p>`
+    : '';
+
+  const content = `
+    <div style="${styles.card}">
+      <div style="text-align:center;margin:0 0 16px;">
+        <div style="display:inline-block;width:56px;height:56px;border-radius:50%;background:#F0FAF5;line-height:56px;font-size:28px;text-align:center;color:#3B8A6E;">&#10003;</div>
+      </div>
+      <h2 style="${styles.heading};text-align:center;">Your Session is Confirmed &amp; Paid</h2>
+      <p style="${styles.text}">Hi ${firstName},</p>
+      <p style="${styles.text}">Thank you! Your payment has been received and your session with Dr. Hala is locked in. Here are the details:</p>
+      ${aiMessageHtml}
+    </div>
+    ${sessionDetailsCard(booking)}
+    ${joinHtml}
+    ${tipsHtml}
+    <div style="text-align:center;padding:8px 0 12px;">
+      <a href="${getCalendarUrl(booking)}" style="${styles.button}">Add to Your Calendar</a>
+    </div>
+    <div style="text-align:center;padding:0 0 20px;">
+      <a href="${getManageUrl(manageToken)}" style="${styles.buttonSecondary}">Reschedule or Cancel</a>
+    </div>
+    <div style="${styles.card};background:#FEFCFB;">
+      <p style="${styles.muted}">Need anything before your session? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a> or reply to this email.</p>
+      <p style="${styles.muted}">Booking ID: ${booking.bookingId}</p>
+    </div>`;
+
+  return {
+    subject: `Your session is locked in — ${serviceName}`,
+    html: wrapEmail(content),
+    icsContent: generateBookingICS(booking),
+  };
+}
+
 // ─── 2. 24-Hour Reminder Email ──────────────────────────────────
 
 export function buildReminder24hEmail(
@@ -220,6 +299,17 @@ export function buildReminder24hEmail(
       </div>`
     : '';
 
+  // Meet link block — conditionally rendered if the booking has one.
+  // For online sessions this is the single most important thing in the
+  // email, so it sits right below the session details card.
+  const meetHtml = booking.meetLink
+    ? `<div style="${styles.card};background:#F0FAF5;border-left:3px solid #3B8A6E;">
+        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">Join Online Session</p>
+        <p style="margin:0 0 10px;font-size:12px;color:#4A4A5C;">Your Google Meet link is ready — save it now so you don&apos;t have to hunt for it tomorrow.</p>
+        <a href="${booking.meetLink}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Google Meet</a>
+      </div>`
+    : '';
+
   const content = `
     <div style="${styles.card}">
       <h2 style="${styles.heading}">Your Session is Tomorrow</h2>
@@ -228,6 +318,7 @@ export function buildReminder24hEmail(
       ${aiHtml}
     </div>
     ${sessionDetailsCard(booking)}
+    ${meetHtml}
     <div style="text-align:center;padding:8px 0 12px;">
       <a href="${getCalendarUrl(booking)}" style="${styles.button}">Add to Calendar</a>
     </div>
@@ -254,6 +345,17 @@ export function buildReminder1hEmail(
     ? 'Please make sure you are in a quiet, private space with a good internet connection.'
     : 'The office is located at 430 Hazeldean Rd, Ottawa. Please arrive 5 minutes early.';
 
+  // Big "Join Now" button for online sessions — this is THE most
+  // important CTA at T-1h. If the client clicks this and nothing else,
+  // the email did its job.
+  const meetHtml = booking.meetLink
+    ? `<div style="${styles.card};background:#F0FAF5;border-left:4px solid #3B8A6E;text-align:center;">
+        <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#3B8A6E;">Ready to Join?</p>
+        <p style="margin:0 0 14px;font-size:12px;color:#4A4A5C;">The link is active now.</p>
+        <a href="${booking.meetLink}" style="display:inline-block;padding:14px 36px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:15px;font-weight:700;">Join Google Meet</a>
+      </div>`
+    : '';
+
   const content = `
     <div style="${styles.card}">
       <h2 style="${styles.heading}">Starting Soon — 1 Hour</h2>
@@ -264,6 +366,7 @@ export function buildReminder1hEmail(
         <p style="margin:0;font-size:13px;color:#4A4A5C;">Take a few deep breaths. You are doing something wonderful for yourself.</p>
       </div>
     </div>
+    ${meetHtml}
     <div style="${styles.card};background:#FEFCFB;">
       <p style="${styles.muted}">Need to reach Dr. Hala urgently? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp ${BUSINESS.phone}</a></p>
     </div>`;

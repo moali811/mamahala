@@ -29,6 +29,8 @@ const KEY_BY_CUSTOMER = (email: string) =>
 const KEY_DRAFT = (id: string) => `invoices:draft:${id}`;
 const KEY_DRAFTS_LIST = 'invoices:drafts';
 const KEY_SETTINGS = 'invoices:settings';
+/** Reverse index: paymentToken → invoiceId (used by /pay/[token] page). */
+const KEY_PAY_TOKEN = (token: string) => `invoice:by-token:${token}`;
 
 const RECENT_CAP = 200;
 const DRAFTS_CAP = 50;
@@ -134,8 +136,32 @@ export async function saveInvoiceRecord(
       ...customerList.filter((id) => id !== invoice.invoiceId),
     ].slice(0, 50);
     await kv.set(KEY_BY_CUSTOMER(email), nextCustomer);
+
+    // Reverse index: paymentToken → invoiceId for /pay/[token] lookup
+    if (invoice.paymentToken) {
+      await kv.set(KEY_PAY_TOKEN(invoice.paymentToken), invoice.invoiceId);
+    }
   } catch {
     /* swallow */
+  }
+}
+
+/**
+ * Look up an invoice by its public payment token. Used by the payment
+ * concierge page to show the client their invoice without exposing the
+ * internal invoiceId. Returns null if the token is unknown or expired.
+ */
+export async function getInvoiceByPaymentToken(
+  token: string,
+): Promise<StoredInvoice | null> {
+  if (!KV_AVAILABLE) return null;
+  if (!token || !/^[0-9a-f-]{8,64}$/i.test(token)) return null;
+  try {
+    const invoiceId = (await kv.get(KEY_PAY_TOKEN(token))) as string | null;
+    if (!invoiceId) return null;
+    return await getInvoiceRecord(invoiceId);
+  } catch {
+    return null;
   }
 }
 

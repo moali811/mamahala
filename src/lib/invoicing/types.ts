@@ -133,6 +133,15 @@ export interface InvoiceDraft {
    * When empty or undefined, the single-service behavior applies.
    */
   lineItems?: InvoiceLineItem[];
+  /**
+   * Optional per-invoice Stripe Payment Link URL. When set, the payment
+   * concierge page uses this as the "Pay with Card" destination instead of
+   * creating a dynamic Checkout Session. Useful when STRIPE_SECRET_KEY is
+   * unavailable (the admin creates a one-time Payment Link in the Stripe
+   * dashboard and pastes it here). Empty/undefined → concierge falls back
+   * to the generic "customer chooses what to pay" link with an amount hint.
+   */
+  stripePaymentLink?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -216,6 +225,13 @@ export interface StoredInvoice {
   /** Dynamic Stripe Checkout URL with the exact invoice amount. */
   stripeCheckoutUrl?: string;
   /**
+   * Opaque token used by the payment concierge page to look up this invoice
+   * without exposing the invoiceId. Generated at send time via crypto.randomUUID().
+   * The email CTA links to `/pay/{paymentToken}` so clients can pay regardless
+   * of whether dynamic Stripe sessions are configured.
+   */
+  paymentToken?: string;
+  /**
    * Where this record came from. Defaults to `'native'` when omitted
    * (for backward compat with Phase 2 records).
    * - `native` — created via Compose tab
@@ -267,6 +283,18 @@ export interface InvoiceSettings {
   wireInstructions?: string;
   /** Optional PayPal.me link (shown to non-CA clients). */
   paypalLink?: string;
+  /**
+   * Optional global-default Stripe Payment Link (e.g. a "customer chooses
+   * what to pay" link from the Stripe dashboard). Used as the "Pay with
+   * Card" destination on the concierge page when:
+   *   1. STRIPE_SECRET_KEY is not configured (no dynamic session), AND
+   *   2. The invoice draft has no per-invoice stripePaymentLink override.
+   *
+   * Paste once here and every invoice automatically gets a card button —
+   * no more per-invoice pasting. Safe to leave empty (concierge will fall
+   * back to e-Transfer / wire / PayPal only).
+   */
+  defaultStripePaymentLink?: string;
   /** Optional Canadian HST/GST registration number shown on invoice header. */
   hstNumber?: string;
   /** Issuer block shown in the invoice header. */

@@ -16,6 +16,10 @@ import { getMessages, type Locale } from '@/lib/i18n';
 import { BUSINESS } from '@/config/business';
 import { services, serviceCategories, getServicesByCategory, getFreeConsultation } from '@/data/services';
 import { PRICING_TIERS, getAnchor, type Region } from '@/config/pricing';
+import {
+  COUNTRIES,
+  type CountryInfo,
+} from '@/config/countries';
 import { useBookingWizard, type BookingStep } from '@/hooks/useBookingWizard';
 import type { ServiceRecommendation, TimeSlot, DayAvailability, SessionMode } from '@/lib/booking/types';
 import type { ServiceCategory, Service } from '@/types';
@@ -551,11 +555,34 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
 
   const monthLabel = new Date(year, monthNum - 1).toLocaleDateString(isRTL ? 'ar' : 'en-US', { month: 'long', year: 'numeric' });
 
-  // Group available slots by period
+  // Group available slots by period — in the CLIENT's local timezone,
+  // not UTC. Historical bug: getUTCHours() put 9am Toronto slots into
+  // "Afternoon" because 13:00 UTC >= 12, and 2pm Toronto into "Evening"
+  // because 18:00 UTC >= 17. This made the labels (Morning/Afternoon/
+  // Evening) not match the displayed times — exactly the calendar bug
+  // Mo reported.
+  const getLocalHour = (iso: string, tz: string): number => {
+    try {
+      const fmt = new Intl.DateTimeFormat('en-US', {
+        timeZone: tz,
+        hour: 'numeric',
+        hour12: false,
+      });
+      // Intl returns "0"-"23" — occasionally "24" for midnight, normalize.
+      const h = parseInt(fmt.format(new Date(iso)), 10);
+      return h === 24 ? 0 : h;
+    } catch {
+      return new Date(iso).getHours(); // fallback to browser-local
+    }
+  };
+  const clientTz = wizard.formData.clientTimezone;
   const availableSlots = daySlots.filter(s => s.available);
-  const morningSlots = availableSlots.filter(s => { const h = new Date(s.start).getUTCHours(); return h < 12; });
-  const afternoonSlots = availableSlots.filter(s => { const h = new Date(s.start).getUTCHours(); return h >= 12 && h < 17; });
-  const eveningSlots = availableSlots.filter(s => { const h = new Date(s.start).getUTCHours(); return h >= 17; });
+  const morningSlots = availableSlots.filter(s => getLocalHour(s.start, clientTz) < 12);
+  const afternoonSlots = availableSlots.filter(s => {
+    const h = getLocalHour(s.start, clientTz);
+    return h >= 12 && h < 17;
+  });
+  const eveningSlots = availableSlots.filter(s => getLocalHour(s.start, clientTz) >= 17);
 
   const selectedDateLabel = selectedDate
     ? new Date(`${selectedDate}T12:00:00`).toLocaleDateString(isRTL ? 'ar' : 'en-US', { weekday: 'long', month: 'long', day: 'numeric' })
@@ -573,11 +600,57 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
         </p>
       </div>
 
-      {/* Timezone */}
-      <div className="flex items-center justify-center gap-2 text-xs text-[#8E8E9F]">
-        <Globe className="w-3.5 h-3.5" />
-        <span>{wizard.formData.clientTimezone.replace(/_/g, ' ')}</span>
-      </div>
+      {/* Timezones — show BOTH the client's and Dr. Hala's so neither
+           party gets confused about session times. Dr. Hala's TZ comes
+           from the availability rules (defaults to America/Toronto). */}
+      {(() => {
+        const formatTZName = (tz: string) => tz.replace(/_/g, ' ');
+        const getOffset = (tz: string): string => {
+          try {
+            const now = new Date();
+            const fmt = new Intl.DateTimeFormat('en-US', {
+              timeZone: tz,
+              timeZoneName: 'shortOffset',
+            });
+            const parts = fmt.formatToParts(now);
+            const off = parts.find(p => p.type === 'timeZoneName')?.value || '';
+            return off.replace('GMT', '').trim() || '±0';
+          } catch {
+            return '';
+          }
+        };
+        // TODO Phase 2.4: read provider TZ from availability rules instead.
+        const providerTz = 'America/Toronto';
+        const clientOffset = getOffset(wizard.formData.clientTimezone);
+        const providerOffset = getOffset(providerTz);
+        const sameTz = wizard.formData.clientTimezone === providerTz;
+        return (
+          <div className="flex flex-col items-center gap-1">
+            <div className="flex items-center justify-center gap-2 text-xs text-[#8E8E9F]">
+              <Globe className="w-3.5 h-3.5" />
+              <span>
+                {isRTL ? 'المنطقة الزمنية لديك' : 'Your time zone'}:{' '}
+                <span className="font-medium text-[#4A4A5C]">
+                  {formatTZName(wizard.formData.clientTimezone)}
+                </span>
+                {clientOffset && <span className="text-[#C0B8B0]"> (GMT{clientOffset})</span>}
+              </span>
+            </div>
+            {!sameTz && (
+              <div className="flex items-center justify-center gap-2 text-[10px] text-[#8E8E9F]">
+                <span className="opacity-60">•</span>
+                <span>
+                  {isRTL ? 'د. هالة في' : 'Dr. Hala is in'}{' '}
+                  <span className="font-medium text-[#4A4A5C]">
+                    {formatTZName(providerTz)}
+                  </span>
+                  {providerOffset && <span className="text-[#C0B8B0]"> (GMT{providerOffset})</span>}
+                </span>
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* ─── Dynamic Layout: full → split on date select ─── */}
       <div className="flex flex-col lg:flex-row lg:gap-6 lg:items-start">
@@ -743,22 +816,43 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
                         <span className="text-[10px] text-[#8E8E9F]">{group.sublabel}</span>
                       </div>
                       <div className="p-2.5 flex flex-wrap gap-1.5">
-                        {group.slots.map((slot, si) => (
-                          <motion.button
-                            key={slot.start}
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ duration: 0.2, delay: 0.2 + gi * 0.08 + si * 0.02 }}
-                            onClick={() => selectSlot(slot)}
-                            className="px-3.5 py-2 rounded-lg border border-[#E8E0D8] text-sm text-[#4A4A5C] font-semibold hover:border-[#7A3B5E] hover:text-white hover:bg-[#7A3B5E] hover:shadow-md transition-all active:scale-95"
-                          >
-                            {new Date(slot.start).toLocaleTimeString(isRTL ? 'ar' : 'en-US', {
-                              timeZone: wizard.formData.clientTimezone,
-                              hour: 'numeric',
-                              minute: '2-digit',
-                            })}
-                          </motion.button>
-                        ))}
+                        {group.slots.map((slot, si) => {
+                          const slotDate = new Date(slot.start);
+                          const clientTimeLabel = slotDate.toLocaleTimeString(isRTL ? 'ar' : 'en-US', {
+                            timeZone: wizard.formData.clientTimezone,
+                            hour: 'numeric',
+                            minute: '2-digit',
+                          });
+                          // Secondary line: same moment rendered in Dr. Hala's
+                          // timezone. Only shown when the client isn't already
+                          // in Toronto, to keep the button lean.
+                          const providerTimezone = 'America/Toronto';
+                          const sameTz = wizard.formData.clientTimezone === providerTimezone;
+                          const providerTimeLabel = sameTz
+                            ? null
+                            : slotDate.toLocaleTimeString(isRTL ? 'ar' : 'en-US', {
+                                timeZone: providerTimezone,
+                                hour: 'numeric',
+                                minute: '2-digit',
+                              });
+                          return (
+                            <motion.button
+                              key={slot.start}
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              transition={{ duration: 0.2, delay: 0.2 + gi * 0.08 + si * 0.02 }}
+                              onClick={() => selectSlot(slot)}
+                              className="group px-3.5 py-2 rounded-lg border border-[#E8E0D8] text-sm text-[#4A4A5C] font-semibold hover:border-[#7A3B5E] hover:text-white hover:bg-[#7A3B5E] hover:shadow-md transition-all active:scale-95 flex flex-col items-center leading-tight"
+                            >
+                              <span>{clientTimeLabel}</span>
+                              {providerTimeLabel && (
+                                <span className="text-[9px] font-normal text-[#8E8E9F] group-hover:text-white/75 mt-0.5">
+                                  {isRTL ? 'د. هالة: ' : 'Hala: '}{providerTimeLabel}
+                                </span>
+                              )}
+                            </motion.button>
+                          );
+                        })}
                       </div>
                     </motion.div>
                   ))}
@@ -774,20 +868,15 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
 
 // ─── Step 4: Client Info ────────────────────────────────────────
 
-// ─── Country data (shared by phone input + location) ────────────
+// NOTE: The COUNTRIES array, CountryInfo type, and detectCountryFromTimezone
+// now live in @/config/countries (imported at the top of this file).
+// The _LEGACY_COUNTRIES array below is kept temporarily as dead code — it
+// WILL NOT be referenced at runtime. TypeScript may flag it as unused;
+// a later cleanup pass can delete it outright. Done this way to keep the
+// diff minimal and avoid accidentally breaking the phone picker.
 
-interface CountryInfo {
-  code: string;
-  name: string;
-  nameAr: string;
-  flag: string;
-  dial: string;
-  city: string;
-  cityAr: string;
-  timezones: string[];
-}
-
-const COUNTRIES: CountryInfo[] = [
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _LEGACY_COUNTRIES: CountryInfo[] = [
   // ─── GCC ────────────────────────────────────────────────────────
   { code: 'AE', name: 'UAE', nameAr: 'الإمارات', flag: '\u{1F1E6}\u{1F1EA}', dial: '+971', city: 'Dubai', cityAr: 'دبي', timezones: ['Asia/Dubai', 'Asia/Muscat'] },
   { code: 'CA', name: 'Canada', nameAr: 'كندا', flag: '\u{1F1E8}\u{1F1E6}', dial: '+1', city: 'Ottawa', cityAr: 'أوتاوا', timezones: ['America/Toronto', 'America/Vancouver', 'America/Edmonton', 'America/Winnipeg', 'America/Halifax', 'America/St_Johns'] },
@@ -983,7 +1072,12 @@ function InfoStep({ wizard, locale, isRTL }: StepProps) {
     wizard.formData.preferredLanguage || (locale === 'ar' ? 'ar' : 'en'),
   );
   const [locationCountry, setLocationCountry] = useState<CountryInfo>(
-    COUNTRIES.find(c => c.name === wizard.formData.clientCountry) || detectedCountry,
+    // formData.clientCountry is now an ISO-2 code — match on code first, then
+    // fall back to name-match (for any legacy drafts still holding the old
+    // name-based value) before defaulting to the timezone-detected country.
+    COUNTRIES.find(c => c.code === wizard.formData.clientCountry)
+      || COUNTRIES.find(c => c.name === wizard.formData.clientCountry)
+      || detectedCountry,
   );
   const [showLocationDropdown, setShowLocationDropdown] = useState(false);
 
@@ -1010,7 +1104,10 @@ function InfoStep({ wizard, locale, isRTL }: StepProps) {
       clientName: name.trim(),
       clientEmail: email.trim().toLowerCase(),
       clientPhone: fullPhone,
-      clientCountry: isRTL ? locationCountry.nameAr : locationCountry.name,
+      // Store ISO-2 code — the pricing engine, country-to-band lookup,
+      // and invoice create route all expect a 2-letter code. Display
+      // name + flag are rendered from this code via COUNTRIES_BY_CODE.
+      clientCountry: locationCountry.code,
       preferredLanguage: preferredLang,
       sessionMode: mode,
       notes: notes.trim(),
@@ -1372,12 +1469,19 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
             <span className="text-[#8E8E9F]"><MessageCircle className="w-3.5 h-3.5 inline mr-1.5" />{isRTL ? 'لغة التواصل' : 'Language'}</span>
             <span className="text-[#4A4A5C] font-medium">{formData.preferredLanguage === 'ar' ? 'العربية' : 'English'}</span>
           </div>
-          {formData.clientCountry && (
-            <div className="flex justify-between">
-              <span className="text-[#8E8E9F]"><Globe className="w-3.5 h-3.5 inline mr-1.5" />{isRTL ? 'الموقع' : 'Location'}</span>
-              <span className="text-[#4A4A5C] font-medium">{formData.clientCountry}</span>
-            </div>
-          )}
+          {formData.clientCountry && (() => {
+            // formData.clientCountry is an ISO-2 code; look up the flag + name.
+            const countryInfo = COUNTRIES.find(c => c.code === formData.clientCountry);
+            const display = countryInfo
+              ? `${countryInfo.flag} ${isRTL ? countryInfo.nameAr : countryInfo.name}`
+              : formData.clientCountry;
+            return (
+              <div className="flex justify-between">
+                <span className="text-[#8E8E9F]"><Globe className="w-3.5 h-3.5 inline mr-1.5" />{isRTL ? 'الموقع' : 'Location'}</span>
+                <span className="text-[#4A4A5C] font-medium">{display}</span>
+              </div>
+            );
+          })()}
         </div>
 
         {formData.notes && (
