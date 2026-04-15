@@ -105,17 +105,23 @@ function buildInvoiceEmailHtml(
         </table>
       </div>
 
-      <!-- Pay Online — always rendered. Routes through the payment
-           concierge page at /pay/{token}, which picks the best tier at
-           click time (dynamic Stripe session → pasted Payment Link →
-           e-Transfer/wire/PayPal fallback). -->
+      <!-- Pay Online — primary CTA goes DIRECTLY to Stripe Checkout
+           when a dynamic session exists (Tier 1). Fastest path for the
+           client: one click, exact amount pre-filled, card form ready.
+           Secondary "Other payment options" link goes to the concierge
+           page where clients who prefer e-Transfer or wire can choose.
+           When Tier 1 is not available, the primary button falls back
+           to the concierge page for manual Stripe link + alt methods. -->
       <div style="background:#F0FAF5;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;">
         <p style="margin:0 0 4px;color:#3B8A6E;font-size:14px;font-weight:700;">Pay Securely Online</p>
-        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;">Pay <strong>${escapeHtml(bd.formattedTotal)}</strong> — card, Interac, wire, or PayPal</p>
-        <a href="${buildPaymentConciergeUrl(invoice)}" style="display:inline-block;padding:16px 48px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:12px;font-size:16px;font-weight:700;letter-spacing:0.3px;">Pay ${escapeHtml(bd.formattedTotal)}</a>
+        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;">Pay <strong>${escapeHtml(bd.formattedTotal)}</strong> with card${invoice.stripeCheckoutUrl ? ' — via Stripe' : ''}</p>
+        <a href="${invoice.stripeCheckoutUrl || buildPaymentConciergeUrl(invoice)}" style="display:inline-block;padding:16px 48px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:12px;font-size:16px;font-weight:700;letter-spacing:0.3px;">Pay ${escapeHtml(bd.formattedTotal)}</a>
+        ${invoice.stripeCheckoutUrl ? `
+        <p style="margin:14px 0 0;font-size:11px;color:#8E8E9F;">Prefer Interac, wire, or PayPal? <a href="${buildPaymentConciergeUrl(invoice)}" style="color:#7A3B5E;text-decoration:underline;">See other payment options</a></p>` : ''}
       </div>
 
-      <!-- Other payment methods -->
+      <!-- Other payment methods (still shown inline as a written summary
+           for clients who don't want to click a second button) -->
       <div style="margin-bottom:20px;">
         <p style="margin:0 0 12px;color:#8E8E9F;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:1px;">Other Payment Methods</p>
         ${blocksHtml}
