@@ -56,8 +56,11 @@ export default function BookingsModule({ password }: Props) {
     return () => clearTimeout(t);
   }, [success]);
 
-  const fetchBookings = useCallback(async () => {
-    setLoading(true);
+  // `silent` mode skips the loading spinner — used by the background
+  // poller so the list doesn't flash on every refresh. Manual refresh
+  // button calls with silent: false to show feedback.
+  const fetchBookings = useCallback(async (opts?: { silent?: boolean }) => {
+    if (!opts?.silent) setLoading(true);
     try {
       const res = await fetch('/api/admin/booking/list', { headers });
       if (!res.ok) throw new Error('Failed to fetch');
@@ -66,11 +69,31 @@ export default function BookingsModule({ password }: Props) {
     } catch {
       setError('Failed to load bookings');
     } finally {
-      setLoading(false);
+      if (!opts?.silent) setLoading(false);
     }
   }, [password]);
 
-  useEffect(() => { fetchBookings(); }, [fetchBookings]);
+  // Load on mount + auto-refresh every 20 seconds so changes made in
+  // other tabs/sessions (or by the booking system itself) show up
+  // without a manual reload. The admin page top-level also polls every
+  // 30s for the notification badge; this polls faster to keep the list
+  // itself fresh while the user is actively viewing it.
+  // Pauses polling while the tab is hidden (document.hidden) to avoid
+  // unnecessary KV hits when the admin isn't actively looking.
+  useEffect(() => {
+    fetchBookings();
+    const tick = () => {
+      if (typeof document !== 'undefined' && document.hidden) return;
+      fetchBookings({ silent: true });
+    };
+    const interval = setInterval(tick, 20000);
+    const onVisible = () => { if (!document.hidden) fetchBookings({ silent: true }); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [fetchBookings]);
 
   const handleApprove = async (bookingId: string) => {
     setActionLoading(bookingId);
@@ -317,7 +340,7 @@ export default function BookingsModule({ password }: Props) {
           <p className="text-sm text-[#8E8E9F] mt-0.5">Manage session requests and approvals</p>
         </div>
         <button
-          onClick={fetchBookings}
+          onClick={() => fetchBookings()}
           disabled={loading}
           className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F5F0EB] text-sm text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors"
         >

@@ -7,6 +7,7 @@
    ================================================================ */
 
 import { BUSINESS } from '@/config/business';
+import { LOGO_256_DATA_URI } from './logo-data-uri';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
@@ -33,30 +34,34 @@ export const emailStyles = {
   footerText: 'margin:0;font-size:11px;color:#B0B0B0;',
 };
 
-// ─── Branded Header (text-only, no external resources) ─────────
+// ─── Branded Header (inline data-URI logo, NO remote resources) ─
 //
-// CRITICAL: do NOT add <img src="https://..."> tags here or anywhere
-// in the email body. Remote images trigger:
+// CRITICAL: do NOT use <img src="https://..."> here or anywhere in
+// the email body. Remote images trigger:
 //   1. "Remote resources blocked" banners in webmail clients, which
 //      makes the email look sketchy and pushes it to the junk folder
 //   2. Resend's `application_error: Unable to fetch data` errors when
 //      Resend's pipeline tries to inline/validate the image and can't
 //      reach the host in time
-// Both were happening on mamahala.ca's booking notifications before
-// 2026-04-15. Text-only branding is deliberate — keep it that way.
-// If a logo is genuinely needed, use a base64 data URI inline (works
-// in Gmail/Apple Mail, may fail in some Outlook versions) or attach
-// it via Resend's attachments API with content_id and reference via
-// <img src="cid:logo-256">. Never use an external URL.
+// Both were happening on mamahala.ca's booking notifications on
+// 2026-04-15 until we removed the remote <img> tag.
+//
+// The fix: embed the logo as a base64 data URI via LOGO_256_DATA_URI
+// (pre-encoded from public/images/logo-256.png in logo-data-uri.ts).
+// Data URIs are not "remote resources" — they're part of the HTML
+// itself, so no privacy warning, no spam penalty, no Resend fetch
+// failure. Works in Gmail, Apple Mail, SiteGround webmail, and most
+// Outlook versions. The one known exception is old desktop Outlook
+// (2007–2013) which may strip data URIs; if that matters later,
+// switch to Resend attachments with content_id + cid: reference.
 
 export function emailHeader(options?: { locale?: string }): string {
   const isAr = options?.locale === 'ar';
   const brandName = isAr ? BUSINESS.nameAr : BUSINESS.name;
   const dir = isAr ? 'rtl' : 'ltr';
-  const monogram = isAr ? 'م' : 'MH';
 
   return `<tr><td style="text-align:center;padding:28px 0 16px;" dir="${dir}">
-    <div style="display:inline-block;width:48px;height:48px;line-height:48px;border-radius:50%;background:#7A3B5E;color:#F5F0EB;font-size:18px;font-weight:700;font-family:Georgia,serif;letter-spacing:0.5px;margin:0 auto 10px;">${monogram}</div>
+    <img src="${LOGO_256_DATA_URI}" alt="${BUSINESS.name}" width="56" height="56" style="display:block;margin:0 auto 10px;border-radius:12px;border:0;" />
     <p style="${emailStyles.brandName}">${brandName}</p>
     <div style="${emailStyles.divider}"></div>
   </td></tr>`;

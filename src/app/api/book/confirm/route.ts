@@ -20,7 +20,7 @@ import { generateBookingId, saveBooking, createManageToken } from '@/lib/booking
 import { isSlotAvailable } from '@/lib/booking/availability';
 import { fetchBusySlots } from '@/lib/booking/google-calendar';
 import { createCalendarEvent } from '@/lib/booking/google-calendar';
-import { buildConfirmationEmail, sendBookingEmail, notifyAdmin, __lastSendErrors } from '@/lib/booking/emails';
+import { buildConfirmationEmail, sendBookingEmail, notifyAdmin } from '@/lib/booking/emails';
 import { generateSessionPrepTips } from '@/lib/booking/ai-session-prep';
 import { processBookingIntake } from '@/lib/invoicing/booking-intake';
 import { getCustomer } from '@/lib/invoicing/customer-store';
@@ -208,28 +208,22 @@ export async function POST(request: NextRequest) {
     // Resend has confirmed acceptance for every send. Adds a few
     // hundred ms of latency but guarantees delivery. Wrapped in a
     // single Promise.all so both sends run in parallel, not serially.
-    const [clientMessageId, adminResults] = await Promise.all([
+    await Promise.all([
       sendBookingEmail({
         to: finalBooking.clientEmail,
         subject,
         html,
         icsContent: isFreeSession ? icsContent : undefined, // Only attach ICS for confirmed (free) sessions
-      }).catch(err => {
-        console.error('[Booking Confirm] Client email failed:', err);
-        return null;
-      }),
+      }).catch(err => console.error('[Booking Confirm] Client email failed:', err)),
       // Notify Dr. Hala (with approve/decline links for paid sessions)
       notifyAdmin(
         isFreeSession ? 'new-booking' : 'pending-approval',
         finalBooking,
-      ).catch(err => {
-        console.error('[Booking Confirm] Admin notification failed:', err);
-        return [] as Array<{ to: string; messageId: string | null }>;
-      }),
+      ).catch(err => console.error('[Booking Confirm] Admin notification failed:', err)),
     ]);
 
     // ─── Build response ──────────────────────────────────────
-    const result: BookingConfirmationResult & { __emailDebug?: unknown } = {
+    const result: BookingConfirmationResult = {
       bookingId,
       draftId,
       manageToken,
@@ -238,14 +232,6 @@ export async function POST(request: NextRequest) {
       meetLink: finalBooking.meetLink,
       aiPrepTips: prepTips.length > 0 ? prepTips : undefined,
       aiConfirmationMessage: finalBooking.aiConfirmationMessage,
-      // Temporary diagnostic for 2026-04-15 launch-day triage — expose
-      // per-recipient send results so we can see them in the response
-      // body. Remove after the race/delivery issue is fully resolved.
-      __emailDebug: {
-        clientMessageId,
-        adminResults,
-        errors: { ...__lastSendErrors },
-      },
     };
 
     return NextResponse.json(result, { status: 201 });

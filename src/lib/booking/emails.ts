@@ -16,18 +16,28 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
 // ─── Formatting Helpers ─────────────────────────────────────────
 
+// Formats a datetime like "Monday, April 21 at 11:00 AM" in the given
+// IANA timezone. Previously included the year + used comma separators,
+// producing awkward subject lines like "Monday, April 21, 2026, 11:00 AM"
+// where the year break mid-string read as a timestamp typo in inbox
+// previews. Year is dropped (always "current" in transactional context);
+// ` at ` separator between date and time reads cleaner.
 function formatDateTime(iso: string, timezone: string): string {
   try {
     const d = new Date(iso);
-    return d.toLocaleString('en-US', {
+    const datePart = d.toLocaleString('en-US', {
       timeZone: timezone,
       weekday: 'long',
       month: 'long',
       day: 'numeric',
-      year: 'numeric',
+    });
+    const timePart = d.toLocaleString('en-US', {
+      timeZone: timezone,
       hour: 'numeric',
       minute: '2-digit',
+      hour12: true,
     });
+    return `${datePart} at ${timePart}`;
   } catch {
     return iso;
   }
@@ -36,15 +46,18 @@ function formatDateTime(iso: string, timezone: string): string {
 function formatDateTimeAr(iso: string, timezone: string): string {
   try {
     const d = new Date(iso);
-    return d.toLocaleString('ar', {
+    const datePart = d.toLocaleString('ar', {
       timeZone: timezone,
       weekday: 'long',
       month: 'long',
       day: 'numeric',
-      year: 'numeric',
+    });
+    const timePart = d.toLocaleString('ar', {
+      timeZone: timezone,
       hour: 'numeric',
       minute: '2-digit',
     });
+    return `${datePart} — ${timePart}`;
   } catch {
     return iso;
   }
@@ -590,18 +603,9 @@ interface SendEmailOptions {
   replyTo?: string;
 }
 
-// Global container for the most recent error per recipient, so the
-// booking confirm route can surface it in the __emailDebug response
-// field for launch-day triage. Keyed by recipient email.
-// TEMPORARY — remove once the admin@mamahala.ca delivery issue is
-// fully resolved.
-export const __lastSendErrors: Record<string, { phase: string; name?: string; message?: string }> = {};
-
 export async function sendBookingEmail(options: SendEmailOptions): Promise<string | null> {
-  delete __lastSendErrors[options.to];
   if (!RESEND_API_KEY) {
     console.warn('[Booking Email] RESEND_API_KEY not set — skipping');
-    __lastSendErrors[options.to] = { phase: 'no-api-key' };
     return null;
   }
 
@@ -619,7 +623,7 @@ export async function sendBookingEmail(options: SendEmailOptions): Promise<strin
 
     // Resend returns { data, error } — it does NOT throw on API errors.
     // Must inspect `error` explicitly or failures silently disappear into
-    // the void.
+    // the void. Root cause of the 2026-04-15 "no emails arriving" bug.
     const { data, error } = await resend.emails.send({
       from: FROM_EMAIL,
       to: options.to,
@@ -631,28 +635,23 @@ export async function sendBookingEmail(options: SendEmailOptions): Promise<strin
     });
 
     if (error) {
-      const name = (error as any).name;
-      const message = (error as any).message;
       console.error('[EMAIL FAILURE] Booking email rejected by Resend:', {
         to: options.to,
         from: FROM_EMAIL,
         subject: options.subject,
-        errorName: name,
-        errorMessage: message,
+        errorName: (error as any).name,
+        errorMessage: (error as any).message,
       });
-      __lastSendErrors[options.to] = { phase: 'resend-error', name, message };
       return null;
     }
 
     return (data as any)?.id ?? null;
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
     console.error('[EMAIL FAILURE] Booking email threw:', {
       to: options.to,
       from: FROM_EMAIL,
-      error: message,
+      error: err instanceof Error ? err.message : String(err),
     });
-    __lastSendErrors[options.to] = { phase: 'threw', message };
     return null;
   }
 }
@@ -682,13 +681,6 @@ export async function notifyAdmin(
     return ADMIN_EMAILS.map(to => ({ to, messageId: null }));
   }
 
-  console.error('[Admin Notify] dispatching batch', {
-    type,
-    bookingId: booking.bookingId,
-    adminEmails: ADMIN_EMAILS,
-    adminEmailsLength: ADMIN_EMAILS.length,
-  });
-
   try {
     const { Resend } = await import('resend');
     const resend = new Resend(RESEND_API_KEY);
@@ -705,38 +697,26 @@ export async function notifyAdmin(
     const { data, error } = await resend.batch.send(payload as any);
 
     if (error) {
-      const name = (error as any).name;
-      const message = (error as any).message;
       console.error('[EMAIL FAILURE] Admin notify batch rejected by Resend:', {
         bookingId: booking.bookingId,
-        errorName: name,
-        errorMessage: message,
+        errorName: (error as any).name,
+        errorMessage: (error as any).message,
       });
-      for (const to of ADMIN_EMAILS) {
-        __lastSendErrors[to] = { phase: 'batch-resend-error', name, message };
-      }
       return ADMIN_EMAILS.map(to => ({ to, messageId: null }));
     }
 
     // Resend batch response: { data: { data: [{ id }, { id }] } }
     // Map each result back to its recipient by index.
     const batchData = (data as any)?.data ?? [];
-    const results = ADMIN_EMAILS.map((to, i) => ({
+    return ADMIN_EMAILS.map((to, i) => ({
       to,
       messageId: batchData[i]?.id ?? null,
     }));
-
-    console.error('[Admin Notify] batch result', results);
-    return results;
   } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
     console.error('[EMAIL FAILURE] Admin notify batch threw:', {
       bookingId: booking.bookingId,
-      error: message,
+      error: err instanceof Error ? err.message : String(err),
     });
-    for (const to of ADMIN_EMAILS) {
-      __lastSendErrors[to] = { phase: 'batch-threw', message };
-    }
     return ADMIN_EMAILS.map(to => ({ to, messageId: null }));
   }
 }
