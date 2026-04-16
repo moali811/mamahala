@@ -52,50 +52,103 @@ export async function POST(request: NextRequest) {
  * Find up to 5 available alternative slots on the booking's date and +/-2 nearby days.
  * Returns formatted strings like "Tuesday, April 22 at 10:00 AM" plus ISO start times.
  */
+/**
+ * Smart alternative slot finder — suggests practical, relevant times.
+ *
+ * Intelligence rules:
+ * 1. Only future dates (never suggest past slots)
+ * 2. Only reasonable hours (8 AM – 8 PM in client's timezone)
+ * 3. Prefer slots near the original booking time (±2 hours first)
+ * 4. Spread across different days (max 2 per day) for variety
+ * 5. Check up to 7 days ahead for maximum options
+ */
 async function findAlternativeSlots(
   bookingDate: string,
   durationMinutes: number,
   clientTimezone?: string,
+  originalStartTime?: string,
 ): Promise<Array<{ label: string; startIso: string }>> {
-  const alternatives: Array<{ label: string; startIso: string }> = [];
+  const tz = clientTimezone || 'America/Toronto';
+  const now = new Date();
+  const nowIso = now.toISOString();
 
-  // Check the booking day and +/-2 nearby days (5 days total)
-  const [year, month, day] = bookingDate.split('-').map(Number);
-  const baseDate = new Date(year, month - 1, day);
-  const datesToCheck: string[] = [];
-
-  for (let offset = -2; offset <= 2; offset++) {
-    const d = new Date(baseDate);
-    d.setDate(d.getDate() + offset);
-    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    datesToCheck.push(dateStr);
+  // Get the original booking hour in client's timezone for proximity scoring
+  let originalHour = 10; // default: morning preference
+  if (originalStartTime) {
+    try {
+      const fmt = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', hour12: false });
+      originalHour = parseInt(fmt.format(new Date(originalStartTime)), 10);
+    } catch { /* use default */ }
   }
 
-  for (const dateStr of datesToCheck) {
-    if (alternatives.length >= 5) break;
+  // Collect candidate slots from the next 7 days
+  type Candidate = { startIso: string; hour: number; dateStr: string };
+  const candidates: Candidate[] = [];
+
+  for (let offset = 0; offset <= 7; offset++) {
+    const d = new Date(now);
+    d.setDate(d.getDate() + offset);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
     try {
       const slots = await getAvailableSlots(dateStr, durationMinutes);
-      const available = slots.filter(s => s.available);
+      const available = slots.filter(s => s.available && s.start > nowIso);
+
       for (const slot of available) {
-        if (alternatives.length >= 5) break;
-        const d = new Date(slot.start);
-        const label = d.toLocaleString('en-US', {
-          timeZone: clientTimezone || 'America/Toronto',
-          weekday: 'long',
-          month: 'long',
-          day: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true,
-        });
-        alternatives.push({ label, startIso: slot.start });
+        // Get the hour in client's timezone
+        let hour = 10;
+        try {
+          const fmt = new Intl.DateTimeFormat('en-US', { timeZone: tz, hour: 'numeric', hour12: false });
+          hour = parseInt(fmt.format(new Date(slot.start)), 10);
+        } catch { /* use default */ }
+
+        // Only reasonable hours: 8 AM – 8 PM in client's timezone
+        if (hour >= 8 && hour <= 20) {
+          candidates.push({ startIso: slot.start, hour, dateStr });
+        }
       }
     } catch {
-      // Skip days that fail — non-critical
+      // Skip days that fail
     }
   }
 
-  return alternatives;
+  // Score candidates: closer to original time = better, spread across days
+  const scored = candidates.map(c => ({
+    ...c,
+    timeDiff: Math.abs(c.hour - originalHour), // 0 = same time, higher = further
+  }));
+
+  // Sort: prefer closest time match, then earliest date
+  scored.sort((a, b) => {
+    if (a.timeDiff !== b.timeDiff) return a.timeDiff - b.timeDiff;
+    return a.startIso.localeCompare(b.startIso);
+  });
+
+  // Pick top 5, max 2 per day for variety
+  const result: Array<{ label: string; startIso: string }> = [];
+  const perDay: Record<string, number> = {};
+
+  for (const c of scored) {
+    if (result.length >= 5) break;
+    perDay[c.dateStr] = (perDay[c.dateStr] || 0) + 1;
+    if (perDay[c.dateStr] > 2) continue; // max 2 per day
+
+    const label = new Date(c.startIso).toLocaleString('en-US', {
+      timeZone: tz,
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+    result.push({ label, startIso: c.startIso });
+  }
+
+  // Final sort by date/time for clean display
+  result.sort((a, b) => a.startIso.localeCompare(b.startIso));
+
+  return result;
 }
 
 async function processDecline(bookingId: string, reason?: string): Promise<{
@@ -127,6 +180,7 @@ async function processDecline(bookingId: string, reason?: string): Promise<{
     bookingDate,
     booking.durationMinutes,
     booking.clientTimezone,
+    booking.startTime,
   ).catch(() => [] as Array<{ label: string; startIso: string }>);
 
   // Send decline email to client
@@ -134,35 +188,32 @@ async function processDecline(bookingId: string, reason?: string): Promise<{
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
   const bookUrl = `${SITE_URL}/en/book?service=${booking.serviceSlug}`;
 
-  // Build the "Suggested Alternative Times" section if alternatives were found
-  const alternativesHtml = alternativeSlots.length > 0
-    ? `<div style="${emailStyles.card};background:#FFFAF5;border-left:3px solid #C8A97D;">
-        <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#7A3B5E;">We have these times available instead:</p>
-        ${alternativeSlots.map(slot =>
-          `<p style="margin:0 0 6px;font-size:13px;color:#4A4A5C;">&#8226; ${slot.label}</p>`
-        ).join('')}
-        <div style="text-align:center;margin:14px 0 2px;">
-          <a href="${bookUrl}" style="${emailStyles.button}">Book a New Time</a>
-        </div>
-      </div>`
-    : '';
-
   const html = emailWrapper(`
     <div style="${emailStyles.card}">
-      <h2 style="${emailStyles.heading}">Regarding Your Session Request</h2>
+      <h2 style="${emailStyles.heading}">Let's Find the Right Time</h2>
       <p style="${emailStyles.text}">Hi ${firstName},</p>
-      <p style="${emailStyles.text}">Thank you for your interest in booking a ${serviceName} session. Unfortunately, we are unable to accommodate this particular time slot.</p>
-      <p style="${emailStyles.text}">We would love to find a time that works for both of us. Please feel free to:</p>
-      <div style="${emailStyles.goldAccent}">
-        <p style="margin:0 0 6px;font-size:13px;color:#4A4A5C;">&#8226; Book a different time on our website</p>
-        <p style="margin:0 0 6px;font-size:13px;color:#4A4A5C;">&#8226; Message us on <a href="${BUSINESS.whatsappUrl}" style="color:#7A3B5E;font-weight:600;">WhatsApp</a> at ${BUSINESS.phone}</p>
-        <p style="margin:0;font-size:13px;color:#4A4A5C;">&#8226; We typically reply within a few hours</p>
+      <p style="${emailStyles.text}">Thank you for reaching out about ${serviceName}. Unfortunately, the time you selected isn't available, but I'd love to connect with you soon.</p>
+      ${alternativeSlots.length > 0 ? `
+      <p style="${emailStyles.text};font-weight:600;color:#7A3B5E;">Here are some times that work well:</p>
+      <div style="background:#FFFAF5;border-radius:12px;padding:16px 20px;margin:12px 0 16px;">
+        ${alternativeSlots.map((slot, i) =>
+          `<p style="margin:0 0 ${i < alternativeSlots.length - 1 ? '8' : '0'}px;font-size:14px;color:#2D2A33;font-weight:500;">&#9679; ${slot.label}</p>`
+        ).join('')}
       </div>
+      <div style="text-align:center;margin:8px 0 16px;">
+        <a href="${bookUrl}" style="${emailStyles.button}">Book One of These Times</a>
+      </div>
+      <p style="${emailStyles.muted};text-align:center;">Or pick any time that suits you from our full calendar</p>
+      ` : `
+      <div style="text-align:center;margin:16px 0;">
+        <a href="${SITE_URL}/en/book" style="${emailStyles.button}">See Available Times</a>
+      </div>
+      `}
+      <div style="${emailStyles.goldAccent};margin-top:16px;">
+        <p style="margin:0;font-size:13px;color:#4A4A5C;">Need a specific time? Message us on <a href="${BUSINESS.whatsappUrl}" style="color:#7A3B5E;font-weight:600;">WhatsApp</a> and we'll work it out together.</p>
+      </div>
+      <p style="${emailStyles.muted};margin-top:16px;">— Dr. Hala</p>
     </div>
-    ${alternativesHtml}
-    ${alternativeSlots.length === 0 ? `<div style="text-align:center;margin:20px 0 4px;">
-      <a href="${SITE_URL}/en/book" style="${emailStyles.button}">Book Another Time</a>
-    </div>` : ''}
   `);
 
   await sendBookingEmail({
