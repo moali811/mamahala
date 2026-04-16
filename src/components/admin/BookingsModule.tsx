@@ -32,12 +32,9 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string; b
   'no-show': { bg: 'bg-gray-50', text: 'text-gray-500', label: 'No-Show', border: 'border-l-gray-400' },
 };
 
-type TopTab = 'bookings' | 'availability';
+type TopTab = 'bookings' | 'recurring' | 'availability';
 
 export default function BookingsModule({ password }: Props) {
-  // Top-level tab switches between the booking list and the availability editor.
-  // Keeps the UI simple — availability lives with bookings because both are the
-  // "when sessions happen" domain.
   const [topTab, setTopTab] = useState<TopTab>('bookings');
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +42,9 @@ export default function BookingsModule({ password }: Props) {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Selection state for bulk actions
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   // Invoice review sheet state
   const [invoiceSheet, setInvoiceSheet] = useState<{ booking: Booking; draft: InvoiceDraft } | null>(null);
@@ -310,9 +310,10 @@ export default function BookingsModule({ password }: Props) {
   return (
     <div className="space-y-6">
       {/* ─── Top-level tab switch: Bookings list vs Availability editor ─── */}
-      <div className="flex gap-1.5 p-1 bg-[#F5F0EB] rounded-xl max-w-md">
+      <div className="flex gap-1.5 p-1 bg-[#F5F0EB] rounded-xl max-w-lg overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         {([
           { key: 'bookings' as const, label: 'Booking Requests' },
+          { key: 'recurring' as const, label: 'Recurring' },
           { key: 'availability' as const, label: 'Availability' },
         ]).map(tab => {
           const isActive = topTab === tab.key;
@@ -332,8 +333,123 @@ export default function BookingsModule({ password }: Props) {
         })}
       </div>
 
-      {/* Availability editor (alternative view) */}
+      {/* Availability editor */}
       {topTab === 'availability' && <AvailabilityEditor password={password} />}
+
+      {/* Recurring series view */}
+      {topTab === 'recurring' && (() => {
+        const recurringBookings = bookings.filter(b => b.series);
+        const seriesGroups = new Map<string, Booking[]>();
+        for (const b of recurringBookings) {
+          const sid = b.series!.seriesId;
+          const list = seriesGroups.get(sid) ?? [];
+          list.push(b);
+          seriesGroups.set(sid, list);
+        }
+        // Sort groups by the first session's start time (most recent first)
+        const sortedGroups = [...seriesGroups.entries()].sort((a, b) => {
+          const aFirst = a[1].sort((x, y) => (x.series?.seriesIndex ?? 0) - (y.series?.seriesIndex ?? 0))[0];
+          const bFirst = b[1].sort((x, y) => (x.series?.seriesIndex ?? 0) - (y.series?.seriesIndex ?? 0))[0];
+          return (bFirst?.startTime ?? '').localeCompare(aFirst?.startTime ?? '');
+        });
+        return (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-[#2D2A33]">Recurring Sessions</h2>
+                <p className="text-sm text-[#8E8E9F] mt-0.5">{sortedGroups.length} series · {recurringBookings.length} total sessions</p>
+              </div>
+              <button onClick={() => fetchBookings()} disabled={loading} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#F5F0EB] text-sm text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors">
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Refresh
+              </button>
+            </div>
+
+            {loading && (
+              <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 text-[#C8A97D] animate-spin" /></div>
+            )}
+
+            {!loading && sortedGroups.length === 0 && (
+              <div className="text-center py-12 bg-white rounded-xl border border-[#F0ECE8]">
+                <RefreshCw className="w-10 h-10 text-[#E8E0D8] mx-auto mb-3" />
+                <p className="text-sm text-[#8E8E9F]">No recurring series yet</p>
+              </div>
+            )}
+
+            {!loading && sortedGroups.map(([seriesId, sessions]) => {
+              const sorted = [...sessions].sort((a, b) => (a.series?.seriesIndex ?? 0) - (b.series?.seriesIndex ?? 0));
+              const anchor = sorted[0];
+              const freq = anchor?.series?.frequency ?? 'weekly';
+              const total = anchor?.series?.seriesTotal ?? sessions.length;
+              const mode = anchor?.series?.invoiceMode ?? 'per-session';
+              const confirmedCount = sorted.filter(s => s.status === 'confirmed' || s.status === 'completed').length;
+              const cancelledCount = sorted.filter(s => s.status === 'cancelled' || s.status === 'declined').length;
+              return (
+                <div key={seriesId} className="bg-white rounded-xl border border-[#F0ECE8] overflow-hidden">
+                  {/* Series header */}
+                  <div className="px-4 py-3 bg-[#FAF7F2] border-b border-[#F0ECE8]">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-9 h-9 rounded-full bg-[#7A3B5E]/10 flex items-center justify-center text-sm font-bold text-[#7A3B5E]">
+                          {anchor?.clientName?.charAt(0)?.toUpperCase() || '?'}
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-[#2D2A33]">{anchor?.clientName}</h3>
+                          <p className="text-xs text-[#8E8E9F]">
+                            {anchor?.serviceName || anchor?.serviceSlug} · {freq} · {mode === 'bundled' ? 'Bundled invoice' : 'Per-session'}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-[#2D2A33]">{sorted.length}/{total}</p>
+                        <p className="text-[10px] text-[#8E8E9F]">sessions</p>
+                      </div>
+                    </div>
+                    {/* Progress bar */}
+                    <div className="flex gap-1 mt-2">
+                      {Array.from({ length: total }, (_, i) => {
+                        const session = sorted.find(s => (s.series?.seriesIndex ?? 0) === i + 1);
+                        const st = session?.status;
+                        const color = st === 'completed' ? 'bg-[#3B8A6E]'
+                          : st === 'confirmed' ? 'bg-[#3B8A6E]/60'
+                          : st === 'cancelled' || st === 'declined' ? 'bg-[#C45B5B]'
+                          : st === 'approved' ? 'bg-blue-400'
+                          : st === 'pending_approval' ? 'bg-amber-400'
+                          : 'bg-[#E8E4DE]';
+                        return <div key={i} className={`flex-1 h-1.5 rounded-full ${color}`} />;
+                      })}
+                    </div>
+                    <div className="flex gap-3 mt-1.5 text-[10px] text-[#8E8E9F]">
+                      {confirmedCount > 0 && <span>{confirmedCount} confirmed</span>}
+                      {cancelledCount > 0 && <span className="text-[#C45B5B]">{cancelledCount} cancelled</span>}
+                    </div>
+                  </div>
+                  {/* Individual sessions */}
+                  <div className="divide-y divide-[#F0ECE8]">
+                    {sorted.map(session => {
+                      const status = STATUS_COLORS[session.status] ?? STATUS_COLORS.confirmed;
+                      return (
+                        <div key={session.bookingId} className="px-4 py-2.5 flex items-center gap-3">
+                          <span className="text-xs font-bold text-[#8E8E9F] w-8 shrink-0">#{session.series?.seriesIndex}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-[#2D2A33]">
+                              {new Date(session.startTime).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                              {' · '}
+                              {new Date(session.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+                            </p>
+                          </div>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${status.bg} ${status.text}`}>
+                            {status.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })()}
 
       {/* Bookings list (default view) */}
       {topTab === 'bookings' && (
@@ -440,21 +556,35 @@ export default function BookingsModule({ password }: Props) {
         ))}
       </div>
 
-      {/* Sort Controls */}
-      <div className="flex items-center gap-2">
-        <ArrowUpDown className="w-3.5 h-3.5 text-[#8E8E9F]" />
-        <span className="text-xs text-[#8E8E9F]">Sort:</span>
-        {(['date', 'name', 'status'] as SortKey[]).map(sk => (
-          <button
-            key={sk}
-            onClick={() => setSortBy(sk)}
-            className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${
-              sortBy === sk ? 'bg-[#7A3B5E]/10 text-[#7A3B5E]' : 'text-[#8E8E9F] hover:bg-[#F5F0EB]'
-            }`}
-          >
-            {sk === 'date' ? 'Date' : sk === 'name' ? 'Name' : 'Status'}
-          </button>
-        ))}
+      {/* Sort + Select Controls */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <ArrowUpDown className="w-3.5 h-3.5 text-[#8E8E9F]" />
+          <span className="text-xs text-[#8E8E9F]">Sort:</span>
+          {(['date', 'name', 'status'] as SortKey[]).map(sk => (
+            <button
+              key={sk}
+              onClick={() => setSortBy(sk)}
+              className={`px-2 py-1 rounded text-[10px] font-medium transition-all ${
+                sortBy === sk ? 'bg-[#7A3B5E]/10 text-[#7A3B5E]' : 'text-[#8E8E9F] hover:bg-[#F5F0EB]'
+              }`}
+            >
+              {sk === 'date' ? 'Date' : sk === 'name' ? 'Name' : 'Status'}
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => {
+            if (selectedIds.size === sorted.length && sorted.length > 0) {
+              setSelectedIds(new Set());
+            } else {
+              setSelectedIds(new Set(sorted.map(b => b.bookingId)));
+            }
+          }}
+          className="text-xs font-medium text-[#7A3B5E] hover:text-[#6A2E4E] transition-colors px-2 py-1"
+        >
+          {selectedIds.size > 0 && selectedIds.size === sorted.length ? 'Deselect All' : 'Select All'}
+        </button>
       </div>
 
       {/* Booking Cards */}
@@ -493,8 +623,24 @@ export default function BookingsModule({ password }: Props) {
                     isActionable ? 'border-amber-200 shadow-sm' : 'border-[#F0ECE8]'
                   } ${status.border}`}
                 >
-                  {/* Top row: avatar + name + status */}
-                  <div className="flex items-start gap-3 mb-3">
+                  {/* Top row: checkbox + avatar + name + status */}
+                  <div className="flex items-start gap-2.5 mb-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const next = new Set(selectedIds);
+                        if (next.has(booking.bookingId)) next.delete(booking.bookingId);
+                        else next.add(booking.bookingId);
+                        setSelectedIds(next);
+                      }}
+                      className={`mt-1.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+                        selectedIds.has(booking.bookingId)
+                          ? 'bg-[#7A3B5E] border-[#7A3B5E]'
+                          : 'border-[#D8D2C8] hover:border-[#7A3B5E]'
+                      }`}
+                    >
+                      {selectedIds.has(booking.bookingId) && <Check className="w-3 h-3 text-white" />}
+                    </button>
                     <div className="w-9 h-9 rounded-full bg-[#7A3B5E]/10 flex items-center justify-center shrink-0 text-sm font-bold text-[#7A3B5E]">
                       {booking.clientName?.charAt(0)?.toUpperCase() || '?'}
                     </div>
@@ -698,6 +844,52 @@ export default function BookingsModule({ password }: Props) {
               );
             })}
           </AnimatePresence>
+        </div>
+      )}
+      {/* Selection action bar */}
+      {selectedIds.size > 0 && (
+        <div className="sticky bottom-16 sm:bottom-0 z-30 mx--4 sm:mx-0">
+          <div className="bg-[#2D2A33] text-white rounded-xl mx-4 sm:mx-0 px-4 py-3 flex items-center justify-between shadow-lg">
+            <span className="text-sm font-semibold">{selectedIds.size} selected</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setConfirmDialog({
+                    title: 'Delete Selected',
+                    message: `Permanently delete ${selectedIds.size} booking${selectedIds.size === 1 ? '' : 's'}? This cannot be undone.`,
+                    confirmLabel: 'Delete',
+                    confirmColor: 'red',
+                    showNotifyToggle: false,
+                    onConfirm: async () => {
+                      setConfirmDialog(null);
+                      for (const id of selectedIds) {
+                        try {
+                          await fetch('/api/admin/booking/delete', {
+                            method: 'POST',
+                            headers,
+                            body: JSON.stringify({ bookingId: id }),
+                          });
+                        } catch { /* continue */ }
+                      }
+                      setSelectedIds(new Set());
+                      setSuccess(`Deleted ${selectedIds.size} booking(s)`);
+                      fetchBookings({ silent: true });
+                    },
+                  });
+                }}
+                className="px-3 py-1.5 rounded-lg bg-[#C45B5B] text-xs font-semibold hover:bg-[#B04A4A] transition-colors flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Delete
+              </button>
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold hover:bg-white/20 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
         </div>
       )}
       </>

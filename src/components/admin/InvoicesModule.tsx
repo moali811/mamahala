@@ -12,7 +12,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileText, History, BarChart3, Settings as SettingsIcon,
-  Send, Save, Eye, Trash2, CheckCircle2, XCircle, DollarSign,
+  Send, Save, Eye, Trash2, Check, CheckCircle2, XCircle, DollarSign,
   Sparkles, Globe, Receipt, Loader2, X, ChevronDown, AlertCircle,
   LayoutDashboard, Users, RefreshCw, Search, Upload, Download,
   TrendingUp, TrendingDown, Calendar, Mail, Wand2, RotateCw, AlertTriangle,
@@ -1760,6 +1760,8 @@ function HistoryTab({
     useState<ZohoInvoiceImportPreview | null>(null);
   const [zohoImportLoading, setZohoImportLoading] = useState(false);
   const [zohoImportCommitting, setZohoImportCommitting] = useState(false);
+  const [selectedInvIds, setSelectedInvIds] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
 
   // Filter invoices client-side
   const filtered = invoices.filter((inv) => {
@@ -2011,11 +2013,26 @@ function HistoryTab({
             </button>
           ))}
         </div>
-        {/* Actions row — result count + import/export */}
+        {/* Actions row — result count + select/import/export */}
         <div className="flex items-center justify-between">
-          <span className="text-xs text-[#8E8E9F]">
-            {filtered.length} result{filtered.length === 1 ? '' : 's'}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-[#8E8E9F]">
+              {filtered.length} result{filtered.length === 1 ? '' : 's'}
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                if (selectedInvIds.size === filtered.length && filtered.length > 0) {
+                  setSelectedInvIds(new Set());
+                } else {
+                  setSelectedInvIds(new Set(filtered.map(inv => inv.invoiceId)));
+                }
+              }}
+              className="text-xs font-medium text-[#7A3B5E] hover:text-[#6A2E4E] transition-colors px-1"
+            >
+              {selectedInvIds.size > 0 && selectedInvIds.size === filtered.length ? 'Deselect' : 'Select All'}
+            </button>
+          </div>
           <div className="flex items-center gap-1.5">
             <button
               type="button"
@@ -2107,8 +2124,24 @@ function HistoryTab({
         {sorted.map((inv) => {
           const isZohoImport = inv.origin === 'zoho-import';
           return (
-          <div key={inv.invoiceId} className="bg-white rounded-xl border border-[#EDE8DF] p-3">
-            <div className="flex items-start justify-between gap-2 mb-2">
+          <div key={inv.invoiceId} className={`bg-white rounded-xl border p-3 transition-colors ${selectedInvIds.has(inv.invoiceId) ? 'border-[#7A3B5E] bg-[#FFFAF5]' : 'border-[#EDE8DF]'}`}>
+            <div className="flex items-start gap-2.5 mb-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const next = new Set(selectedInvIds);
+                  if (next.has(inv.invoiceId)) next.delete(inv.invoiceId);
+                  else next.add(inv.invoiceId);
+                  setSelectedInvIds(next);
+                }}
+                className={`mt-1 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+                  selectedInvIds.has(inv.invoiceId)
+                    ? 'bg-[#7A3B5E] border-[#7A3B5E]'
+                    : 'border-[#D8D2C8] hover:border-[#7A3B5E]'
+                }`}
+              >
+                {selectedInvIds.has(inv.invoiceId) && <Check className="w-3 h-3 text-white" />}
+              </button>
               <div className="min-w-0 flex-1">
                 <button
                   type="button"
@@ -2307,6 +2340,70 @@ function HistoryTab({
           />
         )}
       </AnimatePresence>
+
+      {/* Selection action bar */}
+      {selectedInvIds.size > 0 && (
+        <div className="sticky bottom-16 sm:bottom-0 z-30">
+          <div className="bg-[#2D2A33] text-white rounded-xl mx-0 px-4 py-3 flex items-center justify-between shadow-lg">
+            <span className="text-sm font-semibold">{selectedInvIds.size} selected</span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  const ids = [...selectedInvIds];
+                  for (const id of ids) {
+                    try {
+                      await fetch('/api/admin/invoices/mark-paid', {
+                        method: 'POST',
+                        headers: bearerHeaders,
+                        body: JSON.stringify({ invoiceId: id }),
+                      });
+                    } catch { /* continue */ }
+                  }
+                  setSelectedInvIds(new Set());
+                  onBanner({ kind: 'success', text: `Marked ${ids.length} invoice(s) as paid` });
+                  onRefresh();
+                }}
+                className="px-3 py-1.5 rounded-lg bg-[#3B8A6E] text-xs font-semibold hover:bg-[#2F7A5E] transition-colors"
+              >
+                Mark Paid
+              </button>
+              <button
+                onClick={async () => {
+                  if (!confirm(`Permanently delete ${selectedInvIds.size} invoice(s)? This cannot be undone.`)) return;
+                  setDeleting(true);
+                  const ids = [...selectedInvIds];
+                  let count = 0;
+                  for (const id of ids) {
+                    try {
+                      const res = await fetch('/api/admin/invoices/delete', {
+                        method: 'POST',
+                        headers: bearerHeaders,
+                        body: JSON.stringify({ invoiceId: id }),
+                      });
+                      if (res.ok) count++;
+                    } catch { /* continue */ }
+                  }
+                  setDeleting(false);
+                  setSelectedInvIds(new Set());
+                  onBanner({ kind: 'success', text: `Deleted ${count} invoice(s)` });
+                  onRefresh();
+                }}
+                disabled={deleting}
+                className="px-3 py-1.5 rounded-lg bg-[#C45B5B] text-xs font-semibold hover:bg-[#B04A4A] disabled:opacity-50 transition-colors flex items-center gap-1.5"
+              >
+                {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                Delete
+              </button>
+              <button
+                onClick={() => setSelectedInvIds(new Set())}
+                className="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold hover:bg-white/20 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

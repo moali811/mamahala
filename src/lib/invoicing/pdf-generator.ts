@@ -411,19 +411,6 @@ export async function generateInvoicePdf(
         y += 3;
       }
     }
-    // Booking policy — embedded as a natural sentence, not a separate line
-    if (settings.bookingPolicyUrl) {
-      y += 2;
-      doc.setFont('helvetica', 'italic');
-      doc.setFontSize(7);
-      doc.setTextColor(...PLUM);
-      const policyText = 'Our full booking & cancellation policy is available at mamahala.ca/booking-policy';
-      try {
-        doc.textWithLink(policyText, MARGIN, y, { url: settings.bookingPolicyUrl });
-      } catch {
-        doc.text(policyText, MARGIN, y);
-      }
-    }
   }
 
   // ─── FOOTER ────────────────────────────────────────────────

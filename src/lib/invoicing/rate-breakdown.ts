@@ -43,6 +43,25 @@ export function computeRateBreakdown(
   // and tax mode. This supports Dr. Hala's Zoho-era "Session + CC fees"
   // style invoices.
   if (draft.lineItems && draft.lineItems.length > 0) {
+    // Bundled series fix: when all lineItems have unitPriceLocal === 0
+    // (sentinel from booking-intake), compute per-session pricing from
+    // the auto pricing engine and populate each item.
+    const allZero = draft.lineItems.every(item => item.unitPriceLocal === 0);
+    let effectiveItems = draft.lineItems;
+    if (allZero) {
+      const base = getOnlinePriceForCountry(tierKey, country, draft.displayCurrency);
+      if (base) {
+        const cPercent = Math.max(0, Math.min(1, draft.complexity?.percent ?? 0));
+        const pkgDiscount = pkg.discount;
+        const sliding = Math.min(0.4, Math.max(0, draft.slidingScalePercent ?? 0));
+        const perSession = Math.round(base.amount * (1 + cPercent) * (1 - pkgDiscount) * (1 - sliding));
+        effectiveItems = draft.lineItems.map(item => ({
+          ...item,
+          unitPriceLocal: perSession,
+        }));
+      }
+    }
+
     const lineCurrency =
       draft.displayCurrency || draft.manualPrice?.currency || 'CAD';
     const resolved = resolveCurrency(lineCurrency, 'CAD');
@@ -55,7 +74,12 @@ export function computeRateBreakdown(
       warning = `Auto-corrected "${resolved.original}" to "${currency}".`;
     }
 
-    const subtotalLocal = draft.lineItems.reduce(
+    // If we populated from pricing engine, use the correct currency
+    const effectiveCurrency = allZero
+      ? (getOnlinePriceForCountry(tierKey, country, draft.displayCurrency)?.currency ?? currency)
+      : currency;
+
+    const subtotalLocal = effectiveItems.reduce(
       (sum, item) => sum + item.quantity * item.unitPriceLocal,
       0,
     );
@@ -77,16 +101,18 @@ export function computeRateBreakdown(
     const totalCAD = subtotalCAD + taxCAD;
 
     // Build the formulaLine showing the item composition
-    const itemSummary = draft.lineItems
-      .map((item) => formatPrice(item.quantity * item.unitPriceLocal, currency))
+    const itemSummary = effectiveItems
+      .map((item) => formatPrice(item.quantity * item.unitPriceLocal, effectiveCurrency))
       .join(' + ');
     const formulaParts: Array<string | null> = [
-      `Multi-item: ${itemSummary}`,
-      `= ${formatPrice(subtotalLocal, currency)}`,
+      allZero
+        ? `Bundled: ${effectiveItems.length} sessions × ${formatPrice(effectiveItems[0]?.unitPriceLocal ?? 0, effectiveCurrency)}`
+        : `Multi-item: ${itemSummary}`,
+      `= ${formatPrice(subtotalLocal, effectiveCurrency)}`,
       taxPct > 0
-        ? `+ ${Math.round(taxPct * 100)}% HST = ${formatPrice(totalLocal, currency)}`
+        ? `+ ${Math.round(taxPct * 100)}% HST = ${formatPrice(totalLocal, effectiveCurrency)}`
         : null,
-      currency !== 'CAD' ? `(${formatPrice(totalCAD, 'CAD')})` : null,
+      effectiveCurrency !== 'CAD' ? `(${formatPrice(totalCAD, 'CAD')})` : null,
     ];
     const lineFormulaLine = formulaParts
       .filter((p): p is string => !!p)
@@ -94,8 +120,8 @@ export function computeRateBreakdown(
 
     // perSessionLocal is informational — the average per line item
     const perSessionLocal =
-      draft.lineItems.length > 0
-        ? Math.round(subtotalLocal / draft.lineItems.length)
+      effectiveItems.length > 0
+        ? Math.round(subtotalLocal / effectiveItems.length)
         : 0;
 
     return {
@@ -104,13 +130,13 @@ export function computeRateBreakdown(
       country,
       band: 'premium', // synthetic — multi-item doesn't use bands
       baseAmountLocal: perSessionLocal,
-      baseAmountCAD: Math.round(convert(perSessionLocal, currency, 'CAD') || 0),
-      displayCurrency: currency,
+      baseAmountCAD: Math.round(convert(perSessionLocal, effectiveCurrency, 'CAD') || 0),
+      displayCurrency: effectiveCurrency,
       floorApplied: false,
-      complexityPercent: 0,
+      complexityPercent: draft.complexity?.percent ?? 0,
       afterComplexityLocal: perSessionLocal,
-      afterComplexityCAD: Math.round(convert(perSessionLocal, currency, 'CAD') || 0),
-      sessions: draft.lineItems.length,
+      afterComplexityCAD: Math.round(convert(perSessionLocal, effectiveCurrency, 'CAD') || 0),
+      sessions: effectiveItems.length,
       packageDiscountPercent: 0,
       slidingScalePercent: 0,
       perSessionLocal,
@@ -122,8 +148,8 @@ export function computeRateBreakdown(
       taxAmountCAD: taxCAD,
       totalLocal,
       totalCAD,
-      formattedBase: formatPrice(perSessionLocal, currency),
-      formattedTotal: formatPrice(totalLocal, currency),
+      formattedBase: formatPrice(perSessionLocal, effectiveCurrency),
+      formattedTotal: formatPrice(totalLocal, effectiveCurrency),
       formattedTotalCAD: formatPrice(totalCAD, 'CAD'),
       formulaLine: lineFormulaLine,
       warning,

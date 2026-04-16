@@ -198,7 +198,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
   const [clientPhone, setClientPhone] = useState('');
   const [clientTimezone, setClientTimezone] = useState('America/Toronto');
   const [clientCountry, setClientCountry] = useState('CA');
-  const [sendClientEmail, setSendClientEmail] = useState(true);
+  const [sendClientEmail, setSendClientEmail] = useState(false);
 
   // ─── Calendar state ────────────────────────────────────────
   const [currentMonth, setCurrentMonth] = useState(() => ymdToday().slice(0, 7));
@@ -256,7 +256,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     setClientPhone('');
     setClientTimezone('America/Toronto');
     setClientCountry('CA');
-    setSendClientEmail(true);
+    setSendClientEmail(false);
     setCurrentMonth(ymdToday().slice(0, 7));
     setSelectedDate('');
     setSelectedSlot(null);

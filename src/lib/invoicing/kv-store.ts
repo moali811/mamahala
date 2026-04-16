@@ -225,6 +225,41 @@ export async function updateInvoiceStatus(
   return updated;
 }
 
+/**
+ * Permanently delete an invoice record and remove it from all index lists.
+ * Admin-only action — no soft delete, fully destructive.
+ */
+export async function deleteInvoiceRecord(invoiceId: string): Promise<boolean> {
+  if (!KV_AVAILABLE) return false;
+  const existing = await getInvoiceRecord(invoiceId);
+  if (!existing) return false;
+
+  try {
+    // Remove from main key
+    await kv.del(KEY_INVOICE(invoiceId));
+
+    // Remove from recent list
+    const recent = ((await kv.get(KEY_RECENT)) as string[] | null) ?? [];
+    const nextRecent = recent.filter(id => id !== invoiceId);
+    await kv.set(KEY_RECENT, nextRecent);
+
+    // Remove from customer list
+    const email = existing.draft.client.email.toLowerCase();
+    const customerList = ((await kv.get(KEY_BY_CUSTOMER(email))) as string[] | null) ?? [];
+    const nextCustomer = customerList.filter(id => id !== invoiceId);
+    await kv.set(KEY_BY_CUSTOMER(email), nextCustomer);
+
+    // Remove payment token reverse index
+    if (existing.paymentToken) {
+      await kv.del(KEY_PAY_TOKEN(existing.paymentToken));
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /* ═══════════════ Drafts ═══════════════ */
 
 export async function saveDraft(draft: InvoiceDraft): Promise<void> {
