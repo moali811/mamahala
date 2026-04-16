@@ -66,11 +66,19 @@ export async function POST(
     // The Step 2 InvoiceReviewSheet saves edits through its own
     // PATCH path, but for any that haven't been flushed yet, we
     // persist them here before activating.
-    const draftIdToEdit = booking.series?.bundleInvoiceDraftId
-      || booking.draftId
-      || booking.series?.bundleAnchorBookingId
-        ? await resolveBundleDraftId(booking)
-        : booking.draftId;
+    //
+    // Resolution order for "which draft to edit":
+    //   1. Bundled anchor: series.bundleInvoiceDraftId
+    //   2. Bundled non-anchor sibling: look up via the anchor
+    //   3. Per-session / single booking: booking.draftId
+    let draftIdToEdit: string | undefined;
+    if (booking.series?.bundleInvoiceDraftId) {
+      draftIdToEdit = booking.series.bundleInvoiceDraftId;
+    } else if (booking.series?.bundleAnchorBookingId) {
+      draftIdToEdit = await resolveBundleDraftId(booking);
+    } else {
+      draftIdToEdit = booking.draftId || undefined;
+    }
 
     if (body.draftEdits && draftIdToEdit) {
       const existing = await getDraft(draftIdToEdit);
@@ -88,37 +96,30 @@ export async function POST(
     const sendClientEmail = body.sendClientEmail !== false;
 
     if (isSeries) {
-      // Only activate from the anchor. If the id isn't the anchor,
-      // look it up via the series metadata.
-      const anchorId = booking.series?.seriesIndex === 1
-        ? booking.bookingId
-        : (booking.series?.bundleAnchorBookingId ?? null);
-
-      if (!anchorId) {
-        // Per-session series — there's no single anchor. Activate
-        // the requested booking on its own. Siblings will need
-        // their own confirm-and-send call.
-        const result = await activateBooking(booking.bookingId, { sendClientEmail });
-        if (!result) {
-          return NextResponse.json(
-            { error: 'Activation failed — booking may have been modified concurrently' },
-            { status: 409 },
-          );
-        }
-        return NextResponse.json({
-          ok: true,
-          kind: 'series-instance',
-          booking: result.booking,
-          calendarEventId: result.calendarEventId,
-          meetLink: result.meetLink,
-          clientEmailSent: result.clientEmailSent,
-        });
+      // Resolve the anchor for this series. The anchor is either the
+      // current booking (if it's seriesIndex=1) or, for bundled non-
+      // anchor siblings, the one we linked to via bundleAnchorBookingId.
+      //
+      // For per-session siblings, bundleAnchorBookingId isn't set — we
+      // look the anchor up by querying the series and picking index 1.
+      let anchorId: string;
+      if (booking.series?.seriesIndex === 1) {
+        anchorId = booking.bookingId;
+      } else if (booking.series?.bundleAnchorBookingId) {
+        anchorId = booking.series.bundleAnchorBookingId;
+      } else {
+        // Per-session sibling (index > 1, no bundle anchor) — still
+        // activate the whole series so Dr. Hala gets all GCal events.
+        // Fall through to activateSeriesFromAnchor which reads siblings
+        // via the series index; it'll treat index 1 as the email/invoice
+        // anchor regardless of which id the admin clicked.
+        anchorId = booking.bookingId;
       }
 
       const result = await activateSeriesFromAnchor(anchorId, { sendClientEmail });
       return NextResponse.json({
         ok: true,
-        kind: 'series-bundle',
+        kind: 'series',
         activated: result.activated.length,
         skipped: result.skipped.length,
         bookings: result.activated.map(b => ({
@@ -148,6 +149,9 @@ export async function POST(
       meetLink: result.meetLink,
       clientEmailSent: result.clientEmailSent,
       manageToken: result.manageToken,
+      invoiceNumber: result.invoiceNumber,
+      invoiceId: result.invoiceId,
+      invoiceEmailError: result.invoiceEmailError,
     });
   } catch (err) {
     console.error('[confirm-and-send] error:', err);

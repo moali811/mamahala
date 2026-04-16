@@ -58,6 +58,8 @@ import {
   notifyAdmin,
 } from './emails';
 import { processBookingIntake } from '@/lib/invoicing/booking-intake';
+import { sendInvoiceFromDraft } from '@/lib/invoicing/send-invoice-pipeline';
+import { getDraft, getSettings } from '@/lib/invoicing/kv-store';
 
 /** Default hold length for pending-review bookings (hours). */
 export const DEFAULT_HOLD_HOURS = 24;
@@ -115,6 +117,13 @@ export interface ActivateOptions {
   sendClientEmail?: boolean;
   /** Default true. Set false to activate without the admin notification. */
   notifyAdminOnSuccess?: boolean;
+  /**
+   * Default true. When true, the activation also runs the invoice
+   * send pipeline (PDF → email → saved StoredInvoice record) for
+   * any draft linked to the booking. Set false for series siblings
+   * where only the anchor should send the invoice.
+   */
+  sendInvoice?: boolean;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────
@@ -323,7 +332,7 @@ export async function createSeriesHold(
   };
 }
 
-// ─── Activate (Send GCal + Emails) ──────────────────────────────
+// ─── Activate (Send GCal + Emails + Invoice) ────────────────────
 
 export interface ActivateResult {
   booking: Booking;
@@ -331,12 +340,24 @@ export interface ActivateResult {
   meetLink?: string;
   clientEmailSent: boolean;
   manageToken?: string;
+  /** Invoice number if the invoice send pipeline ran successfully. */
+  invoiceNumber?: string;
+  /** Invoice ID if the pipeline ran (even if the email failed). */
+  invoiceId?: string;
+  /** Non-blocking error from the invoice email send. */
+  invoiceEmailError?: string | null;
 }
 
 /**
  * Activate a held booking: create the GCal event + Meet link, send
- * the client confirmation, notify the admin, flip the status from
- * 'pending-review' → 'confirmed' (free) or 'approved' (paid).
+ * the client confirmation + invoice email, notify the admin, and
+ * flip status from 'pending-review' → 'confirmed' (free) or
+ * 'approved' (paid).
+ *
+ * Invoice send is gated on:
+ *   - options.sendInvoice (defaults true)
+ *   - booking.draftId being a non-empty string
+ *   - Non-bundled-sibling (bundled siblings have draftId='' by design)
  *
  * Guards against races by re-reading the booking and checking
  * status === 'pending-review' before acting. Returns null if the
@@ -346,7 +367,11 @@ export async function activateBooking(
   bookingId: string,
   options: ActivateOptions = {},
 ): Promise<ActivateResult | null> {
-  const { sendClientEmail = true, notifyAdminOnSuccess = true } = options;
+  const {
+    sendClientEmail = true,
+    notifyAdminOnSuccess = true,
+    sendInvoice = true,
+  } = options;
 
   const booking = await getBooking(bookingId);
   if (!booking) return null;
@@ -384,9 +409,47 @@ export async function activateBooking(
         calendarEventId,
         ...(meetLink ? { meetLink } : {}),
       });
+    } else {
+      console.warn(`[admin-booking-flow] createCalendarEvent returned null for ${bookingId}`);
     }
   } catch (err) {
     console.error('[admin-booking-flow] GCal failed:', err);
+  }
+
+  // ─── Invoice send pipeline ──────────────────────────────
+  // Runs when: sendInvoice=true (default), there's a truthy draftId,
+  // and it's not a free session. Bundled siblings have draftId='' so
+  // they skip this automatically — only the bundled anchor sends.
+  let invoiceNumber: string | undefined;
+  let invoiceId: string | undefined;
+  let invoiceEmailError: string | null | undefined;
+
+  if (sendInvoice && !isFreeSession && booking.draftId) {
+    try {
+      const [draft, settings] = await Promise.all([
+        getDraft(booking.draftId),
+        getSettings(),
+      ]);
+      if (!draft) {
+        console.warn(`[admin-booking-flow] Draft ${booking.draftId} missing for booking ${bookingId} — skipping invoice send`);
+      } else {
+        const result = await sendInvoiceFromDraft(draft, settings);
+        invoiceNumber = result.invoice.invoiceNumber;
+        invoiceId = result.invoice.invoiceId;
+        invoiceEmailError = result.emailError;
+
+        // Link the stored invoice back to the booking record
+        await updateBooking(bookingId, {
+          invoiceId: result.invoice.invoiceId,
+          // The draft is gone now (sendInvoiceFromDraft deletes it),
+          // clear our reference so we don't try to use it later.
+          draftId: undefined,
+        });
+      }
+    } catch (err) {
+      console.error('[admin-booking-flow] Invoice send failed:', err);
+      invoiceEmailError = err instanceof Error ? err.message : 'Invoice send failed';
+    }
   }
 
   // Generate the manage token + send the client confirmation email
@@ -431,14 +494,28 @@ export async function activateBooking(
     meetLink,
     clientEmailSent,
     manageToken,
+    invoiceNumber,
+    invoiceId,
+    invoiceEmailError,
   };
 }
 
 /**
- * Activate every sibling in a series. For bundled series, only the
- * anchor triggers the confirmation email (which lists all sessions);
- * siblings are activated silently. For per-session series, each
- * activation sends its own email.
+ * Activate every sibling in a series. Each sibling gets its own GCal
+ * event (so Dr. Hala sees all N sessions on her calendar), but only
+ * the anchor sends the client-facing emails:
+ *
+ *   - Bundled series: one client confirmation email (listing all
+ *     sessions), one bundled invoice, both from the anchor. Siblings
+ *     activate silently.
+ *   - Per-session series: one confirmation email from the anchor
+ *     listing the first session; one invoice for the first session.
+ *     The remaining siblings' drafts stay in KV for Dr. Hala to
+ *     send manually later (e.g. via the Invoices tab) or via future
+ *     recurring-invoice automation.
+ *
+ * This keeps the client's inbox clean while Dr. Hala still gets the
+ * full recurring schedule on her calendar from day one.
  */
 export async function activateSeriesFromAnchor(
   anchorBookingId: string,
@@ -458,29 +535,58 @@ export async function activateSeriesFromAnchor(
   }
 
   const siblings = await getBookingsBySeriesId(anchor.series.seriesId);
+  if (siblings.length === 0) {
+    console.error(`[activateSeriesFromAnchor] No siblings found for seriesId=${anchor.series.seriesId}`);
+    return { activated: [], skipped: [{ bookingId: anchorBookingId, reason: 'no-siblings-in-index' }] };
+  }
+
+  console.log(
+    `[activateSeriesFromAnchor] Activating series ${anchor.series.seriesId} — ${siblings.length} siblings (mode: ${anchor.series.invoiceMode})`,
+  );
+
   const activated: Booking[] = [];
   const skipped: Array<{ bookingId: string; reason: string }> = [];
 
-  const isBundled = anchor.series.invoiceMode === 'bundled';
-
+  // Only the anchor sends emails + invoice. Siblings get a GCal
+  // event but stay silent on the client-email side.
   for (const sibling of siblings) {
-    // Bundled series: only the anchor sends the client email.
-    // Per-session: each sibling sends its own (so the client gets a
-    // receipt per session). The admin notification is also limited
-    // to the anchor to avoid inbox spam.
     const isAnchor = sibling.bookingId === anchorBookingId;
     const childOptions: ActivateOptions = {
-      sendClientEmail: isBundled ? isAnchor : (options.sendClientEmail ?? true),
+      sendClientEmail: isAnchor && (options.sendClientEmail ?? true),
       notifyAdminOnSuccess: isAnchor && (options.notifyAdminOnSuccess ?? true),
+      sendInvoice: isAnchor && (options.sendInvoice ?? true),
     };
 
-    const result = await activateBooking(sibling.bookingId, childOptions);
-    if (result) {
-      activated.push(result.booking);
-    } else {
-      skipped.push({ bookingId: sibling.bookingId, reason: 'not-pending-or-missing' });
+    try {
+      const result = await activateBooking(sibling.bookingId, childOptions);
+      if (result) {
+        activated.push(result.booking);
+        console.log(
+          `[activateSeriesFromAnchor] Activated sibling ${sibling.bookingId} (index ${sibling.series?.seriesIndex}) — GCal: ${result.calendarEventId ?? 'none'}`,
+        );
+      } else {
+        skipped.push({ bookingId: sibling.bookingId, reason: 'not-pending-or-missing' });
+        console.warn(
+          `[activateSeriesFromAnchor] Skipped sibling ${sibling.bookingId} (index ${sibling.series?.seriesIndex}) — returned null`,
+        );
+      }
+    } catch (err) {
+      // A sibling throwing shouldn't break the entire series activation.
+      // Log, record as skipped, continue iterating.
+      console.error(
+        `[activateSeriesFromAnchor] Sibling ${sibling.bookingId} threw:`,
+        err,
+      );
+      skipped.push({
+        bookingId: sibling.bookingId,
+        reason: err instanceof Error ? err.message : 'unknown error',
+      });
     }
   }
+
+  console.log(
+    `[activateSeriesFromAnchor] Done: activated=${activated.length}, skipped=${skipped.length}`,
+  );
 
   return { activated, skipped };
 }
