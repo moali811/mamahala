@@ -3,12 +3,11 @@
 /* ================================================================
    NewBookingModal — Two-step admin booking wizard
    ================================================================
-   STEP 1 — Booking details
-     • Creative service picker (featured row + category cards)
-     • Live availability calendar (month grid → day → time chips)
-     • Client details + session mode
-     • Optional recurring series toggle with per-slot planner
-     • Context badge: "Dr. Hala is currently in {location}"
+   STEP 1 — Booking details (section-based wizard)
+     § Service & Mode — service picker + online/in-person toggle
+     § Date & Time   — availability calendar + time slot picker
+     § Client        — name, email, phone, country, timezone
+     § Options       — recurring toggle, notes, email confirmation
 
    STEP 2 — Invoice review (inline)
      • Mounts InvoiceReviewSheet in inline mode
@@ -27,22 +26,22 @@
        → POST /api/admin/booking/{id}/save-for-later
        → Extends hold, closes modal
 
-   Everything is timezone-aware via /api/admin/provider-location.
-   Recurring series use /api/admin/booking/plan-series to check each
-   slot before submission.
+   Mobile-first: collapsible wizard sections auto-advance on
+   selection for a native-app booking flow.
    ================================================================ */
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Loader2, Check, Calendar, Clock, MapPin,
-  ChevronLeft, ChevronRight, Video, Phone, Building2,
+  ChevronLeft, ChevronRight, Video, Building2,
   RefreshCw, AlertCircle, ArrowRight,
   Heart, MessageCircle, ChevronDown, Sparkles, Globe,
+  User,
 } from 'lucide-react';
 import { services, serviceCategories } from '@/data/services';
 import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
-import { COUNTRIES } from '@/config/countries';
+import { COUNTRIES, COUNTRIES_BY_CODE } from '@/config/countries';
 import type { Service, ServiceCategory } from '@/types';
 import type { InvoiceDraft } from '@/lib/invoicing/types';
 import type { Booking } from '@/lib/booking/types';
@@ -55,8 +54,10 @@ interface Props {
   onCreated: () => void;
 }
 
-// ─── Constants ──────────────────────────────────────────────────
+// ─── Section wizard type ───────────────────────────────────────
+type SectionKey = 'service' | 'schedule' | 'client' | 'options';
 
+// ─── Constants ─────────────────────────────────────────────────
 const TIMEZONES = [
   'Asia/Dubai',
   'America/Toronto',
@@ -72,8 +73,7 @@ const TIMEZONES = [
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// ─── Types ──────────────────────────────────────────────────────
-
+// ─── Types ─────────────────────────────────────────────────────
 interface DayAvailability {
   date: string;
   hasSlots: boolean;
@@ -104,8 +104,7 @@ interface ProviderLocationInfo {
   source: 'override' | 'schedule' | 'default';
 }
 
-// ─── Helpers ────────────────────────────────────────────────────
-
+// ─── Helpers ───────────────────────────────────────────────────
 function getServiceDuration(service: Service | undefined): number {
   if (!service) return 50;
   const tier = PRICING_TIERS[service.pricingTierKey as PricingTierKey];
@@ -169,13 +168,28 @@ function formatSlotDateInTz(iso: string, timezone: string): string {
   }
 }
 
-// ─── Component ──────────────────────────────────────────────────
+function isSlotMorning(iso: string, timezone: string): boolean {
+  try {
+    const formatted = new Date(iso).toLocaleString('en-US', {
+      timeZone: timezone,
+      hour: 'numeric',
+      hour12: true,
+    });
+    return formatted.includes('AM');
+  } catch {
+    return true;
+  }
+}
 
+// ─── Component ─────────────────────────────────────────────────
 export default function NewBookingModal({ open, password, onClose, onCreated }: Props) {
-  // ─── Step state ──────────────────────────────────────────────
+  // ─── Step state ────────────────────────────────────────────
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
-  // ─── Step 1 booking form state ───────────────────────────────
+  // ─── Section wizard state ──────────────────────────────────
+  const [activeSection, setActiveSection] = useState<SectionKey>('service');
+
+  // ─── Step 1 booking form state ─────────────────────────────
   const [serviceSlug, setServiceSlug] = useState<string>('initial-consultation');
   const [sessionMode, setSessionMode] = useState<'online' | 'inPerson'>('online');
   const [notes, setNotes] = useState('');
@@ -186,7 +200,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
   const [clientCountry, setClientCountry] = useState('CA');
   const [sendClientEmail, setSendClientEmail] = useState(true);
 
-  // ─── Calendar state ──────────────────────────────────────────
+  // ─── Calendar state ────────────────────────────────────────
   const [currentMonth, setCurrentMonth] = useState(() => ymdToday().slice(0, 7));
   const [monthAvailability, setMonthAvailability] = useState<Map<string, DayAvailability>>(new Map());
   const [selectedDate, setSelectedDate] = useState<string>('');
@@ -195,7 +209,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
   const [monthLoading, setMonthLoading] = useState(false);
   const [daySlotsLoading, setDaySlotsLoading] = useState(false);
 
-  // ─── Recurring state ─────────────────────────────────────────
+  // ─── Recurring state ───────────────────────────────────────
   const [isRecurring, setIsRecurring] = useState(false);
   const [recurringFrequency, setRecurringFrequency] = useState<'weekly' | 'biweekly'>('weekly');
   const [recurringCount, setRecurringCount] = useState(6);
@@ -205,10 +219,10 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
   const [seriesOverrides, setSeriesOverrides] = useState<Map<number, { startTime: string; endTime: string }>>(new Map());
   const [seriesSkips, setSeriesSkips] = useState<Set<number>>(new Set());
 
-  // ─── Provider location badge ─────────────────────────────────
+  // ─── Provider location badge ───────────────────────────────
   const [providerLoc, setProviderLoc] = useState<ProviderLocationInfo | null>(null);
 
-  // ─── Step 1 submission / Step 2 state ───────────────────────
+  // ─── Step 1 submission / Step 2 state ──────────────────────
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [step2, setStep2] = useState<{
@@ -216,7 +230,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     draft: InvoiceDraft;
   } | null>(null);
 
-  // ─── Derived: service + duration ─────────────────────────────
+  // ─── Derived ───────────────────────────────────────────────
   const selectedService = useMemo(
     () => services.find(s => s.slug === serviceSlug),
     [serviceSlug],
@@ -229,10 +243,11 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     'Content-Type': 'application/json',
   }), [password]);
 
-  // ─── Effect: reset when modal opens ──────────────────────────
+  // ─── Effect: reset when modal opens ────────────────────────
   useEffect(() => {
     if (!open) return;
     setCurrentStep(1);
+    setActiveSection('service');
     setServiceSlug('initial-consultation');
     setSessionMode('online');
     setNotes('');
@@ -257,7 +272,14 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     setStep2(null);
   }, [open]);
 
-  // ─── Effect: fetch month availability ─────────────────────────
+  // ─── Effect: auto-clear errors ─────────────────────────────
+  useEffect(() => {
+    if (!error) return;
+    const t = setTimeout(() => setError(null), 5000);
+    return () => clearTimeout(t);
+  }, [error]);
+
+  // ─── Effect: fetch month availability ──────────────────────
   useEffect(() => {
     if (!open || currentStep !== 1) return;
     setMonthLoading(true);
@@ -265,30 +287,26 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
       .then(r => r.json())
       .then(data => {
         const map = new Map<string, DayAvailability>();
-        for (const d of data.dates ?? []) {
-          map.set(d.date, d);
-        }
+        for (const d of data.dates ?? []) map.set(d.date, d);
         setMonthAvailability(map);
       })
       .catch(() => {})
       .finally(() => setMonthLoading(false));
   }, [open, currentStep, currentMonth, duration]);
 
-  // ─── Effect: fetch day slots when date selected ──────────────
+  // ─── Effect: fetch day slots when date selected ────────────
   useEffect(() => {
     if (!open || !selectedDate || currentStep !== 1) return;
     setDaySlotsLoading(true);
     setSelectedSlot(null);
     fetch(`/api/book/availability?date=${selectedDate}&duration=${duration}&tz=${clientTimezone}`)
       .then(r => r.json())
-      .then(data => {
-        setDaySlots(data.slots ?? []);
-      })
+      .then(data => setDaySlots(data.slots ?? []))
       .catch(() => setDaySlots([]))
       .finally(() => setDaySlotsLoading(false));
   }, [open, selectedDate, duration, clientTimezone, currentStep]);
 
-  // ─── Effect: fetch provider location badge ────────────────────
+  // ─── Effect: fetch provider location badge ─────────────────
   useEffect(() => {
     if (!open) return;
     fetch('/api/admin/provider-location', { headers })
@@ -305,7 +323,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
       .catch(() => {});
   }, [open, headers]);
 
-  // ─── Handler: check recurring series availability ────────────
+  // ─── Handler: check recurring series availability ──────────
   const handleCheckSeries = useCallback(async () => {
     if (!selectedSlot || !serviceSlug) return;
     setSeriesPlanLoading(true);
@@ -335,19 +353,28 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     }
   }, [selectedSlot, serviceSlug, recurringFrequency, recurringCount, duration, headers]);
 
-  // ─── Handler: Step 1 Next ────────────────────────────────────
+  // ─── Handler: Step 1 Next (with smart section navigation) ──
   const handleStep1Next = useCallback(async () => {
     setError(null);
-    if (!clientName.trim()) return setError('Client name is required');
-    if (!clientEmail.includes('@')) return setError('Valid client email is required');
-    if (!selectedSlot) return setError('Pick a time slot first');
+    if (!selectedSlot) {
+      setActiveSection('schedule');
+      return setError('Pick a time slot first');
+    }
+    if (!clientName.trim()) {
+      setActiveSection('client');
+      return setError('Client name is required');
+    }
+    if (!clientEmail.includes('@')) {
+      setActiveSection('client');
+      return setError('Valid client email is required');
+    }
     if (isRecurring && !seriesPlan) {
+      setActiveSection('options');
       return setError('Check series availability first (or disable recurring)');
     }
 
     setSubmitting(true);
     try {
-      // Build request body
       const body: Record<string, unknown> = {
         serviceSlug,
         clientName: clientName.trim(),
@@ -360,7 +387,6 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
       };
 
       if (isRecurring && seriesPlan) {
-        // Resolve final slot list: apply overrides, filter out skips
         const finalSlots = seriesPlan
           .filter(s => !seriesSkips.has(s.index))
           .map(s => {
@@ -407,8 +433,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
 
       // Paid: fetch booking + draft for Step 2
       const [bookingRes, draftRes] = await Promise.all([
-        fetch(`/api/admin/booking/list?id=${data.primaryBookingId}`, { headers })
-          .catch(() => null),
+        fetch(`/api/admin/booking/list?id=${data.primaryBookingId}`, { headers }).catch(() => null),
         fetch(`/api/admin/invoices/drafts?id=${data.primaryDraftId}`, { headers }),
       ]);
 
@@ -418,10 +443,6 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
         booking = bData.booking || bData.bookings?.[0] || null;
       }
 
-      // Fallback: construct a minimal booking snapshot from form state
-      // if the list endpoint doesn't return a direct lookup. Step 2
-      // only needs clientName/email/startTime/durationMinutes/country
-      // for the context card.
       if (!booking) {
         booking = {
           bookingId: data.primaryBookingId,
@@ -459,9 +480,10 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     serviceSlug, clientPhone, clientTimezone, clientCountry, sessionMode, notes,
     recurringFrequency, recurringInvoiceMode, seriesOverrides, seriesSkips,
     sendClientEmail, headers, onCreated, onClose, selectedService, duration,
+    setActiveSection,
   ]);
 
-  // ─── Handler: Step 2 Confirm & Send ──────────────────────────
+  // ─── Handler: Step 2 Confirm & Send ────────────────────────
   const handleConfirmSend = useCallback(async () => {
     if (!step2) return;
     setSubmitting(true);
@@ -483,7 +505,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     }
   }, [step2, headers, sendClientEmail, onCreated, onClose]);
 
-  // ─── Handler: Step 2 Skip & Send Later ───────────────────────
+  // ─── Handler: Step 2 Skip & Send Later ─────────────────────
   const handleSkipForLater = useCallback(async () => {
     if (!step2) return;
     setSubmitting(true);
@@ -514,11 +536,12 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
 
   if (!open) return null;
 
-  // ─── Render ──────────────────────────────────────────────────
+  // ─── Render ────────────────────────────────────────────────
   return (
     <AnimatePresence>
       {open && (
         <>
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -527,50 +550,73 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
             className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
           />
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            initial={{ opacity: 0, y: 60, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.98 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+            exit={{ opacity: 0, y: 60, scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed inset-0 z-50 flex items-end sm:items-start justify-center sm:p-4 pointer-events-none"
           >
-            {/* Mobile: full-screen sheet. Desktop: centered floating card. */}
             <div className="pointer-events-auto w-full max-w-3xl bg-white sm:rounded-2xl shadow-2xl flex flex-col h-[100dvh] sm:h-auto sm:my-4 sm:max-h-[calc(100dvh-2rem)]">
-              {/* Header with step indicator */}
-              <div className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-4 bg-white border-b border-[#F0ECE8] sm:rounded-t-2xl">
+              {/* ── Grab handle (mobile) ── */}
+              <div className="sm:hidden flex justify-center pt-2.5 pb-0.5">
+                <div className="w-10 h-1 rounded-full bg-[#E0DBD4]" />
+              </div>
+
+              {/* ── Header ── */}
+              <div className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-3 bg-white border-b border-[#F0ECE8] sm:rounded-t-2xl">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   {currentStep === 2 && (
                     <button
                       onClick={() => setCurrentStep(1)}
                       disabled={submitting}
-                      className="p-1.5 rounded-lg hover:bg-[#F5F0EB] text-[#8E8E9F] hover:text-[#4A4A5C] transition-colors"
+                      className="p-2 -ml-1 rounded-xl hover:bg-[#F5F0EB] text-[#8E8E9F] hover:text-[#4A4A5C] transition-colors active:scale-95"
                       aria-label="Back"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                   )}
                   <div className="min-w-0">
-                    <h2 className="text-base sm:text-lg font-bold text-[#2D2A33] truncate">
+                    <h2 className="text-base sm:text-lg font-bold text-[#2D2A33]">
                       {currentStep === 1 ? 'New Booking' : 'Review Invoice'}
                     </h2>
-                    <p className="text-xs text-[#8E8E9F] truncate">
-                      {currentStep === 1
-                        ? 'Step 1 of 2 · Pick a service, time, and client'
-                        : 'Step 2 of 2 · Confirm pricing and send'}
-                    </p>
+                    {currentStep === 1 ? (
+                      <div className="flex items-center gap-1 mt-1.5">
+                        {(['service', 'schedule', 'client', 'options'] as const).map(s => {
+                          const isActive = s === activeSection;
+                          const isComplete =
+                            s === 'service' ? !!serviceSlug
+                            : s === 'schedule' ? !!selectedSlot
+                            : s === 'client' ? !!clientName.trim() && clientEmail.includes('@')
+                            : true;
+                          return (
+                            <div
+                              key={s}
+                              className={`h-1 rounded-full transition-all duration-300 ${
+                                isActive ? 'w-5 bg-[#7A3B5E]'
+                                : isComplete ? 'w-1.5 bg-[#7A3B5E]/50'
+                                : 'w-1.5 bg-[#E8E4DE]'
+                              }`}
+                            />
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-[#8E8E9F] mt-0.5">Step 2 · Confirm pricing and send</p>
+                    )}
                   </div>
                 </div>
                 <button
                   onClick={handleClose}
                   disabled={submitting}
                   aria-label="Close"
-                  className="p-2 rounded-lg hover:bg-[#F5F0EB] text-[#8E8E9F] hover:text-[#4A4A5C] transition-colors shrink-0"
+                  className="p-2 rounded-xl hover:bg-[#F5F0EB] text-[#8E8E9F] hover:text-[#4A4A5C] transition-colors active:scale-95 shrink-0"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              {/* Body — scrollable on mobile */}
-              <div className="px-4 sm:px-6 py-5 space-y-5 overflow-y-auto flex-1 min-h-0">
+              {/* ── Scrollable body ── */}
+              <div className="px-4 sm:px-6 py-4 space-y-3 overflow-y-auto flex-1 min-h-0 overscroll-contain">
                 {currentStep === 1 ? (
                   <Step1Content
                     serviceSlug={serviceSlug}
@@ -620,6 +666,8 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
                     onCheckSeries={handleCheckSeries}
                     sendClientEmail={sendClientEmail}
                     setSendClientEmail={setSendClientEmail}
+                    activeSection={activeSection}
+                    setActiveSection={setActiveSection}
                   />
                 ) : (
                   step2 && (
@@ -630,7 +678,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
                       draft={step2.draft}
                       password={password}
                       onClose={handleClose}
-                      onSent={() => { /* noop in inline mode */ }}
+                      onSent={() => {}}
                       onConfirm={handleConfirmSend}
                       onConfirmLabel="Confirm & Send"
                       onSecondaryAction={{
@@ -641,23 +689,39 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
                   )
                 )}
 
-                {/* Error banner */}
-                {error && (
-                  <div className="px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <span>{error}</span>
-                  </div>
-                )}
+                {/* Error toast */}
+                <AnimatePresence>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      className="px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 flex items-start gap-2.5"
+                    >
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span className="flex-1 text-[13px] leading-snug">{error}</span>
+                      <button
+                        onClick={() => setError(null)}
+                        className="shrink-0 p-0.5 rounded-lg hover:bg-red-100 transition-colors"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
-              {/* Step 1 footer (Step 2 has its own footer inside InvoiceReviewSheet) */}
+              {/* ── Footer CTA (Step 1 only) ── */}
               {currentStep === 1 && (
-                <div className="shrink-0 px-4 sm:px-6 py-3 bg-white border-t border-[#F0ECE8] rounded-b-2xl flex gap-2">
+                <div
+                  className="shrink-0 px-4 sm:px-6 py-3 bg-white border-t border-[#F0ECE8] sm:rounded-b-2xl flex gap-2"
+                  style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}
+                >
                   <button
                     type="button"
                     onClick={handleClose}
                     disabled={submitting}
-                    className="flex-1 px-4 py-2.5 rounded-lg bg-[#F5F0EB] text-sm font-semibold text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors disabled:opacity-50"
+                    className="px-5 py-3 rounded-xl bg-[#F5F0EB] text-sm font-semibold text-[#4A4A5C] hover:bg-[#EDE6DF] active:scale-[0.97] transition-all disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -665,16 +729,16 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
                     type="button"
                     onClick={handleStep1Next}
                     disabled={submitting || !selectedSlot || !clientName || !clientEmail}
-                    className="flex-1 px-4 py-2.5 rounded-lg bg-[#7A3B5E] text-sm font-semibold text-white hover:bg-[#6A2E4E] transition-colors disabled:opacity-50 inline-flex items-center justify-center gap-2"
+                    className="flex-1 py-3 rounded-xl bg-[#7A3B5E] text-sm font-semibold text-white hover:bg-[#6A2E4E] active:scale-[0.97] transition-all disabled:opacity-40 inline-flex items-center justify-center gap-2 shadow-sm"
                   >
                     {submitting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Creating…
+                        Creating...
                       </>
                     ) : (
                       <>
-                        {isFreeSession ? 'Create & Send Confirmation' : 'Next — Review Invoice'}
+                        {isFreeSession ? 'Create & Confirm' : 'Review Invoice'}
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -689,7 +753,82 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
   );
 }
 
-// ─── Step 1 Content ─────────────────────────────────────────────
+// ─── Wizard Section ────────────────────────────────────────────
+
+function WizardSection({
+  number,
+  title,
+  active,
+  completed,
+  summary,
+  onToggle,
+  children,
+}: {
+  number: number;
+  title: string;
+  active: boolean;
+  completed: boolean;
+  summary: string;
+  onToggle: () => void;
+  children: React.ReactNode;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (active && ref.current) {
+      const t = setTimeout(() => {
+        ref.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 200);
+      return () => clearTimeout(t);
+    }
+  }, [active]);
+
+  return (
+    <div ref={ref} className="rounded-2xl border border-[#F0ECE8] overflow-hidden bg-white transition-shadow data-[active=true]:shadow-sm" data-active={active}>
+      {/* Header — always visible */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className={`w-full flex items-center gap-3 px-4 py-3.5 text-left transition-colors ${
+          active ? 'bg-white' : completed ? 'bg-[#FAFAF8] hover:bg-[#F5F2EE]' : 'bg-[#FAF7F2] hover:bg-[#F5F0EB]'
+        }`}
+      >
+        {/* Number / check circle */}
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-sm font-bold transition-all ${
+          active
+            ? 'bg-[#7A3B5E] text-white shadow-sm'
+            : completed
+            ? 'bg-[#3B8A6E] text-white'
+            : 'bg-[#F0ECE8] text-[#8E8E9F]'
+        }`}>
+          {completed && !active ? <Check className="w-4 h-4" /> : number}
+        </div>
+        {/* Title + collapsed summary */}
+        <div className="flex-1 min-w-0">
+          <p className={`text-sm font-semibold transition-colors ${active ? 'text-[#2D2A33]' : 'text-[#4A4A5C]'}`}>
+            {title}
+          </p>
+          {!active && completed && summary && (
+            <p className="text-xs text-[#8E8E9F] truncate mt-0.5">{summary}</p>
+          )}
+        </div>
+        {/* Chevron */}
+        <ChevronDown className={`w-4 h-4 text-[#8E8E9F] transition-transform duration-200 shrink-0 ${
+          active ? 'rotate-180' : ''
+        }`} />
+      </button>
+
+      {/* Content */}
+      {active && (
+        <div className="px-4 pb-4 pt-2 border-t border-[#F0ECE8]">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Step 1 Content ────────────────────────────────────────────
 
 interface Step1Props {
   serviceSlug: string;
@@ -739,22 +878,66 @@ interface Step1Props {
   onCheckSeries: () => void;
   sendClientEmail: boolean;
   setSendClientEmail: (v: boolean) => void;
+  activeSection: SectionKey;
+  setActiveSection: (v: SectionKey) => void;
 }
 
 function Step1Content(props: Step1Props) {
+  const providerTz = props.providerLoc?.timezone ?? 'America/Toronto';
+
+  // Section completion
+  const sectionComplete = {
+    service: !!props.serviceSlug,
+    schedule: !!props.selectedSlot,
+    client: !!props.clientName.trim() && props.clientEmail.includes('@'),
+    options: true,
+  };
+
+  // Section summaries (shown when collapsed)
+  const sectionSummary = {
+    service: props.selectedService
+      ? `${props.selectedService.name} · ${props.duration}min · ${props.sessionMode === 'online' ? 'Online' : 'In-Person'}`
+      : '',
+    schedule: props.selectedSlot
+      ? `${formatSlotDateInTz(props.selectedSlot.start, providerTz)} · ${formatSlotInTz(props.selectedSlot.start, providerTz)}`
+      : '',
+    client: props.clientName.trim()
+      ? `${props.clientName.trim()}${props.clientEmail.trim() ? ' · ' + props.clientEmail.trim() : ''}`
+      : '',
+    options: props.isRecurring
+      ? `Recurring · ${props.recurringFrequency} · ${props.recurringCount} sessions`
+      : 'Single session',
+  };
+
+  // Auto-advance: service → schedule
+  const handleServicePick = (slug: string) => {
+    props.setServiceSlug(slug);
+    setTimeout(() => props.setActiveSection('schedule'), 350);
+  };
+
+  // Auto-advance: slot → client
+  const handleSlotPick = (slot: TimeSlot | null) => {
+    props.setSelectedSlot(slot);
+    if (slot) setTimeout(() => props.setActiveSection('client'), 350);
+  };
+
+  // Date pick (no auto-advance — user still needs to pick a slot)
+  const handleDatePick = (date: string) => {
+    props.setSelectedDate(date);
+    props.setSelectedSlot(null);
+  };
+
   return (
     <>
-      {/* Provider location badge */}
+      {/* Provider location context */}
       {props.providerLoc && (
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#FFFAF5] to-[#F5F0EB] border border-[#C8A97D]/30">
+        <div className="flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-[#FFFAF5] to-[#F5F0EB] border border-[#C8A97D]/20">
           <MapPin className="w-4 h-4 text-[#C8A97D] shrink-0" />
           <p className="text-xs text-[#4A4A5C]">
-            Dr. Hala is currently in{' '}
+            Dr. Hala is in{' '}
             <strong className="text-[#7A3B5E]">{props.providerLoc.locationLabel}</strong>
-            {' · '}
-            <span className="text-[#8E8E9F]">{props.providerLoc.timezone}</span>
             {props.providerLoc.source !== 'default' && (
-              <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded-full bg-[#3B8A6E]/10 text-[#3B8A6E] font-semibold uppercase tracking-wide">
+              <span className="ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full bg-[#3B8A6E]/10 text-[#3B8A6E] font-semibold uppercase tracking-wide">
                 {props.providerLoc.source}
               </span>
             )}
@@ -762,183 +945,245 @@ function Step1Content(props: Step1Props) {
         </div>
       )}
 
-      {/* Service picker */}
-      <ServicePicker
-        selected={props.serviceSlug}
-        onSelect={props.setServiceSlug}
-        duration={props.duration}
-        isFree={props.isFreeSession}
-      />
-
-      {/* Session mode */}
-      <div>
-        <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Session mode</label>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => props.setSessionMode('online')}
-            className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-colors inline-flex items-center justify-center gap-2 ${
-              props.sessionMode === 'online'
-                ? 'bg-[#7A3B5E] text-white'
-                : 'bg-[#F5F0EB] text-[#4A4A5C] hover:bg-[#EDE6DF]'
-            }`}
-          >
-            <Video className="w-3.5 h-3.5" />
-            Online (Meet / Phone)
-          </button>
-          <button
-            type="button"
-            onClick={() => props.setSessionMode('inPerson')}
-            className={`flex-1 px-3 py-2 rounded-lg text-xs font-semibold transition-colors inline-flex items-center justify-center gap-2 ${
-              props.sessionMode === 'inPerson'
-                ? 'bg-[#7A3B5E] text-white'
-                : 'bg-[#F5F0EB] text-[#4A4A5C] hover:bg-[#EDE6DF]'
-            }`}
-          >
-            <Building2 className="w-3.5 h-3.5" />
-            In-Person — {props.providerLoc?.locationLabel?.split(',')[0]?.trim() || 'Office'}
-          </button>
-        </div>
-      </div>
-
-      {/* Availability calendar */}
-      <AvailabilityCalendar
-        currentMonth={props.currentMonth}
-        onMonthChange={props.setCurrentMonth}
-        monthAvailability={props.monthAvailability}
-        monthLoading={props.monthLoading}
-        selectedDate={props.selectedDate}
-        onDateSelect={d => { props.setSelectedDate(d); props.setSelectedSlot(null); }}
-        daySlots={props.daySlots}
-        daySlotsLoading={props.daySlotsLoading}
-        selectedSlot={props.selectedSlot}
-        onSlotSelect={props.setSelectedSlot}
-        providerTz={props.providerLoc?.timezone ?? 'America/Toronto'}
-        clientTz={props.clientTimezone}
-      />
-
-      {/* Recurring toggle */}
-      <RecurringSection
-        isRecurring={props.isRecurring}
-        setIsRecurring={props.setIsRecurring}
-        frequency={props.recurringFrequency}
-        setFrequency={props.setRecurringFrequency}
-        count={props.recurringCount}
-        setCount={props.setRecurringCount}
-        invoiceMode={props.recurringInvoiceMode}
-        setInvoiceMode={props.setRecurringInvoiceMode}
-        seriesPlan={props.seriesPlan}
-        seriesPlanLoading={props.seriesPlanLoading}
-        seriesOverrides={props.seriesOverrides}
-        setSeriesOverrides={props.setSeriesOverrides}
-        seriesSkips={props.seriesSkips}
-        setSeriesSkips={props.setSeriesSkips}
-        onCheckSeries={props.onCheckSeries}
-        canCheck={!!props.selectedSlot}
-        providerTz={props.providerLoc?.timezone ?? 'America/Toronto'}
-      />
-
-      {/* Client fields */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Client name</label>
-          <input
-            type="text"
-            value={props.clientName}
-            onChange={e => props.setClientName(e.target.value)}
-            placeholder="Full name"
-            className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
+      {/* § 1 — Service & Mode */}
+      <WizardSection
+        number={1}
+        title="Service & Mode"
+        active={props.activeSection === 'service'}
+        completed={sectionComplete.service}
+        summary={sectionSummary.service}
+        onToggle={() => props.setActiveSection('service')}
+      >
+        <div className="space-y-4">
+          <ServicePicker
+            selected={props.serviceSlug}
+            onSelect={handleServicePick}
+            duration={props.duration}
+            isFree={props.isFreeSession}
           />
+          {/* Session mode toggle */}
+          <div>
+            <label className="block text-xs font-semibold text-[#4A4A5C] mb-2">Session Mode</label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => props.setSessionMode('online')}
+                className={`flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.97] ${
+                  props.sessionMode === 'online'
+                    ? 'bg-[#7A3B5E] text-white shadow-sm'
+                    : 'bg-[#F5F0EB] text-[#4A4A5C] hover:bg-[#EDE6DF]'
+                }`}
+              >
+                <Video className="w-4 h-4" />
+                Online
+              </button>
+              <button
+                type="button"
+                onClick={() => props.setSessionMode('inPerson')}
+                className={`flex items-center justify-center gap-2 px-3 py-3 rounded-xl text-sm font-semibold transition-all active:scale-[0.97] ${
+                  props.sessionMode === 'inPerson'
+                    ? 'bg-[#7A3B5E] text-white shadow-sm'
+                    : 'bg-[#F5F0EB] text-[#4A4A5C] hover:bg-[#EDE6DF]'
+                }`}
+              >
+                <Building2 className="w-4 h-4" />
+                In-Person
+              </button>
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Client email</label>
-          <input
-            type="email"
-            value={props.clientEmail}
-            onChange={e => props.setClientEmail(e.target.value)}
-            placeholder="client@example.com"
-            className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
-          />
-        </div>
-      </div>
+      </WizardSection>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
-            Phone <span className="text-[#C4C0BC] font-normal">(optional)</span>
+      {/* § 2 — Date & Time */}
+      <WizardSection
+        number={2}
+        title="Date & Time"
+        active={props.activeSection === 'schedule'}
+        completed={sectionComplete.schedule}
+        summary={sectionSummary.schedule}
+        onToggle={() => props.setActiveSection('schedule')}
+      >
+        <AvailabilityCalendar
+          currentMonth={props.currentMonth}
+          onMonthChange={props.setCurrentMonth}
+          monthAvailability={props.monthAvailability}
+          monthLoading={props.monthLoading}
+          selectedDate={props.selectedDate}
+          onDateSelect={handleDatePick}
+          daySlots={props.daySlots}
+          daySlotsLoading={props.daySlotsLoading}
+          selectedSlot={props.selectedSlot}
+          onSlotSelect={handleSlotPick}
+          providerTz={providerTz}
+          clientTz={props.clientTimezone}
+        />
+      </WizardSection>
+
+      {/* § 3 — Client Details */}
+      <WizardSection
+        number={3}
+        title="Client Details"
+        active={props.activeSection === 'client'}
+        completed={sectionComplete.client}
+        summary={sectionSummary.client}
+        onToggle={() => props.setActiveSection('client')}
+      >
+        <div className="space-y-3">
+          <div>
+            <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
+              <User className="inline w-3 h-3 mr-1" />
+              Client name
+            </label>
+            <input
+              type="text"
+              value={props.clientName}
+              onChange={e => props.setClientName(e.target.value)}
+              placeholder="Full name"
+              className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] placeholder:text-[#C4C0BC] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/30 transition-colors"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Client email</label>
+            <input
+              type="email"
+              value={props.clientEmail}
+              onChange={e => props.setClientEmail(e.target.value)}
+              placeholder="client@example.com"
+              className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] placeholder:text-[#C4C0BC] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/30 transition-colors"
+            />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
+                Phone <span className="text-[#C4C0BC] font-normal">(optional)</span>
+              </label>
+              <input
+                type="tel"
+                value={props.clientPhone}
+                onChange={e => props.setClientPhone(e.target.value)}
+                placeholder="+1 613 555 0000"
+                className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] placeholder:text-[#C4C0BC] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/30 transition-colors"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Country</label>
+              <select
+                value={props.clientCountry}
+                onChange={e => {
+                  const code = e.target.value;
+                  props.setClientCountry(code);
+                  const country = COUNTRIES_BY_CODE[code];
+                  if (country) {
+                    // Auto-fill phone dial code (only if phone is empty or starts with a dial code)
+                    const currentPhone = props.clientPhone.trim();
+                    if (!currentPhone || /^\+\d{0,4}$/.test(currentPhone)) {
+                      props.setClientPhone(country.dial + ' ');
+                    }
+                    // Auto-fill timezone (pick first timezone for the country)
+                    if (country.timezones.length > 0) {
+                      props.setClientTimezone(country.timezones[0]);
+                    }
+                  }
+                }}
+                className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 bg-white transition-colors"
+              >
+                {COUNTRIES.map(c => (
+                  <option key={c.code} value={c.code}>
+                    {c.flag} {c.name} ({c.code}){c.code === 'CA' ? ' — e-Transfer locked on' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
+              <Globe className="inline w-3 h-3 mr-1" />
+              Client timezone
+            </label>
+            <select
+              value={props.clientTimezone}
+              onChange={e => props.setClientTimezone(e.target.value)}
+              className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 bg-white transition-colors"
+            >
+              {/* Country timezones first, then standard list, deduped */}
+              {(() => {
+                const countryTzs = COUNTRIES_BY_CODE[props.clientCountry]?.timezones ?? [];
+                const all = [...new Set([...countryTzs, ...TIMEZONES])];
+                // Ensure the current value is always in the list
+                if (props.clientTimezone && !all.includes(props.clientTimezone)) {
+                  all.unshift(props.clientTimezone);
+                }
+                return all.map(tz => (
+                  <option key={tz} value={tz}>{tz}</option>
+                ));
+              })()}
+            </select>
+            <p className="text-[11px] text-[#8E8E9F] mt-1.5">
+              Client sees session times in this timezone.
+            </p>
+          </div>
+        </div>
+      </WizardSection>
+
+      {/* § 4 — Session Options */}
+      <WizardSection
+        number={4}
+        title="Session Options"
+        active={props.activeSection === 'options'}
+        completed={sectionComplete.options}
+        summary={sectionSummary.options}
+        onToggle={() => props.setActiveSection('options')}
+      >
+        <div className="space-y-4">
+          <RecurringSection
+            isRecurring={props.isRecurring}
+            setIsRecurring={props.setIsRecurring}
+            frequency={props.recurringFrequency}
+            setFrequency={props.setRecurringFrequency}
+            count={props.recurringCount}
+            setCount={props.setRecurringCount}
+            invoiceMode={props.recurringInvoiceMode}
+            setInvoiceMode={props.setRecurringInvoiceMode}
+            seriesPlan={props.seriesPlan}
+            seriesPlanLoading={props.seriesPlanLoading}
+            seriesOverrides={props.seriesOverrides}
+            setSeriesOverrides={props.setSeriesOverrides}
+            seriesSkips={props.seriesSkips}
+            setSeriesSkips={props.setSeriesSkips}
+            onCheckSeries={props.onCheckSeries}
+            canCheck={!!props.selectedSlot}
+            providerTz={providerTz}
+          />
+          <div>
+            <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
+              Notes <span className="text-[#C4C0BC] font-normal">(optional, for Dr. Hala)</span>
+            </label>
+            <textarea
+              value={props.notes}
+              onChange={e => props.setNotes(e.target.value)}
+              rows={3}
+              placeholder="Anything Dr. Hala should know before the session..."
+              className="w-full px-4 py-3 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] placeholder:text-[#C4C0BC] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/30 resize-none transition-colors"
+            />
+          </div>
+          <label className="flex items-center gap-3 cursor-pointer py-1">
+            <input
+              type="checkbox"
+              checked={props.sendClientEmail}
+              onChange={e => props.setSendClientEmail(e.target.checked)}
+              className="w-5 h-5 accent-[#7A3B5E] rounded"
+            />
+            <span className="text-sm text-[#4A4A5C]">
+              Send confirmation email to client
+            </span>
           </label>
-          <input
-            type="tel"
-            value={props.clientPhone}
-            onChange={e => props.setClientPhone(e.target.value)}
-            placeholder="+1 613 555 0000"
-            className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
-          />
         </div>
-        <div>
-          <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Country</label>
-          <select
-            value={props.clientCountry}
-            onChange={e => props.setClientCountry(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 bg-white"
-          >
-            {COUNTRIES.map(c => (
-              <option key={c.code} value={c.code}>
-                {c.flag} {c.name} ({c.code}){c.code === 'CA' ? ' — e-Transfer locked on' : ''}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
-          <Globe className="inline w-3 h-3 mr-1" />
-          Client timezone
-        </label>
-        <select
-          value={props.clientTimezone}
-          onChange={e => props.setClientTimezone(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 bg-white"
-        >
-          {TIMEZONES.map(tz => (
-            <option key={tz} value={tz}>{tz}</option>
-          ))}
-        </select>
-        <p className="text-[10px] text-[#8E8E9F] mt-1">
-          The client sees session times in this timezone. The calendar above also shows them in this timezone for your reference.
-        </p>
-      </div>
-
-      <div>
-        <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
-          Notes <span className="text-[#C4C0BC] font-normal">(optional, for Dr. Hala)</span>
-        </label>
-        <textarea
-          value={props.notes}
-          onChange={e => props.setNotes(e.target.value)}
-          rows={2}
-          placeholder="Anything Dr. Hala should know before the session…"
-          className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 resize-none"
-        />
-      </div>
-
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={props.sendClientEmail}
-          onChange={e => props.setSendClientEmail(e.target.checked)}
-          className="w-4 h-4 accent-[#7A3B5E]"
-        />
-        <span className="text-xs text-[#4A4A5C]">
-          Send confirmation email to client after activation
-        </span>
-      </label>
+      </WizardSection>
     </>
   );
 }
 
-// ─── Service Picker ─────────────────────────────────────────────
+// ─── Service Picker ────────────────────────────────────────────
 
 function ServicePicker({
   selected,
@@ -951,8 +1196,9 @@ function ServicePicker({
   duration: number;
   isFree: boolean;
 }) {
-  const [expandedCategory, setExpandedCategory] = useState<ServiceCategory | null>(() => {
+  const [activeCategory, setActiveCategory] = useState<ServiceCategory | null>(() => {
     const svc = services.find(s => s.slug === selected);
+    if (svc?.slug === 'initial-consultation' || svc?.slug === 'online-phone-consultation') return null;
     return (svc?.category as ServiceCategory) ?? null;
   });
 
@@ -960,6 +1206,7 @@ function ServicePicker({
     () => services.filter(s => s.slug === 'initial-consultation' || s.slug === 'online-phone-consultation'),
     [],
   );
+
   const categorized = useMemo(() => {
     const groups = new Map<ServiceCategory, Service[]>();
     for (const s of services) {
@@ -972,16 +1219,15 @@ function ServicePicker({
   }, []);
 
   return (
-    <div>
-      <label className="block text-xs font-semibold text-[#4A4A5C] mb-2">
-        Service
-        <span className="ml-2 text-[10px] text-[#8E8E9F] font-normal">
-          {duration} min · {isFree ? 'Free consultation' : 'Paid session (invoice in Step 2)'}
-        </span>
-      </label>
+    <div className="space-y-3">
+      {/* Duration / price hint */}
+      <div className="flex items-center gap-2 text-xs text-[#8E8E9F]">
+        <Clock className="w-3.5 h-3.5" />
+        <span>{duration} min · {isFree ? 'Free consultation' : 'Paid session (invoice in Step 2)'}</span>
+      </div>
 
-      {/* Featured row — Free consultation + Online/Phone consultation */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
+      {/* Featured services — prominent cards */}
+      <div className="space-y-2">
         {featured.map(s => {
           const free = isServiceFree(s);
           const dur = getServiceDuration(s);
@@ -992,84 +1238,110 @@ function ServicePicker({
               key={s.slug}
               type="button"
               onClick={() => onSelect(s.slug)}
-              className={`text-left px-3 py-2.5 rounded-xl border-2 transition-all ${
+              className={`w-full text-left px-4 py-3.5 rounded-xl border-2 transition-all active:scale-[0.98] ${
                 active
-                  ? 'border-[#7A3B5E] bg-gradient-to-br from-[#FFFAF5] to-[#FDF6ED] shadow-sm'
-                  : 'border-[#F0ECE8] bg-white hover:border-[#C8A97D]/50'
+                  ? 'border-[#7A3B5E] bg-gradient-to-r from-[#FFFAF5] to-[#FDF6ED] shadow-sm'
+                  : 'border-[#F0ECE8] bg-white hover:border-[#C8A97D]/40'
               }`}
             >
-              <div className="flex items-start gap-2">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+              <div className="flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
                   active ? 'bg-[#7A3B5E] text-white' : 'bg-[#F5F0EB] text-[#7A3B5E]'
                 }`}>
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-bold text-[#2D2A33] truncate">{s.name}</p>
-                    <Sparkles className="w-3 h-3 text-[#C8A97D] shrink-0" />
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-[#2D2A33]">{s.name}</p>
+                    <Sparkles className="w-3.5 h-3.5 text-[#C8A97D] shrink-0" />
                   </div>
-                  <p className="text-[10px] text-[#8E8E9F] mt-0.5">
-                    {dur} min · {free ? 'Free' : `CA$${s.priceFrom}`}
+                  <p className="text-xs text-[#8E8E9F] mt-0.5">
+                    {dur} min · {free ? 'Free' : `from CA$${s.priceFrom}`}
                   </p>
                 </div>
+                {active && (
+                  <div className="w-6 h-6 rounded-full bg-[#7A3B5E] flex items-center justify-center shrink-0">
+                    <Check className="w-3.5 h-3.5 text-white" />
+                  </div>
+                )}
               </div>
             </button>
           );
         })}
       </div>
 
-      {/* Category sections */}
-      <div className="space-y-1.5 rounded-xl border border-[#F0ECE8] overflow-hidden bg-[#FAF7F2]">
+      {/* Category chips — horizontal scroll */}
+      <div
+        className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1"
+        style={{ scrollbarWidth: 'none' }}
+      >
         {serviceCategories.map(cat => {
           const list = categorized.get(cat.key) ?? [];
           if (list.length === 0) return null;
-          const expanded = expandedCategory === cat.key;
+          const isActive = activeCategory === cat.key;
           return (
-            <div key={cat.key}>
-              <button
-                type="button"
-                onClick={() => setExpandedCategory(expanded ? null : cat.key)}
-                className="w-full flex items-center justify-between px-3 py-2 bg-white hover:bg-[#F5F0EB] transition-colors text-left"
-              >
-                <span className="text-xs font-semibold text-[#4A4A5C]">
-                  {cat.name} <span className="text-[#8E8E9F] font-normal">({list.length})</span>
-                </span>
-                <ChevronDown className={`w-3.5 h-3.5 text-[#8E8E9F] transition-transform ${expanded ? 'rotate-180' : ''}`} />
-              </button>
-              {expanded && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 p-2 bg-[#FAF7F2]">
-                  {list.map(s => {
-                    const active = selected === s.slug;
-                    return (
-                      <button
-                        key={s.slug}
-                        type="button"
-                        onClick={() => onSelect(s.slug)}
-                        className={`text-left px-2.5 py-2 rounded-lg border transition-all ${
-                          active
-                            ? 'border-[#7A3B5E] bg-white shadow-sm'
-                            : 'border-transparent bg-white/60 hover:bg-white'
-                        }`}
-                      >
-                        <p className="text-[11px] font-semibold text-[#2D2A33] leading-tight">{s.name}</p>
-                        <p className="text-[10px] text-[#8E8E9F] mt-0.5">
-                          {s.duration} · CA${s.priceFrom}
-                        </p>
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+            <button
+              key={cat.key}
+              type="button"
+              onClick={() => setActiveCategory(isActive ? null : cat.key)}
+              className={`shrink-0 px-3.5 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap active:scale-95 ${
+                isActive
+                  ? 'bg-[#7A3B5E] text-white shadow-sm'
+                  : 'bg-[#F5F0EB] text-[#4A4A5C] hover:bg-[#EDE6DF]'
+              }`}
+            >
+              {cat.name}
+            </button>
           );
         })}
       </div>
+
+      {/* Category service list */}
+      <AnimatePresence mode="wait">
+        {activeCategory && (
+          <motion.div
+            key={activeCategory}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-1.5"
+          >
+            {(categorized.get(activeCategory) ?? []).map(s => {
+              const active = selected === s.slug;
+              return (
+                <button
+                  key={s.slug}
+                  type="button"
+                  onClick={() => onSelect(s.slug)}
+                  className={`w-full text-left px-4 py-3 rounded-xl border transition-all active:scale-[0.98] ${
+                    active
+                      ? 'border-[#7A3B5E] bg-[#FFFAF5] shadow-sm'
+                      : 'border-[#F0ECE8] bg-white hover:border-[#C8A97D]/30'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-[#2D2A33]">{s.name}</p>
+                      <p className="text-xs text-[#8E8E9F] mt-0.5">{s.duration} · from CA${s.priceFrom}</p>
+                    </div>
+                    {active && (
+                      <div className="w-5 h-5 rounded-full bg-[#7A3B5E] flex items-center justify-center shrink-0 ml-2">
+                        <Check className="w-3 h-3 text-white" />
+                      </div>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-// ─── Availability Calendar ──────────────────────────────────────
+// ─── Availability Calendar ─────────────────────────────────────
 
 function AvailabilityCalendar({
   currentMonth,
@@ -1110,160 +1382,207 @@ function AvailabilityCalendar({
   const available = daySlots.filter(s => s.available);
   const busy = daySlots.filter(s => !s.available && (s.reason === 'busy' || s.reason === 'buffer'));
 
+  // Group available slots by morning/afternoon
+  const morningSlots = available.filter(s => isSlotMorning(s.start, providerTz));
+  const afternoonSlots = available.filter(s => !isSlotMorning(s.start, providerTz));
+
   return (
-    <div className="rounded-xl border border-[#F0ECE8] bg-[#FAF7F2] overflow-hidden">
-      {/* Month header */}
-      <div className="flex items-center justify-between px-3 py-2 bg-white border-b border-[#F0ECE8]">
-        <button
-          type="button"
-          onClick={() => onMonthChange(shiftMonth(currentMonth, -1))}
-          className="p-1.5 rounded-lg hover:bg-[#F5F0EB] text-[#8E8E9F]"
-          aria-label="Previous month"
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </button>
-        <div className="flex items-center gap-2">
-          <Calendar className="w-3.5 h-3.5 text-[#7A3B5E]" />
-          <span className="text-xs font-bold text-[#2D2A33]">{formatMonthLabel(currentMonth)}</span>
-          {monthLoading && <Loader2 className="w-3 h-3 animate-spin text-[#8E8E9F]" />}
+    <div className="space-y-3">
+      {/* Calendar card */}
+      <div className="rounded-xl border border-[#F0ECE8] bg-[#FAF7F2] overflow-hidden">
+        {/* Month header */}
+        <div className="flex items-center justify-between px-3 py-2.5 bg-white border-b border-[#F0ECE8]">
+          <button
+            type="button"
+            onClick={() => onMonthChange(shiftMonth(currentMonth, -1))}
+            className="p-2 rounded-xl hover:bg-[#F5F0EB] text-[#8E8E9F] active:scale-95 transition-all"
+            aria-label="Previous month"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-[#7A3B5E]" />
+            <span className="text-sm font-bold text-[#2D2A33]">{formatMonthLabel(currentMonth)}</span>
+            {monthLoading && <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8E8E9F]" />}
+          </div>
+          <button
+            type="button"
+            onClick={() => onMonthChange(shiftMonth(currentMonth, 1))}
+            className="p-2 rounded-xl hover:bg-[#F5F0EB] text-[#8E8E9F] active:scale-95 transition-all"
+            aria-label="Next month"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => onMonthChange(shiftMonth(currentMonth, 1))}
-          className="p-1.5 rounded-lg hover:bg-[#F5F0EB] text-[#8E8E9F]"
-          aria-label="Next month"
-        >
-          <ChevronRight className="w-4 h-4" />
-        </button>
+
+        {/* Weekday labels */}
+        <div className="grid grid-cols-7 bg-white">
+          {WEEKDAY_LABELS.map(w => (
+            <div key={w} className="text-center py-2 text-[11px] font-semibold text-[#8E8E9F]">
+              {w}
+            </div>
+          ))}
+        </div>
+
+        {/* Day grid */}
+        <div className="grid grid-cols-7 gap-px bg-[#F0ECE8] border-t border-[#F0ECE8]">
+          {cells.map((cell, i) => {
+            if (!cell) {
+              return <div key={`empty-${i}`} className="bg-white min-h-[44px]" />;
+            }
+            const info = monthAvailability.get(cell);
+            const isPast = cell < today;
+            const isSelected = cell === selectedDate;
+            const hasSlots = info?.hasSlots ?? false;
+            const isBlocked = info?.isBlocked ?? false;
+            const dayNum = parseInt(cell.slice(-2), 10);
+
+            return (
+              <button
+                key={cell}
+                type="button"
+                disabled={isPast || isBlocked}
+                onClick={() => onDateSelect(cell)}
+                title={isBlocked ? info?.blockReason : undefined}
+                className={`bg-white min-h-[44px] flex flex-col items-center justify-center text-sm transition-all relative active:scale-95 ${
+                  isPast
+                    ? 'text-[#D8D2C8] cursor-not-allowed'
+                    : isSelected
+                    ? 'bg-[#7A3B5E] text-white font-bold'
+                    : isBlocked
+                    ? 'bg-red-50 text-red-400 cursor-not-allowed'
+                    : hasSlots
+                    ? 'hover:bg-[#F5F0EB] text-[#2D2A33] font-medium'
+                    : 'text-[#C4C0BC] hover:bg-[#FAF7F2]'
+                }`}
+              >
+                <span>{dayNum}</span>
+                {!isPast && !isSelected && hasSlots && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#3B8A6E] absolute bottom-1" />
+                )}
+                {!isPast && isBlocked && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-red-400 absolute bottom-1" />
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Weekday row */}
-      <div className="grid grid-cols-7 bg-white">
-        {WEEKDAY_LABELS.map(w => (
-          <div key={w} className="text-center py-1.5 text-[10px] font-semibold text-[#8E8E9F]">
-            {w}
-          </div>
-        ))}
-      </div>
-
-      {/* Day grid */}
-      <div className="grid grid-cols-7 gap-px bg-[#F0ECE8] border-t border-[#F0ECE8]">
-        {cells.map((cell, i) => {
-          if (!cell) {
-            return <div key={`empty-${i}`} className="bg-white aspect-square" />;
-          }
-          const info = monthAvailability.get(cell);
-          const isPast = cell < today;
-          const isSelected = cell === selectedDate;
-          const hasSlots = info?.hasSlots ?? false;
-          const isBlocked = info?.isBlocked ?? false;
-          const dayNum = parseInt(cell.slice(-2), 10);
-
-          return (
-            <button
-              key={cell}
-              type="button"
-              disabled={isPast || isBlocked}
-              onClick={() => onDateSelect(cell)}
-              title={isBlocked ? info?.blockReason : undefined}
-              className={`bg-white aspect-square flex flex-col items-center justify-center text-xs transition-colors relative ${
-                isPast
-                  ? 'text-[#D8D2C8] cursor-not-allowed'
-                  : isSelected
-                  ? 'bg-[#7A3B5E] text-white font-bold'
-                  : isBlocked
-                  ? 'bg-red-50 text-red-400 cursor-not-allowed'
-                  : hasSlots
-                  ? 'hover:bg-[#F5F0EB] text-[#2D2A33]'
-                  : 'text-[#C4C0BC] hover:bg-[#FAF7F2]'
-              }`}
-            >
-              <span>{dayNum}</span>
-              {!isPast && !isSelected && hasSlots && (
-                <span className="w-1 h-1 rounded-full bg-[#3B8A6E] absolute bottom-1" />
-              )}
-              {!isPast && isBlocked && (
-                <span className="w-1 h-1 rounded-full bg-red-400 absolute bottom-1" />
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Day slots */}
+      {/* Time slots (shown when date selected) */}
       {selectedDate && (
-        <div className="px-3 py-3 bg-white border-t border-[#F0ECE8]">
-          <div className="flex items-center justify-between mb-2">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
             <p className="text-xs font-semibold text-[#4A4A5C]">
-              <Clock className="inline w-3 h-3 mr-1 text-[#C8A97D]" />
+              <Clock className="inline w-3.5 h-3.5 mr-1 text-[#C8A97D]" />
               Available times
-              <span className="ml-1.5 text-[10px] text-[#8E8E9F] font-normal">
-                (Dr. Hala tz: {providerTz})
-              </span>
             </p>
-            {daySlotsLoading && <Loader2 className="w-3 h-3 animate-spin text-[#8E8E9F]" />}
+            {daySlotsLoading && <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8E8E9F]" />}
           </div>
+
           {available.length === 0 && !daySlotsLoading && (
-            <p className="text-xs text-[#8E8E9F] py-2">No available times on this day.</p>
+            <p className="text-sm text-[#8E8E9F] py-3 text-center">No available times on this day.</p>
           )}
-          {available.length > 0 && (
-            <div className="flex flex-wrap gap-1.5 mb-2">
-              {available.map(s => {
-                const active = selectedSlot?.start === s.start;
-                return (
-                  <button
-                    key={s.start}
-                    type="button"
-                    onClick={() => onSlotSelect(s)}
-                    title={`Client sees: ${formatSlotInTz(s.start, clientTz)} (${clientTz})`}
-                    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-semibold transition-all ${
-                      active
-                        ? 'bg-[#7A3B5E] text-white shadow-sm'
-                        : 'bg-[#F5F0EB] text-[#4A4A5C] hover:bg-[#EDE6DF]'
-                    }`}
-                  >
-                    {formatSlotInTz(s.start, providerTz)}
-                  </button>
-                );
-              })}
+
+          {/* Morning slots */}
+          {morningSlots.length > 0 && (
+            <div>
+              <p className="text-[11px] font-semibold text-[#8E8E9F] uppercase tracking-wider mb-2">Morning</p>
+              <div className="grid grid-cols-3 gap-2">
+                {morningSlots.map(s => {
+                  const active = selectedSlot?.start === s.start;
+                  return (
+                    <button
+                      key={s.start}
+                      type="button"
+                      onClick={() => onSlotSelect(s)}
+                      title={`Client sees: ${formatSlotInTz(s.start, clientTz)} (${clientTz})`}
+                      className={`py-2.5 rounded-xl text-sm font-mono font-semibold transition-all active:scale-95 ${
+                        active
+                          ? 'bg-[#7A3B5E] text-white shadow-sm'
+                          : 'bg-[#F5F0EB] text-[#4A4A5C] hover:bg-[#EDE6DF]'
+                      }`}
+                    >
+                      {formatSlotInTz(s.start, providerTz)}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           )}
+
+          {/* Afternoon slots */}
+          {afternoonSlots.length > 0 && (
+            <div>
+              <p className="text-[11px] font-semibold text-[#8E8E9F] uppercase tracking-wider mb-2">Afternoon</p>
+              <div className="grid grid-cols-3 gap-2">
+                {afternoonSlots.map(s => {
+                  const active = selectedSlot?.start === s.start;
+                  return (
+                    <button
+                      key={s.start}
+                      type="button"
+                      onClick={() => onSlotSelect(s)}
+                      title={`Client sees: ${formatSlotInTz(s.start, clientTz)} (${clientTz})`}
+                      className={`py-2.5 rounded-xl text-sm font-mono font-semibold transition-all active:scale-95 ${
+                        active
+                          ? 'bg-[#7A3B5E] text-white shadow-sm'
+                          : 'bg-[#F5F0EB] text-[#4A4A5C] hover:bg-[#EDE6DF]'
+                      }`}
+                    >
+                      {formatSlotInTz(s.start, providerTz)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Busy slots (overridable) */}
           {busy.length > 0 && (
-            <details className="text-[10px] text-[#8E8E9F]">
-              <summary className="cursor-pointer hover:text-[#4A4A5C]">
-                {busy.length} busy / buffered slot{busy.length === 1 ? '' : 's'} (click to override)
+            <details className="text-xs text-[#8E8E9F]">
+              <summary className="cursor-pointer hover:text-[#4A4A5C] py-1">
+                {busy.length} busy/buffered slot{busy.length === 1 ? '' : 's'} (tap to override)
               </summary>
-              <div className="flex flex-wrap gap-1.5 mt-2">
+              <div className="grid grid-cols-3 gap-2 mt-2">
                 {busy.map(s => (
                   <button
                     key={s.start}
                     type="button"
                     onClick={() => onSlotSelect({ ...s, available: true })}
-                    className="px-2 py-1 rounded-md font-mono text-[10px] bg-[#FFF4F0] text-[#C45B5B] border border-red-100 hover:bg-red-50"
-                    title={`${s.reason} — click to force-book`}
+                    className="py-2 rounded-xl font-mono text-xs bg-[#FFF4F0] text-[#C45B5B] border border-red-100 hover:bg-red-50 active:scale-95 transition-all"
+                    title={`${s.reason} — tap to force-book`}
                   >
-                    {formatSlotInTz(s.start, providerTz)} ⚠
+                    {formatSlotInTz(s.start, providerTz)}
                   </button>
                 ))}
               </div>
             </details>
           )}
 
-          {/* Selected slot summary */}
+          {/* Selected slot confirmation */}
           {selectedSlot && (
-            <div className="mt-2 p-2 rounded-lg bg-gradient-to-r from-[#F0FAF5] to-[#FAF7F2] border border-[#3B8A6E]/20">
-              <p className="text-[11px] text-[#4A4A5C]">
-                <strong className="text-[#3B8A6E]">
-                  {formatSlotDateInTz(selectedSlot.start, providerTz)} · {formatSlotInTz(selectedSlot.start, providerTz)}
-                </strong>{' '}
-                in {providerTz}
-              </p>
-              {clientTz !== providerTz && (
-                <p className="text-[10px] text-[#8E8E9F] mt-0.5">
-                  Client will see: {formatSlotDateInTz(selectedSlot.start, clientTz)} · {formatSlotInTz(selectedSlot.start, clientTz)} ({clientTz})
-                </p>
-              )}
-            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="p-3.5 rounded-xl bg-gradient-to-r from-[#F0FAF5] to-[#FAF7F2] border border-[#3B8A6E]/20"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[#3B8A6E] flex items-center justify-center shrink-0">
+                  <Check className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-[#3B8A6E]">
+                    {formatSlotDateInTz(selectedSlot.start, providerTz)} · {formatSlotInTz(selectedSlot.start, providerTz)}
+                  </p>
+                  {clientTz !== providerTz && (
+                    <p className="text-xs text-[#8E8E9F] mt-0.5">
+                      Client: {formatSlotInTz(selectedSlot.start, clientTz)} ({clientTz.split('/')[1]?.replace('_', ' ')})
+                    </p>
+                  )}
+                </div>
+              </div>
+            </motion.div>
           )}
         </div>
       )}
@@ -1271,7 +1590,7 @@ function AvailabilityCalendar({
   );
 }
 
-// ─── Recurring Section ──────────────────────────────────────────
+// ─── Recurring Section ─────────────────────────────────────────
 
 function RecurringSection({
   isRecurring,
@@ -1312,30 +1631,31 @@ function RecurringSection({
 }) {
   return (
     <div className="rounded-xl border border-[#F0ECE8] bg-[#FAF7F2] overflow-hidden">
-      <label className="flex items-center gap-2 px-3 py-2.5 bg-white border-b border-[#F0ECE8] cursor-pointer">
+      {/* Toggle header */}
+      <label className="flex items-center gap-3 px-4 py-3 bg-white border-b border-[#F0ECE8] cursor-pointer">
         <input
           type="checkbox"
           checked={isRecurring}
           onChange={e => setIsRecurring(e.target.checked)}
-          className="w-4 h-4 accent-[#7A3B5E]"
+          className="w-5 h-5 accent-[#7A3B5E] rounded"
         />
-        <RefreshCw className="w-3.5 h-3.5 text-[#C8A97D]" />
-        <span className="text-xs font-semibold text-[#2D2A33]">Make this a recurring session</span>
+        <RefreshCw className="w-4 h-4 text-[#C8A97D]" />
+        <span className="text-sm font-semibold text-[#2D2A33]">Make this recurring</span>
       </label>
 
       {isRecurring && (
-        <div className="px-3 py-3 space-y-3">
-          {/* Frequency + count + mode */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <div className="px-4 py-3.5 space-y-3">
+          {/* Frequency + count + invoice mode */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-[10px] font-semibold text-[#4A4A5C] mb-1 uppercase tracking-wide">Frequency</label>
-              <div className="flex gap-1">
+              <label className="block text-[11px] font-semibold text-[#4A4A5C] mb-1.5 uppercase tracking-wider">Frequency</label>
+              <div className="grid grid-cols-2 gap-1.5">
                 {(['weekly', 'biweekly'] as const).map(f => (
                   <button
                     key={f}
                     type="button"
                     onClick={() => setFrequency(f)}
-                    className={`flex-1 px-2 py-1.5 rounded-md text-[11px] font-semibold transition-colors ${
+                    className={`px-2 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95 ${
                       frequency === f
                         ? 'bg-[#7A3B5E] text-white'
                         : 'bg-white text-[#4A4A5C] hover:bg-[#F5F0EB] border border-[#E8E4DE]'
@@ -1347,25 +1667,25 @@ function RecurringSection({
               </div>
             </div>
             <div>
-              <label className="block text-[10px] font-semibold text-[#4A4A5C] mb-1 uppercase tracking-wide">Sessions</label>
+              <label className="block text-[11px] font-semibold text-[#4A4A5C] mb-1.5 uppercase tracking-wider">Sessions</label>
               <input
                 type="number"
                 min={1}
                 max={12}
                 value={count}
                 onChange={e => setCount(Math.max(1, Math.min(12, parseInt(e.target.value, 10) || 1)))}
-                className="w-full px-2 py-1.5 rounded-md border border-[#E8E4DE] text-xs text-center font-semibold bg-white"
+                className="w-full h-[38px] px-3 rounded-lg border border-[#E8E4DE] text-sm text-center font-semibold bg-white"
               />
             </div>
             <div>
-              <label className="block text-[10px] font-semibold text-[#4A4A5C] mb-1 uppercase tracking-wide">Invoice</label>
-              <div className="flex gap-1">
+              <label className="block text-[11px] font-semibold text-[#4A4A5C] mb-1.5 uppercase tracking-wider">Invoice</label>
+              <div className="grid grid-cols-2 gap-1.5">
                 {(['per-session', 'bundled'] as const).map(m => (
                   <button
                     key={m}
                     type="button"
                     onClick={() => setInvoiceMode(m)}
-                    className={`flex-1 px-2 py-1.5 rounded-md text-[10px] font-semibold transition-colors ${
+                    className={`px-2 py-2 rounded-lg text-[11px] font-semibold transition-all active:scale-95 ${
                       invoiceMode === m
                         ? 'bg-[#7A3B5E] text-white'
                         : 'bg-white text-[#4A4A5C] hover:bg-[#F5F0EB] border border-[#E8E4DE]'
@@ -1378,29 +1698,29 @@ function RecurringSection({
             </div>
           </div>
 
-          {/* Check availability button */}
+          {/* Check availability */}
           <button
             type="button"
             onClick={onCheckSeries}
             disabled={!canCheck || seriesPlanLoading}
-            className="w-full px-3 py-2 rounded-lg bg-[#FFFAF5] border border-[#C8A97D]/40 text-[11px] font-semibold text-[#7A3B5E] hover:bg-[#FCF3E8] disabled:opacity-40 transition-colors inline-flex items-center justify-center gap-2"
+            className="w-full px-4 py-2.5 rounded-xl bg-[#FFFAF5] border border-[#C8A97D]/40 text-sm font-semibold text-[#7A3B5E] hover:bg-[#FCF3E8] disabled:opacity-40 transition-all active:scale-[0.98] inline-flex items-center justify-center gap-2"
           >
             {seriesPlanLoading ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
+              <Loader2 className="w-4 h-4 animate-spin" />
             ) : (
-              <RefreshCw className="w-3 h-3" />
+              <RefreshCw className="w-4 h-4" />
             )}
             {canCheck ? 'Check availability for all sessions' : 'Pick a first slot above first'}
           </button>
 
           {/* Series plan results */}
           {seriesPlan && (
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {seriesPlan.map(slot => {
                 const effective = seriesOverrides.get(slot.index);
                 const isSkipped = seriesSkips.has(slot.index);
                 const statusColor = isSkipped
-                  ? 'bg-gray-50 text-gray-400 border-gray-200 line-through'
+                  ? 'bg-gray-50 text-gray-400 border-gray-200'
                   : slot.status === 'available'
                   ? 'bg-[#F0FAF5] text-[#3B8A6E] border-[#3B8A6E]/20'
                   : slot.status === 'conflict'
@@ -1409,9 +1729,9 @@ function RecurringSection({
                 const displayStart = effective?.startTime ?? slot.startTime;
 
                 return (
-                  <div key={slot.index} className={`flex items-center gap-2 px-2.5 py-1.5 rounded-md border text-[11px] ${statusColor}`}>
-                    <span className="font-bold w-6">#{slot.index}</span>
-                    <span className="flex-1 min-w-0 font-mono truncate">
+                  <div key={slot.index} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs ${statusColor} ${isSkipped ? 'line-through opacity-60' : ''}`}>
+                    <span className="font-bold w-7 shrink-0">#{slot.index}</span>
+                    <span className="flex-1 min-w-0 font-mono truncate text-[13px]">
                       {formatSlotDateInTz(displayStart, providerTz)} · {formatSlotInTz(displayStart, providerTz)}
                     </span>
                     {!isSkipped && slot.status !== 'available' && slot.suggestedAlternatives && slot.suggestedAlternatives.length > 0 && (
@@ -1424,9 +1744,9 @@ function RecurringSection({
                           next.set(slot.index, { startTime: s, endTime: en });
                           setSeriesOverrides(next);
                         }}
-                        className="bg-white text-[10px] border border-[#E8E4DE] rounded px-1 py-0.5"
+                        className="bg-white text-xs border border-[#E8E4DE] rounded-lg px-2 py-1 max-w-[120px]"
                       >
-                        <option value="">Alternative…</option>
+                        <option value="">Alt...</option>
                         {slot.suggestedAlternatives.map(a => (
                           <option key={a.startTime} value={`${a.startTime}|${a.endTime}`}>
                             {formatSlotDateInTz(a.startTime, providerTz)} {formatSlotInTz(a.startTime, providerTz)}
@@ -1442,7 +1762,7 @@ function RecurringSection({
                         else next.add(slot.index);
                         setSeriesSkips(next);
                       }}
-                      className="text-[10px] px-1.5 py-0.5 rounded hover:bg-white/60"
+                      className="text-xs px-2 py-1 rounded-lg hover:bg-white/60 font-semibold shrink-0 active:scale-95"
                     >
                       {isSkipped ? 'Include' : 'Skip'}
                     </button>
@@ -1450,7 +1770,7 @@ function RecurringSection({
                 );
               })}
               {seriesPlan.some(s => s.status !== 'available' && !seriesSkips.has(s.index) && !seriesOverrides.has(s.index)) && (
-                <p className="text-[10px] text-[#C8A97D] px-1 pt-1">
+                <p className="text-xs text-[#C8A97D] px-1 pt-1">
                   Resolve conflicts by picking an alternative or skipping before continuing.
                 </p>
               )}

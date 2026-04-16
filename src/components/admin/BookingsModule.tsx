@@ -521,6 +521,27 @@ export default function BookingsModule({ password }: Props) {
                     <p className="text-xs text-[#C0B8B0] shrink-0">{booking.source}</p>
                   </div>
 
+                  {/* Received timestamp */}
+                  {booking.createdAt && (
+                    <p className="text-[11px] text-[#B0A99F] mb-2.5 -mt-1.5 ml-12">
+                      Received {new Date(booking.createdAt).toLocaleDateString('en-US', {
+                        month: 'short', day: 'numeric',
+                      })} at {new Date(booking.createdAt).toLocaleTimeString('en-US', {
+                        hour: 'numeric', minute: '2-digit',
+                      })}
+                      {(() => {
+                        const ms = Date.now() - new Date(booking.createdAt).getTime();
+                        const mins = Math.floor(ms / 60000);
+                        if (mins < 1) return ' · just now';
+                        if (mins < 60) return ` · ${mins}m ago`;
+                        const hrs = Math.floor(mins / 60);
+                        if (hrs < 24) return ` · ${hrs}h ago`;
+                        const days = Math.floor(hrs / 24);
+                        return ` · ${days}d ago`;
+                      })()}
+                    </p>
+                  )}
+
                   {/* Details grid */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 text-xs mb-3">
                     <div className="flex items-center gap-1.5 text-[#6B6580]">
