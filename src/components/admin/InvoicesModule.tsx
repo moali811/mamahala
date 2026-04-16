@@ -1764,6 +1764,10 @@ function HistoryTab({
   const [deleting, setDeleting] = useState(false);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  // Mark-paid modal state
+  const [markPaidInvoice, setMarkPaidInvoice] = useState<StoredInvoice | null>(null);
+  const [markPaidMethod, setMarkPaidMethod] = useState('e-transfer');
+  const [markingPaid, setMarkingPaid] = useState(false);
 
   // Filter invoices client-side
   const filtered = invoices.filter((inv) => {
@@ -1788,43 +1792,37 @@ function HistoryTab({
     return true;
   });
 
-  const markPaid = async (invoice: StoredInvoice) => {
-    const method = prompt(
-      'Payment method? (e-transfer / wire / paypal / other)',
-      'e-transfer',
-    );
-    if (!method) return;
-    const confirmed = confirm(
-      `Mark ${invoice.invoiceNumber} as paid via ${method} for ${invoice.breakdown.formattedTotal}?\n\nThis will auto-generate a Receipt PDF and email it to the client.`,
-    );
-    if (!confirmed) return;
+  const markPaid = (invoice: StoredInvoice) => {
+    setMarkPaidInvoice(invoice);
+    setMarkPaidMethod('e-transfer');
+  };
 
+  const confirmMarkPaid = async () => {
+    if (!markPaidInvoice) return;
+    setMarkingPaid(true);
     try {
       const res = await fetch('/api/admin/invoices/mark-paid', {
         method: 'POST',
         headers: bearerHeaders,
         body: JSON.stringify({
-          invoiceId: invoice.invoiceId,
-          paymentMethod: method as PaymentMethodRecord,
+          invoiceId: markPaidInvoice.invoiceId,
+          paymentMethod: markPaidMethod as PaymentMethodRecord,
         }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        onBanner({ kind: 'error', text: 'Mark paid failed' });
-        return;
-      }
+      if (!res.ok) { onBanner({ kind: 'error', text: 'Mark paid failed' }); return; }
       const receiptMsg = data.receiptEmailSent
         ? ' + receipt emailed'
         : data.receiptError
         ? ` (receipt error: ${data.receiptError})`
         : ' (dry run — no email)';
-      onBanner({
-        kind: 'success',
-        text: `${invoice.invoiceNumber} marked paid${receiptMsg}`,
-      });
+      onBanner({ kind: 'success', text: `${markPaidInvoice.invoiceNumber} marked paid via ${markPaidMethod}${receiptMsg}` });
+      setMarkPaidInvoice(null);
       onRefresh();
     } catch {
       onBanner({ kind: 'error', text: 'Server error' });
+    } finally {
+      setMarkingPaid(false);
     }
   };
 
@@ -2209,6 +2207,21 @@ function HistoryTab({
         <table className="w-full text-sm">
           <thead className="bg-[#FAF7F2]">
             <tr className="text-left">
+              <th className="px-2 py-2.5 w-8">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (selectedInvIds.size === sorted.length) setSelectedInvIds(new Set());
+                    else setSelectedInvIds(new Set(sorted.map(inv => inv.invoiceId)));
+                  }}
+                  className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                    selectedInvIds.size === sorted.length && sorted.length > 0
+                      ? 'bg-[#7A3B5E] border-[#7A3B5E]' : 'border-[#D8D2C8]'
+                  }`}
+                >
+                  {selectedInvIds.size === sorted.length && sorted.length > 0 && <Check className="w-2.5 h-2.5 text-white" />}
+                </button>
+              </th>
               <th className="px-3 py-2.5 text-[10px] uppercase tracking-widest font-semibold text-[#8E8E9F]">Date</th>
               <th className="px-3 py-2.5 text-[10px] uppercase tracking-widest font-semibold text-[#8E8E9F]">Number</th>
               <th className="px-3 py-2.5 text-[10px] uppercase tracking-widest font-semibold text-[#8E8E9F]">Client</th>
@@ -2223,7 +2236,24 @@ function HistoryTab({
             {sorted.map((inv) => {
               const isZohoImport = inv.origin === 'zoho-import';
               return (
-              <tr key={inv.invoiceId} className="border-t border-[#F3EFE8]">
+              <tr key={inv.invoiceId} className={`border-t border-[#F3EFE8] ${selectedInvIds.has(inv.invoiceId) ? 'bg-[#FFFAF5]' : ''}`}>
+                <td className="px-2 py-2.5 w-8">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = new Set(selectedInvIds);
+                      if (next.has(inv.invoiceId)) next.delete(inv.invoiceId);
+                      else next.add(inv.invoiceId);
+                      setSelectedInvIds(next);
+                    }}
+                    className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                      selectedInvIds.has(inv.invoiceId)
+                        ? 'bg-[#7A3B5E] border-[#7A3B5E]' : 'border-[#D8D2C8] hover:border-[#7A3B5E]'
+                    }`}
+                  >
+                    {selectedInvIds.has(inv.invoiceId) && <Check className="w-2.5 h-2.5 text-white" />}
+                  </button>
+                </td>
                 <td className="px-3 py-2.5 text-xs text-[#4A4A5C] whitespace-nowrap">
                   {new Date(inv.issuedAt).toLocaleDateString()}
                 </td>
@@ -2448,6 +2478,57 @@ function HistoryTab({
                 className="flex-1 py-2.5 rounded-xl bg-[#C45B5B] text-sm font-semibold text-white hover:bg-[#B04A4A] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
                 Delete Forever
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mark Paid modal */}
+      {markPaidInvoice && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={() => setMarkPaidInvoice(null)}>
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4" onClick={e => e.stopPropagation()}>
+            <h3 className="text-base font-bold text-[#2D2A33]">Mark as Paid</h3>
+            <p className="text-sm text-[#4A4A5C]">
+              {markPaidInvoice.invoiceNumber} · <strong>{markPaidInvoice.breakdown.formattedTotal}</strong> to {markPaidInvoice.draft.client.name}
+            </p>
+            <div>
+              <label className="block text-xs font-semibold text-[#4A4A5C] mb-2">Payment method</label>
+              <div className="grid grid-cols-2 gap-2">
+                {['e-transfer', 'wire', 'paypal', 'stripe', 'cash', 'other'].map(m => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setMarkPaidMethod(m)}
+                    className={`px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                      markPaidMethod === m
+                        ? 'bg-[#7A3B5E] text-white shadow-sm'
+                        : 'bg-[#F5F0EB] text-[#4A4A5C] hover:bg-[#EDE6DF]'
+                    }`}
+                  >
+                    {m === 'e-transfer' ? 'e-Transfer' : m === 'paypal' ? 'PayPal' : m === 'stripe' ? 'Stripe' : m.charAt(0).toUpperCase() + m.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className="text-xs text-[#8E8E9F]">
+              A receipt PDF will be generated and emailed to the client.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setMarkPaidInvoice(null)}
+                className="flex-1 py-2.5 rounded-xl bg-[#F5F0EB] text-sm font-semibold text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmMarkPaid}
+                disabled={markingPaid}
+                className="flex-1 py-2.5 rounded-xl bg-[#3B8A6E] text-sm font-semibold text-white hover:bg-[#2F7A5E] disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
+              >
+                {markingPaid ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+                Confirm Paid
               </button>
             </div>
           </div>

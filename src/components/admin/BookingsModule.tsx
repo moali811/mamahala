@@ -924,9 +924,18 @@ export default function BookingsModule({ password }: Props) {
           draft={invoiceSheet.draft}
           password={password}
           onClose={() => setInvoiceSheet(null)}
-          onSent={(invoiceNumber) => {
+          onSent={async (invoiceNumber) => {
+            // For pending-review drafts, also activate the booking (GCal + confirmation)
+            if (invoiceSheet.booking.status === 'pending-review') {
+              try {
+                await fetch(`/api/admin/booking/${invoiceSheet.booking.bookingId}/confirm-and-send`, {
+                  method: 'POST', headers,
+                  body: JSON.stringify({ sendClientEmail: true }),
+                });
+              } catch { /* best effort — invoice already sent */ }
+            }
             setInvoiceSheet(null);
-            setSuccess(`Invoice ${invoiceNumber} sent to ${invoiceSheet.booking.clientEmail}!`);
+            setSuccess(`Invoice ${invoiceNumber} sent to ${invoiceSheet.booking.clientEmail}! Booking activated.`);
             fetchBookings();
           }}
         />
