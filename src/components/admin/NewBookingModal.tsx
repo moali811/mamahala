@@ -533,9 +533,10 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
             className="fixed inset-0 z-50 flex items-end sm:items-start justify-center sm:p-4 pointer-events-none"
           >
-            <div className="pointer-events-auto w-full max-w-3xl sm:my-4 bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[100dvh] sm:max-h-[calc(100dvh-2rem)]">
+            {/* Mobile: full-screen sheet. Desktop: centered floating card. */}
+            <div className="pointer-events-auto w-full max-w-3xl bg-white sm:rounded-2xl shadow-2xl flex flex-col h-[100dvh] sm:h-auto sm:my-4 sm:max-h-[calc(100dvh-2rem)]">
               {/* Header with step indicator */}
-              <div className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-4 bg-white border-b border-[#F0ECE8] rounded-t-2xl">
+              <div className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-4 bg-white border-b border-[#F0ECE8] sm:rounded-t-2xl">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   {currentStep === 2 && (
                     <button
