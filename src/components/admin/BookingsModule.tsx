@@ -802,11 +802,30 @@ export default function BookingsModule({ password }: Props) {
                     {/* Quick status pills — show contextual next-step actions */}
                     {booking.status === 'pending-review' && (
                       <button
-                        onClick={() => handleApproveAndInvoice(booking)}
+                        onClick={async () => {
+                          // For pending-review (draft) bookings, skip approve and
+                          // go straight to confirm-and-send which activates + sends
+                          setActionLoading(booking.bookingId);
+                          setError(null);
+                          try {
+                            const res = await fetch(`/api/admin/booking/${booking.bookingId}/confirm-and-send`, {
+                              method: 'POST', headers,
+                              body: JSON.stringify({ sendClientEmail: false }),
+                            });
+                            const data = await res.json();
+                            if (!res.ok) throw new Error(data.error || 'Failed to activate');
+                            setSuccess('Draft booking activated — GCal event created and invoice sent');
+                            fetchBookings({ silent: true });
+                          } catch (err: any) {
+                            setError(err.message || 'Failed to activate booking');
+                          } finally {
+                            setActionLoading(null);
+                          }
+                        }}
                         disabled={isLoading}
                         className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#3B8A6E]/10 text-[#3B8A6E] hover:bg-[#3B8A6E] hover:text-white disabled:opacity-50 transition-all"
                       >
-                        Complete & Send Invoice
+                        {isLoading ? 'Activating...' : 'Activate & Confirm'}
                       </button>
                     )}
                     {booking.status === 'approved' && (
