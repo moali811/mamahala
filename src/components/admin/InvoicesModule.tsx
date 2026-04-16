@@ -1994,13 +1994,14 @@ function HistoryTab({
             className="w-full pl-9 pr-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
           />
         </div>
-        <div className="flex items-center gap-1.5 flex-wrap">
+        {/* Filter chips — horizontally scrollable on mobile */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
           {filterChips.map((chip) => (
             <button
               key={chip.value}
               type="button"
               onClick={() => setStatusFilter(chip.value)}
-              className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-colors ${
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                 statusFilter === chip.value
                   ? 'bg-[#7A3B5E] text-white'
                   : 'bg-white border border-[#E8E4DE] text-[#4A4A5C] hover:border-[#7A3B5E]'
@@ -2009,23 +2010,57 @@ function HistoryTab({
               {chip.label}
             </button>
           ))}
-          <button
-            type="button"
-            onClick={handleZohoImport}
-            disabled={zohoImportLoading || zohoImportCommitting}
-            className="ml-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-white border border-[#C8A97D] text-[#7A3B5E] hover:bg-[#FAF7F2] disabled:opacity-50"
-            title="Import historical invoices from Zoho Books CSV export"
-          >
-            {zohoImportLoading ? (
-              <Loader2 className="w-3 h-3 animate-spin" />
-            ) : (
-              <Upload className="w-3 h-3" />
-            )}
-            Import from Zoho
-          </button>
-          <span className="text-[11px] text-[#8E8E9F]">
+        </div>
+        {/* Actions row — result count + import/export */}
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-[#8E8E9F]">
             {filtered.length} result{filtered.length === 1 ? '' : 's'}
           </span>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={handleZohoImport}
+              disabled={zohoImportLoading || zohoImportCommitting}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#4A4A5C] hover:bg-[#F5F0EB] disabled:opacity-50 transition-colors"
+              title="Import invoices from CSV"
+            >
+              {zohoImportLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Upload className="w-3.5 h-3.5" />}
+              Import
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (filtered.length === 0) return;
+                const headers = ['Invoice #', 'Date', 'Client', 'Email', 'Country', 'Service', 'Total', 'Currency', 'CAD Equivalent', 'Status'];
+                const rows = filtered.map(inv => [
+                  inv.invoiceNumber,
+                  inv.issuedAt ? new Date(inv.issuedAt).toLocaleDateString() : '',
+                  inv.draft.client.name,
+                  inv.draft.client.email,
+                  inv.draft.client.country,
+                  inv.draft.serviceSlug,
+                  inv.breakdown?.totalLocal?.toFixed(2) ?? '',
+                  inv.breakdown?.displayCurrency ?? '',
+                  inv.breakdown?.totalCAD?.toFixed(2) ?? '',
+                  inv.status,
+                ]);
+                const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `invoices-export-${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+                onBanner({ kind: 'success', text: `Exported ${filtered.length} invoices to CSV` });
+              }}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-[#4A4A5C] hover:bg-[#F5F0EB] transition-colors"
+              title="Export filtered invoices as CSV"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export
+            </button>
+          </div>
         </div>
       </div>
 
