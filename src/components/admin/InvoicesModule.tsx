@@ -1762,6 +1762,8 @@ function HistoryTab({
   const [zohoImportCommitting, setZohoImportCommitting] = useState(false);
   const [selectedInvIds, setSelectedInvIds] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   // Filter invoices client-side
   const filtered = invoices.filter((inv) => {
@@ -2154,11 +2156,14 @@ function HistoryTab({
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <div className="text-[10px] font-mono text-[#8E8E9F]">{inv.invoiceNumber}</div>
                   {isZohoImport && (
-                    <span
-                      className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#F3EFE8] text-[#8E8E9F] uppercase tracking-wide"
-                      title={`Imported from Zoho Books (original: ${inv.legacyInvoiceNumber || 'N/A'})`}
-                    >
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#F3EFE8] text-[#8E8E9F] uppercase tracking-wide">
                       Zoho
+                    </span>
+                  )}
+                  {(inv.draft.recurringScheduleId || (inv.draft.lineItems && inv.draft.lineItems.length > 1)) && (
+                    <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-[#C8A97D]/10 text-[#C8A97D] uppercase tracking-wide">
+                      <RefreshCw className="w-2.5 h-2.5" />
+                      Series
                     </span>
                   )}
                 </div>
@@ -2368,8 +2373,59 @@ function HistoryTab({
                 Mark Paid
               </button>
               <button
+                onClick={() => { setDeleteConfirmText(''); setDeleteConfirmOpen(true); }}
+                disabled={deleting}
+                className="px-3 py-1.5 rounded-lg bg-[#C45B5B] text-xs font-semibold hover:bg-[#B04A4A] disabled:opacity-50 transition-colors flex items-center gap-1.5"
+              >
+                {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                Delete
+              </button>
+              <button
+                onClick={() => setSelectedInvIds(new Set())}
+                className="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold hover:bg-white/20 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Secure delete confirmation dialog */}
+      {deleteConfirmOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" onClick={() => setDeleteConfirmOpen(false)}>
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6 space-y-4" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#C45B5B]/10 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5 text-[#C45B5B]" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-[#2D2A33]">Delete {selectedInvIds.size} Invoice{selectedInvIds.size === 1 ? '' : 's'}</h3>
+                <p className="text-xs text-[#8E8E9F]">This action cannot be undone</p>
+              </div>
+            </div>
+            <p className="text-sm text-[#4A4A5C]">
+              Type <strong className="text-[#C45B5B] font-mono">DELETE</strong> to permanently remove the selected invoice{selectedInvIds.size === 1 ? '' : 's'} and all associated records.
+            </p>
+            <input
+              type="text"
+              value={deleteConfirmText}
+              onChange={e => setDeleteConfirmText(e.target.value)}
+              placeholder="Type DELETE to confirm"
+              className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base font-mono text-center focus:outline-none focus:ring-2 focus:ring-[#C45B5B]/20 focus:border-[#C45B5B]/30"
+              autoFocus
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={() => setDeleteConfirmOpen(false)}
+                className="flex-1 py-2.5 rounded-xl bg-[#F5F0EB] text-sm font-semibold text-[#4A4A5C] hover:bg-[#EDE6DF] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
                 onClick={async () => {
-                  if (!confirm(`Permanently delete ${selectedInvIds.size} invoice(s)? This cannot be undone.`)) return;
+                  setDeleteConfirmOpen(false);
                   setDeleting(true);
                   const ids = [...selectedInvIds];
                   let count = 0;
@@ -2385,20 +2441,13 @@ function HistoryTab({
                   }
                   setDeleting(false);
                   setSelectedInvIds(new Set());
-                  onBanner({ kind: 'success', text: `Deleted ${count} invoice(s)` });
+                  onBanner({ kind: 'success', text: `Permanently deleted ${count} invoice(s)` });
                   onRefresh();
                 }}
-                disabled={deleting}
-                className="px-3 py-1.5 rounded-lg bg-[#C45B5B] text-xs font-semibold hover:bg-[#B04A4A] disabled:opacity-50 transition-colors flex items-center gap-1.5"
+                disabled={deleteConfirmText !== 'DELETE'}
+                className="flex-1 py-2.5 rounded-xl bg-[#C45B5B] text-sm font-semibold text-white hover:bg-[#B04A4A] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               >
-                {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                Delete
-              </button>
-              <button
-                onClick={() => setSelectedInvIds(new Set())}
-                className="px-3 py-1.5 rounded-lg bg-white/10 text-xs font-semibold hover:bg-white/20 transition-colors"
-              >
-                Cancel
+                Delete Forever
               </button>
             </div>
           </div>

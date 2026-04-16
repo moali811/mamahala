@@ -19,9 +19,10 @@ interface Props {
   password: string;
 }
 
-type FilterStatus = 'all' | 'pending_approval' | 'approved' | 'confirmed' | 'completed' | 'cancelled' | 'declined';
+type FilterStatus = 'all' | 'pending_approval' | 'pending-review' | 'approved' | 'confirmed' | 'completed' | 'cancelled' | 'declined';
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; label: string; border: string }> = {
+  'pending-review': { bg: 'bg-orange-50', text: 'text-orange-600', label: 'Draft', border: 'border-l-orange-300' },
   pending_approval: { bg: 'bg-amber-50', text: 'text-amber-700', label: 'Pending', border: 'border-l-amber-400' },
   approved: { bg: 'bg-blue-50', text: 'text-blue-700', label: 'Approved', border: 'border-l-blue-400' },
   confirmed: { bg: 'bg-green-50', text: 'text-green-700', label: 'Confirmed', border: 'border-l-green-500' },
@@ -536,6 +537,7 @@ export default function BookingsModule({ password }: Props) {
       <div className="flex gap-1.5 overflow-x-auto pb-1 snap-x snap-mandatory scrollbar-none">
         {([
           { key: 'pending_approval' as FilterStatus, label: 'Pending', count: bookings.filter(b => b.status === 'pending_approval').length },
+          { key: 'pending-review' as FilterStatus, label: 'Draft', count: bookings.filter(b => b.status === 'pending-review').length },
           { key: 'approved' as FilterStatus, label: 'Approved', count: bookings.filter(b => b.status === 'approved').length },
           { key: 'confirmed' as FilterStatus, label: 'Confirmed', count: bookings.filter(b => b.status === 'confirmed').length },
           { key: 'completed' as FilterStatus, label: 'Completed', count: bookings.filter(b => b.status === 'completed').length },
@@ -651,8 +653,14 @@ export default function BookingsModule({ password }: Props) {
                           {status.label}
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 mt-0.5">
+                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                         <p className="text-xs text-[#8E8E9F] truncate">{booking.serviceName || booking.serviceSlug}</p>
+                        {booking.series && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-[#C8A97D] bg-[#C8A97D]/10 px-1.5 py-0.5 rounded-full shrink-0">
+                            <RefreshCw className="w-2.5 h-2.5" />
+                            {booking.series.seriesIndex}/{booking.series.seriesTotal}
+                          </span>
+                        )}
                         {booking.status === 'confirmed' && (() => {
                           const daysUntil = Math.ceil((new Date(booking.startTime).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
                           if (daysUntil >= 0 && daysUntil <= 7) {

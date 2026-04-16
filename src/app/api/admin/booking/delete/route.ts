@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBooking, deleteBooking } from '@/lib/booking/booking-store';
 import { authorize } from '@/lib/invoicing/auth';
+import { deleteCalendarEvent } from '@/lib/booking/google-calendar';
 
 export async function POST(request: NextRequest) {
   if (!authorize(request)) {
@@ -21,6 +22,9 @@ export async function POST(request: NextRequest) {
     if (!booking) {
       return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
+
+    // Best-effort GCal cleanup — remove the calendar event before deleting
+    try { await deleteCalendarEvent(bookingId); } catch { /* best effort */ }
 
     await deleteBooking(bookingId);
     return NextResponse.json({ success: true, bookingId });

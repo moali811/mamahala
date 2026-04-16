@@ -21,6 +21,7 @@ import {
   buildStatusNoShowEmail,
 } from '@/lib/booking/emails';
 import { recomputeBundleInvoice } from '@/lib/invoicing/booking-intake';
+import { deleteCalendarEvent } from '@/lib/booking/google-calendar';
 import type { Booking, BookingStatus } from '@/lib/booking/types';
 
 const VALID_STATUSES: BookingStatus[] = [
@@ -53,6 +54,12 @@ export async function POST(request: NextRequest) {
       ...(status === 'cancelled' ? { cancelledAt: new Date().toISOString() } : {}),
       ...(status === 'completed' ? { completedAt: new Date().toISOString() } : {}),
     });
+
+    // ─── GCal cleanup for cancelled/declined/no-show ────────────
+    const gcalRemovalStatuses = ['cancelled', 'declined', 'no-show'];
+    if (gcalRemovalStatuses.includes(status)) {
+      try { await deleteCalendarEvent(bookingId); } catch { /* best effort */ }
+    }
 
     // ─── Series cascade: cancel-one ────────────────────────────
     // If this booking is part of a recurring series AND the new status

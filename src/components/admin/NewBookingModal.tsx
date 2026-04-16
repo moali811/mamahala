@@ -37,7 +37,7 @@ import {
   ChevronLeft, ChevronRight, Video, Building2,
   RefreshCw, AlertCircle, ArrowRight,
   Heart, MessageCircle, ChevronDown, Sparkles, Globe,
-  User,
+  User, Search,
 } from 'lucide-react';
 import { services, serviceCategories } from '@/data/services';
 import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
@@ -294,11 +294,13 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
       .finally(() => setMonthLoading(false));
   }, [open, currentStep, currentMonth, duration]);
 
-  // ─── Effect: fetch day slots when date selected ────────────
+  // ─── Effect: fetch day slots when date or timezone changes ──
+  // NOTE: selectedSlot is NOT cleared here — the slot's ISO string
+  // is absolute and stays valid across timezone changes. The slot is
+  // only cleared when the user picks a different date (in handleDatePick).
   useEffect(() => {
     if (!open || !selectedDate || currentStep !== 1) return;
     setDaySlotsLoading(true);
-    setSelectedSlot(null);
     fetch(`/api/book/availability?date=${selectedDate}&duration=${duration}&tz=${clientTimezone}`)
       .then(r => r.json())
       .then(data => setDaySlots(data.slots ?? []))
@@ -1052,34 +1054,23 @@ function Step1Content(props: Step1Props) {
               className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] placeholder:text-[#C4C0BC] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/30 transition-colors"
             />
           </div>
-          {/* Country first — triggers auto-fill for phone + timezone */}
-          <div>
-            <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Country</label>
-            <select
-              value={props.clientCountry}
-              onChange={e => {
-                const code = e.target.value;
-                props.setClientCountry(code);
-                const country = COUNTRIES_BY_CODE[code];
-                if (country) {
-                  const currentPhone = props.clientPhone.trim();
-                  if (!currentPhone || /^\+\d{0,4}$/.test(currentPhone)) {
-                    props.setClientPhone(country.dial + ' ');
-                  }
-                  if (country.timezones.length > 0) {
-                    props.setClientTimezone(country.timezones[0]);
-                  }
+          {/* Country — searchable picker with auto-fill */}
+          <CountryPicker
+            value={props.clientCountry}
+            onChange={(code) => {
+              props.setClientCountry(code);
+              const country = COUNTRIES_BY_CODE[code];
+              if (country) {
+                const currentPhone = props.clientPhone.trim();
+                if (!currentPhone || /^\+\d{0,4}$/.test(currentPhone)) {
+                  props.setClientPhone(country.dial + ' ');
                 }
-              }}
-              className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 bg-white transition-colors"
-            >
-              {COUNTRIES.map(c => (
-                <option key={c.code} value={c.code}>
-                  {c.flag} {c.name} ({c.code}){c.code === 'CA' ? ' — e-Transfer locked on' : ''}
-                </option>
-              ))}
-            </select>
-          </div>
+                if (country.timezones.length > 0) {
+                  props.setClientTimezone(country.timezones[0]);
+                }
+              }
+            }}
+          />
           {/* Phone + Timezone side by side (phone auto-filled from country above) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
@@ -1771,6 +1762,108 @@ function RecurringSection({
               )}
             </div>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Country Picker (searchable) ───────────────────────────────
+
+function CountryPicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (code: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const selected = COUNTRIES_BY_CODE[value];
+
+  const filtered = useMemo(() => {
+    if (!query.trim()) return COUNTRIES;
+    const q = query.toLowerCase();
+    return COUNTRIES.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.code.toLowerCase().includes(q) ||
+      c.nameAr.includes(q) ||
+      c.dial.includes(q)
+    );
+  }, [query]);
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  // Focus search when opened
+  useEffect(() => {
+    if (open) setTimeout(() => inputRef.current?.focus(), 50);
+    else setQuery('');
+  }, [open]);
+
+  return (
+    <div ref={containerRef} className="relative">
+      <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Country</label>
+      <button
+        type="button"
+        onClick={() => setOpen(!open)}
+        className={`w-full h-12 px-4 rounded-xl border text-base text-left flex items-center gap-2 transition-colors bg-white ${
+          open ? 'border-[#7A3B5E]/30 ring-2 ring-[#7A3B5E]/20' : 'border-[#E8E4DE]'
+        }`}
+      >
+        <span className="text-lg leading-none">{selected?.flag}</span>
+        <span className="flex-1 truncate text-[#2D2A33]">{selected?.name ?? value}</span>
+        <span className="text-xs text-[#8E8E9F]">{value}</span>
+        <ChevronDown className={`w-4 h-4 text-[#8E8E9F] transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 bg-white rounded-xl border border-[#E8E4DE] shadow-xl max-h-[280px] flex flex-col overflow-hidden">
+          <div className="px-3 py-2 border-b border-[#F0ECE8] shrink-0">
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#8E8E9F]" />
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Search country..."
+                className="w-full pl-8 pr-3 py-2 rounded-lg bg-[#FAF7F2] text-sm focus:outline-none placeholder:text-[#C4C0BC]"
+              />
+            </div>
+          </div>
+          <div className="overflow-y-auto flex-1 overscroll-contain">
+            {filtered.length === 0 && (
+              <p className="text-sm text-[#8E8E9F] text-center py-4">No countries match</p>
+            )}
+            {filtered.map(c => (
+              <button
+                key={c.code}
+                type="button"
+                onClick={() => { onChange(c.code); setOpen(false); }}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors active:scale-[0.98] ${
+                  value === c.code
+                    ? 'bg-[#7A3B5E]/5 text-[#7A3B5E] font-semibold'
+                    : 'text-[#2D2A33] hover:bg-[#FAF7F2]'
+                }`}
+              >
+                <span className="text-base leading-none">{c.flag}</span>
+                <span className="flex-1 truncate">{c.name}</span>
+                <span className="text-xs text-[#8E8E9F] shrink-0">{c.dial}</span>
+                {value === c.code && <Check className="w-4 h-4 text-[#7A3B5E] shrink-0" />}
+              </button>
+            ))}
+          </div>
         </div>
       )}
     </div>
