@@ -79,7 +79,7 @@ async function findAlternativeSlots(
         if (alternatives.length >= 5) break;
         const d = new Date(slot.start);
         const label = d.toLocaleString('en-US', {
-          timeZone: 'America/Toronto',
+          timeZone: booking.clientTimezone || 'America/Toronto',
           weekday: 'long',
           month: 'long',
           day: 'numeric',

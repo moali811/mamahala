@@ -477,7 +477,10 @@ export function buildAdminNotificationEmail(
   extraInfo?: { oldBooking?: Booking },
 ): { subject: string; html: string } {
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
-  const dateTime = formatDateTime(booking.startTime, 'America/Toronto');
+  // Show time in client's timezone (primary) + Dr. Hala's timezone if different
+  const clientTz = booking.clientTimezone || 'America/Toronto';
+  const dateTime = formatDateTime(booking.startTime, clientTz);
+  const clientTzLabel = clientTz.split('/').pop()?.replace(/_/g, ' ') || clientTz;
 
   const typeLabels: Record<AdminNotificationType, { label: string; color: string }> = {
     'new-booking': { label: 'New Booking', color: '#3B8A6E' },
@@ -503,7 +506,7 @@ export function buildAdminNotificationEmail(
 
   let extraHtml = '';
   if (type === 'reschedule' && extraInfo?.oldBooking) {
-    const oldDt = formatDateTime(extraInfo.oldBooking.startTime, 'America/Toronto');
+    const oldDt = formatDateTime(extraInfo.oldBooking.startTime, extraInfo.oldBooking.clientTimezone || 'America/Toronto');
     extraHtml = `<p style="${styles.text}">Moved from: <span style="text-decoration:line-through;color:#C45B5B;">${oldDt}</span></p>`;
   }
   if (type === 'cancellation' && booking.cancelReason) {

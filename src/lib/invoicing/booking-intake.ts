@@ -136,10 +136,11 @@ function inferCountry(
   return 'CA';
 }
 
-function formatBookingDate(isoStart: string): string {
+function formatBookingDate(isoStart: string, clientTimezone?: string): string {
   try {
     const d = new Date(isoStart);
     return d.toLocaleString('en-US', {
+      ...(clientTimezone ? { timeZone: clientTimezone } : {}),
       weekday: 'long',
       month: 'long',
       day: 'numeric',
@@ -219,7 +220,7 @@ export async function processBookingIntake(
 
   // ─── 6. Build the draft invoice ─────────────────────────────────
   const now = new Date().toISOString();
-  const bookingLabel = formatBookingDate(input.startTime);
+  const bookingLabel = formatBookingDate(input.startTime, input.clientTimezone);
   const isBundledAnchor =
     input.seriesContext?.mode === 'bundled'
     && input.seriesContext.isAnchor === true;
