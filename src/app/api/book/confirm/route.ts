@@ -16,7 +16,7 @@
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { generateBookingId, saveBooking, createManageToken } from '@/lib/booking/booking-store';
+import { generateBookingId, saveBooking, createManageToken, getAvailabilityRules } from '@/lib/booking/booking-store';
 import { isSlotAvailable } from '@/lib/booking/availability';
 import { fetchBusySlots } from '@/lib/booking/google-calendar';
 import { createCalendarEvent } from '@/lib/booking/google-calendar';
@@ -91,6 +91,9 @@ export async function POST(request: NextRequest) {
     const existingCustomer = await getCustomer(body.clientEmail.toLowerCase());
     const isNewClient = !existingCustomer;
 
+    // ─── Fetch hold settings for smart-hold timer ──────────────
+    const availabilityRules = await getAvailabilityRules().catch(() => null);
+
     // ─── Create Booking record ───────────────────────────────
     const bookingId = generateBookingId();
     const now = new Date().toISOString();
@@ -114,7 +117,17 @@ export async function POST(request: NextRequest) {
       status: isFreeSession ? 'confirmed' : 'pending_approval',
       source: 'native',
       aiIntakeNotes: body.aiIntakeNotes,
-      ...(isFreeSession ? { confirmedAt: now } : {}),
+      ...(isFreeSession
+        ? { confirmedAt: now }
+        : {
+            // Smart Hold: block this slot immediately and set auto-approve timer.
+            // Hold duration is configurable in admin settings (default 4 hours).
+            holdExpiresAt: (() => {
+              const rules = availabilityRules;
+              const holdHours = rules?.holdDurationHours ?? 4;
+              return new Date(Date.now() + holdHours * 3600_000).toISOString();
+            })(),
+          }),
       createdAt: now,
       updatedAt: now,
     };

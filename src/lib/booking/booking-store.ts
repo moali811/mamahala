@@ -165,6 +165,13 @@ export async function getHeldBookingsForDate(date: string): Promise<Booking[]> {
 
   return all.filter(b => {
     if (b.status === 'confirmed' || b.status === 'approved') return true;
+
+    // Smart Hold: client-submitted bookings awaiting Dr. Hala's review
+    // ALWAYS block the slot — prevents double-booking. Slot only frees
+    // when Dr. Hala explicitly declines. If she doesn't respond, the
+    // auto-approve cron takes over (so clients are never left hanging).
+    if (b.status === 'pending_approval') return true;
+
     if (b.status === 'pending-review') {
       // Active hold only if the expiry timestamp is in the future.
       // Missing expiry defaults to "not holding" — safer than a

@@ -10,6 +10,7 @@ import { authorize } from '@/lib/invoicing/auth';
 import { deleteDraft } from '@/lib/invoicing/kv-store';
 import { BUSINESS } from '@/config/business';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
+import { getAvailableSlots } from '@/lib/booking/availability';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
@@ -47,6 +48,55 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ ok: true, ...result });
 }
 
+/**
+ * Find up to 5 available alternative slots on the booking's date and +/-2 nearby days.
+ * Returns formatted strings like "Tuesday, April 22 at 10:00 AM" plus ISO start times.
+ */
+async function findAlternativeSlots(
+  bookingDate: string,
+  durationMinutes: number,
+): Promise<Array<{ label: string; startIso: string }>> {
+  const alternatives: Array<{ label: string; startIso: string }> = [];
+
+  // Check the booking day and +/-2 nearby days (5 days total)
+  const [year, month, day] = bookingDate.split('-').map(Number);
+  const baseDate = new Date(year, month - 1, day);
+  const datesToCheck: string[] = [];
+
+  for (let offset = -2; offset <= 2; offset++) {
+    const d = new Date(baseDate);
+    d.setDate(d.getDate() + offset);
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    datesToCheck.push(dateStr);
+  }
+
+  for (const dateStr of datesToCheck) {
+    if (alternatives.length >= 5) break;
+    try {
+      const slots = await getAvailableSlots(dateStr, durationMinutes);
+      const available = slots.filter(s => s.available);
+      for (const slot of available) {
+        if (alternatives.length >= 5) break;
+        const d = new Date(slot.start);
+        const label = d.toLocaleString('en-US', {
+          timeZone: 'America/Toronto',
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          hour: 'numeric',
+          minute: '2-digit',
+          hour12: true,
+        });
+        alternatives.push({ label, startIso: slot.start });
+      }
+    } catch {
+      // Skip days that fail — non-critical
+    }
+  }
+
+  return alternatives;
+}
+
 async function processDecline(bookingId: string, reason?: string): Promise<{
   error?: string;
   clientName?: string;
@@ -70,9 +120,30 @@ async function processDecline(bookingId: string, reason?: string): Promise<{
     await deleteDraft(booking.draftId).catch(() => {});
   }
 
+  // Find alternative available slots near the original booking date
+  const bookingDate = booking.startTime.slice(0, 10); // YYYY-MM-DD from ISO
+  const alternativeSlots = await findAlternativeSlots(
+    bookingDate,
+    booking.durationMinutes,
+  ).catch(() => [] as Array<{ label: string; startIso: string }>);
+
   // Send decline email to client
   const firstName = booking.clientName.split(' ')[0];
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
+  const bookUrl = `${SITE_URL}/en/book?service=${booking.serviceSlug}`;
+
+  // Build the "Suggested Alternative Times" section if alternatives were found
+  const alternativesHtml = alternativeSlots.length > 0
+    ? `<div style="${emailStyles.card};background:#FFFAF5;border-left:3px solid #C8A97D;">
+        <p style="margin:0 0 10px;font-size:13px;font-weight:700;color:#7A3B5E;">We have these times available instead:</p>
+        ${alternativeSlots.map(slot =>
+          `<p style="margin:0 0 6px;font-size:13px;color:#4A4A5C;">&#8226; ${slot.label}</p>`
+        ).join('')}
+        <div style="text-align:center;margin:14px 0 2px;">
+          <a href="${bookUrl}" style="${emailStyles.button}">Book a New Time</a>
+        </div>
+      </div>`
+    : '';
 
   const html = emailWrapper(`
     <div style="${emailStyles.card}">
@@ -85,10 +156,11 @@ async function processDecline(bookingId: string, reason?: string): Promise<{
         <p style="margin:0 0 6px;font-size:13px;color:#4A4A5C;">&#8226; Message us on <a href="${BUSINESS.whatsappUrl}" style="color:#7A3B5E;font-weight:600;">WhatsApp</a> at ${BUSINESS.phone}</p>
         <p style="margin:0;font-size:13px;color:#4A4A5C;">&#8226; We typically reply within a few hours</p>
       </div>
-      <div style="text-align:center;margin:20px 0 4px;">
-        <a href="${SITE_URL}/en/book" style="${emailStyles.button}">Book Another Time</a>
-      </div>
     </div>
+    ${alternativesHtml}
+    ${alternativeSlots.length === 0 ? `<div style="text-align:center;margin:20px 0 4px;">
+      <a href="${SITE_URL}/en/book" style="${emailStyles.button}">Book Another Time</a>
+    </div>` : ''}
   `);
 
   await sendBookingEmail({

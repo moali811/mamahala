@@ -1594,7 +1594,7 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
         </h1>
         <p className="text-sm text-[#8E8E9F]">
           {isPendingApproval
-            ? (isRTL ? 'ستراجع د. هالة طلبك وترسل لك فاتورة مع تعليمات الدفع قريباً.' : 'Dr. Hala will review your request and send you an invoice with payment instructions shortly.')
+            ? (isRTL ? 'ستقوم الدكتورة هالة بمراجعة طلبك والتأكيد خلال ساعات قليلة.' : 'Dr. Hala will review your request and confirm within a few hours.')
             : (isRTL ? 'تم إرسال تفاصيل الحجز وملف التقويم إلى بريدك الإلكتروني.' : 'Booking details and a calendar file have been sent to your email.')
           }
         </p>
@@ -1611,7 +1611,7 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
           <p className="text-sm font-bold text-[#7A3B5E] mb-4">{isRTL ? 'الخطوات التالية' : 'What Happens Next'}</p>
           <div className="space-y-3">
             {[
-              { num: '1', en: 'Dr. Hala reviews your request — typically within a few hours', ar: 'ستراجع د. هالة طلبك — عادة خلال ساعات قليلة' },
+              { num: '1', en: 'Dr. Hala reviews your request (usually within 4 hours)', ar: 'الدكتورة هالة تراجع طلبك (عادةً خلال ٤ ساعات)' },
               { num: '2', en: 'You receive an invoice with payment details via email', ar: 'ستصلك فاتورة بتفاصيل الدفع عبر البريد الإلكتروني' },
               { num: '3', en: 'Complete payment — your session is confirmed!', ar: 'أكمل الدفع — يتم تأكيد جلستك!' },
             ].map(step => (

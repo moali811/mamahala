@@ -130,6 +130,14 @@ export interface Booking {
    */
   pendingReviewExpiresAt?: string;
 
+  /**
+   * Smart Hold: ISO timestamp after which a `pending_approval` booking
+   * is auto-approved by the cron engine. The slot stays blocked regardless
+   * — this timer only controls when auto-approve kicks in, not when the
+   * slot frees. Slots only free on explicit decline.
+   */
+  holdExpiresAt?: string;
+
   createdAt: string;
   updatedAt: string;
 }
@@ -178,6 +186,13 @@ export interface AvailabilityRules {
   minimumNoticeHours: number;
   /** Free cancellation window in hours before session (default 24). */
   cancellationPolicyHours: number;
+
+  // ─── Smart Hold Settings ────────────────────────────────────────
+  /** Hours to hold a slot for pending_approval before auto-action (default 4). */
+  holdDurationHours?: number;
+  /** When true (default), expired holds are auto-approved. When false, they stay pending. */
+  autoApproveOnExpiry?: boolean;
+
   updatedAt: string;
 }
 

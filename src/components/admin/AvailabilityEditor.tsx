@@ -893,6 +893,59 @@ export default function AvailabilityEditor({ password }: Props) {
             step={1}
             onChange={v => updateRules({ cancellationPolicyHours: v })}
           />
+
+          {/* ─── Smart Hold Settings ─────────────────────── */}
+          <div className="pt-2">
+            <p className="text-[10px] font-semibold text-[#8E8E9F] uppercase tracking-widest mb-2 px-1">
+              Smart Hold
+            </p>
+          </div>
+
+          {/* Booking Hold Duration — select dropdown */}
+          <div className="bg-white rounded-xl border border-[#F0ECE8] p-3">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-[#2D2A33]">Booking hold duration</p>
+                <p className="text-[10px] text-[#8E8E9F] mt-1 leading-relaxed">
+                  How long a pending request holds a time slot before the auto-approve timer fires. Longer holds give Dr. Hala more time to review manually.
+                </p>
+              </div>
+              <div className="shrink-0">
+                <select
+                  value={rules.holdDurationHours ?? 4}
+                  onChange={e => updateRules({ holdDurationHours: Number(e.target.value) })}
+                  className="px-3 py-1.5 rounded-lg border border-[#E8E4DE] text-xs font-mono bg-[#FAF7F2] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
+                >
+                  {[2, 4, 8, 12, 24].map(h => (
+                    <option key={h} value={h}>{h}h</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Auto-approve on expiry — toggle */}
+          <div className="bg-white rounded-xl border border-[#F0ECE8] p-3">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-[#2D2A33]">Auto-approve on expiry</p>
+                <p className="text-[10px] text-[#8E8E9F] mt-1 leading-relaxed">
+                  When enabled, pending requests are automatically approved and invoiced after the hold duration expires. When disabled, they stay pending until Dr. Hala acts.
+                </p>
+              </div>
+              <div className="shrink-0">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={rules.autoApproveOnExpiry ?? true}
+                    onChange={e => updateRules({ autoApproveOnExpiry: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-[#E8E4DE] peer-focus:ring-2 peer-focus:ring-[#7A3B5E]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-[#E8E4DE] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#3B8A6E]" />
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

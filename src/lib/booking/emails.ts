@@ -168,7 +168,7 @@ export function buildConfirmationEmail(data: ConfirmationEmailData): {
         <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#7A3B5E;">What Happens Next?</p>
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr><td style="padding:8px 0;vertical-align:top;width:28px;"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#C8A97D;color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;">1</span></td>
-              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>Dr. Hala reviews your request</strong> — typically within a few hours</p></td></tr>
+              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>Dr. Hala reviews your request</strong> — usually within 4 hours</p></td></tr>
           <tr><td style="padding:8px 0;vertical-align:top;"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#C8A97D;color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;">2</span></td>
               <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>You receive an invoice</strong> with payment details</p></td></tr>
           <tr><td style="padding:8px 0;vertical-align:top;"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#3B8A6E;color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;">3</span></td>
@@ -182,7 +182,7 @@ export function buildConfirmationEmail(data: ConfirmationEmailData): {
     : 'Your Session is Confirmed';
 
   const statusText = isPendingApproval
-    ? 'Thank you for reaching out. Dr. Hala will review your request and get back to you shortly with next steps.'
+    ? 'Thank you for reaching out. Dr. Hala will review your request and confirm within a few hours.'
     : 'Your session with Dr. Hala has been confirmed. Here are the details:';
 
   const content = `
