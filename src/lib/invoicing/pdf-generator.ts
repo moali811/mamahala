@@ -36,22 +36,9 @@ export async function generateInvoicePdf(
   const isPaid = invoice.status === 'paid';
   const rightEdge = PAGE_WIDTH - MARGIN;
 
-  // ─── Subtle watermark (centered, ultra-faded) ─────────────
-  // jsPDF's addImage uses the top-left corner of the image as the
-  // anchor, so we compute the top-left coordinates that make the
-  // 75×75 watermark land in the horizontal + vertical centre of the
-  // page (A4 = 210×297mm).
+  // Watermark is drawn later, after the Pay Online banner, so it sits
+  // in the lower half of the page between the CTA and footer.
   const watermarkDataUrl = getWatermarkLogoDataUrl();
-  if (watermarkDataUrl) {
-    try {
-      const wmSize = 75;
-      const wmX = (PAGE_WIDTH - wmSize) / 2;
-      const wmY = (PAGE_HEIGHT - wmSize) / 2;
-      doc.setGState(new GState({ opacity: 0.025 }));
-      doc.addImage(watermarkDataUrl, 'PNG', wmX, wmY, wmSize, wmSize, undefined, 'FAST');
-      doc.setGState(new GState({ opacity: 1 }));
-    } catch { /* skip */ }
-  }
 
   // ─── Thin top accent line (just 1.5mm plum) ────────────────
   doc.setFillColor(...PLUM);
@@ -166,28 +153,27 @@ export async function generateInvoicePdf(
   doc.text(invoice.draft.client.country || '', MARGIN, y);
   y += 3.5;
 
-  // Right: dates
-  const dateX = PAGE_WIDTH / 2 + 10;
+  // Right: dates — right-aligned to match invoice number and amounts
   let dy = y - 15.5;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
   doc.setTextColor(...MUTED);
-  doc.text('ISSUE DATE', dateX, dy);
+  doc.text('ISSUE DATE', rightEdge, dy, { align: 'right' });
   dy += 4;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(10);
   doc.setTextColor(...DARK);
-  doc.text(formatDate(invoice.issuedAt), dateX, dy);
+  doc.text(formatDate(invoice.issuedAt), rightEdge, dy, { align: 'right' });
   dy += 6;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
   doc.setTextColor(...MUTED);
-  doc.text('DUE DATE', dateX, dy);
+  doc.text('DUE DATE', rightEdge, dy, { align: 'right' });
   dy += 4;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(...DARK);
-  doc.text(formatDate(invoice.dueDate), dateX, dy);
+  doc.text(formatDate(invoice.dueDate), rightEdge, dy, { align: 'right' });
 
   y += 4;
   hr(doc, y);
@@ -334,6 +320,20 @@ export async function generateInvoicePdf(
     y = ctaY + ctaH + 6;
   }
 
+  // ─── Subtle watermark (below Pay Online, in the lower half) ───
+  if (watermarkDataUrl) {
+    try {
+      const wmSize = 75;
+      const wmX = (PAGE_WIDTH - wmSize) / 2;
+      // Place between current y and footer top, centered vertically
+      const footTop = PAGE_HEIGHT - 22;
+      const wmY = y + (footTop - y - wmSize) / 2;
+      doc.setGState(new GState({ opacity: 0.025 }));
+      doc.addImage(watermarkDataUrl, 'PNG', wmX, wmY, wmSize, wmSize, undefined, 'FAST');
+      doc.setGState(new GState({ opacity: 1 }));
+    } catch { /* skip */ }
+  }
+
   // ─── PAYMENT INSTRUCTIONS (region-aware, single-block primary) ─
   // Canadian clients see one locked e-Transfer block. International
   // clients see one block from the cascade (Stripe > wire > PayPal
@@ -411,14 +411,17 @@ export async function generateInvoicePdf(
         y += 3;
       }
     }
-    // Booking policy as a clean link, not a raw URL
+    // Booking policy — embedded as a natural sentence, not a separate line
     if (settings.bookingPolicyUrl) {
-      y += 1;
+      y += 2;
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(7);
       doc.setTextColor(...PLUM);
+      const policyText = 'Our full booking & cancellation policy is available at mamahala.ca/booking-policy';
       try {
-        doc.textWithLink('View Booking Policy', MARGIN, y, { url: settings.bookingPolicyUrl });
+        doc.textWithLink(policyText, MARGIN, y, { url: settings.bookingPolicyUrl });
       } catch {
-        doc.text('View Booking Policy', MARGIN, y);
+        doc.text(policyText, MARGIN, y);
       }
     }
   }

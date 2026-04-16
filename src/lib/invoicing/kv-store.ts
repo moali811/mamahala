@@ -49,12 +49,11 @@ export function getDefaultSettings(): InvoiceSettings {
     termsAndConditions: [
       "Prepaid sessions may be rescheduled with a minimum of 2 hours' notice.",
       "Missed sessions without prior notice may incur a 50% fee, to honor counselor's time and fair scheduling for all clients.",
-      'Booking Policy: https://www.mamahala.ca/en/booking-policy',
     ],
 
     /* ── Tax + e-Transfer ── */
     defaultTaxMode: 'manual-hst',
-    defaultDaysUntilDue: 7,
+    defaultDaysUntilDue: 1,
     defaultAllowETransfer: true,
     eTransferEmail: BUSINESS.email || 'admin@mamahala.ca',
     wireInstructions: '',

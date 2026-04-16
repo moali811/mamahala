@@ -1052,6 +1052,35 @@ function Step1Content(props: Step1Props) {
               className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] placeholder:text-[#C4C0BC] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/30 transition-colors"
             />
           </div>
+          {/* Country first — triggers auto-fill for phone + timezone */}
+          <div>
+            <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Country</label>
+            <select
+              value={props.clientCountry}
+              onChange={e => {
+                const code = e.target.value;
+                props.setClientCountry(code);
+                const country = COUNTRIES_BY_CODE[code];
+                if (country) {
+                  const currentPhone = props.clientPhone.trim();
+                  if (!currentPhone || /^\+\d{0,4}$/.test(currentPhone)) {
+                    props.setClientPhone(country.dial + ' ');
+                  }
+                  if (country.timezones.length > 0) {
+                    props.setClientTimezone(country.timezones[0]);
+                  }
+                }
+              }}
+              className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 bg-white transition-colors"
+            >
+              {COUNTRIES.map(c => (
+                <option key={c.code} value={c.code}>
+                  {c.flag} {c.name} ({c.code}){c.code === 'CA' ? ' — e-Transfer locked on' : ''}
+                </option>
+              ))}
+            </select>
+          </div>
+          {/* Phone + Timezone side by side (phone auto-filled from country above) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
@@ -1066,61 +1095,27 @@ function Step1Content(props: Step1Props) {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Country</label>
+              <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
+                <Globe className="inline w-3 h-3 mr-1" />
+                Client timezone
+              </label>
               <select
-                value={props.clientCountry}
-                onChange={e => {
-                  const code = e.target.value;
-                  props.setClientCountry(code);
-                  const country = COUNTRIES_BY_CODE[code];
-                  if (country) {
-                    // Auto-fill phone dial code (only if phone is empty or starts with a dial code)
-                    const currentPhone = props.clientPhone.trim();
-                    if (!currentPhone || /^\+\d{0,4}$/.test(currentPhone)) {
-                      props.setClientPhone(country.dial + ' ');
-                    }
-                    // Auto-fill timezone (pick first timezone for the country)
-                    if (country.timezones.length > 0) {
-                      props.setClientTimezone(country.timezones[0]);
-                    }
-                  }
-                }}
+                value={props.clientTimezone}
+                onChange={e => props.setClientTimezone(e.target.value)}
                 className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 bg-white transition-colors"
               >
-                {COUNTRIES.map(c => (
-                  <option key={c.code} value={c.code}>
-                    {c.flag} {c.name} ({c.code}){c.code === 'CA' ? ' — e-Transfer locked on' : ''}
-                  </option>
-                ))}
+                {(() => {
+                  const countryTzs = COUNTRIES_BY_CODE[props.clientCountry]?.timezones ?? [];
+                  const all = [...new Set([...countryTzs, ...TIMEZONES])];
+                  if (props.clientTimezone && !all.includes(props.clientTimezone)) {
+                    all.unshift(props.clientTimezone);
+                  }
+                  return all.map(tz => (
+                    <option key={tz} value={tz}>{tz}</option>
+                  ));
+                })()}
               </select>
             </div>
-          </div>
-          <div>
-            <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
-              <Globe className="inline w-3 h-3 mr-1" />
-              Client timezone
-            </label>
-            <select
-              value={props.clientTimezone}
-              onChange={e => props.setClientTimezone(e.target.value)}
-              className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 bg-white transition-colors"
-            >
-              {/* Country timezones first, then standard list, deduped */}
-              {(() => {
-                const countryTzs = COUNTRIES_BY_CODE[props.clientCountry]?.timezones ?? [];
-                const all = [...new Set([...countryTzs, ...TIMEZONES])];
-                // Ensure the current value is always in the list
-                if (props.clientTimezone && !all.includes(props.clientTimezone)) {
-                  all.unshift(props.clientTimezone);
-                }
-                return all.map(tz => (
-                  <option key={tz} value={tz}>{tz}</option>
-                ));
-              })()}
-            </select>
-            <p className="text-[11px] text-[#8E8E9F] mt-1.5">
-              Client sees session times in this timezone.
-            </p>
           </div>
         </div>
       </WizardSection>

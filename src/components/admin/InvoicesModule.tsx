@@ -138,6 +138,10 @@ export default function InvoicesModule({ password }: Props) {
   const [recurring, setRecurring] = useState<RecurringSchedule[]>([]);
   const [loading, setLoading] = useState(false);
   const [banner, setBanner] = useState<{ kind: 'success' | 'error' | 'info'; text: string } | null>(null);
+  // Inline PDF overlay (replaces window.open for mobile compatibility)
+  const [pdfOverlayUrl, setPdfOverlayUrl] = useState<string | null>(null);
+  // Customer profile modal (accessible from History tab too)
+  const [profileEmail, setProfileEmail] = useState<string | null>(null);
   const bearerHeaders = useMemo(
     () => ({
       'Content-Type': 'application/json',
@@ -330,6 +334,8 @@ export default function InvoicesModule({ password }: Props) {
           bearerHeaders={bearerHeaders}
           onRefresh={refreshHistory}
           onBanner={setBanner}
+          onViewPdfOverlay={setPdfOverlayUrl}
+          onOpenClientProfile={setProfileEmail}
         />
       )}
       {tab === 'customers' && (
@@ -365,6 +371,36 @@ export default function InvoicesModule({ password }: Props) {
               setSettings(s);
               setBanner({ kind: 'success', text: 'Settings saved' });
             }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Inline PDF overlay (mobile-friendly) */}
+      {pdfOverlayUrl && (
+        <div className="fixed inset-0 z-[60] bg-black/50 flex items-end md:items-center justify-center" onClick={() => { URL.revokeObjectURL(pdfOverlayUrl); setPdfOverlayUrl(null); }}>
+          <div className="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-3xl h-[90dvh] md:h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDE8DF] shrink-0">
+              <h3 className="text-sm font-semibold text-[#2D2A33]">Invoice PDF</h3>
+              <button
+                onClick={() => { URL.revokeObjectURL(pdfOverlayUrl); setPdfOverlayUrl(null); }}
+                className="p-2 rounded-full hover:bg-[#EDE6DF] transition-colors"
+              >
+                <X className="w-4 h-4 text-[#8E8E9F]" />
+              </button>
+            </div>
+            <iframe src={pdfOverlayUrl} className="flex-1 w-full" title="Invoice PDF" />
+          </div>
+        </div>
+      )}
+
+      {/* Customer profile modal (accessible from History tab) */}
+      <AnimatePresence>
+        {profileEmail && (
+          <CustomerProfileModal
+            email={profileEmail}
+            bearerHeaders={bearerHeaders}
+            onClose={() => setProfileEmail(null)}
+            onBanner={setBanner}
           />
         )}
       </AnimatePresence>
@@ -1703,12 +1739,16 @@ function HistoryTab({
   bearerHeaders,
   onRefresh,
   onBanner,
+  onViewPdfOverlay,
+  onOpenClientProfile,
 }: {
   invoices: StoredInvoice[];
   loading: boolean;
   bearerHeaders: HeadersInit;
   onRefresh: () => void;
   onBanner: (b: { kind: 'success' | 'error' | 'info'; text: string }) => void;
+  onViewPdfOverlay?: (url: string) => void;
+  onOpenClientProfile?: (email: string) => void;
 }) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -1823,14 +1863,18 @@ function HistoryTab({
   };
 
   const viewPdf = (invoice: StoredInvoice) => {
-    // Open in a new tab with Bearer auth via URL — serverless-friendly
     const url = `/api/admin/invoices/pdf/${invoice.invoiceId}`;
-    // Use fetch with bearer then blob URL since we can't put headers on an <a>
     fetch(url, { headers: bearerHeaders })
       .then((r) => r.blob())
       .then((blob) => {
         const objUrl = URL.createObjectURL(blob);
-        window.open(objUrl, '_blank');
+        // Use inline overlay on mobile, new tab on desktop
+        const isMobile = window.innerWidth < 768;
+        if (isMobile && onViewPdfOverlay) {
+          onViewPdfOverlay(objUrl);
+        } else {
+          window.open(objUrl, '_blank');
+        }
       })
       .catch(() => onBanner({ kind: 'error', text: 'PDF load failed' }));
   };
@@ -2031,7 +2075,13 @@ function HistoryTab({
           <div key={inv.invoiceId} className="bg-white rounded-xl border border-[#EDE8DF] p-3">
             <div className="flex items-start justify-between gap-2 mb-2">
               <div className="min-w-0 flex-1">
-                <div className="text-sm font-bold text-[#2D2A33] truncate">{inv.draft.client.name}</div>
+                <button
+                  type="button"
+                  onClick={() => onOpenClientProfile?.(inv.draft.client.email)}
+                  className="text-sm font-bold text-[#2D2A33] truncate text-left hover:text-[#7A3B5E] transition-colors"
+                >
+                  {inv.draft.client.name}
+                </button>
                 <div className="text-[10px] text-[#8E8E9F] truncate">{inv.draft.client.email}</div>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <div className="text-[10px] font-mono text-[#8E8E9F]">{inv.invoiceNumber}</div>
@@ -2118,7 +2168,13 @@ function HistoryTab({
                   </div>
                 </td>
                 <td className="px-3 py-2.5 text-xs text-[#2D2A33]">
-                  <div className="font-medium">{inv.draft.client.name}</div>
+                  <button
+                    type="button"
+                    onClick={() => onOpenClientProfile?.(inv.draft.client.email)}
+                    className="font-medium hover:text-[#7A3B5E] transition-colors text-left"
+                  >
+                    {inv.draft.client.name}
+                  </button>
                   <div className="text-[10px] text-[#8E8E9F]">{inv.draft.client.email}</div>
                 </td>
                 <td className="px-3 py-2.5 text-xs text-[#4A4A5C] font-mono uppercase">{inv.draft.client.country}</td>

@@ -131,6 +131,7 @@ function buildETransferBlock(
     heading: 'Pay by Interac e-Transfer',
     bodyLines: [
       `Send to: ${settings.eTransferEmail}`,
+      'Open your banking app, go to Send Money > Interac e-Transfer, and enter the email above.',
       'Auto-deposit is enabled - no security question needed.',
       `Please include reference: ${invoice.invoiceNumber}`,
     ],
