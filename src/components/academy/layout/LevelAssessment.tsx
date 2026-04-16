@@ -85,7 +85,7 @@ export default function LevelAssessment({
           </h3>
         </div>
         <p className="text-xs text-[#6B6580] mb-4 leading-relaxed">
-          {isRTL ? 'قَيِّمي نَفْسَكِ بِصِدْقٍ — سَنُقارِنُ النَّتائِجَ بَعْدَ اِنْتِهاءِ المُسْتَوى.' : 'Rate yourself honestly — we\'ll compare results once the level is complete.'}
+          {isRTL ? 'قَيِّمْ نَفْسَكَ بِصِدْقٍ — سَنُقارِنُ النَّتائِجَ بَعْدَ اِنْتِهاءِ المُسْتَوى.' : 'Rate yourself honestly — we\'ll compare results once the level is complete.'}
         </p>
         <div className="space-y-4">
           {dimensions.map((dim, i) => (

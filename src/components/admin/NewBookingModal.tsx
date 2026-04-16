@@ -795,7 +795,7 @@ function Step1Content(props: Step1Props) {
             }`}
           >
             <Building2 className="w-3.5 h-3.5" />
-            In-Person — Ottawa
+            In-Person — {props.providerLoc?.locationLabel?.split(',')[0]?.trim() || 'Office'}
           </button>
         </div>
       </div>

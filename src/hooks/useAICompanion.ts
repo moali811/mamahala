@@ -88,7 +88,7 @@ export function useAICompanion(opts: UseAICompanionOptions) {
         let errLabel = 'Something went wrong. Please try again.';
         if (res.status === 429) {
           errLabel = locale === 'ar'
-            ? 'تَجاوَزْتِ حَدَّ المُحادَثاتِ. عُودي بَعْدَ قَليل.'
+            ? 'تَجاوَزْتَ حَدَّ المُحادَثاتِ. عُدْ بَعْدَ قَليل.'
             : 'Chat limit reached. Please try again later.';
         } else if (res.status === 503) {
           errLabel = locale === 'ar' ? 'المُساعِدُ غَيْرُ مُتاحٍ الآن.' : 'Companion unavailable.';

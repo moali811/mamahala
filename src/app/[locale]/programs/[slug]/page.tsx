@@ -100,10 +100,29 @@ export default function ProgramOverviewPage() {
   const [completedModules, setCompletedModules] = useState<Set<string>>(new Set());
   const [unlockingLevel, setUnlockingLevel] = useState<number | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [dynamicPricing, setDynamicPricing] = useState({
+    toolkitFullAccessPrice: BUSINESS.toolkitFullAccessPrice,
+    academyFullAccessPrice: BUSINESS.academyFullAccessPrice,
+  });
 
   useEffect(() => {
     loadProgram(slug).then(p => { setProgram(p); setLoading(false); });
   }, [slug]);
+
+  // Fetch dynamic pricing on mount
+  useEffect(() => {
+    fetch('/api/pricing')
+      .then(r => r.json())
+      .then(data => {
+        if (data.toolkitFullAccessPrice != null || data.academyFullAccessPrice != null) {
+          setDynamicPricing(prev => ({
+            toolkitFullAccessPrice: data.toolkitFullAccessPrice ?? prev.toolkitFullAccessPrice,
+            academyFullAccessPrice: data.academyFullAccessPrice ?? prev.academyFullAccessPrice,
+          }));
+        }
+      })
+      .catch(() => { /* use BUSINESS defaults */ });
+  }, []);
 
   // Load unlock state from localStorage (both per-level and legacy per-module)
   useEffect(() => {
@@ -194,16 +213,36 @@ export default function ProgramOverviewPage() {
     }
   }, [program, enrolled, slug, locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleUnlockLevel = (levelNum: number) => {
+  const handleUnlockLevel = async (levelNum: number) => {
     if (checkoutLoading) return;
     setCheckoutLoading(true);
     setUnlockingLevel(levelNum);
 
-    // Academy now uses single Full Access tier — any level button unlocks everything.
-    // Using :bundle: format so unlock-success handler unlocks both Level 2 and Level 3.
+    const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : '';
+
+    // Try dynamic checkout first
+    try {
+      const res = await fetch('/api/academy/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          programSlug: slug,
+          programTitle: program?.titleEn || slug,
+          levelNumber: levelNum,
+          email,
+          locale,
+        }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+        return;
+      }
+    } catch { /* fall through to payment link */ }
+
+    // Fallback: static Stripe payment link
     const paymentUrl = BUSINESS.academyPaymentLinks.fullAccess;
     if (paymentUrl) {
-      const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : '';
       const url = new URL(paymentUrl);
       if (email) url.searchParams.set('prefilled_email', email);
       url.searchParams.set('client_reference_id', `${slug}:bundle:${email}`);
@@ -405,8 +444,8 @@ export default function ProgramOverviewPage() {
                 {program.isFree
                   ? (isRTL ? 'مجاني' : 'Free')
                   : (isRTL
-                      ? `ابْدَئي مَجّاناً · $${BUSINESS.academyFullAccessPrice} CAD للوُصولِ الكامِل`
-                      : `Start free · $${BUSINESS.academyFullAccessPrice} CAD for full access`)}
+                      ? `ابْدَئي مَجّاناً · $${dynamicPricing.academyFullAccessPrice} CAD للوُصولِ الكامِل`
+                      : `Start free · $${dynamicPricing.academyFullAccessPrice} CAD for full access`)}
               </Badge>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {program.totalModules} {isRTL ? 'وحدة' : 'modules'}</span>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Clock className="w-4 h-4" /> {program.totalDurationHours}h</span>
@@ -552,7 +591,7 @@ export default function ProgramOverviewPage() {
                       </span>
                     </div>
                     <h3 className="text-lg font-bold text-[#2D2A33] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
-                      {isRTL ? 'افتحي البرنامجَ بالكامل' : 'Unlock the Full Program'}
+                      {isRTL ? 'افتحِ البرنامجَ بالكامل' : 'Unlock the Full Program'}
                     </h3>
                     <p className="text-sm text-[#6B6580]">
                       {isRTL
@@ -562,7 +601,7 @@ export default function ProgramOverviewPage() {
                   </div>
                   <div className="flex flex-col items-center gap-1.5 flex-shrink-0">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold" style={{ color: program.color }}>${BUSINESS.academyFullAccessPrice}</span>
+                      <span className="text-3xl font-bold" style={{ color: program.color }}>${dynamicPricing.academyFullAccessPrice}</span>
                       <span className="text-xs text-[#8E8E9F]">CAD</span>
                     </div>
                     <button
@@ -573,7 +612,7 @@ export default function ProgramOverviewPage() {
                     >
                       {checkoutLoading
                         ? (isRTL ? 'جارٍ...' : 'Loading...')
-                        : (isRTL ? 'افتحي الوُصولَ الكامِل' : 'Unlock Full Access')}
+                        : (isRTL ? 'افتحِ الوُصولَ الكامِل' : 'Unlock Full Access')}
                     </button>
                   </div>
                 </div>
@@ -673,7 +712,7 @@ export default function ProgramOverviewPage() {
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-[#2D2A33]">
-                                      {isRTL ? 'اِفْتَحي البَرْنامَجَ بِالكامِل' : 'Unlock the Full Program'}
+                                      {isRTL ? 'اِفْتَحِ البَرْنامَجَ بِالكامِل' : 'Unlock the Full Program'}
                                     </p>
                                     <p className="text-[11px] text-[#8E8E9F]">
                                       {isRTL ? 'جَميعُ المُسْتَوَيات · دَفْعةٌ واحِدَة · وُصولٌ دائِم' : 'All levels · one payment · lifetime access'}
@@ -685,7 +724,7 @@ export default function ProgramOverviewPage() {
                                     className="px-4 py-2 rounded-lg text-xs font-semibold text-white transition-all hover:shadow-md flex-shrink-0 disabled:opacity-50"
                                     style={{ backgroundColor: program.color }}
                                   >
-                                    CAD ${BUSINESS.academyFullAccessPrice}
+                                    CAD ${dynamicPricing.academyFullAccessPrice}
                                   </button>
                                 </div>
                               )}
@@ -799,7 +838,7 @@ export default function ProgramOverviewPage() {
                 {!enrolled
                   ? (isRTL ? 'ابدأ رحلتك اليوم' : 'Start Your Journey Today')
                   : completedModules.size > 0
-                    ? (isRTL ? 'أكملي رحلتكِ' : 'Keep Going!')
+                    ? (isRTL ? 'أكمِلْ رحلتَك' : 'Keep Going!')
                     : (isRTL ? 'أنت مسجل!' : "You're Enrolled!")}
               </h2>
 
@@ -843,12 +882,12 @@ export default function ProgramOverviewPage() {
                           <div className="inline-flex items-center gap-2 text-[#C8A97D] mb-3">
                             <Star className="w-5 h-5" />
                             <span className="font-semibold text-sm">
-                              {isRTL ? `${completedCount} من ${totalCount} مكتمل — أحسنتِ!` : `${completedCount} of ${totalCount} complete — well done!`}
+                              {isRTL ? `${completedCount} من ${totalCount} مكتمل — أحسنتَ!` : `${completedCount} of ${totalCount} complete — well done!`}
                             </span>
                           </div>
                           <p className="text-[#4A4A5C] mb-6">
                             {isRTL
-                              ? 'كلُّ خطوةٍ تقرّبكِ من النّسخةِ الأفضل. استمرّي — أنتِ على الطّريقِ الصّحيح.'
+                              ? 'كلُّ خطوةٍ تقرّبُكَ من النّسخةِ الأفضل. استمرَّ — أنتَ على الطّريقِ الصّحيح.'
                               : "Every step brings you closer to the version of yourself you're working toward. Keep going — you're on the right path."}
                           </p>
                           <div className="flex flex-wrap gap-3">
@@ -858,7 +897,7 @@ export default function ProgramOverviewPage() {
                               style={{ backgroundColor: program.color }}
                             >
                               <Play className="w-4 h-4" />
-                              {isRTL ? 'أكملي الرّحلة' : 'Continue Your Journey'}
+                              {isRTL ? 'أكمِلْ الرّحلةَ' : 'Continue Your Journey'}
                             </a>
                             <button
                               onClick={() => document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
@@ -922,8 +961,8 @@ export default function ProgramOverviewPage() {
                   {!program.isFree && (
                     <p className="text-xs text-[#8E8E9F] text-center mt-3">
                       {isRTL
-                        ? `المُسْتَوى الأَوَّل مَجّاني · الوُصولُ الكامِل $${BUSINESS.academyFullAccessPrice} CAD`
-                        : `Level 1 is free · Full access $${BUSINESS.academyFullAccessPrice} CAD`}
+                        ? `المُسْتَوى الأَوَّل مَجّاني · الوُصولُ الكامِل $${dynamicPricing.academyFullAccessPrice} CAD`
+                        : `Level 1 is free · Full access $${dynamicPricing.academyFullAccessPrice} CAD`}
                     </p>
                   )}
                 </>

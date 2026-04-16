@@ -23,50 +23,50 @@ const toolkit: ToolkitMeta = {
   descriptionEn:
     "Your children don't need you to be perfect. They need you to be present, connected, and willing to grow alongside them.\n\nThis guide is built on principles grounded in attachment research, cognitive-behavioral approaches, emotional intelligence science, and the practical wisdom that comes from sitting with hundreds of families as they navigate the hardest and most rewarding job in the world.\n\nYou won't agree with everything in here — and that's fine. Take what resonates. Adapt what needs adapting. The goal isn't to follow a script. The goal is to parent with awareness, warmth, and intention.",
   descriptionAr:
-    'لا يَحْتاجُ أَطْفالُكِ أَنْ تَكوني مِثالِيَّة. يَحْتاجونَ مِنْكِ أَنْ تَكوني حاضِرَة، مُتَواصِلَة، ومُسْتَعِدَّةً لِلنُّمُوِّ بِجانِبِهِم.\n\nهذا الدَّليلُ مَبْنِيٌّ عَلى مَبادِئَ مُرْتَكِزَةٍ عَلى أَبْحاثِ التَّعَلُّق، والمُقارَباتِ المَعْرِفِيَّةِ السُّلوكِيَّة، وعُلومِ الذَّكاءِ العاطِفِيّ، والحِكْمَةِ العَمَلِيَّةِ النّابِعَةِ مِنَ الجُلوسِ مَعَ مِئاتِ العائِلاتِ وَهُنَّ يَتَنَقَّلْنَ في أَصْعَبِ وأَكْثَرِ الوَظائِفِ مُكافَأَةً في العالَم.\n\nلَنْ تَتَّفِقي مَعَ كُلِّ شَيْءٍ هُنا — وَهذا جَيِّد. خُذي ما يَتَرَدَّدُ صَداهُ. كَيِّفي ما يَحْتاجُ تَكْييفاً. الهَدَفُ لَيْسَ اِتِّباعَ نَصّ. الهَدَفُ هُوَ التَّرْبِيَةُ بِوَعْيٍ، ودِفْء، ونِيَّة.',
+    'لا يَحْتاجُ أَطْفالُكَ أَنْ تَكونَ مِثالِيًّا. يَحْتاجونَ مِنْكَ أَنْ تَكونَ حاضِرًا، مُتَواصِلًا، ومُسْتَعِدًّا لِلنُّمُوِّ بِجانِبِهِم.\n\nهذا الدَّليلُ مَبْنِيٌّ عَلى مَبادِئَ مُرْتَكِزَةٍ عَلى أَبْحاثِ التَّعَلُّق، والمُقارَباتِ المَعْرِفِيَّةِ السُّلوكِيَّة، وعُلومِ الذَّكاءِ العاطِفِيّ، والحِكْمَةِ العَمَلِيَّةِ النّابِعَةِ مِنَ الجُلوسِ مَعَ مِئاتِ العائِلاتِ وَهُمْ يَتَنَقَّلونَ في أَصْعَبِ وأَكْثَرِ الوَظائِفِ مُكافَأَةً في العالَم.\n\nلَنْ تَتَّفِقَ مَعَ كُلِّ شَيْءٍ هُنا — وَهذا جَيِّد. خُذْ ما يَتَرَدَّدُ صَداهُ. كَيِّفْ ما يَحْتاجُ تَكْييفاً. الهَدَفُ لَيْسَ اِتِّباعَ نَصّ. الهَدَفُ هُوَ التَّرْبِيَةُ بِوَعْيٍ، ودِفْء، ونِيَّة.',
   author: 'Dr. Hala Ali',
   category: 'families',
   format: 'guide',
   color: '#7A3B5E',
   heroQuoteEn: "Your children don't need you to be perfect. They need you to be present.",
-  heroQuoteAr: 'لا يَحْتاجُ أَطْفالُكِ أَنْ تَكوني مِثالِيَّة. يَحْتاجونَ مِنْكِ أَنْ تَكوني حاضِرَة.',
+  heroQuoteAr: 'لا يَحْتاجُ أَطْفالُكَ أَنْ تَكونَ مِثالِيًّا. يَحْتاجونَ مِنْكَ أَنْ تَكونَ حاضِرًا.',
   isPremium: true,
-  priceCAD: 19,
+  priceCAD: 7,
   freePreviewSectionId: 'attachment',
 
   howToUse: [
     {
       iconName: 'heart',
       labelEn: 'Read slowly, not linearly',
-      labelAr: 'اِقْرَئي بِبُطْء، لا بِتَسَلْسُل',
+      labelAr: 'اِقْرَأْ بِبُطْء، لا بِتَسَلْسُل',
       descEn: 'Start wherever you are. If tantrums are your pain point today, jump to Discipline. Come back to Attachment later.',
-      descAr: 'اِبْدَئي مِنْ حَيْثُ أَنْتِ. إِذا كانَتْ نَوْباتُ الغَضَبِ هي نُقْطَةَ أَلَمِكِ اليَوْم، اِقْفِزي إِلى الاِنْضِباط. عودي إِلى التَّعَلُّقِ لاحِقاً.',
+      descAr: 'اِبْدَأْ مِنْ حَيْثُ أَنْتَ. إِذا كانَتْ نَوْباتُ الغَضَبِ هي نُقْطَةَ أَلَمِكَ اليَوْم، اِقْفِزْ إِلى الاِنْضِباط. عُدْ إِلى التَّعَلُّقِ لاحِقاً.',
     },
     {
       iconName: 'pen-line',
       labelEn: 'The worksheets are the magic',
       labelAr: 'الأَوْراقُ العَمَلِيَّةُ هي السِّحْر',
       descEn: "Reading alone changes nothing. The worksheets in Part 6 are where insight becomes action. Don't skip them.",
-      descAr: 'القِراءَةُ وَحْدَها لا تُغَيِّرُ شَيْئاً. الأَوْراقُ العَمَلِيَّةُ في الجُزْءِ السّادِسِ هي حَيْثُ تُصْبِحُ الرُّؤْيَةُ عَمَلاً. لا تَتَجاوَزيها.',
+      descAr: 'القِراءَةُ وَحْدَها لا تُغَيِّرُ شَيْئاً. الأَوْراقُ العَمَلِيَّةُ في الجُزْءِ السّادِسِ هي حَيْثُ تُصْبِحُ الرُّؤْيَةُ عَمَلاً. لا تَتَجاوَزْها.',
     },
     {
       iconName: 'shield',
       labelEn: 'Repair matters more than perfection',
       labelAr: 'الإِصْلاحُ أَهَمُّ مِنَ الكَمال',
       descEn: "You will mess up. That's not the question. The question is: will you come back, own it, and repair?",
-      descAr: 'سَتَرْتَكِبينَ أَخْطاء. هذا لَيْسَ السُّؤال. السُّؤالُ هُوَ: هَلْ سَتَعودينَ، وتَعْتَرِفينَ، وتُصْلِحين؟',
+      descAr: 'سَتَرْتَكِبُ أَخْطاء. هذا لَيْسَ السُّؤال. السُّؤالُ هُوَ: هَلْ سَتَعودُ، وتَعْتَرِفُ، وتُصْلِحُ؟',
     },
     {
       iconName: 'compass',
       labelEn: 'Your values first, my advice second',
-      labelAr: 'قِيَمُكِ أَوَّلاً، نَصيحَتي ثانِياً',
+      labelAr: 'قِيَمُكَ أَوَّلاً، نَصيحَتي ثانِياً',
       descEn: "If something in this guide conflicts with a value that matters deeply to you, trust your value and adapt the advice.",
-      descAr: 'إِذا كانَ شَيْءٌ في هذا الدَّليلِ يَتَعارَضُ مَعَ قيمَةٍ تَهُمُّكِ بِعُمْق، ثِقي بِقيمَتِكِ وكَيِّفي النَّصيحَة.',
+      descAr: 'إِذا كانَ شَيْءٌ في هذا الدَّليلِ يَتَعارَضُ مَعَ قيمَةٍ تَهُمُّكَ بِعُمْق، ثِقْ بِقيمَتِكَ وكَيِّفِ النَّصيحَة.',
     },
     {
       iconName: 'sparkles',
       labelEn: 'You are not doing this alone',
-      labelAr: 'أَنْتِ لا تَفْعَلينَ هذا وَحْدَكِ',
+      labelAr: 'أَنْتَ لا تَفْعَلُ هذا وَحْدَكَ',
       descEn: "No parent figures this out in isolation. Every chapter here was shaped by other parents' struggles and breakthroughs.",
       descAr: 'لا يَكْتَشِفُ أَيُّ والِدٍ هذا بِمَعْزِل. كُلُّ فَصْلٍ هُنا شَكَّلَتْهُ نِضالاتُ وَفَتَحاتُ والِدينَ آخَرين.',
     },
@@ -81,7 +81,7 @@ const toolkit: ToolkitMeta = {
       titleEn: 'Part 1 · Attachment-Based Parenting',
       titleAr: 'الجُزْءُ الأَوَّل · التَّرْبِيَةُ القائِمَةُ عَلى التَّعَلُّق',
       subtitleEn: 'The foundation of every relationship your child will ever have',
-      subtitleAr: 'أَساسُ كُلِّ عَلاقَةٍ سَيَعيشُها طِفْلُكِ يَوْماً',
+      subtitleAr: 'أَساسُ كُلِّ عَلاقَةٍ سَيَعيشُها طِفْلُكَ يَوْماً',
       color: '#C4878A',
       blocks: [
         {
@@ -90,7 +90,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             "Attachment is the emotional bond between a child and their primary caregivers. It's not about how much you love your child — every parent reading this loves their child. It's about how your child experiences that love. Do they feel safe? Do they trust that when they're scared, sad, or overwhelmed, someone will be there?",
           textAr:
-            'التَّعَلُّقُ هُوَ الرّابِطُ العاطِفِيُّ بَيْنَ الطِّفْلِ وَمُقَدِّمي الرِّعايَةِ الأَساسِيّين. لَيْسَ الأَمْرُ عَنْ مِقْدارِ حُبِّكِ لِطِفْلِكِ — كُلُّ والِدٍ يَقْرَأُ هذا يُحِبُّ طِفْلَه. الأَمْرُ عَنْ كَيْفَ يَخْتَبِرُ طِفْلُكِ ذلِكَ الحُبّ. هَلْ يَشْعُرُ بِالأَمان؟ هَلْ يَثِقُ أَنَّهُ حينَ يَخافُ، أَوْ يَحْزَن، أَوْ يُرْهَق، سَيَكونُ شَخْصٌ هُناك؟',
+            'التَّعَلُّقُ هُوَ الرّابِطُ العاطِفِيُّ بَيْنَ الطِّفْلِ وَمُقَدِّمي الرِّعايَةِ الأَساسِيّين. لَيْسَ الأَمْرُ عَنْ مِقْدارِ حُبِّكَ لِطِفْلِكَ — كُلُّ والِدٍ يَقْرَأُ هذا يُحِبُّ طِفْلَه. الأَمْرُ عَنْ كَيْفَ يَخْتَبِرُ طِفْلُكَ ذلِكَ الحُبّ. هَلْ يَشْعُرُ بِالأَمان؟ هَلْ يَثِقُ أَنَّهُ حينَ يَخافُ، أَوْ يَحْزَن، أَوْ يُرْهَق، سَيَكونُ شَخْصٌ هُناك؟',
           tone: 'lead',
         },
         {
@@ -135,21 +135,21 @@ const toolkit: ToolkitMeta = {
               labelEn: 'Secure',
               labelAr: 'الآمِن',
               descEn: '"When I need you, you\'re there. I can trust you." Formed through consistent, responsive care — not perfect, consistent.',
-              descAr: '"حينَ أَحْتاجُكِ، أَنْتِ هُناك. يُمْكِنُني أَنْ أَثِقَ بِكِ." يَتَكَوَّنُ مِنْ رِعايَةٍ ثابِتَةٍ ومُسْتَجيبَة — لَيْسَ مِثالِيَّة، بَلْ ثابِتَة.',
+              descAr: '"حينَ أَحْتاجُكَ، أَنْتَ هُناك. يُمْكِنُني أَنْ أَثِقَ بِكَ." يَتَكَوَّنُ مِنْ رِعايَةٍ ثابِتَةٍ ومُسْتَجيبَة — لَيْسَ مِثالِيَّة، بَلْ ثابِتَة.',
             },
             {
               iconName: 'flame',
               labelEn: 'Anxious / Ambivalent',
               labelAr: 'القَلِق / المُتَأَرْجِح',
               descEn: '"Sometimes you\'re there, sometimes not. I need to cling." Formed through inconsistent caregiving — warm sometimes, distracted other times.',
-              descAr: '"أَحْياناً أَنْتِ هُناك، أَحْياناً لا. أَحْتاجُ أَنْ أَتَشَبَّث." يَتَكَوَّنُ مِنْ رِعايَةٍ غَيْرِ ثابِتَة — دافِئَةٌ أَحْياناً، مُشَتَّتَةٌ أَحْياناً أُخْرى.',
+              descAr: '"أَحْياناً أَنْتَ هُناك، أَحْياناً لا. أَحْتاجُ أَنْ أَتَشَبَّث." يَتَكَوَّنُ مِنْ رِعايَةٍ غَيْرِ ثابِتَة — دافِئَةٌ أَحْياناً، مُشَتَّتَةٌ أَحْياناً أُخْرى.',
             },
             {
               iconName: 'shield',
               labelEn: 'Avoidant',
               labelAr: 'المُتَجَنِّب',
               descEn: '"When I show my needs, you pull away. Safer not to need." Formed through caregivers uncomfortable with emotion, or encouraging independence too early.',
-              descAr: '"حينَ أُظْهِرُ اِحْتِياجاتي، تَبْتَعِدينَ. أَكْثَرُ أَماناً أَنْ لا أَحْتاج." يَتَكَوَّنُ مِنْ مُقَدِّمي رِعايَةٍ غَيْرِ مُرْتاحينَ لِلعاطِفَة، أَوْ يُشَجِّعونَ الاِسْتِقْلالَ باكِراً.',
+              descAr: '"حينَ أُظْهِرُ اِحْتِياجاتي، تَبْتَعِدُ. أَكْثَرُ أَماناً أَنْ لا أَحْتاج." يَتَكَوَّنُ مِنْ مُقَدِّمي رِعايَةٍ غَيْرِ مُرْتاحينَ لِلعاطِفَة، أَوْ يُشَجِّعونَ الاِسْتِقْلالَ باكِراً.',
             },
             {
               iconName: 'brain',
@@ -167,7 +167,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             "A note: if you recognize yourself or your child in the insecure patterns, this is not an indictment. Most adults carry some insecure attachment from their own childhoods. The fact that you're reading this — learning, reflecting, wanting to do differently — is itself a powerful step toward change.",
           textAr:
-            'مُلاحَظَة: إِذا تَعَرَّفْتِ عَلى نَفْسِكِ أَوْ عَلى طِفْلِكِ في الأَنْماطِ غَيْرِ الآمِنَة، هذا لَيْسَ اِتِّهاماً. مُعْظَمُ البالِغينَ يَحْمِلونَ بَعْضَ التَّعَلُّقِ غَيْرِ الآمِنِ مِنْ طُفولَتِهِم. حَقيقَةُ أَنَّكِ تَقْرَئينَ هذا — تَتَعَلَّمينَ، تَتَأَمَّلينَ، تُريدينَ فِعْلَ شَيْءٍ مُخْتَلِف — هي في حَدِّ ذاتِها خُطْوَةٌ قَوِيَّةٌ نَحْوَ التَّغْيير.',
+            'مُلاحَظَة: إِذا تَعَرَّفْتَ عَلى نَفْسِكَ أَوْ عَلى طِفْلِكَ في الأَنْماطِ غَيْرِ الآمِنَة، هذا لَيْسَ اِتِّهاماً. مُعْظَمُ البالِغينَ يَحْمِلونَ بَعْضَ التَّعَلُّقِ غَيْرِ الآمِنِ مِنْ طُفولَتِهِم. حَقيقَةُ أَنَّكَ تَقْرَأُ هذا — تَتَعَلَّمُ، تَتَأَمَّلُ، تُريدُ فِعْلَ شَيْءٍ مُخْتَلِف — هي في حَدِّ ذاتِها خُطْوَةٌ قَوِيَّةٌ نَحْوَ التَّغْيير.',
         },
 
         /* ── Strengthen by Age ── */
@@ -184,7 +184,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             'Attachment isn\'t only formed in infancy. You can strengthen the bond with your child at any stage.',
           textAr:
-            'التَّعَلُّقُ لا يَتَكَوَّنُ فَقَطْ في الطُّفولَةِ المُبَكِّرَة. يُمْكِنُكِ تَقْوِيَةُ الرّابِطِ مَعَ طِفْلِكِ في أَيِّ مَرْحَلَة.',
+            'التَّعَلُّقُ لا يَتَكَوَّنُ فَقَطْ في الطُّفولَةِ المُبَكِّرَة. يُمْكِنُكَ تَقْوِيَةُ الرّابِطِ مَعَ طِفْلِكَ في أَيِّ مَرْحَلَة.',
         },
         {
           kind: 'tabs',
@@ -208,12 +208,12 @@ const toolkit: ToolkitMeta = {
                     'Be predictable: consistent routines create safety',
                   ],
                   itemsAr: [
-                    'اِسْتَجيبي لِلبُكاءِ بِسُرْعَةٍ ودِفْء — لا يُمْكِنُكِ تَدْليلُ الرَّضيع',
-                    'تَواصَلي بِالعُيونِ خِلالَ الإِطْعامِ والتَّغْييرِ واللَّعِب',
-                    'اِسْرُدي أَفْعالَكِ: "سَأَحْمِلُكَ الآن. أَرى أَنَّكَ مُنْزَعِج."',
-                    'اِتْبَعي قِيادَتَهُ خِلالَ اللَّعِب — دَعيهِ يَقودُ وأَنْتِ تَتْبَعين',
-                    'مارِسي التَّلامُسَ الجِلْدِيَّ والقُرْبَ الجَسَدِيّ',
-                    'كوني مُتَوَقَّعَة: الرّوتينُ الثّابِتُ يَخْلُقُ الأَمان',
+                    'اِسْتَجِبْ لِلبُكاءِ بِسُرْعَةٍ ودِفْء — لا يُمْكِنُكَ تَدْليلُ الرَّضيع',
+                    'تَواصَلْ بِالعُيونِ خِلالَ الإِطْعامِ والتَّغْييرِ واللَّعِب',
+                    'اِسْرُدْ أَفْعالَكَ: "سَأَحْمِلُكَ الآن. أَرى أَنَّكَ مُنْزَعِج."',
+                    'اِتْبَعْ قِيادَتَهُ خِلالَ اللَّعِب — دَعْهُ يَقودُ وأَنْتَ تَتْبَعُ',
+                    'مارِسْ التَّلامُسَ الجِلْدِيَّ والقُرْبَ الجَسَدِيّ',
+                    'كُنْ مُتَوَقَّعًا: الرّوتينُ الثّابِتُ يَخْلُقُ الأَمان',
                   ],
                 },
               ],
@@ -235,11 +235,11 @@ const toolkit: ToolkitMeta = {
                     'Repair after conflict: "I\'m sorry I yelled. That wasn\'t okay. How are you feeling?"',
                   ],
                   itemsAr: [
-                    'اِقْضي ١٥–٢٠ دَقيقَةً يَوْمِيّاً في لَعِبٍ يَقودُهُ الطِّفْل (بِدونِ تَعْليمٍ أَوْ تَصْحيح)',
-                    'سَمّي مَشاعِرَهُم: "يَبْدو أَنَّكِ تَشْعُرينَ بِالإِحْباط."',
-                    'صادِقي قَبْلَ التَّوْجيه: "أَفْهَمُ أَنَّكِ غاضِبَة. وفي الوَقْتِ نَفْسِهِ لا يُمْكِنُ الضَّرْب."',
-                    'كوني ثابِتَةً في الحُدود — يَشْعُرُ الأَطْفالُ بِأَمانٍ أَكْبَرَ حينَ تَكونُ الحُدودُ واضِحَة',
-                    'أَصْلِحي بَعْدَ الخِلاف: "آسِفَة لِأَنَّني صَرَخْت. لَمْ يَكُنْ ذلِكَ مَقْبولاً. كَيْفَ تَشْعُرين؟"',
+                    'اِقْضِ ١٥–٢٠ دَقيقَةً يَوْمِيّاً في لَعِبٍ يَقودُهُ الطِّفْل (بِدونِ تَعْليمٍ أَوْ تَصْحيح)',
+                    'سَمِّ مَشاعِرَهُم: "يَبْدو أَنَّكَ تَشْعُرُ بِالإِحْباط."',
+                    'صادِقْ قَبْلَ التَّوْجيه: "أَفْهَمُ أَنَّكَ غاضِب. وفي الوَقْتِ نَفْسِهِ لا يُمْكِنُ الضَّرْب."',
+                    'كُنْ ثابِتًا في الحُدود — يَشْعُرُ الأَطْفالُ بِأَمانٍ أَكْبَرَ حينَ تَكونُ الحُدودُ واضِحَة',
+                    'أَصْلِحْ بَعْدَ الخِلاف: "آسِف لِأَنَّني صَرَخْت. لَمْ يَكُنْ ذلِكَ مَقْبولاً. كَيْفَ تَشْعُر؟"',
                   ],
                 },
               ],
@@ -261,11 +261,11 @@ const toolkit: ToolkitMeta = {
                     'Let them see you manage your own emotions well',
                   ],
                   itemsAr: [
-                    'اُحْضُري لِما يَهُمُّهُم (مُباراةُ كُرَةِ القَدَم، المَسْرَحِيَّةُ المَدْرَسِيَّة)',
-                    'اِسْأَلي أَسْئِلَةً مَفْتوحَة: "ما كانَ أَفْضَلُ جُزْءٍ مِنْ يَوْمِكَ؟" لَيْسَ "كَيْفَ كانَتِ المَدْرَسَة؟"',
-                    'اِحْتَرِمي حاجَتَهُم المُتَنامِيَةَ لِلخُصوصِيَّة مَعَ البَقاءِ مُتَواصِلَة',
-                    'اِخْلُقي طُقوساً: أَحاديثُ قَبْلَ النَّوْم، مُغامَراتُ عُطْلَةِ نِهايَةِ الأُسْبوع، نُزْهاتٌ أُسْبوعِيَّة',
-                    'دَعيهِمْ يَرَوْنَكِ تُديرينَ عَواطِفَكِ جَيِّداً',
+                    'اُحْضُرْ لِما يَهُمُّهُم (مُباراةُ كُرَةِ القَدَم، المَسْرَحِيَّةُ المَدْرَسِيَّة)',
+                    'اِسْأَلْ أَسْئِلَةً مَفْتوحَة: "ما كانَ أَفْضَلُ جُزْءٍ مِنْ يَوْمِكَ؟" لَيْسَ "كَيْفَ كانَتِ المَدْرَسَة؟"',
+                    'اِحْتَرِمْ حاجَتَهُم المُتَنامِيَةَ لِلخُصوصِيَّة مَعَ البَقاءِ مُتَواصِلًا',
+                    'اِخْلُقْ طُقوساً: أَحاديثُ قَبْلَ النَّوْم، مُغامَراتُ عُطْلَةِ نِهايَةِ الأُسْبوع، نُزْهاتٌ أُسْبوعِيَّة',
+                    'دَعْهُم يَرَوْنَكَ تُديرُ عَواطِفَكَ جَيِّداً',
                   ],
                 },
               ],
@@ -288,11 +288,11 @@ const toolkit: ToolkitMeta = {
                     'Repair conversations matter even more: "I handled that badly. Can we talk about it?"',
                   ],
                   itemsAr: [
-                    'اِسْتَمِرّي في الحُضور، حَتّى حينَ يُبْعِدونَك — يَحْتاجونَكِ أَكْثَرَ مِمّا يَعْتَرِفون',
-                    'اِسْتَمِعي أَكْثَرَ مِمّا تُحاضِرين — يَعْرِفونَ الفَرْق',
-                    'اِحْتَرِمي اِسْتِقْلالِيَّتَهُم مَعَ الحَزْمِ في قَضايا السَّلامَة',
-                    'شارِكي نِضالاتِكِ أَنْتِ (بِطَريقَةٍ مُناسِبَةٍ لِلعُمْر) — يَبْني ذلِكَ الثِّقَة',
-                    'اِبْقَيْ فُضولِيَّةً حَوْلَ عالَمِهِم: موسيقاهُم، أَصْدِقاؤُهُم، اِهْتِماماتُهُم',
+                    'اِسْتَمِرَّ في الحُضور، حَتّى حينَ يُبْعِدونَكَ — يَحْتاجونَكَ أَكْثَرَ مِمّا يَعْتَرِفون',
+                    'اِسْتَمِعْ أَكْثَرَ مِمّا تُحاضِرُ — يَعْرِفونَ الفَرْق',
+                    'اِحْتَرِمْ اِسْتِقْلالِيَّتَهُم مَعَ الحَزْمِ في قَضايا السَّلامَة',
+                    'شارِكْ نِضالاتِكَ أَنْتَ (بِطَريقَةٍ مُناسِبَةٍ لِلعُمْر) — يَبْني ذلِكَ الثِّقَة',
+                    'اِبْقَ فُضولِيًّا حَوْلَ عالَمِهِم: موسيقاهُم، أَصْدِقاؤُهُم، اِهْتِماماتُهُم',
                     'مُحادَثاتُ الإِصْلاحِ تَهُمُّ أَكْثَر: "تَعامَلْتُ مَعَ ذلِكَ بِشَكْلٍ سَيِّئ. هَلْ يُمْكِنُنا التَّحَدُّث؟"',
                   ],
                 },
@@ -314,7 +314,7 @@ const toolkit: ToolkitMeta = {
           id: 's1-repair-quote',
           textEn:
             "It's not about getting it right every time. It's about what you do after you get it wrong.",
-          textAr: 'لَيْسَ الأَمْرُ عَنْ فِعْلِ الأَمْرِ بِشَكْلٍ صَحيحٍ في كُلِّ مَرَّة. بَلْ عَمّا تَفْعَلينَهُ بَعْدَ أَنْ تُخْطِئي.',
+          textAr: 'لَيْسَ الأَمْرُ عَنْ فِعْلِ الأَمْرِ بِشَكْلٍ صَحيحٍ في كُلِّ مَرَّة. بَلْ عَمّا تَفْعَلُهُ بَعْدَ أَنْ تُخْطِئَ.',
         },
         {
           kind: 'info-card-pair',
@@ -324,7 +324,7 @@ const toolkit: ToolkitMeta = {
               titleEn: 'What repair looks like',
               titleAr: 'كَيْفَ يَبْدو الإِصْلاح',
               bodyEn: '• Coming back after you\'ve calmed down\n• Acknowledging your child\'s experience\n• Taking responsibility without excuses\n• Asking what they need right now',
-              bodyAr: '• العَوْدَةُ بَعْدَ أَنْ تَهْدَئي\n• الاِعْتِرافُ بِتَجْرِبَةِ طِفْلِك\n• تَحَمُّلُ المَسْؤولِيَّةِ بِلا أَعْذار\n• السُّؤالُ ماذا يَحْتاجونَ الآن',
+              bodyAr: '• العَوْدَةُ بَعْدَ أَنْ تَهْدَأَ\n• الاِعْتِرافُ بِتَجْرِبَةِ طِفْلِكَ\n• تَحَمُّلُ المَسْؤولِيَّةِ بِلا أَعْذار\n• السُّؤالُ ماذا يَحْتاجونَ الآن',
               color: '#5A8B6F',
             },
             {
@@ -342,7 +342,7 @@ const toolkit: ToolkitMeta = {
           promptEn:
             'Think of a recent moment when you lost your temper, dismissed your child\'s feelings, or got it wrong. What repair would that moment deserve? Write the exact words you\'d say.',
           promptAr:
-            'فَكِّري في لَحْظَةٍ قَريبَةٍ فَقَدْتِ فيها أَعْصابَك، أَوْ رَفَضْتِ مَشاعِرَ طِفْلِك، أَوْ أَخْطَأْتِ. ما الإِصْلاحُ الَّذي تَسْتَحِقُّهُ تِلْكَ اللَّحْظَة؟ اِكْتُبي الكَلِماتِ بِالضَّبْطِ كَما تَقولينَها.',
+            'فَكِّرْ في لَحْظَةٍ قَريبَةٍ فَقَدْتَ فيها أَعْصابَكَ، أَوْ رَفَضْتَ مَشاعِرَ طِفْلِكَ، أَوْ أَخْطَأْتَ. ما الإِصْلاحُ الَّذي تَسْتَحِقُّهُ تِلْكَ اللَّحْظَة؟ اِكْتُبْ الكَلِماتِ بِالضَّبْطِ كَما تَقولُها.',
           minWords: 50,
         },
       ],
@@ -356,7 +356,7 @@ const toolkit: ToolkitMeta = {
       titleEn: 'Part 2 · Discipline Without Damage',
       titleAr: 'الجُزْءُ الثّاني · الاِنْضِباطُ بِلا أَذى',
       subtitleEn: 'Why punishment backfires — and what to do instead',
-      subtitleAr: 'لِماذا تَرْتَدُّ العُقوبَةُ سَلْبِيّاً — وماذا تَفْعَلينَ بَدَلاً مِنْ ذلِك',
+      subtitleAr: 'لِماذا تَرْتَدُّ العُقوبَةُ سَلْبِيّاً — وماذا تَفْعَلُ بَدَلاً مِنْ ذلِك',
       color: '#D4836A',
       blocks: [
         {
@@ -395,7 +395,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             'Why punishment backfires: it damages trust, teaches avoidance (not better choices), escalates over time, models the very behavior you\'re trying to stop, and ignores the root cause.',
           textAr:
-            'لِماذا تَرْتَدُّ العُقوبَةُ سَلْبِيّاً: تُدَمِّرُ الثِّقَة، تُعَلِّمُ التَّجَنُّبَ (لا الاِخْتِياراتِ الأَفْضَل)، تَتَصاعَدُ مَعَ الوَقْت، تُحاكي السُّلوكَ الَّذي تُحاوِلينَ إِيقافَهُ، وتَتَجاهَلُ السَّبَبَ الجَذْرِيّ.',
+            'لِماذا تَرْتَدُّ العُقوبَةُ سَلْبِيّاً: تُدَمِّرُ الثِّقَة، تُعَلِّمُ التَّجَنُّبَ (لا الاِخْتِياراتِ الأَفْضَل)، تَتَصاعَدُ مَعَ الوَقْت، تُحاكي السُّلوكَ الَّذي تُحاوِلُ إِيقافَهُ، وتَتَجاهَلُ السَّبَبَ الجَذْرِيّ.',
         },
 
         /* ── Natural vs Logical Consequences ── */
@@ -414,7 +414,7 @@ const toolkit: ToolkitMeta = {
               titleEn: 'Natural consequences',
               titleAr: 'العَواقِبُ الطَّبيعِيَّة',
               bodyEn: 'Happen on their own. You don\'t create them; you allow them (as long as the child is safe). Child refuses coat → feels cold. Your role: resist rescuing. Be empathetic, not punitive.',
-              bodyAr: 'تَحْدُثُ بِنَفْسِها. لا تَخْلُقينَها؛ تَسْمَحينَ بِها (طالَما الطِّفْلُ آمِن). الطِّفْلُ يَرْفُضُ المِعْطَف ← يَشْعُرُ بِالبَرْد. دَوْرُكِ: قاوِمي الإِنْقاذ. كوني مُتَعاطِفَة، لا عِقابِيَّة.',
+              bodyAr: 'تَحْدُثُ بِنَفْسِها. لا تَخْلُقُها؛ تَسْمَحُ بِها (طالَما الطِّفْلُ آمِن). الطِّفْلُ يَرْفُضُ المِعْطَف ← يَشْعُرُ بِالبَرْد. دَوْرُكَ: قاوِمْ الإِنْقاذ. كُنْ مُتَعاطِفًا، لا عِقابِيًّا.',
               color: '#C8A97D',
             },
             {
@@ -457,7 +457,7 @@ const toolkit: ToolkitMeta = {
           kind: 'cycle-diagram',
           id: 's2-abc-diagram',
           titleEn: 'Behavior is communication. Look at the full picture.',
-          titleAr: 'السُّلوكُ تَواصُل. اُنْظُري إِلى الصّورَةِ الكامِلَة.',
+          titleAr: 'السُّلوكُ تَواصُل. اُنْظُرْ إِلى الصّورَةِ الكامِلَة.',
           steps: [
             {
               labelEn: 'A · Antecedent',
@@ -470,7 +470,7 @@ const toolkit: ToolkitMeta = {
               labelEn: 'B · Behavior',
               labelAr: 'B · السُّلوك',
               descEn: 'What exactly happened? Describe specifically, not judgmentally.',
-              descAr: 'ماذا حَدَثَ بِالضَّبْط؟ صِفيهِ بِدِقَّة، لا بِحُكْم.',
+              descAr: 'ماذا حَدَثَ بِالضَّبْط؟ صِفْهُ بِدِقَّة، لا بِحُكْم.',
               color: '#C4878A',
             },
             {
@@ -509,7 +509,7 @@ const toolkit: ToolkitMeta = {
                   kind: 'checklist',
                   id: 's2-tantrum-say',
                   titleEn: 'What to say',
-                  titleAr: 'ما تَقولين',
+                  titleAr: 'ما تَقولُ',
                   itemsEn: [
                     '"I can see you\'re really upset. I\'m going to stay right here with you."',
                     '"It\'s okay to feel angry. It\'s not okay to throw things. I\'ll help you when you\'re ready."',
@@ -537,7 +537,7 @@ const toolkit: ToolkitMeta = {
                   kind: 'checklist',
                   id: 's2-lying-say',
                   titleEn: 'What to say',
-                  titleAr: 'ما تَقولين',
+                  titleAr: 'ما تَقولُ',
                   itemsEn: [
                     '"I already know what happened. I\'m giving you a chance to tell me the truth."',
                     '"In this family, we can handle the truth. You won\'t get in trouble for being honest."',
@@ -559,7 +559,7 @@ const toolkit: ToolkitMeta = {
                   kind: 'checklist',
                   id: 's2-sibling',
                   titleEn: 'Your approach',
-                  titleAr: 'مُقارَبَتُكِ',
+                  titleAr: 'مُقارَبَتُكَ',
                   itemsEn: [
                     'Avoid taking sides or playing judge',
                     'Teach conflict resolution skills rather than solving it for them',
@@ -568,11 +568,11 @@ const toolkit: ToolkitMeta = {
                     'Say: "It sounds like you both want the same thing. How can we figure this out?"',
                   ],
                   itemsAr: [
-                    'تَجَنَّبي الاِنْحِيازَ أَوْ لَعِبَ دَوْرِ القاضي',
-                    'عَلِّميهِم مَهاراتِ حَلِّ الخِلافِ بَدَلاً مِنْ حَلِّهِ لَهُم',
-                    'أَعْطي كُلَّ طِفْلٍ اِهْتِماماً فَرْدِيّاً',
-                    'لا تُقارِني بَيْنَ الإِخْوَة — أَبَداً',
-                    'قولي: "يَبْدو أَنَّ كِلَيْكُما يُريدُ الشَّيْءَ نَفْسَه. كَيْفَ يُمْكِنُ أَنْ نَحُلَّ هذا؟"',
+                    'تَجَنَّبْ الاِنْحِيازَ أَوْ لَعِبَ دَوْرِ القاضي',
+                    'عَلِّمْهُم مَهاراتِ حَلِّ الخِلافِ بَدَلاً مِنْ حَلِّهِ لَهُم',
+                    'أَعْطِ كُلَّ طِفْلٍ اِهْتِماماً فَرْدِيّاً',
+                    'لا تُقارِنْ بَيْنَ الإِخْوَة — أَبَداً',
+                    'قُلْ: "يَبْدو أَنَّ كِلَيْكُما يُريدُ الشَّيْءَ نَفْسَه. كَيْفَ يُمْكِنُ أَنْ نَحُلَّ هذا؟"',
                   ],
                 },
               ],
@@ -594,11 +594,11 @@ const toolkit: ToolkitMeta = {
                     'Check your own tone — are you inviting cooperation or demanding compliance?',
                   ],
                   itemsAr: [
-                    'اِخْتاري مَعارِكَك — لَيْسَ كُلُّ فِعْلِ تَحَدٍّ يَحْتاجُ مُواجَهَة',
-                    'قَدِّمي اِخْتِياراتٍ ضِمْنَ الحُدود: "هَلْ تُريدُ عَمَلَ الواجِبِ قَبْلَ أَوْ بَعْدَ العَشاء؟"',
-                    'اِعْتَرِفي بِمَشاعِرِهِم دونَ التَّنازُلِ عَنِ الحَدّ',
-                    'قولي: "يُمْكِنُكَ أَنْ تَكونَ غاضِباً مِنَ القاعِدَة. القاعِدَةُ ما زالَتْ قائِمَة."',
-                    'اِفْحَصي نَبْرَتَكِ — هَلْ تَدْعينَ إِلى التَّعاونِ أَمْ تَطْلُبينَ الاِمْتِثال؟',
+                    'اِخْتَرْ مَعارِكَكَ — لَيْسَ كُلُّ فِعْلِ تَحَدٍّ يَحْتاجُ مُواجَهَة',
+                    'قَدِّمْ اِخْتِياراتٍ ضِمْنَ الحُدود: "هَلْ تُريدُ عَمَلَ الواجِبِ قَبْلَ أَوْ بَعْدَ العَشاء؟"',
+                    'اِعْتَرِفْ بِمَشاعِرِهِم دونَ التَّنازُلِ عَنِ الحَدّ',
+                    'قُلْ: "يُمْكِنُكَ أَنْ تَكونَ غاضِباً مِنَ القاعِدَة. القاعِدَةُ ما زالَتْ قائِمَة."',
+                    'اِفْحَصْ نَبْرَتَكَ — هَلْ تَدْعو إِلى التَّعاونِ أَمْ تَطْلُبُ الاِمْتِثال؟',
                   ],
                 },
               ],
@@ -616,7 +616,7 @@ const toolkit: ToolkitMeta = {
       titleEn: 'Part 3 · Emotional Coaching',
       titleAr: 'الجُزْءُ الثّالِث · التَّدْريبُ العاطِفِيّ',
       subtitleEn: 'Teaching your child the language of feelings',
-      subtitleAr: 'تَعْليمُ طِفْلِكِ لُغَةَ المَشاعِر',
+      subtitleAr: 'تَعْليمُ طِفْلِكَ لُغَةَ المَشاعِر',
       color: '#C8A97D',
       blocks: [
         {
@@ -625,7 +625,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             "A child who can name their emotions, understand what triggers them, and express them appropriately has a superpower. They're better equipped for friendships, school, romantic relationships, and careers. And here's the encouraging part: emotional intelligence isn't something children are born with or without. It's something they learn — primarily from you.",
           textAr:
-            'الطِّفْلُ الَّذي يُمْكِنُهُ تَسْمِيَةُ مَشاعِرِهِ، وفَهْمُ ما يُحَفِّزُها، والتَّعْبيرُ عَنْها بِشَكْلٍ مُناسِب، لَدَيْهِ قُوَّةٌ عَظيمَة. هُوَ أَكْثَرُ اِسْتِعْداداً لِلصَّداقاتِ والمَدْرَسَةِ والعَلاقاتِ العاطِفِيَّةِ والمَسيرَةِ المِهَنِيَّة. وإِلَيْكُنَّ الجُزْءَ المُشَجِّع: الذَّكاءُ العاطِفِيُّ لَيْسَ شَيْئاً يَوْلَدُ بِهِ الأَطْفالُ أَوْ لا. إِنَّهُ شَيْءٌ يَتَعَلَّمونَه — بِشَكْلٍ أَساسِيٍّ مِنْكِ.',
+            'الطِّفْلُ الَّذي يُمْكِنُهُ تَسْمِيَةُ مَشاعِرِهِ، وفَهْمُ ما يُحَفِّزُها، والتَّعْبيرُ عَنْها بِشَكْلٍ مُناسِب، لَدَيْهِ قُوَّةٌ عَظيمَة. هُوَ أَكْثَرُ اِسْتِعْداداً لِلصَّداقاتِ والمَدْرَسَةِ والعَلاقاتِ العاطِفِيَّةِ والمَسيرَةِ المِهَنِيَّة. وإِلَيْكَ الجُزْءَ المُشَجِّع: الذَّكاءُ العاطِفِيُّ لَيْسَ شَيْئاً يَوْلَدُ بِهِ الأَطْفالُ أَوْ لا. إِنَّهُ شَيْءٌ يَتَعَلَّمونَه — بِشَكْلٍ أَساسِيٍّ مِنْكَ.',
           tone: 'lead',
         },
 
@@ -645,35 +645,35 @@ const toolkit: ToolkitMeta = {
           steps: [
             {
               labelEn: '1 · Notice',
-              labelAr: '١ · اُلْحُظي',
+              labelAr: '١ · اُلْحُظْ',
               descEn: 'Pay attention to subtle signals. Don\'t wait for a meltdown.',
-              descAr: 'اِنْتَبِهي لِلإِشاراتِ الخَفِيَّة. لا تَنْتَظِري الاِنْهِيار.',
+              descAr: 'اِنْتَبِهْ لِلإِشاراتِ الخَفِيَّة. لا تَنْتَظِرِ الاِنْهِيار.',
               color: '#5A8B6F',
             },
             {
               labelEn: '2 · Opportunity',
               labelAr: '٢ · الفُرْصَة',
               descEn: 'See the upset as a teaching moment, not a problem to fix.',
-              descAr: 'اُنْظُري إِلى الاِنْزِعاجِ كَلَحْظَةِ تَعْليم، لا كَمُشْكِلَةٍ لِلحَلّ.',
+              descAr: 'اُنْظُرْ إِلى الاِنْزِعاجِ كَلَحْظَةِ تَعْليم، لا كَمُشْكِلَةٍ لِلحَلّ.',
               color: '#C8A97D',
             },
             {
               labelEn: '3 · Validate',
-              labelAr: '٣ · صادِقي',
+              labelAr: '٣ · صادِقْ',
               descEn: '"I can see you\'re really sad about this." Validation is not agreement.',
               descAr: '"أَرى أَنَّكِ حَزينَةٌ حَقّاً بِسَبَبِ هذا." المُصادَقَةُ لَيْسَتْ مُوافَقَة.',
               color: '#C4878A',
             },
             {
               labelEn: '4 · Name it',
-              labelAr: '٤ · سَمّيها',
+              labelAr: '٤ · سَمِّها',
               descEn: '"It sounds like you\'re feeling disappointed." Naming moves feelings from emotional brain to thinking brain.',
-              descAr: '"يَبْدو أَنَّكِ تَشْعُرينَ بِخَيْبَةِ الأَمَل." التَّسْمِيَةُ تَنْقُلُ المَشاعِرَ مِنْ دِماغِ العاطِفَةِ إِلى دِماغِ التَّفْكير.',
+              descAr: '"يَبْدو أَنَّكَ تَشْعُرُ بِخَيْبَةِ الأَمَل." التَّسْمِيَةُ تَنْقُلُ المَشاعِرَ مِنْ دِماغِ العاطِفَةِ إِلى دِماغِ التَّفْكير.',
               color: '#D4836A',
             },
             {
               labelEn: '5 · Set limits & solve',
-              labelAr: '٥ · ضَعي حُدوداً وحُلولاً',
+              labelAr: '٥ · ضَعْ حُدودًا وحُلولًا',
               descEn: '"It\'s okay to feel angry. It\'s not okay to hit. What else could you do?"',
               descAr: '"لا بَأْسَ بِالغَضَب. لَيْسَ مَقْبولاً الضَّرْب. ماذا يُمْكِنُكَ أَنْ تَفْعَلَ غَيْرَ ذلِك؟"',
               color: '#7A3B5E',
@@ -696,7 +696,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             'The single most misunderstood concept in emotional coaching. Validating = acknowledging the feeling is real. Permitting = allowing the behavior. You can do the first without the second. In fact, you must. The formula: "I understand you feel [emotion]. AND [the boundary still holds]."',
           textAr:
-            'المَفْهومُ الأَكْثَرُ سوءَ فَهْمٍ في التَّدْريبِ العاطِفِيّ. المُصادَقَةُ = الاِعْتِرافُ بِأَنَّ الشُّعورَ حَقيقِيّ. الإِباحَةُ = السَّماحُ بِالسُّلوك. يُمْكِنُكِ فِعْلُ الأَوَّلِ دونَ الثّاني. في الحَقيقَة، يَجِبُ ذلِك. الصيغَة: "أَفْهَمُ أَنَّكِ تَشْعُرينَ بِـ[الشُّعور]. وفي الوَقْتِ نَفْسِهِ [الحَدُّ ما زالَ قائِماً]."',
+            'المَفْهومُ الأَكْثَرُ سوءَ فَهْمٍ في التَّدْريبِ العاطِفِيّ. المُصادَقَةُ = الاِعْتِرافُ بِأَنَّ الشُّعورَ حَقيقِيّ. الإِباحَةُ = السَّماحُ بِالسُّلوك. يُمْكِنُكَ فِعْلُ الأَوَّلِ دونَ الثّاني. في الحَقيقَة، يَجِبُ ذلِك. الصيغَة: "أَفْهَمُ أَنَّكَ تَشْعُرُ بِـ[الشُّعور]. وفي الوَقْتِ نَفْسِهِ [الحَدُّ ما زالَ قائِماً]."',
         },
         {
           kind: 'info-card-pair',
@@ -743,7 +743,7 @@ const toolkit: ToolkitMeta = {
           kind: 'reflection-prompt',
           id: 's3-vocab-reflection',
           promptEn: "Which emotion words does your child already know? Which ones would you like to teach next? Write out a plan for how you'll introduce them (books, games, real moments).",
-          promptAr: 'أَيُّ كَلِماتٍ عاطِفِيَّةٍ يَعْرِفُها طِفْلُكِ بِالفِعْل؟ أَيُّها تُريدينَ تَعْليمَها لَه بَعْدَ ذلِك؟ اُكْتُبي خُطَّةً لِكَيْفِيَّةِ تَقْديمِها (كُتُب، أَلْعاب، لَحَظاتٌ حَقيقِيَّة).',
+          promptAr: 'أَيُّ كَلِماتٍ عاطِفِيَّةٍ يَعْرِفُها طِفْلُكَ بِالفِعْل؟ أَيُّها تُريدُ تَعْليمَها لَه بَعْدَ ذلِك؟ اُكْتُبْ خُطَّةً لِكَيْفِيَّةِ تَقْديمِها (كُتُب، أَلْعاب، لَحَظاتٌ حَقيقِيَّة).',
           minWords: 40,
         },
       ],
@@ -766,7 +766,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             "Screens are not going away. Your child will grow up in a digital world. The question isn't whether they'll use technology — it's whether they'll use it wisely. The goal isn't elimination — it's intentional, guided use.",
           textAr:
-            'الشّاشاتُ لَنْ تَخْتَفي. سَيَكْبُرُ طِفْلُكِ في عالَمٍ رَقْمِيّ. السُّؤالُ لَيْسَ ما إِذا كانَ سَيَسْتَخْدِمُ التِّكْنولوجْيا — بَلْ ما إِذا كانَ سَيَسْتَخْدِمُها بِحِكْمَة. الهَدَفُ لَيْسَ الإِقْصاء — بَلِ الاِسْتِخْدامُ المَقْصودُ والمُوَجَّه.',
+            'الشّاشاتُ لَنْ تَخْتَفي. سَيَكْبُرُ طِفْلُكَ في عالَمٍ رَقْمِيّ. السُّؤالُ لَيْسَ ما إِذا كانَ سَيَسْتَخْدِمُ التِّكْنولوجْيا — بَلْ ما إِذا كانَ سَيَسْتَخْدِمُها بِحِكْمَة. الهَدَفُ لَيْسَ الإِقْصاء — بَلِ الاِسْتِخْدامُ المَقْصودُ والمُوَجَّه.',
           tone: 'lead',
         },
         {
@@ -781,14 +781,14 @@ const toolkit: ToolkitMeta = {
               labelEn: 'Under 18 months',
               labelAr: 'تَحْتَ ١٨ شَهْراً',
               descEn: 'Avoid screens except for video calls with family. Babies learn from real-world interaction.',
-              descAr: 'تَجَنَّبي الشّاشاتِ إِلّا لِمُكالَماتِ الفيديو مَعَ العائِلَة. الرُّضَّعُ يَتَعَلَّمونَ مِنَ التَّفاعُلِ الحَقيقِيّ.',
+              descAr: 'تَجَنَّبِ الشّاشاتِ إِلّا لِمُكالَماتِ الفيديو مَعَ العائِلَة. الرُّضَّعُ يَتَعَلَّمونَ مِنَ التَّفاعُلِ الحَقيقِيّ.',
             },
             {
               iconName: 'eye',
               labelEn: '18 months – 2 years',
               labelAr: '١٨ شَهْراً – سَنَتَيْن',
               descEn: 'If introducing screens, choose high-quality, slow-paced, educational content. Watch together and talk about it.',
-              descAr: 'إِذا قَدَّمْتِ الشّاشات، اِخْتاري مُحْتَوىً عالِيَ الجَوْدَة، بَطيءَ الإِيقاع، تَعْليمِيّاً. شاهِدا مَعاً وتَحَدَّثا عَنْه.',
+              descAr: 'إِذا قَدَّمْتَ الشّاشات، اِخْتَرْ مُحْتَوىً عالِيَ الجَوْدَة، بَطيءَ الإِيقاع، تَعْليمِيّاً. شاهِدا مَعاً وتَحَدَّثا عَنْه.',
             },
             {
               iconName: 'clock',
@@ -809,14 +809,14 @@ const toolkit: ToolkitMeta = {
               labelEn: '13–18 years',
               labelAr: '١٣–١٨ سَنَة',
               descEn: 'Negotiate limits together — teens respond better to collaboration than control. Monitor social media and mood. No devices in bedrooms at night.',
-              descAr: 'تَفاوَضا عَلى الحُدودِ مَعاً — يَسْتَجيبُ المُراهِقونَ لِلتَّعاوُنِ أَفْضَلَ مِنَ التَّحَكُّم. راقِبي التَّواصُلَ الاِجْتِماعِيَّ والمِزاج. لا أَجْهِزَةَ في غُرَفِ النَّوْمِ لَيْلاً.',
+              descAr: 'تَفاوَضا عَلى الحُدودِ مَعاً — يَسْتَجيبُ المُراهِقونَ لِلتَّعاوُنِ أَفْضَلَ مِنَ التَّحَكُّم. راقِبِ التَّواصُلَ الاِجْتِماعِيَّ والمِزاج. لا أَجْهِزَةَ في غُرَفِ النَّوْمِ لَيْلاً.',
             },
             {
               iconName: 'heart',
               labelEn: 'All ages',
               labelAr: 'كُلُّ الأَعْمار',
               descEn: 'Model what you\'re asking. If you\'re on your phone during dinner, the family media agreement means nothing.',
-              descAr: 'كوني قُدْوَةً لِما تَطْلُبين. إِذا كُنْتِ عَلى هاتِفِكِ خِلالَ العَشاء، فَاِتِّفاقُ إِعْلامِ العائِلَةِ لا يَعْني شَيْئاً.',
+              descAr: 'كُنْ قُدْوَةً لِما تَطْلُبُ. إِذا كُنْتَ عَلى هاتِفِكَ خِلالَ العَشاء، فَاِتِّفاقُ إِعْلامِ العائِلَةِ لا يَعْني شَيْئاً.',
             },
           ],
         },
@@ -875,7 +875,7 @@ const toolkit: ToolkitMeta = {
           kind: 'reflection-prompt',
           id: 's4-replace',
           promptEn: 'What 3 activities will your family do instead of screens this week? Make them specific and realistic.',
-          promptAr: 'ما ثَلاثَةُ أَنْشِطَةٍ سَتَقومُ بِها عائِلَتُكِ بَدَلاً مِنَ الشّاشاتِ هذا الأُسْبوع؟ اِجْعَليها مُحَدَّدَةً وواقِعِيَّة.',
+          promptAr: 'ما ثَلاثَةُ أَنْشِطَةٍ سَتَقومُ بِها عائِلَتُكَ بَدَلاً مِنَ الشّاشاتِ هذا الأُسْبوع؟ اِجْعَلْها مُحَدَّدَةً وواقِعِيَّة.',
         },
       ],
     },
@@ -907,20 +907,20 @@ const toolkit: ToolkitMeta = {
           titleAr: 'إِطارُ الـ C السَّبْعَة',
           columns: 2,
           items: [
-            { iconName: 'target', labelEn: 'Competence', labelAr: 'الكَفاءَة', descEn: 'Effort over outcome. Let them do it themselves. Tolerate their discomfort.', descAr: 'الجُهْدُ فَوْقَ النَّتيجَة. دَعيهِم يَفْعَلونَها بِأَنْفُسِهِم. تَحَمَّلي اِنْزِعاجَهُم.' },
-            { iconName: 'sparkles', labelEn: 'Confidence', labelAr: 'الثِّقَة', descEn: 'Specific praise, not empty praise. Let them try and fail.', descAr: 'مَدْحٌ مُحَدَّد، لا مَدْحٌ فارِغ. دَعيهِم يُحاوِلونَ ويَفْشَلون.' },
-            { iconName: 'heart', labelEn: 'Connection', labelAr: 'التَّواصُل', descEn: 'One-on-one time. Know their friends. Family rituals.', descAr: 'وَقْتٌ فَرْدِيّ. اِعْرِفي أَصْدِقاءَهُم. طُقوسُ العائِلَة.' },
-            { iconName: 'shield', labelEn: 'Character', labelAr: 'الشَّخْصِيَّة', descEn: 'Talk about values explicitly. Model integrity. Name courage when you see it.', descAr: 'تَحَدَّثي عَنِ القِيَمِ صَراحَةً. كوني قُدْوَةً لِلنَّزاهَة. سَمّي الشَّجاعَةَ حينَ تَرَيْنَها.' },
+            { iconName: 'target', labelEn: 'Competence', labelAr: 'الكَفاءَة', descEn: 'Effort over outcome. Let them do it themselves. Tolerate their discomfort.', descAr: 'الجُهْدُ فَوْقَ النَّتيجَة. دَعْهُم يَفْعَلونَها بِأَنْفُسِهِم. تَحَمَّلْ اِنْزِعاجَهُم.' },
+            { iconName: 'sparkles', labelEn: 'Confidence', labelAr: 'الثِّقَة', descEn: 'Specific praise, not empty praise. Let them try and fail.', descAr: 'مَدْحٌ مُحَدَّد، لا مَدْحٌ فارِغ. دَعْهُم يُحاوِلونَ ويَفْشَلون.' },
+            { iconName: 'heart', labelEn: 'Connection', labelAr: 'التَّواصُل', descEn: 'One-on-one time. Know their friends. Family rituals.', descAr: 'وَقْتٌ فَرْدِيّ. اِعْرِفْ أَصْدِقاءَهُم. طُقوسُ العائِلَة.' },
+            { iconName: 'shield', labelEn: 'Character', labelAr: 'الشَّخْصِيَّة', descEn: 'Talk about values explicitly. Model integrity. Name courage when you see it.', descAr: 'تَحَدَّثْ عَنِ القِيَمِ صَراحَةً. كُنْ قُدْوَةً لِلنَّزاهَة. سَمِّ الشَّجاعَةَ حينَ تَراها.' },
             { iconName: 'sparkles', labelEn: 'Contribution', labelAr: 'المُساهَمَة', descEn: 'Meaningful family roles. Acts of service. Purpose talk.', descAr: 'أَدْوارٌ عائِلِيَّةٌ ذاتُ مَعْنى. أَعْمالُ خِدْمَة. حَديثٌ عَنِ الهَدَف.' },
-            { iconName: 'flame', labelEn: 'Coping', labelAr: 'التَّكَيُّف', descEn: 'Teach specific strategies. Build a coping toolbox. Don\'t eliminate all stress.', descAr: 'عَلِّمي اِسْتِراتيجِيّاتٍ مُحَدَّدَة. اِبْني صُنْدوقَ أَدَواتِ تَكَيُّف. لا تُلْغي كُلَّ التَّوَتُّر.' },
-            { iconName: 'compass', labelEn: 'Control', labelAr: 'التَّحَكُّم', descEn: 'Give choices. Link actions to outcomes. "What\'s one thing you CAN control?"', descAr: 'قَدِّمي اِخْتِيارات. اِرْبُطي الأَفْعالَ بِالنَّتائِج. "ما الشَّيْءُ الواحِدُ الَّذي يُمْكِنُكَ التَّحَكُّمُ فيه؟"' },
+            { iconName: 'flame', labelEn: 'Coping', labelAr: 'التَّكَيُّف', descEn: 'Teach specific strategies. Build a coping toolbox. Don\'t eliminate all stress.', descAr: 'عَلِّمْ اِسْتِراتيجِيّاتٍ مُحَدَّدَة. اِبْنِ صُنْدوقَ أَدَواتِ تَكَيُّف. لا تُلْغِ كُلَّ التَّوَتُّر.' },
+            { iconName: 'compass', labelEn: 'Control', labelAr: 'التَّحَكُّم', descEn: 'Give choices. Link actions to outcomes. "What\'s one thing you CAN control?"', descAr: 'قَدِّمْ اِخْتِيارات. اِرْبُطِ الأَفْعالَ بِالنَّتائِج. "ما الشَّيْءُ الواحِدُ الَّذي يُمْكِنُكَ التَّحَكُّمُ فيه؟"' },
           ],
         },
         {
           kind: 'fillable-table',
           id: 's5-action-plan',
           titleEn: "Rate your child 1–5 on each C and choose ONE action for each",
-          titleAr: 'قَيِّمي طِفْلَكِ مِنْ ١ إِلى ٥ في كُلِّ C واخْتاري فِعْلاً واحِداً لِكُلِّ مِنْها',
+          titleAr: 'قَيِّمْ طِفْلَكَ مِنْ ١ إِلى ٥ في كُلِّ C واخْتَرْ فِعْلاً واحِداً لِكُلِّ مِنْها',
           columns: [
             { headerEn: 'C', headerAr: 'C' },
             { headerEn: 'Current strength (1-5)', headerAr: 'القُوَّةُ الحالِيَّة (١-٥)' },
@@ -932,7 +932,7 @@ const toolkit: ToolkitMeta = {
           kind: 'reflection-prompt',
           id: 's5-coping-toolbox',
           promptEn: "Write down 5 healthy coping strategies you want your child to know they have access to. These become their coping toolbox.",
-          promptAr: 'اُكْتُبي ٥ اِسْتِراتيجِيّاتِ تَكَيُّفٍ صِحِّيَّة تُريدينَ لِطِفْلِكِ أَنْ يَعْرِفَ أَنَّ لَدَيْهِ وُصولاً إِلَيْها. هذِهِ تُصْبِحُ صُنْدوقَ أَدَواتِ تَكَيُّفِه.',
+          promptAr: 'اُكْتُبْ ٥ اِسْتِراتيجِيّاتِ تَكَيُّفٍ صِحِّيَّة تُريدُ لِطِفْلِكَ أَنْ يَعْرِفَ أَنَّ لَدَيْهِ وُصولاً إِلَيْها. هذِهِ تُصْبِحُ صُنْدوقَ أَدَواتِ تَكَيُّفِه.',
           minWords: 40,
         },
       ],
@@ -955,7 +955,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             "Reading alone doesn't change parenting. These worksheets are where the insight of the previous five parts becomes actual practice. Fill them in honestly — nobody is grading you.",
           textAr:
-            'القِراءَةُ وَحْدَها لا تُغَيِّرُ التَّرْبِيَة. أَوْراقُ العَمَلِ هذِهِ هي حَيْثُ تُصْبِحُ رُؤْيَةُ الأَجْزاءِ الخَمْسَةِ السّابِقَةِ مُمارَسَةً فِعْلِيَّة. اِمْلَئيها بِصِدْق — لا أَحَدَ يُقَيِّمُكِ.',
+            'القِراءَةُ وَحْدَها لا تُغَيِّرُ التَّرْبِيَة. أَوْراقُ العَمَلِ هذِهِ هي حَيْثُ تُصْبِحُ رُؤْيَةُ الأَجْزاءِ الخَمْسَةِ السّابِقَةِ مُمارَسَةً فِعْلِيَّة. اِمْلَأْها بِصِدْق — لا أَحَدَ يُقَيِّمُكَ.',
           tone: 'lead',
         },
 
@@ -1016,7 +1016,7 @@ const toolkit: ToolkitMeta = {
           kind: 'paragraph',
           id: 's6-w2-intro',
           textEn: 'Use this weekly. Plan one intentional connection moment with each child.',
-          textAr: 'اِسْتَخْدِميهِ أُسْبوعِيّاً. خَطِّطي لِلَحْظَةِ تَواصُلٍ مَقْصودَةٍ مَعَ كُلِّ طِفْل.',
+          textAr: 'اِسْتَخْدِمْهُ أُسْبوعِيّاً. خَطِّطْ لِلَحْظَةِ تَواصُلٍ مَقْصودَةٍ مَعَ كُلِّ طِفْل.',
         },
         {
           kind: 'fillable-table',
@@ -1046,13 +1046,13 @@ const toolkit: ToolkitMeta = {
           textEn:
             "When your child's behavior is challenging, walk through each step before responding.",
           textAr:
-            'حينَ يَكونُ سُلوكُ طِفْلِكِ صَعْباً، مُرّي بِكُلِّ خُطْوَةٍ قَبْلَ الاِسْتِجابَة.',
+            'حينَ يَكونُ سُلوكُ طِفْلِكَ صَعْباً، مُرَّ بِكُلِّ خُطْوَةٍ قَبْلَ الاِسْتِجابَة.',
         },
         {
           kind: 'reflection-prompt',
           id: 's6-w3-step1',
           promptEn: 'Step 1 · What happened? (Describe the behavior specifically.)',
-          promptAr: 'الخُطْوَةُ ١ · ماذا حَدَث؟ (صِفي السُّلوكَ بِدِقَّة.)',
+          promptAr: 'الخُطْوَةُ ١ · ماذا حَدَث؟ (صِفِ السُّلوكَ بِدِقَّة.)',
         },
         {
           kind: 'reflection-prompt',
@@ -1079,10 +1079,10 @@ const toolkit: ToolkitMeta = {
             'Take a break (both of you) and come back to it',
           ],
           itemsAr: [
-            'عاقِبَةٌ طَبيعِيَّة (دَعي الواقِعَ يَكونُ المُعَلِّم)',
+            'عاقِبَةٌ طَبيعِيَّة (دَعِ الواقِعَ يَكونُ المُعَلِّم)',
             'عاقِبَةٌ مَنْطِقِيَّة (مُرْتَبِطَة، مُحْتَرِمَة، مَعْقولَة)',
-            'تَدْريبٌ عاطِفِيّ (صادِقي، سَمّي، ضَعي حُدوداً، حُلّي)',
-            'إِعادَةُ تَوْجيه (قَدِّمي سُلوكاً بَديلاً)',
+            'تَدْريبٌ عاطِفِيّ (صادِقْ، سَمِّ، ضَعْ حُدودًا، حُلَّ)',
+            'إِعادَةُ تَوْجيه (قَدِّمْ سُلوكاً بَديلاً)',
             'خُذا اِسْتِراحَة (كِلاكُما) وعودا إِلَيْها',
           ],
         },
@@ -1099,13 +1099,13 @@ const toolkit: ToolkitMeta = {
           kind: 'paragraph',
           id: 's6-w5-intro',
           textEn: "For each of the 7 C's, identify where your child is strong and where they need support.",
-          textAr: 'لِكُلِّ C مِنَ السَّبْعَة، حَدِّدي أَيْنَ طِفْلُكِ قَوِيّ وأَيْنَ يَحْتاجُ الدَّعْم.',
+          textAr: 'لِكُلِّ C مِنَ السَّبْعَة، حَدِّدْ أَيْنَ طِفْلُكَ قَوِيّ وأَيْنَ يَحْتاجُ الدَّعْم.',
         },
         {
           kind: 'reflection-prompt',
           id: 's6-w5-plan',
           promptEn: 'Your 30-day plan — one focused thing per week for the next 4 weeks:',
-          promptAr: 'خُطَّتُكِ لِلثَّلاثينَ يَوْماً — شَيْءٌ واحِدٌ مُرَكَّزٌ كُلَّ أُسْبوعٍ لِلأَسابيعِ الأَرْبَعَةِ القادِمَة:',
+          promptAr: 'خُطَّتُكَ لِلثَّلاثينَ يَوْماً — شَيْءٌ واحِدٌ مُرَكَّزٌ كُلَّ أُسْبوعٍ لِلأَسابيعِ الأَرْبَعَةِ القادِمَة:',
           minWords: 60,
         },
 
@@ -1116,7 +1116,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             "Parenting is the only job where you're expected to be an expert from day one with no training, no manual, and a tiny human who didn't read any of the same books you did. You will mess up. You will lose your patience. You will wonder if you're doing it all wrong. And then you'll repair. You'll try again. That's intentional parenting. And you're already doing it.",
           textAr:
-            'التَّرْبِيَةُ هي الوَظيفَةُ الوَحيدَةُ الَّتي يُتَوَقَّعُ مِنْكِ فيها أَنْ تَكوني خَبيرَةً مِنَ اليَوْمِ الأَوَّلِ بِلا تَدْريب، بِلا دَليل، ومَعَ إِنْسانٍ صَغيرٍ لَمْ يَقْرَأْ أَيّاً مِنَ الكُتُبِ الَّتي قَرَأْتِها أَنْتِ. سَتَرْتَكِبينَ أَخْطاء. سَتَفْقِدينَ صَبْرَكِ. سَتَتَساءَلينَ إِذا كُنْتِ تَفْعَلينَ كُلَّ شَيْءٍ بِشَكْلٍ خاطِئ. ثُمَّ سَتُصْلِحين. سَتُحاوِلينَ مَرَّةً أُخْرى. هذِهِ هي التَّرْبِيَةُ الواعِيَة. وأَنْتِ تَفْعَلينَها بِالفِعْل.',
+            'التَّرْبِيَةُ هي الوَظيفَةُ الوَحيدَةُ الَّتي يُتَوَقَّعُ مِنْكَ فيها أَنْ تَكونَ خَبيرًا مِنَ اليَوْمِ الأَوَّلِ بِلا تَدْريب، بِلا دَليل، ومَعَ إِنْسانٍ صَغيرٍ لَمْ يَقْرَأْ أَيّاً مِنَ الكُتُبِ الَّتي قَرَأْتَها أَنْتَ. سَتَرْتَكِبُ أَخْطاء. سَتَفْقِدُ صَبْرَكَ. سَتَتَساءَلُ إِذا كُنْتَ تَفْعَلُ كُلَّ شَيْءٍ بِشَكْلٍ خاطِئ. ثُمَّ سَتُصْلِحُ. سَتُحاوِلُ مَرَّةً أُخْرى. هذِهِ هي التَّرْبِيَةُ الواعِيَة. وأَنْتَ تَفْعَلُها بِالفِعْل.',
         },
       ],
     },

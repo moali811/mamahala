@@ -153,6 +153,25 @@ export default function ProgramsPage() {
     },
   };
 
+  // Dynamic pricing (fetched from KV, falls back to BUSINESS defaults)
+  const [dynamicPricing, setDynamicPricing] = useState({
+    toolkitFullAccessPrice: BUSINESS.toolkitFullAccessPrice,
+    academyFullAccessPrice: BUSINESS.academyFullAccessPrice,
+  });
+  useEffect(() => {
+    fetch('/api/pricing')
+      .then(r => r.json())
+      .then(data => {
+        if (data.toolkitFullAccessPrice != null || data.academyFullAccessPrice != null) {
+          setDynamicPricing(prev => ({
+            toolkitFullAccessPrice: data.toolkitFullAccessPrice ?? prev.toolkitFullAccessPrice,
+            academyFullAccessPrice: data.academyFullAccessPrice ?? prev.academyFullAccessPrice,
+          }));
+        }
+      })
+      .catch(() => { /* use BUSINESS defaults */ });
+  }, []);
+
   // Program finder state
   const [finderStep, setFinderStep] = useState(-1); // -1 = not started
   const [finderAnswers, setFinderAnswers] = useState<{ match: string; secondaryMatch?: string; questionIndex: number }[]>([]);
@@ -380,7 +399,7 @@ export default function ProgramsPage() {
                           <div className="flex items-center gap-3 text-xs text-[#8E8E9F]">
                             <span>{prog.modules} {isRTL ? 'وحدة' : 'modules'}</span>
                             <span>{prog.hours}h</span>
-                            <span>{prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `من $${BUSINESS.academyFullAccessPrice} CAD` : `from $${BUSINESS.academyFullAccessPrice} CAD`)}</span>
+                            <span>{prog.free ? (isRTL ? 'مجاني' : 'Free') : (isRTL ? `من $${dynamicPricing.academyFullAccessPrice} CAD` : `from $${dynamicPricing.academyFullAccessPrice} CAD`)}</span>
                           </div>
                         </div>
                         <ArrowRight className="w-5 h-5 text-[#8E8E9F] flex-shrink-0 mt-2" />
@@ -466,7 +485,7 @@ export default function ProgramsPage() {
                         {prog.free
                           ? (isRTL ? 'مجاني' : 'Free')
                           : (<>
-                              ${BUSINESS.academyFullAccessPrice}
+                              ${dynamicPricing.academyFullAccessPrice}
                               <span className="text-[10px] font-semibold text-[#8E8E9F] ms-1">CAD</span>
                             </>)}
                       </span>
@@ -631,7 +650,7 @@ export default function ProgramsPage() {
                   className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#8E8E9F] hover:text-[#2D2A33] transition-colors"
                 >
                   <Eye className="w-3.5 h-3.5" />
-                  {isRTL ? 'اِفْتَحي الوَحْدَةَ الكامِلَة' : 'Open full module'}
+                  {isRTL ? 'اِفْتَحِ الوَحْدَةَ الكامِلَة' : 'Open full module'}
                 </a>
                 <span className="text-[10px] text-[#B0B0C0] font-mono hidden sm:inline">
                   {isRTL ? '٢ / ٨' : '2 / 8'}
@@ -658,7 +677,7 @@ export default function ProgramsPage() {
                 className="inline-flex items-center gap-2 text-sm font-semibold text-[#7A3B5E] hover:text-[#5E2D48] transition-colors group"
               >
                 {isRTL
-                  ? 'هذِهِ ١ مِنْ ٨ مَشاهِدَ في هذِهِ الرِّحْلَة — اِفْتَحي الوَحْدَةَ الكامِلَةَ مَجّاناً'
+                  ? 'هذِهِ ١ مِنْ ٨ مَشاهِدَ في هذِهِ الرِّحْلَة — اِفْتَحِ الوَحْدَةَ الكامِلَةَ مَجّاناً'
                   : "This is 1 of 8 scenes in this journey — open the full module free"}
                 <ArrowRight className={`w-4 h-4 transition-transform group-hover:translate-x-0.5 ${isRTL ? 'rotate-180 group-hover:-translate-x-0.5' : ''}`} />
               </a>
@@ -807,7 +826,7 @@ export default function ProgramsPage() {
                         {isRTL ? 'L1 مجاني' : 'L1 Free'}
                       </span>
                       <span className="text-[10px] text-[#8E8E9F] tabular-nums">
-                        {`${isRTL ? 'الوُصول الكامِل' : 'Full access'} $${BUSINESS.academyFullAccessPrice} CAD`}
+                        {`${isRTL ? 'الوُصول الكامِل' : 'Full access'} $${dynamicPricing.academyFullAccessPrice} CAD`}
                       </span>
                     </div>
                   </div>
@@ -898,8 +917,8 @@ export default function ProgramsPage() {
                           </span>
                           <span className="text-[10px] text-[#8E8E9F] tabular-nums">
                             {isRTL
-                              ? `الوُصولُ الكامِل $${BUSINESS.academyFullAccessPrice} CAD`
-                              : `Full access $${BUSINESS.academyFullAccessPrice} CAD`}
+                              ? `الوُصولُ الكامِل $${dynamicPricing.academyFullAccessPrice} CAD`
+                              : `Full access $${dynamicPricing.academyFullAccessPrice} CAD`}
                           </span>
                         </div>
                       </td>
@@ -971,10 +990,10 @@ export default function ProgramsPage() {
                 icon: <CheckCircle className="w-6 h-6" />,
                 label: isRTL ? 'اِبْدَئي مَجّاناً، ادْفَعي مَرَّةً واحِدَة' : 'Start Free, Pay Once',
                 desc: isRTL
-                  ? `المُسْتَوى الأَوَّلُ مَجّاني. ثُمَّ دَفْعةٌ واحِدَةٌ بِـ $${BUSINESS.academyFullAccessPrice} CAD تَفْتَحُ البَرْنامَجَ بِالكامِل — وُصولٌ مَدى الحَياة. لا اشْتِراكات.`
-                  : `Level 1 is free. Then one payment of $${BUSINESS.academyFullAccessPrice} CAD unlocks the full program — lifetime access. No subscriptions.`,
+                  ? `المُسْتَوى الأَوَّلُ مَجّاني. ثُمَّ دَفْعةٌ واحِدَةٌ بِـ $${dynamicPricing.academyFullAccessPrice} CAD تَفْتَحُ البَرْنامَجَ بِالكامِل — وُصولٌ مَدى الحَياة. لا اشْتِراكات.`
+                  : `Level 1 is free. Then one payment of $${dynamicPricing.academyFullAccessPrice} CAD unlocks the full program — lifetime access. No subscriptions.`,
                 color: '#3B8A6E',
-                tag: isRTL ? `L1 مجاني · كامِل $${BUSINESS.academyFullAccessPrice} CAD` : `L1 free · full $${BUSINESS.academyFullAccessPrice} CAD`,
+                tag: isRTL ? `L1 مجاني · كامِل $${dynamicPricing.academyFullAccessPrice} CAD` : `L1 free · full $${dynamicPricing.academyFullAccessPrice} CAD`,
               },
               {
                 icon: <GraduationCap className="w-6 h-6" />,

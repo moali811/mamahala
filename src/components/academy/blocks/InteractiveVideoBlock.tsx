@@ -150,7 +150,7 @@ export default function InteractiveVideoBlockView({ block, ctx }: Props) {
                   {ctx.isRTL ? 'تَعَذَّرَ تَحْميلُ الفيديو' : 'Video could not load'}
                 </p>
                 <a href={block.src} target="_blank" rel="noopener" className="text-xs underline text-white/70">
-                  {ctx.isRTL ? 'اِفْتَحيهِ في تَبْويبٍ جَديد' : 'Open in new tab'}
+                  {ctx.isRTL ? 'اِفْتَحْهُ في تَبْويبٍ جَديد' : 'Open in new tab'}
                 </a>
               </div>
             ) : (

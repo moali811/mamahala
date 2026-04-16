@@ -85,6 +85,10 @@ export default function ToolkitDetailPage() {
   const [activeSection, setActiveSection] = useState(0);
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [dynamicPricing, setDynamicPricing] = useState({
+    toolkitFullAccessPrice: BUSINESS.toolkitFullAccessPrice,
+    academyFullAccessPrice: BUSINESS.academyFullAccessPrice,
+  });
   /**
    * Ref to the <main> that holds the active section content.
    * Used by changeSection() to scroll the user to the start of the new
@@ -106,6 +110,21 @@ export default function ToolkitDetailPage() {
     });
     return () => { cancelled = true; };
   }, [slug]);
+
+  /* ── Fetch dynamic pricing ─────────────────────────────────────── */
+  useEffect(() => {
+    fetch('/api/pricing')
+      .then(r => r.json())
+      .then(data => {
+        if (data.toolkitFullAccessPrice != null || data.academyFullAccessPrice != null) {
+          setDynamicPricing(prev => ({
+            toolkitFullAccessPrice: data.toolkitFullAccessPrice ?? prev.toolkitFullAccessPrice,
+            academyFullAccessPrice: data.academyFullAccessPrice ?? prev.academyFullAccessPrice,
+          }));
+        }
+      })
+      .catch(() => { /* use BUSINESS defaults */ });
+  }, []);
 
   /* ── Check unlock status for premium toolkits ──────────────────── */
   useEffect(() => {
@@ -480,11 +499,11 @@ export default function ToolkitDetailPage() {
                         className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-3"
                         style={{ fontFamily: 'var(--font-heading)' }}
                       >
-                        {isRTL ? 'اكمِلي رحلتَك' : 'Continue Your Journey'}
+                        {isRTL ? 'أكمِلْ رحلتَك' : 'Continue Your Journey'}
                       </h3>
                       <p className="text-[#4A4A5C] leading-relaxed mb-6 max-w-md mx-auto">
                         {isRTL
-                          ? `لقد أكملتِ المعاينةَ المجّانيّة. افتحي باقي الأقسام واستمتعي بالتجربةِ التفاعليّة الكاملة.`
+                          ? `لقد أكملتَ المعاينةَ المجّانيّة. افتحْ باقيَ الأقسام واستمتِعْ بالتجربةِ التفاعليّة الكاملة.`
                           : `You've finished the free preview. Unlock the rest of this interactive journey — every section, every exercise, forever yours.`}
                       </p>
                       {/* Features list */}
@@ -492,7 +511,7 @@ export default function ToolkitDetailPage() {
                         {[
                           isRTL ? 'وصولٌ دائم لجميعِ الأقسام' : 'Lifetime access to all sections',
                           isRTL ? 'تمارينٌ تفاعليّة وأدواتٌ حقيقيّة' : 'Interactive exercises & real tools',
-                          isRTL ? 'تقدُّمُكِ يُحفَظ تلقائيًّا' : 'Your progress saves automatically',
+                          isRTL ? 'تقدُّمُكَ يُحفَظ تلقائيًّا' : 'Your progress saves automatically',
                         ].map((feat, i) => (
                           <div key={i} className="flex items-center gap-2 text-sm text-[#4A4A5C]">
                             <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: toolkit.color }} />
@@ -502,12 +521,15 @@ export default function ToolkitDetailPage() {
                       </div>
                       {/* Price + CTA */}
                       <div className="flex flex-col items-center gap-2">
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white bg-gradient-to-r from-[#B08D57] to-[#7A3B5E]">
+                          {isRTL ? '🚀 سِعْرُ الإطْلاق' : '🚀 Launch Price'}
+                        </span>
                         <div className="flex items-baseline gap-2">
                           <span
                             className="text-4xl font-bold"
                             style={{ color: toolkit.color, fontFamily: 'var(--font-heading)' }}
                           >
-                            ${BUSINESS.toolkitFullAccessPrice}
+                            ${dynamicPricing.toolkitFullAccessPrice}
                           </span>
                           <span className="text-sm text-[#8E8E9F]">CAD</span>
                         </div>
@@ -515,8 +537,26 @@ export default function ToolkitDetailPage() {
                           {isRTL ? 'دفعةٌ واحدة · بدون اشتراك' : 'One-time payment · no subscription'}
                         </p>
                         <button
-                          onClick={() => {
-                            // Single shared Stripe link unlocks any premium toolkit.
+                          onClick={async () => {
+                            // Try dynamic checkout first, fall back to payment link
+                            try {
+                              const res = await fetch('/api/toolkit/checkout', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  toolkitSlug: toolkit.slug,
+                                  toolkitTitle: isRTL ? toolkit.titleAr : toolkit.titleEn,
+                                  email: localStorage.getItem('mh_toolkit_email') || '',
+                                  locale,
+                                }),
+                              });
+                              const data = await res.json();
+                              if (data.url) {
+                                window.location.href = data.url;
+                                return;
+                              }
+                            } catch { /* fall through to payment link */ }
+                            // Fallback: static Stripe payment link
                             const stripeLink = BUSINESS.toolkitPaymentLinks.fullAccess;
                             if (stripeLink) {
                               const url = `${stripeLink}?client_reference_id=${toolkit.slug}`;
@@ -524,7 +564,7 @@ export default function ToolkitDetailPage() {
                             } else {
                               const confirm = window.confirm(
                                 isRTL
-                                  ? 'الدفع قيد الإعداد — سيتوفّر قريبًا. هل تريدين المحاكاة للتجربة؟'
+                                  ? 'الدفع قيد الإعداد — سيتوفّر قريبًا. هل تريدُ المحاكاة للتجربة؟'
                                   : 'Payment setup coming soon. Simulate unlock for testing?'
                               );
                               if (confirm) {
@@ -539,13 +579,13 @@ export default function ToolkitDetailPage() {
                           }}
                         >
                           <Sparkles className="w-4 h-4" />
-                          {isRTL ? 'افتحي الوصول الكامل' : 'Unlock Full Access'}
+                          {isRTL ? 'افتحِ الوصولَ الكامل' : 'Unlock Full Access'}
                         </button>
                         {/* Redeem access for VIPs */}
                         <button
                           onClick={() => {
                             const email = window.prompt(
-                              isRTL ? 'أدخلي البريد الإلكترونيّ للاسترداد:' : 'Enter your access email:'
+                              isRTL ? 'أدخِلِ البريدَ الإلكترونيّ للاسترداد:' : 'Enter your access email:'
                             );
                             if (!email) return;
                             if (isVipEmail(email)) {

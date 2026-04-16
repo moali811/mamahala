@@ -586,14 +586,36 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
       return new Date(iso).getHours(); // fallback to browser-local
     }
   };
+
+  // Detect when a slot crosses the day boundary in the client's timezone.
+  // E.g. Dr. Hala's 11 PM Dubai = 12 AM Qostanay (next day).
+  const getLocalDateStr = (iso: string, tz: string): string => {
+    try {
+      const fmt = new Intl.DateTimeFormat('en-CA', {
+        timeZone: tz,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      });
+      return fmt.format(new Date(iso)); // returns YYYY-MM-DD
+    } catch {
+      return new Date(iso).toISOString().slice(0, 10);
+    }
+  };
+
   const clientTz = wizard.formData.clientTimezone;
   const availableSlots = daySlots.filter(s => s.available);
-  const morningSlots = availableSlots.filter(s => getLocalHour(s.start, clientTz) < 12);
-  const afternoonSlots = availableSlots.filter(s => {
+
+  // Separate same-day slots from cross-midnight (next-day) slots
+  const sameDaySlots = availableSlots.filter(s => getLocalDateStr(s.start, clientTz) === selectedDate);
+  const nextDaySlots = availableSlots.filter(s => getLocalDateStr(s.start, clientTz) !== selectedDate);
+
+  const morningSlots = sameDaySlots.filter(s => getLocalHour(s.start, clientTz) < 12);
+  const afternoonSlots = sameDaySlots.filter(s => {
     const h = getLocalHour(s.start, clientTz);
     return h >= 12 && h < 17;
   });
-  const eveningSlots = availableSlots.filter(s => getLocalHour(s.start, clientTz) >= 17);
+  const eveningSlots = sameDaySlots.filter(s => getLocalHour(s.start, clientTz) >= 17);
 
   const selectedDateLabel = selectedDate
     ? new Date(`${selectedDate}T12:00:00`).toLocaleDateString(isRTL ? 'ar' : 'en-US', { weekday: 'long', month: 'long', day: 'numeric' })
@@ -833,6 +855,7 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
                       { label: isRTL ? 'صباحاً' : 'Morning', sublabel: slotRange(morningSlots), slots: morningSlots, bg: 'bg-amber-50', accent: 'text-amber-600', icon: '☀️' },
                       { label: isRTL ? 'بعد الظهر' : 'Afternoon', sublabel: slotRange(afternoonSlots), slots: afternoonSlots, bg: 'bg-sky-50', accent: 'text-sky-600', icon: '🌤' },
                       { label: isRTL ? 'مساءً' : 'Evening', sublabel: slotRange(eveningSlots), slots: eveningSlots, bg: 'bg-indigo-50', accent: 'text-indigo-600', icon: '🌙' },
+                      ...(nextDaySlots.length > 0 ? [{ label: isRTL ? 'متأخّر (اليوم التالي)' : 'Late Night (next day)', sublabel: slotRange(nextDaySlots), slots: nextDaySlots, bg: 'bg-violet-50', accent: 'text-violet-600', icon: '🌛' }] : []),
                     ];
                   })().filter(group => group.slots.length > 0).map((group, gi) => (
                     <motion.div

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { BUSINESS } from '@/config/business';
 import { getProductPricing } from '@/lib/pricing';
 
 export const dynamic = 'force-dynamic';
@@ -14,57 +13,51 @@ function getStripe() {
 }
 
 /**
- * POST — Create a Stripe Checkout Session for academy level unlock
- * Body: { programSlug, programTitle, levelNumber, email, locale }
+ * POST — Create a Stripe Checkout Session for toolkit purchase
+ * Body: { toolkitSlug, toolkitTitle, email, locale }
  */
 export async function POST(req: NextRequest) {
   try {
-    const { programSlug, programTitle, levelNumber, email, locale } = await req.json();
+    const { toolkitSlug, toolkitTitle, email, locale } = await req.json();
 
-    if (!programSlug || !levelNumber || !email) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    if (!toolkitSlug) {
+      return NextResponse.json({ error: 'Missing toolkitSlug' }, { status: 400 });
     }
 
     const stripe = getStripe();
-
-    // Academy now uses a single Full Access tier — any paid level unlocks everything.
-    const tier = 'fullAccess';
-    const { academyFullAccessPrice } = await getProductPricing();
-    const priceCAD = academyFullAccessPrice;
+    const { toolkitFullAccessPrice } = await getProductPricing();
 
     const origin = req.headers.get('origin') || 'https://mamahala.ca';
     const loc = locale || 'en';
 
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      customer_email: email,
+      customer_email: email || undefined,
       line_items: [
         {
           price_data: {
             currency: 'cad',
-            unit_amount: priceCAD * 100, // Stripe uses cents
+            unit_amount: Math.round(toolkitFullAccessPrice * 100), // Stripe uses cents
             product_data: {
-              name: `${programTitle} — Full Program Access`,
-              description: 'Lifetime access to all levels and modules',
+              name: toolkitTitle || 'Mama Hala Toolkit — Full Premium Access',
+              description: 'One-time payment · lifetime access · no subscription',
             },
           },
           quantity: 1,
         },
       ],
       metadata: {
-        programSlug,
-        programTitle,
-        levelNumber: String(levelNumber),
-        tier,
-        email: email.toLowerCase().trim(),
+        type: 'toolkit',
+        toolkitSlug,
+        email: (email || '').toLowerCase().trim(),
       },
-      success_url: `${origin}/${loc}/programs/${programSlug}?payment=success&session_id={CHECKOUT_SESSION_ID}&level=${levelNumber}`,
-      cancel_url: `${origin}/${loc}/programs/${programSlug}?payment=cancelled`,
+      success_url: `${origin}/${loc}/resources/toolkits/unlock-success?slug=${toolkitSlug}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/${loc}/resources/toolkits/${toolkitSlug}?payment=cancelled`,
     });
 
     return NextResponse.json({ url: session.url });
   } catch (error) {
-    console.error('Stripe checkout error:', error);
+    console.error('[Toolkit Checkout] Stripe error:', error);
     const message = error instanceof Error ? error.message : 'Checkout failed';
     return NextResponse.json({ error: message }, { status: 500 });
   }
@@ -87,15 +80,14 @@ export async function GET(req: NextRequest) {
     if (session.payment_status === 'paid') {
       return NextResponse.json({
         paid: true,
-        programSlug: session.metadata?.programSlug,
-        levelNumber: session.metadata?.levelNumber ? Number(session.metadata.levelNumber) : null,
+        toolkitSlug: session.metadata?.toolkitSlug,
         email: session.metadata?.email,
       });
     }
 
     return NextResponse.json({ paid: false });
   } catch (error) {
-    console.error('Stripe session verify error:', error);
+    console.error('[Toolkit Checkout] Session verify error:', error);
     return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
   }
 }

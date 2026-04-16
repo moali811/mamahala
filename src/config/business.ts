@@ -49,12 +49,13 @@ export const BUSINESS = {
 
   // ─── TOOLKITS — Single Premium Access tier ────────────────────
   // One flat price unlocks any premium toolkit. Free preview (section 1) stays.
-  // Previous tiered pricing (Standard $19 / Flagship $29) was collapsed.
+  // Launch price: $7 CAD (previous: $19 flat, before that: $19/$29 tiered).
+  // ⚠️  Stripe payment link still set to $19 — update in Stripe dashboard!
   // Success URL configured in Stripe dashboard:
   //   https://mamahala.ca/en/resources/toolkits/unlock-success?slug={CHECKOUT_SESSION_CLIENT_REFERENCE_ID}
-  toolkitFullAccessPrice: 19,
+  toolkitFullAccessPrice: 7,
   toolkitPaymentLinks: {
-    fullAccess: 'https://buy.stripe.com/00w8wOaB88gd23XaMxawo0b',  // $19 CAD — Mama Hala Toolkit - Full Premium Access
+    fullAccess: 'https://buy.stripe.com/00w8wOaB88gd23XaMxawo0b',  // $7 CAD launch price — Mama Hala Toolkit - Full Premium Access (update in Stripe!)
   },
 
   // VIP emails — bypass ALL paywalls (academy levels + premium toolkits)

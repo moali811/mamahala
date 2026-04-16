@@ -97,7 +97,7 @@ function HoverRevealCard({ node, index, color, isRTL, isActive, anyActive, inVie
                 {(node.insightEn || node.insightAr) && (
                   <div className="rounded-md px-2 py-1.5 mt-2" style={{ background: `${nodeColor}08` }}>
                     <p className="text-[10px] text-[#3A3A4C] leading-snug">
-                      <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
+                      <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرِّبْ: ' : 'Try: '}</span>
                       {t(node.insightEn || '', node.insightAr || '', isRTL)}
                     </p>
                   </div>
@@ -196,7 +196,7 @@ function FlowchartView({ diagram, isRTL, color, selected, onSelect }: {
                     <p className="text-xs text-[#4A4A5C] leading-relaxed">{desc}</p>
                     {(node.insightEn || node.insightAr) && (
                       <p className="text-[11px] text-[#3A3A4C] leading-snug mt-2 pt-2 border-t" style={{ borderColor: `${nodeColor}18` }}>
-                        <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
+                        <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرِّبْ: ' : 'Try: '}</span>
                         {t(node.insightEn || '', node.insightAr || '', isRTL)}
                       </p>
                     )}
@@ -737,7 +737,7 @@ function WheelView({ diagram, isRTL, color, selected, onSelect }: {
             </p>
             {(activeStep.insightEn || activeStep.insightAr) && (
               <p className="text-[9px] text-[#3A3A4C] leading-snug mt-1.5 pt-1.5 border-t" style={{ borderColor: `${activeColor}20` }}>
-                <span className="font-bold" style={{ color: activeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
+                <span className="font-bold" style={{ color: activeColor }}>{isRTL ? 'جرِّبْ: ' : 'Try: '}</span>
                 {t(activeStep.insightEn || '', activeStep.insightAr || '', isRTL)}
               </p>
             )}
@@ -820,7 +820,7 @@ function WheelView({ diagram, isRTL, color, selected, onSelect }: {
             </p>
             {(activeStep.insightEn || activeStep.insightAr) && (
               <p className="text-[10px] text-[#3A3A4C] leading-snug mt-1.5 pt-1.5 border-t" style={{ borderColor: `${activeColor}20` }}>
-                <span className="font-bold" style={{ color: activeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
+                <span className="font-bold" style={{ color: activeColor }}>{isRTL ? 'جرِّبْ: ' : 'Try: '}</span>
                 {t(activeStep.insightEn || '', activeStep.insightAr || '', isRTL)}
               </p>
             )}
@@ -984,7 +984,7 @@ function SpectrumView({ diagram, isRTL, color, selected, onSelect }: {
                         </p>
                         {(node.insightEn || node.insightAr) && (
                           <p className="text-[10px] text-[#3A3A4C] leading-snug mt-1.5 pt-1.5 border-t" style={{ borderColor: `${nodeColor}15` }}>
-                            <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرّبي: ' : 'Try: '}</span>
+                            <span className="font-bold" style={{ color: nodeColor }}>{isRTL ? 'جرِّبْ: ' : 'Try: '}</span>
                             {t(node.insightEn || '', node.insightAr || '', isRTL)}
                           </p>
                         )}

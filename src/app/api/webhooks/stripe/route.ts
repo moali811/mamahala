@@ -98,7 +98,52 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true, success: true, type: 'invoice' });
   }
 
-  // ─── Academy/Toolkit payment handling ──────────────────────
+  // ─── Toolkit payment handling ───────────────────────────────
+  if (meta.type === 'toolkit' && meta.toolkitSlug) {
+    const toolkitEmail = (meta.email || session.customer_email || '').toLowerCase().trim();
+    try {
+      const kvInstance = await getKV();
+      if (kvInstance) {
+        await kvInstance.set(`toolkit:paid:${meta.toolkitSlug}:${toolkitEmail}`, {
+          paid: true,
+          paidAt: new Date().toISOString(),
+          amount: session.amount_total ? session.amount_total / 100 : null,
+          currency: session.currency || 'cad',
+          stripeSessionId: session.id,
+        });
+      }
+    } catch (err) {
+      console.error('[Stripe Webhook] Toolkit KV error:', err);
+    }
+
+    // Send confirmation email
+    if (process.env.RESEND_API_KEY && toolkitEmail) {
+      try {
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: 'Mama Hala <toolkits@mamahala.ca>',
+          to: toolkitEmail,
+          subject: 'Toolkit Unlocked — Payment Confirmed!',
+          html: emailWrapper(`
+            <div style="${emailStyles.card}">
+              <h1 style="${emailStyles.heading}">Your Toolkit Is Unlocked!</h1>
+              <p style="${emailStyles.text}">Your payment has been confirmed. Your premium toolkit is now fully unlocked — every section, every exercise, forever yours.</p>
+              <div style="text-align:center;margin:24px 0 8px;">
+                <a href="https://mamahala.ca/en/resources/toolkits/${meta.toolkitSlug}" style="${emailStyles.button}">Open Your Toolkit</a>
+              </div>
+              <p style="${emailStyles.muted};margin-top:16px;">— Dr. Hala &amp; the Mama Hala Team</p>
+            </div>
+          `),
+        });
+      } catch { /* email send failure is non-critical */ }
+    }
+
+    console.log(`[Stripe Webhook] Toolkit ${meta.toolkitSlug} unlocked for ${toolkitEmail}`);
+    return NextResponse.json({ received: true, success: true, type: 'toolkit' });
+  }
+
+  // ─── Academy payment handling ─────────────────────────────
   const programSlug = meta.programSlug;
   const levelNumber = meta.levelNumber ? Number(meta.levelNumber) : null;
   const studentEmail = (meta.email || session.customer_email || '').toLowerCase().trim();

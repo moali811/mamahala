@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import {
   Building2, Phone, Mail, Clock, MapPin, Globe, Calendar,
   Instagram, Facebook, Youtube, Send, CheckCircle, ExternalLink,
-  Edit3, Save, X, Loader2,
+  Edit3, Save, X, Loader2, DollarSign,
 } from 'lucide-react';
 import { BUSINESS } from '@/config/business';
 
@@ -27,6 +27,9 @@ interface Settings {
   stat2Value: string; stat2LabelEn: string; stat2LabelAr: string; stat2DescEn: string; stat2DescAr: string;
   stat3Value: string; stat3LabelEn: string; stat3LabelAr: string; stat3DescEn: string; stat3DescAr: string;
   stat4Value: string; stat4LabelEn: string; stat4LabelAr: string; stat4DescEn: string; stat4DescAr: string;
+  // Pricing
+  toolkitFullAccessPrice: number;
+  academyFullAccessPrice: number;
   // Social
   instagram: string;
   facebook: string;
@@ -52,6 +55,8 @@ const DEFAULT_SETTINGS: Settings = {
   stat2Value: '98%', stat2LabelEn: 'Would Recommend', stat2LabelAr: 'يوصون بنا', stat2DescEn: 'client satisfaction', stat2DescAr: 'رضا العملاء',
   stat3Value: '8+', stat3LabelEn: 'Years of Practice', stat3LabelAr: 'سنوات من الممارسة', stat3DescEn: 'clinical experience', stat3DescAr: 'خبرة سريرية',
   stat4Value: '15+', stat4LabelEn: 'Specializations', stat4LabelAr: 'تخصصاً', stat4DescEn: 'across all ages', stat4DescAr: 'لجميع الأعمار',
+  toolkitFullAccessPrice: BUSINESS.toolkitFullAccessPrice,
+  academyFullAccessPrice: BUSINESS.academyFullAccessPrice,
   instagram: BUSINESS.social.instagram,
   facebook: BUSINESS.social.facebook,
   youtube: BUSINESS.social.youtube,
@@ -112,15 +117,25 @@ export default function SettingsModule({ password }: Props) {
   const fetchSettings = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/settings', {
-        headers: { Authorization: `Bearer ${password}` },
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.settings) {
-          setSettings({ ...DEFAULT_SETTINGS, ...data.settings });
-        }
+      const [settingsRes, pricingRes] = await Promise.all([
+        fetch('/api/admin/settings', {
+          headers: { Authorization: `Bearer ${password}` },
+        }),
+        fetch('/api/admin/pricing', {
+          headers: { Authorization: `Bearer ${password}` },
+        }).catch(() => null),
+      ]);
+      let merged = { ...DEFAULT_SETTINGS };
+      if (settingsRes.ok) {
+        const data = await settingsRes.json();
+        if (data.settings) merged = { ...merged, ...data.settings };
       }
+      if (pricingRes?.ok) {
+        const pricingData = await pricingRes.json();
+        if (pricingData.toolkitFullAccessPrice != null) merged.toolkitFullAccessPrice = pricingData.toolkitFullAccessPrice;
+        if (pricingData.academyFullAccessPrice != null) merged.academyFullAccessPrice = pricingData.academyFullAccessPrice;
+      }
+      setSettings(merged);
     } catch { /* use defaults */ }
     setLoading(false);
   }, [password]);
@@ -130,11 +145,21 @@ export default function SettingsModule({ password }: Props) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const res = await fetch('/api/admin/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
-        body: JSON.stringify({ settings }),
-      });
+      const [res] = await Promise.all([
+        fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
+          body: JSON.stringify({ settings }),
+        }),
+        fetch('/api/admin/pricing', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
+          body: JSON.stringify({
+            toolkitFullAccessPrice: settings.toolkitFullAccessPrice,
+            academyFullAccessPrice: settings.academyFullAccessPrice,
+          }),
+        }).catch(() => null),
+      ]);
       if (res.ok) {
         setEditing(false);
         setSaved(true);
@@ -210,6 +235,55 @@ export default function SettingsModule({ password }: Props) {
               <DisplayRow icon={<Mail className="w-4 h-4" />} label="Email" value={settings.email} link={`mailto:${settings.email}`} />
               <DisplayRow icon={<Clock className="w-4 h-4" />} label="Business Hours" value={settings.hours} />
               <DisplayRow icon={<MapPin className="w-4 h-4" />} label="Location" value={settings.location} />
+            </>
+          )}
+        </div>
+
+        {/* Product Pricing */}
+        <div className="bg-white rounded-xl border border-[#F3EFE8] p-6 lg:col-span-2">
+          <h3 className="text-sm font-semibold text-[#2D2A33] mb-4" style={{ fontFamily: 'Georgia, serif' }}>
+            <DollarSign className="w-4 h-4 inline-block mr-1.5 text-[#3B8A6E]" />
+            Product Pricing
+          </h3>
+          {editing ? (
+            <>
+              <div className="flex items-center gap-4 py-3 border-b border-[#F3EFE8]">
+                <div className="w-8 h-8 rounded-lg bg-[#7A3B5E]/10 flex items-center justify-center flex-shrink-0 text-[#7A3B5E]">
+                  <DollarSign className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className="text-xs text-[#8E8E9F]">Toolkit Access (CAD)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={settings.toolkitFullAccessPrice}
+                    onChange={(e) => setSettings(prev => ({ ...prev, toolkitFullAccessPrice: Number(e.target.value) }))}
+                    className="w-full text-sm font-medium text-[#2D2A33] bg-transparent border-b border-[#E8E4DE] focus:border-[#7A3B5E] focus:outline-none py-0.5"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center gap-4 py-3">
+                <div className="w-8 h-8 rounded-lg bg-[#7A3B5E]/10 flex items-center justify-center flex-shrink-0 text-[#7A3B5E]">
+                  <DollarSign className="w-4 h-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <label className="text-xs text-[#8E8E9F]">Academy Access (CAD)</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={settings.academyFullAccessPrice}
+                    onChange={(e) => setSettings(prev => ({ ...prev, academyFullAccessPrice: Number(e.target.value) }))}
+                    className="w-full text-sm font-medium text-[#2D2A33] bg-transparent border-b border-[#E8E4DE] focus:border-[#7A3B5E] focus:outline-none py-0.5"
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <DisplayRow icon={<DollarSign className="w-4 h-4" />} label="Toolkit Access (CAD)" value={`$${settings.toolkitFullAccessPrice}`} />
+              <DisplayRow icon={<DollarSign className="w-4 h-4" />} label="Academy Access (CAD)" value={`$${settings.academyFullAccessPrice}`} />
             </>
           )}
         </div>

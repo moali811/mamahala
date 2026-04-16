@@ -16,7 +16,7 @@ export const toolkitCatalog: ToolkitCatalogEntry[] = [
     titleAr: 'يوميّاتُ التعافي من القلق',
     hasInteractiveVersion: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
   },
   {
     slug: 'couples-communication-workbook',
@@ -24,7 +24,7 @@ export const toolkitCatalog: ToolkitCatalogEntry[] = [
     titleAr: 'دَفْتَرُ عَمَلِ التَّواصُلِ لِلأَزْواج',
     hasInteractiveVersion: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
   },
   {
     slug: 'complete-parenting-guide',
@@ -32,15 +32,15 @@ export const toolkitCatalog: ToolkitCatalogEntry[] = [
     titleAr: 'الوالِدُ الواعي: دَليلٌ شامِل',
     hasInteractiveVersion: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
   },
   {
     slug: 'understanding-your-teen',
     titleEn: "Understanding Your Teen's Inner World",
-    titleAr: 'فَهْمُ العالَمِ الدّاخِلِيِّ لِمُراهِقِكِ',
+    titleAr: 'فَهْمُ العالَمِ الدّاخِلِيِّ لِمُراهِقِك',
     hasInteractiveVersion: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
   },
   {
     slug: 'adulting-emotional-edition',
@@ -48,7 +48,7 @@ export const toolkitCatalog: ToolkitCatalogEntry[] = [
     titleAr: 'دَليلُ الكِبار ١٠١: النُّسْخَةُ العاطِفِيَّة',
     hasInteractiveVersion: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
   },
   // All others have hasInteractiveVersion: false for now
 ];

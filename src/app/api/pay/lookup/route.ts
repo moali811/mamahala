@@ -39,6 +39,9 @@ export interface PayConciergeData {
   /** URL for the "Pay with Card" button — null when no Stripe tier works. */
   cardPayUrl: string | null;
 
+  /** True when cardPayUrl is a dynamic Checkout Session (Tier 1) — amount pre-filled, no manual entry. */
+  cardPayIsCheckoutSession: boolean;
+
   /** e-Transfer details — only set for Canadian invoices with allowETransfer. */
   eTransfer: {
     email: string;
@@ -100,6 +103,7 @@ export async function GET(request: NextRequest) {
     status: invoice.status,
     countryISO2: country,
     cardPayUrl: resolveCardPayUrl(invoice, settings),
+    cardPayIsCheckoutSession: !!invoice.stripeCheckoutUrl,
     eTransfer:
       isCA && invoice.draft.allowETransfer
         ? {

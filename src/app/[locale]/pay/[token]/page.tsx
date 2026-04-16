@@ -256,46 +256,49 @@ export default function PayConciergePage({
                 href={data.cardPayUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-white rounded-2xl p-5 shadow-sm border border-[#F0ECE8] hover:border-[#3B8A6E] hover:shadow-md transition-all group"
+                className="block bg-white rounded-2xl overflow-hidden shadow-sm border border-[#F0ECE8] hover:border-[#3B8A6E] hover:shadow-md transition-all group"
               >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-[#F0FAF5] flex items-center justify-center shrink-0 group-hover:bg-[#3B8A6E]/15 transition-colors">
-                    <CreditCard className="w-6 h-6 text-[#3B8A6E]" />
+                {/* Primary CTA area */}
+                <div className="p-5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-[#F0FAF5] flex items-center justify-center shrink-0 group-hover:bg-[#3B8A6E]/15 transition-colors">
+                      <CreditCard className="w-6 h-6 text-[#3B8A6E]" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-[#2D2A33] mb-0.5">
+                        {isRTL ? `ادفع ${data.amount.formatted} بالبطاقة` : `Pay ${data.amount.formatted} with Card`}
+                      </p>
+                      <p className="text-xs text-[#8E8E9F]">
+                        {isRTL ? 'فيزا، ماستركارد، أبل باي — عبر Stripe' : 'Visa, Mastercard, Apple Pay — via Stripe'}
+                      </p>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#3B8A6E] shrink-0" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-[#2D2A33] mb-0.5">
-                      {isRTL ? 'الدفع بالبطاقة' : 'Pay with Card'}
-                    </p>
-                    <p className="text-xs text-[#8E8E9F]">
-                      {isRTL ? 'فيزا، ماستركارد، أبل باي — عبر Stripe' : 'Visa, Mastercard, Apple Pay — via Stripe'}
-                    </p>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#3B8A6E] shrink-0" />
                 </div>
-                {/* Amount + Invoice Number hints — shown when the linked Stripe
-                    Payment Link is a "customer chooses what to pay" product with
-                    our required custom field. Always shows both even in the
-                    dynamic-session case because the copy is short and harmless
-                    there (the session pre-fills everything so the hints are
-                    just reassuring confirmation). */}
-                <div className="mt-3 pt-3 border-t border-dashed border-[#F0ECE8] space-y-1.5">
-                  <p className="text-[11px] text-[#8E8E9F] font-medium">
-                    {isRTL ? 'عند الدفع على Stripe، أدخل:' : 'On the Stripe page, please enter:'}
-                  </p>
-                  <div className="flex items-start gap-2">
-                    <span className="text-[11px] text-[#C8A97D] font-bold shrink-0">•</span>
-                    <p className="text-[11px] text-[#4A4A5C]">
-                      <span className="text-[#8E8E9F]">{isRTL ? 'المبلغ: ' : 'Amount: '}</span>
-                      <span className="font-semibold text-[#7A3B5E] font-mono">{data.amount.formatted}</span>
+                {/* Smart helper text — adapts to Stripe tier */}
+                <div className="px-5 pb-4 pt-0">
+                  {data.cardPayIsCheckoutSession ? (
+                    /* Tier 1: Dynamic Checkout Session — amount pre-filled, one click */
+                    <p className="text-[11px] text-[#3B8A6E] flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3 h-3 shrink-0" />
+                      {isRTL
+                        ? 'المبلغ محمّل تلقائياً — أدخل بيانات البطاقة فقط'
+                        : 'Amount pre-filled — just enter your card details'}
                     </p>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-[11px] text-[#C8A97D] font-bold shrink-0">•</span>
-                    <p className="text-[11px] text-[#4A4A5C]">
-                      <span className="text-[#8E8E9F]">{isRTL ? 'رقم الفاتورة: ' : 'Invoice Number: '}</span>
-                      <span className="font-semibold text-[#7A3B5E] font-mono">{data.invoiceNumber}</span>
-                    </p>
-                  </div>
+                  ) : (
+                    /* Tier 2/3: Payment Link — client may need to confirm amount */
+                    <div className="text-[11px] text-[#8E8E9F] bg-[#FFFAF5] rounded-lg p-2.5 space-y-1">
+                      <p className="font-medium">
+                        {isRTL ? 'إذا طُلب منك، أدخل:' : 'If prompted, enter:'}
+                      </p>
+                      <p>
+                        {isRTL ? 'المبلغ' : 'Amount'}: <span className="font-semibold text-[#7A3B5E] font-mono">{data.amount.formatted}</span>
+                      </p>
+                      <p>
+                        {isRTL ? 'مرجع' : 'Reference'}: <span className="font-semibold text-[#7A3B5E] font-mono">{data.invoiceNumber}</span>
+                      </p>
+                    </div>
+                  )}
                 </div>
               </motion.a>
             )}

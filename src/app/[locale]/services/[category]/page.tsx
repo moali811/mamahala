@@ -10,6 +10,7 @@ import {
   GraduationCap, Users, User, Heart, Leaf, Clock, HelpCircle, Sprout, Smile, TreePine,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { getBookingUrl } from '@/config/business';
 import { useServices } from '@/hooks/useServices';
 import { useTestimonials } from '@/hooks/useTestimonials';
 import type { ServiceCategory } from '@/types';
@@ -310,7 +311,12 @@ export default function ServiceCategoryPage() {
           })}
 
           <ScrollReveal className="text-center">
-            <p className="text-xs text-[#8E8E9F] italic">{messages.services.personalizedDisclaimer}</p>
+            <a
+              href={getBookingUrl(locale as string)}
+              className="inline-block text-sm font-semibold text-[#7A3B5E] hover:text-[#5A2D47] transition-colors"
+            >
+              {messages.services.discoveryCTA}
+            </a>
           </ScrollReveal>
         </div>
       </section>

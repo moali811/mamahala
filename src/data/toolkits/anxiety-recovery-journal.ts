@@ -18,7 +18,7 @@ const toolkit: ToolkitMeta = {
   heroQuoteEn: 'This journal won\'t cure your anxiety. But it will teach you to stop being afraid of it.',
   heroQuoteAr: 'هذا الدّفتر لن يشفي قلقك. لكنّه سيُعلّمك أن تتوقّف عن الخوف منه.',
   isPremium: true,
-  priceCAD: 19,
+  priceCAD: 7,
   freePreviewSectionId: 'understanding-your-anxiety',
 
   howToUse: [

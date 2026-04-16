@@ -627,9 +627,9 @@ export default function ModuleLessonPage() {
         <NextStepNudge
           show={quizJustPassed}
           messageEn="Amazing! You passed the quiz! Finish up to continue your journey."
-          messageAr="رائع! اجتزتِ الاختبار! أكملي الوحدة لمتابعة الرّحلة."
+          messageAr="رائع! نجحتَ في الاختبار! أكمِلْ الوحدةَ لمتابعةِ الرّحلة."
           buttonEn="Complete This Module"
-          buttonAr="أكملي هذه الوحدة"
+          buttonAr="أكمِلْ هذه الوحدة"
           isRTL={isRTL}
           color={program.color}
           icon="complete"

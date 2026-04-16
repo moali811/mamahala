@@ -28,7 +28,7 @@ const toolkit: ToolkitMeta = {
   heroQuoteEn: "You are not behind. You are simply learning something that was never taught.",
   heroQuoteAr: 'أَنْتَ لَسْتَ مُتَأَخِّراً. أَنْتَ فَقَطْ تَتَعَلَّمُ شَيْئاً لَمْ يُعَلَّمْ أَبَداً.',
   isPremium: true,
-  priceCAD: 19,
+  priceCAD: 7,
   freePreviewSectionId: 'emotional-literacy',
 
   howToUse: [

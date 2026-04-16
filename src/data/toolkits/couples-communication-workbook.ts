@@ -25,7 +25,7 @@ const toolkit: ToolkitMeta = {
   heroQuoteEn: 'The quality of your relationship is the quality of your communication.',
   heroQuoteAr: 'جَوْدَةُ عَلاقَتِكُما هي جَوْدَةُ تَواصُلِكُما.',
   isPremium: true,
-  priceCAD: 19,
+  priceCAD: 7,
   freePreviewSectionId: 'rebuilding-dialogue',
 
   howToUse: [
@@ -41,7 +41,7 @@ const toolkit: ToolkitMeta = {
       labelEn: 'No interrupting. No scoring.',
       labelAr: 'بِدونِ مُقاطَعَة. بِدونِ تَسْجيلِ نِقاط',
       descEn: "When your partner speaks, your job is to listen — not to prepare your response. This isn't about who's right.",
-      descAr: 'حينَ يَتَحَدَّثُ شَريكُكِ، مُهِمَّتُكِ هي الاِسْتِماع — لَيْسَ تَحْضيرَ رَدِّكِ. هذا لَيْسَ عَنْ مَنْ هُوَ عَلى حَقّ.',
+      descAr: 'حينَ يَتَحَدَّثُ شَريكُكَ، مُهِمَّتُكَ هي الاِسْتِماع — لَيْسَ تَحْضيرَ رَدِّكَ. هذا لَيْسَ عَنْ مَنْ هُوَ عَلى حَقّ.',
     },
     {
       iconName: 'clock',
@@ -114,7 +114,7 @@ const toolkit: ToolkitMeta = {
             "Be kind. You're on the same team, even when it doesn't feel that way.",
           ],
           itemsAr: [
-            'لا مُقاطَعَة. حينَ يَتَحَدَّثُ شَريكُكِ، مُهِمَّتُكِ هي الاِسْتِماع.',
+            'لا مُقاطَعَة. حينَ يَتَحَدَّثُ شَريكُكَ، مُهِمَّتُكَ هي الاِسْتِماع.',
             'لا أَجْهِزَة. ضَعا هَواتِفَكُما في غُرْفَةٍ أُخْرى. هذا الوَقْتُ مُقَدَّس.',
             'تَبادَلا الأَدْوار. لِكُلِّ تَمْرينٍ هَيْكَلِيَّتُه — اِتَّبِعاها.',
             'لا بَأْسَ بِالتَّوَقُّف. إِذا اِرْتَفَعَتِ المَشاعِر، تَوَقَّفا وتَنَفَّسا.',

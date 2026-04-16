@@ -14,21 +14,21 @@ import type { ToolkitMeta } from '@/types/toolkit';
 const toolkit: ToolkitMeta = {
   slug: 'understanding-your-teen',
   titleEn: "Understanding Your Teen's Inner World",
-  titleAr: 'فَهْمُ العالَمِ الدّاخِلِيِّ لِمُراهِقِكِ',
+  titleAr: 'فَهْمُ العالَمِ الدّاخِلِيِّ لِمُراهِقِك',
   subtitleEn: "A Parent's Guide to the Teenage Brain, Decoded",
   subtitleAr: 'دَليلُ الوالِدَيْنِ إِلى دِماغِ المُراهِق، مَفْكوكُ الشِّفْرَة',
   descriptionEn:
     'Your teen is not broken. They are building. When your once-sweet child retreats to their room, rolls their eyes at dinner, or seems to care more about their friends\' opinions than yours, it can feel personal. It can feel like you are losing them. You are not.\n\nThis guide is for parents who want to understand what is happening beneath the surface — not to excuse difficult behavior, but to respond to it with insight instead of fear. When you understand why your teen acts the way they do, everything changes: your patience grows, your reactions soften, and your connection deepens, even when the surface looks stormy.\n\nYour teen needs you now more than ever. They just need you differently than they did at age six.',
   descriptionAr:
-    'مُراهِقُكِ لَيْسَ مَكْسوراً. هُوَ يَبْني. حينَ يَنْسَحِبُ طِفْلُكِ الَّذي كانَ حُلْواً إِلى غُرْفَتِه، ويَرْفَعُ عَيْنَيْهِ عَلى العَشاء، ويَبْدو أَنَّهُ يَهْتَمُّ بِآراءِ أَصْدِقائِهِ أَكْثَرَ مِنْ آرائِكِ، قَدْ يَبْدو الأَمْرُ شَخْصِيّاً. قَدْ يَبْدو أَنَّكِ تَفْقُدينَه. أَنْتِ لا تَفْعَلين.\n\nهذا الدَّليلُ لِلآباءِ والأُمَّهاتِ الَّذينَ يُريدونَ فَهْمَ ما يَحْدُثُ تَحْتَ السَّطْح — لَيْسَ لِتَبْريرِ السُّلوكِ الصَّعْب، بَلْ لِلاِسْتِجابَةِ لَهُ بِبَصيرَةٍ بَدَلاً مِنَ الخَوْف. حينَ تَفْهَمينَ لِماذا يَتَصَرَّفُ مُراهِقُكِ بِالطَّريقَةِ الَّتي يَتَصَرَّفُ بِها، يَتَغَيَّرُ كُلُّ شَيْء: صَبْرُكِ يَنْمو، رُدودُ فِعْلِكِ تَلْطُف، وتَواصُلُكِ يَتَعَمَّق، حَتّى حينَ يَبْدو السَّطْحُ عاصِفاً.\n\nيَحْتاجُكِ مُراهِقُكِ الآنَ أَكْثَرَ مِنْ أَيِّ وَقْتٍ مَضى. يَحْتاجُكِ فَقَطْ بِشَكْلٍ مُخْتَلِفٍ عَمّا كانَ يَحْتاجُكِ في السّادِسَة.',
+    'مُراهِقُكَ لَيْسَ مَكْسوراً. هُوَ يَبْني. حينَ يَنْسَحِبُ طِفْلُكَ الَّذي كانَ حُلْواً إِلى غُرْفَتِه، ويَرْفَعُ عَيْنَيْهِ عَلى العَشاء، ويَبْدو أَنَّهُ يَهْتَمُّ بِآراءِ أَصْدِقائِهِ أَكْثَرَ مِنْ آرائِكَ، قَدْ يَبْدو الأَمْرُ شَخْصِيّاً. قَدْ يَبْدو أَنَّكَ تَفْقُدُه. أَنْتَ لا تَفْعَل.\n\nهذا الدَّليلُ لِلآباءِ والأُمَّهاتِ الَّذينَ يُريدونَ فَهْمَ ما يَحْدُثُ تَحْتَ السَّطْح — لَيْسَ لِتَبْريرِ السُّلوكِ الصَّعْب، بَلْ لِلاِسْتِجابَةِ لَهُ بِبَصيرَةٍ بَدَلاً مِنَ الخَوْف. حينَ تَفْهَمُ لِماذا يَتَصَرَّفُ مُراهِقُكَ بِالطَّريقَةِ الَّتي يَتَصَرَّفُ بِها، يَتَغَيَّرُ كُلُّ شَيْء: صَبْرُكَ يَنْمو، رُدودُ فِعْلِكَ تَلْطُف، وتَواصُلُكَ يَتَعَمَّق، حَتّى حينَ يَبْدو السَّطْحُ عاصِفاً.\n\nيَحْتاجُكَ مُراهِقُكَ الآنَ أَكْثَرَ مِنْ أَيِّ وَقْتٍ مَضى. يَحْتاجُكَ فَقَطْ بِشَكْلٍ مُخْتَلِفٍ عَمّا كانَ يَحْتاجُكَ في السّادِسَة.',
   author: 'Dr. Hala Ali',
   category: 'youth',
   format: 'guide',
   color: '#C4878A',
   heroQuoteEn: 'Your teen is not broken. They are building.',
-  heroQuoteAr: 'مُراهِقُكِ لَيْسَ مَكْسوراً. هُوَ يَبْني.',
+  heroQuoteAr: 'مُراهِقُك لَيْسَ مَكْسوراً. هُوَ يَبْني.',
   isPremium: true,
-  priceCAD: 19,
+  priceCAD: 7,
   freePreviewSectionId: 'teen-brain',
 
   howToUse: [
@@ -56,7 +56,7 @@ const toolkit: ToolkitMeta = {
     {
       iconName: 'shield',
       labelEn: 'Hold the boundary, lose the tone',
-      labelAr: 'اِحْفَظي الحَدَّ، اُسْقِطِي النَّبْرَة',
+      labelAr: 'اِحْفَظِ الحَدَّ، اُسْقِطِ النَّبْرَة',
       descEn: 'You can keep the rule firm while dropping the sarcasm, threat, or shame. Firm ≠ harsh.',
       descAr: 'يُمْكِنُكِ الاِحْتِفاظُ بِالقاعِدَةِ ثابِتَةً مَعَ إِسْقاطِ السُّخْرِيَّةِ أَوِ التَّهْديدِ أَوِ العار. ثابِت ≠ قاسٍ.',
     },
@@ -87,7 +87,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             "To understand your teen, you first need to understand their brain. And the most important thing to know is this: the teenage brain is not a finished adult brain that is misbehaving. It is an unfinished brain that is doing exactly what it was designed to do.",
           textAr:
-            'لِفَهْمِ مُراهِقِكِ، تَحْتاجينَ أَوَّلاً إِلى فَهْمِ دِماغِه. والشَّيْءُ الأَهَمُّ الَّذي يَجِبُ مَعْرِفَتُهُ هُوَ هذا: دِماغُ المُراهِقِ لَيْسَ دِماغاً بالِغاً مُنْتَهِياً يُسيءُ التَّصَرُّف. هُوَ دِماغٌ غَيْرُ مُكْتَمِلٍ يَفْعَلُ بِالضَّبْطِ ما صُمِّمَ لِفِعْلِه.',
+            'لِفَهْمِ مُراهِقِكَ، تَحْتاجُ أَوَّلاً إِلى فَهْمِ دِماغِه. والشَّيْءُ الأَهَمُّ الَّذي يَجِبُ مَعْرِفَتُهُ هُوَ هذا: دِماغُ المُراهِقِ لَيْسَ دِماغاً بالِغاً مُنْتَهِياً يُسيءُ التَّصَرُّف. هُوَ دِماغٌ غَيْرُ مُكْتَمِلٍ يَفْعَلُ بِالضَّبْطِ ما صُمِّمَ لِفِعْلِه.',
           tone: 'lead',
         },
 
@@ -104,7 +104,7 @@ const toolkit: ToolkitMeta = {
               labelEn: 'Prefrontal cortex',
               labelAr: 'القِشْرَةُ الجَبْهِيَّةُ الأَمامِيَّة',
               descEn: 'Decision-making, impulse control, planning. Not fully developed until mid-20s. Your teen literally does not have adult braking power yet.',
-              descAr: 'اِتِّخاذُ القَرار، التَّحَكُّمُ في الاِنْدِفاع، التَّخْطيط. لا تَكْتَمِلُ حَتّى مُنْتَصَفِ العِشْرينات. مُراهِقُكِ حَرْفِيّاً لا يَمْلِكُ قُوَّةَ فَرامِلِ البالِغينَ بَعْد.',
+              descAr: 'اِتِّخاذُ القَرار، التَّحَكُّمُ في الاِنْدِفاع، التَّخْطيط. لا تَكْتَمِلُ حَتّى مُنْتَصَفِ العِشْرينات. مُراهِقُكَ حَرْفِيّاً لا يَمْلِكُ قُوَّةَ فَرامِلِ البالِغينَ بَعْد.',
             },
             {
               iconName: 'flame',
@@ -127,7 +127,7 @@ const toolkit: ToolkitMeta = {
           id: 's1-quote',
           textEn:
             'Your teenager is navigating the world with a gas pedal that works perfectly and brakes that are still being installed.',
-          textAr: 'مُراهِقُكِ يَتَنَقَّلُ في العالَمِ بِدَوّاسَةِ وَقودٍ تَعْمَلُ بِشَكْلٍ مِثالِيٍّ وفَرامِلَ ما زالَتْ تُرَكَّب.',
+          textAr: 'مُراهِقُكَ يَتَنَقَّلُ في العالَمِ بِدَوّاسَةِ وَقودٍ تَعْمَلُ بِشَكْلٍ مِثالِيٍّ وفَرامِلَ ما زالَتْ تُرَكَّب.',
         },
 
         /* ── What it means for parents ── */
@@ -145,7 +145,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             'Your job is not to be the brakes. It is to be the guardrail — present enough to keep them safe, flexible enough to let them learn, and calm enough to help them regulate when their own system cannot.',
           textAr:
-            'مُهِمَّتُكِ لَيْسَتْ أَنْ تَكوني الفَرامِل. بَلْ أَنْ تَكوني الحاجِزَ الواقي — حاضِرَةً بِما يَكْفي لِحِمايَتِهِم، مَرِنَةً بِما يَكْفي لِتَدَعيهِمْ يَتَعَلَّمون، وهادِئَةً بِما يَكْفي لِمُساعَدَتِهِم عَلى التَّنْظيمِ حينَ لا يَسْتَطيعُ جِهازُهُم.',
+            'مُهِمَّتُكَ لَيْسَتْ أَنْ تَكونَ الفَرامِل. بَلْ أَنْ تَكونَ الحاجِزَ الواقي — حاضِرًا بِما يَكْفي لِحِمايَتِهِم، مَرِنًا بِما يَكْفي لِتَدَعَهُمْ يَتَعَلَّمون، وهادِئًا بِما يَكْفي لِمُساعَدَتِهِم عَلى التَّنْظيمِ حينَ لا يَسْتَطيعُ جِهازُهُم.',
         },
         {
           kind: 'cycle-diagram',
@@ -169,9 +169,9 @@ const toolkit: ToolkitMeta = {
             },
             {
               labelEn: 'They borrow your calm',
-              labelAr: 'هُمْ يَسْتَعيرونَ هُدوءَكِ',
+              labelAr: 'هُمْ يَسْتَعيرونَ هُدوءَكَ',
               descEn: 'The storm subsides. Not because you fixed anything — because you held the space.',
-              descAr: 'العاصِفَةُ تَهْدَأ. لَيْسَ لِأَنَّكِ أَصْلَحْتِ شَيْئاً — بَلْ لِأَنَّكِ حَمَلْتِ المِساحَة.',
+              descAr: 'العاصِفَةُ تَهْدَأ. لَيْسَ لِأَنَّكَ أَصْلَحْتَ شَيْئاً — بَلْ لِأَنَّكَ حَمَلْتَ المِساحَة.',
               color: '#C4878A',
             },
             {
@@ -325,14 +325,14 @@ const toolkit: ToolkitMeta = {
           kind: 'pullquote',
           id: 's2-b3-quote',
           textEn: 'Arguing with a parent is actually a sign of trust. Your teen argues with you because they feel safe enough to disagree.',
-          textAr: 'الجِدالُ مَعَ الوالِدِ هُوَ في الحَقيقَةِ عَلامَةُ ثِقَة. مُراهِقُكِ يُجادِلُكِ لِأَنَّهُ يَشْعُرُ بِالأَمانِ بِما يَكْفي لِلاِخْتِلاف.',
+          textAr: 'الجِدالُ مَعَ الوالِدِ هُوَ في الحَقيقَةِ عَلامَةُ ثِقَة. مُراهِقُكَ يُجادِلُكَ لِأَنَّهُ يَشْعُرُ بِالأَمانِ بِما يَكْفي لِلاِخْتِلاف.',
         },
         {
           kind: 'callout',
           id: 's2-b3-what-helps',
           variant: 'dr-hala',
           textEn: 'What helps: Hold your boundaries calmly. Listen to their point — you don\'t have to agree. Say: "I understand your perspective, AND here is why I\'m holding this boundary." Pick your battles wisely.',
-          textAr: 'ما يُساعِد: اِحْفَظي حُدودَكِ بِهُدوء. اِسْتَمِعي لِوِجْهَةِ نَظَرِهِم — لَسْتِ مُضْطَرَّةً لِلمُوافَقَة. قولي: "أَفْهَمُ وِجْهَةَ نَظَرِكَ، وفي الوَقْتِ نَفْسِهِ هذا سَبَبُ تَمَسُّكي بِهذا الحَدّ." اِخْتاري مَعارِكَكِ بِحِكْمَة.',
+          textAr: 'ما يُساعِد: اِحْفَظْ حُدودَكَ بِهُدوء. اِسْتَمِعْ لِوِجْهَةِ نَظَرِهِم — لَسْتَ مُضْطَرًّا لِلمُوافَقَة. قُلْ: "أَفْهَمُ وِجْهَةَ نَظَرِكَ، وفي الوَقْتِ نَفْسِهِ هذا سَبَبُ تَمَسُّكي بِهذا الحَدّ." اِخْتَرْ مَعارِكَكَ بِحِكْمَة.',
         },
 
         /* ── Behavior 4: Extreme emotions ── */
@@ -354,7 +354,7 @@ const toolkit: ToolkitMeta = {
           id: 's2-b4-what-helps',
           variant: 'insight',
           textEn: "What helps: Validate BEFORE you redirect. 'I can see this is really upsetting you' goes further than 'Calm down.' Don't dismiss their emotions because the trigger seems small to you. To them, it is not small.",
-          textAr: 'ما يُساعِد: صادِقي قَبْلَ أَنْ تُوَجِّهي. "أَرى أَنَّ هذا يُؤَثِّرُ عَلَيْكَ حَقّاً" تَذْهَبُ أَبْعَدَ مِنْ "اِهْدَأ." لا تَرْفُضي مَشاعِرَهُمْ لِأَنَّ المُحَفِّزَ يَبْدو صَغيراً لَكِ. بِالنِّسْبَةِ لَهُم، هُوَ لَيْسَ صَغيراً.',
+          textAr: 'ما يُساعِد: صادِقْ قَبْلَ أَنْ تُوَجِّهْ. "أَرى أَنَّ هذا يُؤَثِّرُ عَلَيْكَ حَقّاً" تَذْهَبُ أَبْعَدَ مِنْ "اِهْدَأ." لا تَرْفُضْ مَشاعِرَهُمْ لِأَنَّ المُحَفِّزَ يَبْدو صَغيراً لَكَ. بِالنِّسْبَةِ لَهُم، هُوَ لَيْسَ صَغيراً.',
         },
 
         /* ── Behavior 5: Takes risks ── */
@@ -385,13 +385,13 @@ const toolkit: ToolkitMeta = {
           id: 's2-b6-heading',
           level: 3,
           textEn: "6 · Why they say \"You don't understand\"",
-          textAr: '٦ · لِماذا يَقولون "أَنْتِ لا تَفْهَمين"',
+          textAr: '٦ · لِماذا يَقولون "أَنْتَ لا تَفْهَم"',
         },
         {
           kind: 'paragraph',
           id: 's2-b6-intro',
           textEn: "In some ways they're right — their world IS different from yours. But more often, \"you don't understand\" is really saying \"I don't feel heard.\" It's not an invitation to prove you understand. It's a signal that they need to feel seen.",
-          textAr: 'بِطَريقَةٍ ما هُمْ عَلى حَقّ — عالَمُهُمْ مُخْتَلِفٌ عَنْ عالَمِكِ. لكِنْ في أَغْلَبِ الأَحْيان، "أَنْتِ لا تَفْهَمين" يَقولُ حَقّاً "لا أَشْعُرُ بِأَنَّني مَسْموع." هذِهِ لَيْسَتْ دَعْوَةً لِإِثْباتِ أَنَّكِ تَفْهَمين. هي إِشارَةٌ أَنَّهُمْ يَحْتاجونَ أَنْ يَشْعُروا بِأَنَّهُمْ مَرْئِيّون.',
+          textAr: 'بِطَريقَةٍ ما هُمْ عَلى حَقّ — عالَمُهُمْ مُخْتَلِفٌ عَنْ عالَمِكَ. لكِنْ في أَغْلَبِ الأَحْيان، "أَنْتَ لا تَفْهَم" يَقولُ حَقّاً "لا أَشْعُرُ بِأَنَّني مَسْموع." هذِهِ لَيْسَتْ دَعْوَةً لِإِثْباتِ أَنَّكَ تَفْهَم. هي إِشارَةٌ أَنَّهُمْ يَحْتاجونَ أَنْ يَشْعُروا بِأَنَّهُمْ مَرْئِيّون.',
         },
         {
           kind: 'callout',
@@ -409,7 +409,7 @@ const toolkit: ToolkitMeta = {
     {
       id: 'teen-needs',
       titleEn: 'Part 3 · What Your Teen Actually Needs From You',
-      titleAr: 'الجُزْءُ الثّالِث · ما يَحْتاجُهُ مُراهِقُكِ مِنْكِ فِعْلاً',
+      titleAr: 'الجُزْءُ الثّالِث · ما يَحْتاجُهُ مُراهِقُكَ مِنْكَ فِعْلاً',
       subtitleEn: 'Five unmet needs, five practical actions',
       subtitleAr: 'خَمْسُ اِحْتِياجاتٍ غَيْرِ مُلَبّاة، خَمْسَةُ أَفْعالٍ عَمَلِيَّة',
       color: '#5A8B6F',
@@ -418,7 +418,7 @@ const toolkit: ToolkitMeta = {
           kind: 'paragraph',
           id: 's3-intro',
           textEn: 'Behind every difficult behavior is an unmet need. Here are the five things your teenager needs most, and practical ways to provide them.',
-          textAr: 'وَراءَ كُلِّ سُلوكٍ صَعْبٍ اِحْتِياجٌ غَيْرُ مُلَبّى. إِلَيْكُنَّ الأَشْياءَ الخَمْسَةَ الَّتي يَحْتاجُها مُراهِقُكِ أَكْثَرَ مِنْ غَيْرِها، وطُرُقاً عَمَلِيَّةً لِتَوْفيرِها.',
+          textAr: 'وَراءَ كُلِّ سُلوكٍ صَعْبٍ اِحْتِياجٌ غَيْرُ مُلَبّى. إِلَيْكُمُ الأَشْياءَ الخَمْسَةَ الَّتي يَحْتاجُها مُراهِقُكَ أَكْثَرَ مِنْ غَيْرِها، وطُرُقاً عَمَلِيَّةً لِتَوْفيرِها.',
           tone: 'lead',
         },
         {
@@ -445,7 +445,7 @@ const toolkit: ToolkitMeta = {
               labelEn: '3 · Boundaries that feel fair',
               labelAr: '٣ · حُدودٌ تَبْدو عادِلَة',
               descEn: 'Explain the reason behind rules. "Home by 10 PM because I worry about late-night driving" ≠ "Because I said so." When they make a good case for change, listen.',
-              descAr: 'اِشْرَحي السَّبَبَ وَراءَ القَواعِد. "المَنْزِلُ بِحُلولِ العاشِرَةِ لِأَنَّني قَلِقَةٌ عَلى القِيادَةِ لَيْلاً" ≠ "لِأَنَّني قُلْت". حينَ يُقَدِّمونَ حُجَّةً جَيِّدَةً لِلتَّغْيير، اِسْتَمِعي.',
+              descAr: 'اِشْرَحِ السَّبَبَ وَراءَ القَواعِد. "المَنْزِلُ بِحُلولِ العاشِرَةِ لِأَنَّني قَلِقٌ عَلى القِيادَةِ لَيْلاً" ≠ "لِأَنَّني قُلْت". حينَ يُقَدِّمونَ حُجَّةً جَيِّدَةً لِلتَّغْيير، اِسْتَمِعْ.',
             },
             {
               iconName: 'eye',
@@ -459,7 +459,7 @@ const toolkit: ToolkitMeta = {
               labelEn: '5 · To know the relationship is unconditional',
               labelAr: '٥ · أَنْ يَعْرِفوا أَنَّ العَلاقَةَ غَيْرُ مَشْروطَة',
               descEn: '"I love you. I do not love what you did" ≠ "What is wrong with you?" After conflict, be the one who comes back first. Connection before correction.',
-              descAr: '"أُحِبُّكَ. لا أُحِبُّ ما فَعَلْتَه" ≠ "ما خَطْبُك؟" بَعْدَ الخِلاف، كوني الَّتي تَعودُ أَوَّلاً. التَّواصُلُ قَبْلَ التَّصْحيح.',
+              descAr: '"أُحِبُّكَ. لا أُحِبُّ ما فَعَلْتَه" ≠ "ما خَطْبُك؟" بَعْدَ الخِلاف، كُنِ الَّذي يَعودُ أَوَّلاً. التَّواصُلُ قَبْلَ التَّصْحيح.',
             },
           ],
         },
@@ -467,7 +467,7 @@ const toolkit: ToolkitMeta = {
           kind: 'fillable-table',
           id: 's3-audit',
           titleEn: 'Honest audit: rate yourself 1–5 on each need',
-          titleAr: 'تَدْقيقٌ صادِق: قَيِّمي نَفْسَكِ مِنْ ١ إِلى ٥ في كُلِّ حاجَة',
+          titleAr: 'تَدْقيقٌ صادِق: قَيِّمْ نَفْسَكَ مِنْ ١ إِلى ٥ في كُلِّ حاجَة',
           columns: [
             { headerEn: 'Need', headerAr: 'الحاجَة' },
             { headerEn: 'Where I am now (1-5)', headerAr: 'أَيْنَ أَنا الآن (١-٥)' },
@@ -512,7 +512,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             'When: during a car ride, a walk, or a casual moment (not face-to-face across a table, which feels like interrogation). Say: "What is something interesting you learned or saw this week?" Why it works: signals interest in their world, not their performance.',
           textAr:
-            'مَتى: خِلالَ رَكْبَةِ سَيّارَة، مَشْيٍ، أَوْ لَحْظَةٍ عابِرَة (لَيْسَ وَجْهاً لِوَجْهٍ عَبْرَ طاوِلَة، يَبْدو ذلِكَ كَاِسْتِجْواب). قولي: "ما شَيْءٌ مُثيرٌ لِلاِهْتِمامِ تَعَلَّمْتَهُ أَوْ رَأَيْتَهُ هذا الأُسْبوع؟" لِماذا يَنْجَح: يُشيرُ إِلى الاِهْتِمامِ بِعالَمِهِم، لا بِأَدائِهِم.',
+            'مَتى: خِلالَ رَكْبَةِ سَيّارَة، مَشْيٍ، أَوْ لَحْظَةٍ عابِرَة (لَيْسَ وَجْهاً لِوَجْهٍ عَبْرَ طاوِلَة، يَبْدو ذلِكَ كَاِسْتِجْواب). قُلْ: "ما شَيْءٌ مُثيرٌ لِلاِهْتِمامِ تَعَلَّمْتَهُ أَوْ رَأَيْتَهُ هذا الأُسْبوع؟" لِماذا يَنْجَح: يُشيرُ إِلى الاِهْتِمامِ بِعالَمِهِم، لا بِأَدائِهِم.',
         },
         {
           kind: 'heading',
@@ -528,7 +528,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             'When: when you\'ve had a hard day. Say: "I had a tough day. A project didn\'t go the way I wanted. I just wanted to share that." Why it works: you normalize emotional honesty. It says "it\'s okay to not be okay" and invites reciprocity.',
           textAr:
-            'مَتى: حينَ يَكونُ لَدَيْكِ يَوْمٌ صَعْب. قولي: "كانَ لَدَيَّ يَوْمٌ صَعْب. مَشْروعٌ لَمْ يَسِرْ كَما أَرَدْت. أَرَدْتُ فَقَطْ أَنْ أُشارِكَ ذلِك." لِماذا يَنْجَح: تُطَبِّعينَ الصِّدْقَ العاطِفِيّ. يَقول "لا بَأْسَ أَنْ لا تَكونَ بِخَيْر" ويَدْعو إِلى المُعامَلَةِ بِالمِثْل.',
+            'مَتى: حينَ يَكونُ لَدَيْكَ يَوْمٌ صَعْب. قُلْ: "كانَ لَدَيَّ يَوْمٌ صَعْب. مَشْروعٌ لَمْ يَسِرْ كَما أَرَدْت. أَرَدْتُ فَقَطْ أَنْ أُشارِكَ ذلِك." لِماذا يَنْجَح: تُطَبِّعُ الصِّدْقَ العاطِفِيّ. يَقول "لا بَأْسَ أَنْ لا تَكونَ بِخَيْر" ويَدْعو إِلى المُعامَلَةِ بِالمِثْل.',
         },
         {
           kind: 'heading',
@@ -544,7 +544,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             'When: after a movie, news story, or social-media situation that raises ethical questions. Say: "What do you think about that?" "What would you have done in that situation?" Why it works: you shape values without lecturing.',
           textAr:
-            'مَتى: بَعْدَ فيلْم، خَبَر، أَوْ مَوْقِفٍ في وَسائِلِ التَّواصُلِ يُثيرُ أَسْئِلَةً أَخْلاقِيَّة. قولي: "ما رَأْيُكَ في ذلِك؟" "ماذا كُنْتَ سَتَفْعَلُ في هذا المَوْقِف؟" لِماذا يَنْجَح: تُشَكِّلينَ القِيَمَ بِدونِ مُحاضَرَة.',
+            'مَتى: بَعْدَ فيلْم، خَبَر، أَوْ مَوْقِفٍ في وَسائِلِ التَّواصُلِ يُثيرُ أَسْئِلَةً أَخْلاقِيَّة. قُلْ: "ما رَأْيُكَ في ذلِك؟" "ماذا كُنْتَ سَتَفْعَلُ في هذا المَوْقِف؟" لِماذا يَنْجَح: تُشَكِّلُ القِيَمَ بِدونِ مُحاضَرَة.',
         },
         {
           kind: 'heading',
@@ -560,7 +560,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             'When: a quiet evening or family gathering. Say: "Remember when we…" or "What\'s your favorite memory from when you were younger?" Why it works: shared memories are the glue of family identity.',
           textAr:
-            'مَتى: مَساءٌ هادِئٌ أَوْ تَجَمُّعٌ عائِلِيّ. قولي: "هَلْ تَتَذَكَّرُ حينَ…" أَوْ "ما أَفْضَلُ ذِكْرى لَدَيْكَ مِنْ طُفولَتِك؟" لِماذا يَنْجَح: الذِّكْرَياتُ المُشْتَرَكَةُ هي غِراءُ هُوِيَّةِ العائِلَة.',
+            'مَتى: مَساءٌ هادِئٌ أَوْ تَجَمُّعٌ عائِلِيّ. قُلْ: "هَلْ تَتَذَكَّرُ حينَ…" أَوْ "ما أَفْضَلُ ذِكْرى لَدَيْكَ مِنْ طُفولَتِك؟" لِماذا يَنْجَح: الذِّكْرَياتُ المُشْتَرَكَةُ هي غِراءُ هُوِيَّةِ العائِلَة.',
         },
         {
           kind: 'heading',
@@ -574,7 +574,7 @@ const toolkit: ToolkitMeta = {
           id: 's4-c5-quote',
           textEn:
             'This is the most important conversation you will ever have with your teen. It separates consequences from rescue.',
-          textAr: 'هذِهِ أَهَمُّ مُحادَثَةٍ سَتُجْريها مَعَ مُراهِقِكِ عَلى الإِطْلاق. تَفْصِلُ العَواقِبَ عَنِ الإِنْقاذ.',
+          textAr: 'هذِهِ أَهَمُّ مُحادَثَةٍ سَتُجْريها مَعَ مُراهِقِكَ عَلى الإِطْلاق. تَفْصِلُ العَواقِبَ عَنِ الإِنْقاذ.',
         },
         {
           kind: 'callout',
@@ -583,13 +583,13 @@ const toolkit: ToolkitMeta = {
           textEn:
             'Say: "I want you to know that you can always call me. No matter the time. No matter the situation. If you are somewhere and feel unsafe, or if something happens you didn\'t expect, call me. I will come get you. We will talk about it later, but in the moment, I just want you safe." Why it works: teens take risks. Some of those risks will go wrong. What determines the outcome is not whether they made a mistake, but whether they have someone safe to call when they do. Be that person.',
           textAr:
-            'قولي: "أُريدُكَ أَنْ تَعْرِفَ أَنَّكَ يُمْكِنُكَ دائِماً الاِتِّصالَ بي. مَهْما كانَ الوَقْت. مَهْما كانَ المَوْقِف. إِذا كُنْتَ في مَكانٍ وتَشْعُرُ بِعَدَمِ الأَمان، أَوْ إِذا حَدَثَ شَيْءٌ لَمْ تَتَوَقَّعْه، اِتَّصِلْ بي. سَآتي لِأَخْذِك. سَنَتَحَدَّثُ عَنْهُ لاحِقاً، لكِنْ في اللَّحْظَة، أُريدُكَ آمِناً فَقَط." لِماذا يَنْجَح: المُراهِقونَ يَأْخُذونَ مَخاطَر. بَعْضُ تِلْكَ المَخاطِرِ سَتَسوء. ما يُحَدِّدُ النَّتيجَةَ لَيْسَ ما إِذا كانوا قَدْ أَخْطَؤوا، بَلْ ما إِذا كانَ لَدَيْهِمْ شَخْصٌ آمِنٌ لِلاِتِّصالِ بِهِ حينَ يَفْعَلون. كوني ذلِكَ الشَّخْص.',
+            'قُلْ: "أُريدُكَ أَنْ تَعْرِفَ أَنَّكَ يُمْكِنُكَ دائِماً الاِتِّصالَ بي. مَهْما كانَ الوَقْت. مَهْما كانَ المَوْقِف. إِذا كُنْتَ في مَكانٍ وتَشْعُرُ بِعَدَمِ الأَمان، أَوْ إِذا حَدَثَ شَيْءٌ لَمْ تَتَوَقَّعْه، اِتَّصِلْ بي. سَآتي لِأَخْذِك. سَنَتَحَدَّثُ عَنْهُ لاحِقاً، لكِنْ في اللَّحْظَة، أُريدُكَ آمِناً فَقَط." لِماذا يَنْجَح: المُراهِقونَ يَأْخُذونَ مَخاطَر. بَعْضُ تِلْكَ المَخاطِرِ سَتَسوء. ما يُحَدِّدُ النَّتيجَةَ لَيْسَ ما إِذا كانوا قَدْ أَخْطَؤوا، بَلْ ما إِذا كانَ لَدَيْهِمْ شَخْصٌ آمِنٌ لِلاِتِّصالِ بِهِ حينَ يَفْعَلون. كُنْ ذلِكَ الشَّخْص.',
         },
         {
           kind: 'reflection-prompt',
           id: 's4-commit',
           promptEn: "Write out the exact words you'll use for the Safety Net Talk with your teen. Then: when will you have it? Put it on the calendar. This is non-negotiable.",
-          promptAr: 'اُكْتُبي الكَلِماتِ بِالضَّبْطِ الَّتي سَتَسْتَخْدِمينَها في حَديثِ شَبَكَةِ الأَمانِ مَعَ مُراهِقِك. ثُمَّ: مَتى سَتُجْريهِ؟ ضَعيهِ عَلى التَّقْويم. هذا غَيْرُ قابِلٍ لِلتَّفاوُض.',
+          promptAr: 'اُكْتُبِ الكَلِماتِ بِالضَّبْطِ الَّتي سَتَسْتَخْدِمُها في حَديثِ شَبَكَةِ الأَمانِ مَعَ مُراهِقِك. ثُمَّ: مَتى سَتُجْريهِ؟ ضَعْهُ عَلى التَّقْويم. هذا غَيْرُ قابِلٍ لِلتَّفاوُض.',
           minWords: 60,
         },
       ],
@@ -613,7 +613,7 @@ const toolkit: ToolkitMeta = {
           textEn:
             'Everything in this guide addresses the NORMAL range of adolescent development. Withdrawal, mood swings, risk-taking, and boundary-pushing are within expected territory. But some behaviors go beyond the normal range and signal that your teen may need professional support.',
           textAr:
-            'كُلُّ شَيْءٍ في هذا الدَّليلِ يَتَناوَلُ النِّطاقَ العادِيَّ لِلنُّمُوِّ في مَرْحَلَةِ المُراهَقَة. الاِنْسِحاب، التَّقَلُّباتُ المِزاجِيَّة، أَخْذُ المَخاطِر، دَفْعُ الحُدود — كُلُّها ضِمْنَ المِنْطَقَةِ المُتَوَقَّعَة. لكِنَّ بَعْضَ السُّلوكِيّاتِ تَتَجاوَزُ النِّطاقَ العادِيَّ وتُشيرُ إِلى أَنَّ مُراهِقَكِ قَدْ يَحْتاجُ دَعْماً مِهَنِيّاً.',
+            'كُلُّ شَيْءٍ في هذا الدَّليلِ يَتَناوَلُ النِّطاقَ العادِيَّ لِلنُّمُوِّ في مَرْحَلَةِ المُراهَقَة. الاِنْسِحاب، التَّقَلُّباتُ المِزاجِيَّة، أَخْذُ المَخاطِر، دَفْعُ الحُدود — كُلُّها ضِمْنَ المِنْطَقَةِ المُتَوَقَّعَة. لكِنَّ بَعْضَ السُّلوكِيّاتِ تَتَجاوَزُ النِّطاقَ العادِيَّ وتُشيرُ إِلى أَنَّ مُراهِقَكَ قَدْ يَحْتاجُ دَعْماً مِهَنِيّاً.',
         },
         {
           kind: 'checklist',
@@ -646,7 +646,7 @@ const toolkit: ToolkitMeta = {
           id: 's5-start-heading',
           level: 2,
           textEn: 'How to Start the Conversation',
-          textAr: 'كَيْفَ تَبْدَئينَ المُحادَثَة',
+          textAr: 'كَيْفَ تَبْدَأُ المُحادَثَة',
         },
         {
           kind: 'callout',
@@ -655,20 +655,20 @@ const toolkit: ToolkitMeta = {
           textEn:
             'Say: "I have noticed some changes in you recently, and I want to check in. I\'m not angry and I\'m not trying to fix anything. I just love you and want to make sure you\'re okay. If something\'s going on, I\'m here. And if you\'d rather talk to someone who isn\'t me, I can help you find that person."',
           textAr:
-            'قولي: "لاحَظْتُ بَعْضَ التَّغْييراتِ فيكَ مُؤَخَّراً، وأُريدُ أَنْ أَطْمَئِنَّ عَلَيْك. لَسْتُ غاضِبَةً ولا أُحاوِلُ إِصْلاحَ أَيِّ شَيْء. أَنا فَقَطْ أُحِبُّكَ وأُريدُ التَّأَكُّدَ أَنَّكَ بِخَيْر. إِذا كانَ شَيْءٌ يَحْدُث، أَنا هُنا. وإِذا كُنْتَ تُفَضِّلُ التَّحَدُّثَ مَعَ شَخْصٍ غَيْري، يُمْكِنُني مُساعَدَتُكَ عَلى إِيجادِ ذلِكَ الشَّخْص."',
+            'قُلْ: "لاحَظْتُ بَعْضَ التَّغْييراتِ فيكَ مُؤَخَّراً، وأُريدُ أَنْ أَطْمَئِنَّ عَلَيْك. لَسْتُ غاضِبًا ولا أُحاوِلُ إِصْلاحَ أَيِّ شَيْء. أَنا فَقَطْ أُحِبُّكَ وأُريدُ التَّأَكُّدَ أَنَّكَ بِخَيْر. إِذا كانَ شَيْءٌ يَحْدُث، أَنا هُنا. وإِذا كُنْتَ تُفَضِّلُ التَّحَدُّثَ مَعَ شَخْصٍ غَيْري، يُمْكِنُني مُساعَدَتُكَ عَلى إِيجادِ ذلِكَ الشَّخْص."',
         },
         {
           kind: 'reflection-prompt',
           id: 's5-reflection',
           promptEn: 'Which warning signs (if any) have you noticed in your teen? Be honest with yourself — no judgment. If you see any, what is ONE small step you\'ll take this week to get them support?',
-          promptAr: 'أَيُّ عَلاماتِ التَّحْذيرِ (إِنْ وُجِدَتْ) لاحَظْتِ في مُراهِقِك؟ كوني صادِقَةً مَعَ نَفْسِك — لا حُكْم. إِذا رَأَيْتِ أَيّاً، ما الخُطْوَةُ الصَّغيرَةُ الواحِدَةُ الَّتي سَتَتَّخِذينَها هذا الأُسْبوعَ لِتَقْديمِ الدَّعْمِ لَهُم؟',
+          promptAr: 'أَيُّ عَلاماتِ التَّحْذيرِ (إِنْ وُجِدَتْ) لاحَظْتَ في مُراهِقِك؟ كُنْ صادِقًا مَعَ نَفْسِكَ — لا حُكْم. إِذا رَأَيْتَ أَيّاً، ما الخُطْوَةُ الصَّغيرَةُ الواحِدَةُ الَّتي سَتَتَّخِذُها هذا الأُسْبوعَ لِتَقْديمِ الدَّعْمِ لَهُم؟',
           minWords: 50,
         },
         {
           kind: 'pullquote',
           id: 's5-close',
           textEn: "You don't have to figure this out alone. Professional support is not a failure — it's a resource. Use it.",
-          textAr: 'لَسْتِ مُضْطَرَّةً لِلاِكْتِشافِ وَحْدَك. الدَّعْمُ المِهَنِيُّ لَيْسَ فَشَلاً — هُوَ مَوْرِد. اِسْتَخْدِميه.',
+          textAr: 'لَسْتَ مُضْطَرًّا لِلاِكْتِشافِ وَحْدَك. الدَّعْمُ المِهَنِيُّ لَيْسَ فَشَلاً — هُوَ مَوْرِد. اِسْتَخْدِمْهُ.',
         },
       ],
     },

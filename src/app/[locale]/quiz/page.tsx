@@ -376,12 +376,7 @@ export default function QuizPage() {
                       {sName}
                     </h3>
                     <p className="text-sm text-[#8E8E9F] mb-4">{sDesc}</p>
-                    <div className="flex items-center gap-3">
-                      <Badge variant="sand" size="sm">
-                        {messages.services.priceFrom} ${service.priceFrom} CAD
-                      </Badge>
-                      <Badge variant="neutral" size="sm">{service.duration}</Badge>
-                    </div>
+                    <Badge variant="neutral" size="sm">{service.duration}</Badge>
                     <div className="flex gap-3 mt-5">
                       <Button as="a" href={getBookingUrl(locale as string)} size="sm" icon={<Calendar className="w-4 h-4" />}>
                         {messages.services.bookOnline}

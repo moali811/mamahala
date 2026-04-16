@@ -285,7 +285,7 @@ const resources: DownloadResource[] = [
     category: 'youth',
     popular: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -322,7 +322,7 @@ const resources: DownloadResource[] = [
     featured: true,
     popular: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -342,7 +342,7 @@ const resources: DownloadResource[] = [
     featured: true,
     popular: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -362,7 +362,7 @@ const resources: DownloadResource[] = [
     featured: true,
     popular: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -496,7 +496,7 @@ const resources: DownloadResource[] = [
     dateAdded: '2026-04-08',
     popular: true,
     isPremium: true,
-    priceCAD: 19,
+    priceCAD: 7,
     price: 0,
     isFree: true,
     isLeadMagnet: true,
@@ -735,6 +735,12 @@ function DownloadsPageInner() {
   const [themeFilter, setThemeFilter] = useState<string>('all');
   const [typeFilter, setTypeFilter] = useState<string>('all');
 
+  // Dynamic pricing — fetched from API, BUSINESS as fallback
+  const [dynamicPricing, setDynamicPricing] = useState({
+    toolkitFullAccessPrice: BUSINESS.toolkitFullAccessPrice,
+    academyFullAccessPrice: BUSINESS.academyFullAccessPrice,
+  });
+
   // Pagination
   const ITEMS_PER_PAGE = 6;
   const searchParams = useSearchParams();
@@ -825,6 +831,21 @@ function DownloadsPageInner() {
     }
     setPreviewLoading(false);
   };
+
+  // Fetch dynamic pricing on mount
+  useEffect(() => {
+    fetch('/api/pricing')
+      .then(r => r.json())
+      .then(data => {
+        if (data.toolkitFullAccessPrice != null || data.academyFullAccessPrice != null) {
+          setDynamicPricing(prev => ({
+            toolkitFullAccessPrice: data.toolkitFullAccessPrice ?? prev.toolkitFullAccessPrice,
+            academyFullAccessPrice: data.academyFullAccessPrice ?? prev.academyFullAccessPrice,
+          }));
+        }
+      })
+      .catch(() => { /* use BUSINESS defaults */ });
+  }, []);
 
   // Check localStorage on mount
   useEffect(() => {
@@ -1023,11 +1044,11 @@ function DownloadsPageInner() {
                   <Lock className="w-7 h-7 text-[#7A3B5E]" />
                 </div>
                 <h3 className="text-xl font-bold text-[#2D2A33] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
-                  {isRTL ? 'افتحي جميعَ التحميلاتِ المجّانيّة' : 'Unlock All Free Downloads'}
+                  {isRTL ? 'افتحْ جميعَ التحميلاتِ المجّانيّة' : 'Unlock All Free Downloads'}
                 </h3>
                 <p className="text-sm text-[#8E8E9F] mb-6">
                   {isRTL
-                    ? 'أدخلي بريدَكِ الإلكترونيّ مرّةً واحدةً لتحميلِ جميعِ الأدواتِ المجّانيّة فورًا. التجاربُ التفاعليّةُ المُمَيَّزة تُفتَحُ بشكلٍ منفصل.'
+                    ? 'أدخِلْ بريدَكَ الإلكترونيّ مرّةً واحدةً لتحميلِ جميعِ الأدواتِ المجّانيّة فورًا. التجاربُ التفاعليّةُ المُمَيَّزة تُفتَحُ بشكلٍ منفصل.'
                     : 'Enter your email once to download every free toolkit instantly. Premium interactive experiences unlock separately.'}
                 </p>
                 <form onSubmit={handleUnlock} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
@@ -1162,7 +1183,7 @@ function DownloadsPageInner() {
               const hasInteractive = catalogEntry?.hasInteractiveVersion ?? false;
               const isPremium = catalogEntry?.isPremium ?? resource.isPremium ?? false;
               // All premium toolkits share the same flat price
-              const priceCAD = BUSINESS.toolkitFullAccessPrice;
+              const priceCAD = dynamicPricing.toolkitFullAccessPrice;
 
               return (
                 <motion.div key={resource.id}
@@ -1240,7 +1261,7 @@ function DownloadsPageInner() {
                               <Sparkles className="w-4 h-4" />
                               {paidSlugs.has(resource.id)
                                 ? (isRTL ? 'افْتَحِ النُّسْخَةَ التَّفاعُلِيَّة' : 'Open Interactive Version')
-                                : (isRTL ? `جرِّبيها مَجّاناً · اِفْتَحي $${priceCAD} CAD` : `Try Free · Unlock $${priceCAD} CAD`)}
+                                : (isRTL ? `جرِّبْها مَجّاناً · اِفْتَحْ $${priceCAD} CAD` : `Try Free · Unlock $${priceCAD} CAD`)}
                             </Link>
                             {paidSlugs.has(resource.id) ? (
                               <button
@@ -1466,7 +1487,7 @@ function DownloadsPageInner() {
                       {previewIsPremium ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] shadow-sm">
                           <Sparkles className="w-2.5 h-2.5" />
-                          {isRTL ? `مميّز · $${BUSINESS.toolkitFullAccessPrice} CAD` : `Premium · $${BUSINESS.toolkitFullAccessPrice} CAD`}
+                          {isRTL ? `🚀 سِعْرُ الإطْلاق · $${dynamicPricing.toolkitFullAccessPrice} CAD` : `🚀 Launch Price · $${dynamicPricing.toolkitFullAccessPrice} CAD`}
                         </span>
                       ) : (
                         <Badge variant="success" size="sm">{messages.common.free}</Badge>
@@ -1558,8 +1579,8 @@ function DownloadsPageInner() {
                   >
                     <Sparkles className="w-4 h-4" />
                     {isRTL
-                      ? `جرّبي القِسْمَ المَجّاني · افتحي $${BUSINESS.toolkitFullAccessPrice} CAD`
-                      : `Try Free · Unlock $${BUSINESS.toolkitFullAccessPrice} CAD`}
+                      ? `جرِّبْ القِسْمَ المَجّاني · افتحْ $${dynamicPricing.toolkitFullAccessPrice} CAD`
+                      : `Try Free · Unlock $${dynamicPricing.toolkitFullAccessPrice} CAD`}
                   </Link>
                 ) : previewHasInteractive ? (
                   /* Non-premium interactive: direct link to interactive version */
