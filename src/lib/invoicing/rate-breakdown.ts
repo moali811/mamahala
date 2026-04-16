@@ -83,7 +83,7 @@ export function computeRateBreakdown(
       (sum, item) => sum + item.quantity * item.unitPriceLocal,
       0,
     );
-    const subCADRaw = convert(subtotalLocal, currency, 'CAD');
+    const subCADRaw = convert(subtotalLocal, effectiveCurrency, 'CAD');
     const subtotalCAD = Math.round(isFinite(subCADRaw) ? subCADRaw : 0);
 
     // Tax (manual HST for CA only, based on primary service's country)

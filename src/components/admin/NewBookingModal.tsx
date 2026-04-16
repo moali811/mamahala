@@ -358,6 +358,14 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
   // ─── Handler: Step 1 Next (with smart section navigation) ──
   const handleStep1Next = useCallback(async () => {
     setError(null);
+
+    // If we already created a draft (user went back to Step 1 and clicked Next again),
+    // skip creation and go straight to Step 2 to avoid duplicate drafts.
+    if (step2) {
+      setCurrentStep(2);
+      return;
+    }
+
     if (!selectedSlot) {
       setActiveSection('schedule');
       return setError('Pick a time slot first');

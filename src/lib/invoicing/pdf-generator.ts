@@ -334,6 +334,16 @@ export async function generateInvoicePdf(
     } catch { /* skip */ }
   }
 
+  // ─── Page overflow guard ────────────────────────────────────
+  // If content has grown past the safe zone (footer starts at ~22mm
+  // from bottom), add a new page so payment instructions / notes /
+  // terms don't get hidden behind the footer.
+  const safeBottom = PAGE_HEIGHT - 40; // 40mm buffer for footer + margin
+  if (y > safeBottom) {
+    doc.addPage();
+    y = MARGIN + 5;
+  }
+
   // ─── PAYMENT INSTRUCTIONS (region-aware, single-block primary) ─
   // Canadian clients see one locked e-Transfer block. International
   // clients see one block from the cascade (Stripe > wire > PayPal

@@ -800,6 +800,15 @@ export default function BookingsModule({ password }: Props) {
                   {/* ─── Inline Actions Bar ─── */}
                   <div className="flex items-center gap-1.5 pt-2 border-t border-[#F0ECE8] flex-wrap">
                     {/* Quick status pills — show contextual next-step actions */}
+                    {booking.status === 'pending-review' && (
+                      <button
+                        onClick={() => handleApproveAndInvoice(booking)}
+                        disabled={isLoading}
+                        className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#3B8A6E]/10 text-[#3B8A6E] hover:bg-[#3B8A6E] hover:text-white disabled:opacity-50 transition-all"
+                      >
+                        Complete & Send Invoice
+                      </button>
+                    )}
                     {booking.status === 'approved' && (
                       <button
                         onClick={() => handleStatusChangeWithDialog(booking.bookingId, booking.clientName, 'confirmed' as BookingStatus)}
