@@ -531,11 +531,11 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-            className="fixed inset-0 z-50 flex items-start justify-center p-2 sm:p-4 pointer-events-none overflow-y-auto"
+            className="fixed inset-0 z-50 flex items-end sm:items-start justify-center sm:p-4 pointer-events-none"
           >
-            <div className="pointer-events-auto w-full max-w-3xl my-4 bg-white rounded-2xl shadow-2xl">
+            <div className="pointer-events-auto w-full max-w-3xl sm:my-4 bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col max-h-[100dvh] sm:max-h-[calc(100dvh-2rem)]">
               {/* Header with step indicator */}
-              <div className="sticky top-0 z-10 flex items-center justify-between px-4 sm:px-6 py-4 bg-white border-b border-[#F0ECE8] rounded-t-2xl">
+              <div className="shrink-0 flex items-center justify-between px-4 sm:px-6 py-4 bg-white border-b border-[#F0ECE8] rounded-t-2xl">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
                   {currentStep === 2 && (
                     <button
@@ -568,8 +568,8 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
                 </button>
               </div>
 
-              {/* Body */}
-              <div className="px-4 sm:px-6 py-5 space-y-5">
+              {/* Body — scrollable on mobile */}
+              <div className="px-4 sm:px-6 py-5 space-y-5 overflow-y-auto flex-1 min-h-0">
                 {currentStep === 1 ? (
                   <Step1Content
                     serviceSlug={serviceSlug}
@@ -651,7 +651,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
 
               {/* Step 1 footer (Step 2 has its own footer inside InvoiceReviewSheet) */}
               {currentStep === 1 && (
-                <div className="sticky bottom-0 z-10 px-4 sm:px-6 py-3 bg-white border-t border-[#F0ECE8] rounded-b-2xl flex gap-2">
+                <div className="shrink-0 px-4 sm:px-6 py-3 bg-white border-t border-[#F0ECE8] rounded-b-2xl flex gap-2">
                   <button
                     type="button"
                     onClick={handleClose}
