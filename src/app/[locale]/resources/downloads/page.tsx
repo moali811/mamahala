@@ -502,6 +502,26 @@ const resources: DownloadResource[] = [
     isLeadMagnet: true,
   },
   {
+    id: 'digital-mirror-workbook',
+    title: {
+      en: 'The Digital Mirror',
+      ar: 'المِرآةُ الرَّقمِيَّة',
+    },
+    description: {
+      en: 'What your screen time reveals about your inner world. A 5-part interactive workbook connecting your digital patterns to attachment theory, childhood wounds, and the attention economy — with a 21-day CBT-based digital reset journal.',
+      ar: 'ماذا يَكشِفُ وَقتُ شاشَتِكَ عَن عالَمِكَ الدَّاخِلِيّ. دَفتَرُ عَمَلٍ تَفاعُلِيٌّ مِن ٥ أجزاءٍ يَربِطُ أنماطَكَ الرَّقمِيَّةَ بِنَظَرِيَّةِ التَّعَلُّقِ وجُروحِ الطُّفولَةِ واقتِصادِ الانتِباه — مَعَ دَفتَرِ إعادَةِ ضَبطٍ رَقمِيٍّ لِمُدَّةِ ٢١ يَومًا.',
+    },
+    type: 'ebook',
+    category: 'adults',
+    dateAdded: '2026-04-17',
+    popular: true,
+    isPremium: true,
+    priceCAD: 7,
+    price: 0,
+    isFree: true,
+    isLeadMagnet: true,
+  },
+  {
     id: 'student-burnout-recovery',
     title: {
       en: 'Burnout Is Not a Badge of Honor',
@@ -681,6 +701,10 @@ const themesByDemographic: Record<string, Array<{ key: string; en: string; ar: s
     {
       key: 'anxiety', en: 'Anxiety & Emotions', ar: 'القلق والمشاعر',
       ids: ['anxiety-recovery-journal', 'anger-management-worksheet', 'self-care-assessment'],
+    },
+    {
+      key: 'digital-wellness', en: 'Digital Wellness', ar: 'العافية الرقمية',
+      ids: ['digital-mirror-workbook'],
     },
   ],
   couples: [

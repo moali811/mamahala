@@ -128,6 +128,21 @@ const assessments = [
     audience: 'couples',
   },
 
+  // ─── DIGITAL SELF-AWARENESS (adults) ───
+  {
+    href: 'quiz/digital-awareness',
+    titleEn: 'The Digital Self-Awareness Profile',
+    titleAr: 'مِلَفُّ الوعيِ الرَّقمِيِّ الذَّاتِيّ',
+    descEn: 'Discover what your screen time reveals about your inner world. 18 questions across 6 psychological dimensions \u2014 from dependency patterns to online authenticity.',
+    descAr: 'اكتشِفْ ما يكشِفُه وقتُ شاشتِك عن عالمِك الداخليّ. ١٨ سؤالاً عبرَ ٦ أبعادٍ نفسيّة — من أنماطِ الاعتمادِ إلى الأصالةِ الرقميّة.',
+    duration: { en: '6 min', ar: '6 دقائق' },
+    color: '#7A5B8A',
+    questions: 18,
+    category: 'adults' as Category,
+    audience: 'adults',
+    dateAdded: '2026-04-17',
+  },
+
   // ─── FOR TEENS (self-reported) ───
   {
     href: 'quiz/digital-life',

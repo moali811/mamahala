@@ -40,6 +40,7 @@ const QUIZ_NAMES: Record<string, { en: string; ar: string }> = {
   'adulting-check': { en: 'The Adulting Reality Check', ar: 'فحصُ واقعِ حياةِ الكبار' },
   'conflict-style': { en: 'How Do We Fight?', ar: 'كيفَ نتخاصم؟' },
   'communication-style': { en: 'Are We Speaking the Same Language?', ar: 'هل نتحدّثُ اللغةَ نفسَها؟' },
+  'digital-awareness': { en: 'The Digital Self-Awareness Profile', ar: 'مِلَفُّ الوعيِ الرَّقمِيِّ الذَّاتِيّ' },
 };
 
 /** Generate a unique session ID */

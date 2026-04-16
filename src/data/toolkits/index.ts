@@ -50,6 +50,14 @@ export const toolkitCatalog: ToolkitCatalogEntry[] = [
     isPremium: true,
     priceCAD: 7,
   },
+  {
+    slug: 'digital-mirror-workbook',
+    titleEn: 'The Digital Mirror',
+    titleAr: 'المِرآةُ الرَّقمِيَّة',
+    hasInteractiveVersion: true,
+    isPremium: true,
+    priceCAD: 7,
+  },
   // All others have hasInteractiveVersion: false for now
 ];
 
@@ -59,6 +67,7 @@ const toolkitLoaders: Record<string, () => Promise<{ default: ToolkitMeta }>> = 
   'complete-parenting-guide': () => import('./complete-parenting-guide'),
   'understanding-your-teen': () => import('./understanding-your-teen'),
   'adulting-emotional-edition': () => import('./adulting-emotional-edition'),
+  'digital-mirror-workbook': () => import('./digital-mirror-workbook'),
 };
 
 export async function getToolkit(slug: string): Promise<ToolkitMeta | null> {
