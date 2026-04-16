@@ -119,7 +119,7 @@ async function autoApproveBooking(booking: Booking): Promise<boolean> {
 
     // Notify Dr. Hala
     try {
-      await notifyAdmin(mergedBooking, 'auto-approved');
+      await notifyAdmin('new-booking', mergedBooking);
     } catch {
       // Non-critical
     }
