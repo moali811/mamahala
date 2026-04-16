@@ -125,14 +125,17 @@ export default function BookingsModule({ password }: Props) {
     setActionLoading(booking.bookingId);
     setError(null);
     try {
-      // Step 1: Approve
-      const approveRes = await fetch('/api/admin/booking/approve', {
-        method: 'POST', headers,
-        body: JSON.stringify({ bookingId: booking.bookingId }),
-      });
-      if (!approveRes.ok) {
-        const d = await approveRes.json();
-        throw new Error(d.error || 'Approval failed');
+      // Step 1: Approve (skip for pending-review drafts — they go
+      // straight to invoice review without needing approval first)
+      if (booking.status !== 'pending-review') {
+        const approveRes = await fetch('/api/admin/booking/approve', {
+          method: 'POST', headers,
+          body: JSON.stringify({ bookingId: booking.bookingId }),
+        });
+        if (!approveRes.ok) {
+          const d = await approveRes.json();
+          throw new Error(d.error || 'Approval failed');
+        }
       }
 
       // Step 2: Try to fetch the draft created during booking intake
@@ -178,9 +181,11 @@ export default function BookingsModule({ password }: Props) {
         } as InvoiceDraft;
       }
 
-      // Step 4: Open the invoice review sheet instead of sending immediately
+      // Step 4: Open the invoice review sheet for admin to review before sending
       setInvoiceSheet({ booking, draft });
-      setSuccess('Booking approved! Review the invoice below.');
+      setSuccess(booking.status === 'pending-review'
+        ? 'Review the invoice below, then confirm to activate.'
+        : 'Booking approved! Review the invoice below.');
       fetchBookings();
     } catch (err: any) {
       setError(err.message || 'Failed');
@@ -802,30 +807,11 @@ export default function BookingsModule({ password }: Props) {
                     {/* Quick status pills — show contextual next-step actions */}
                     {booking.status === 'pending-review' && (
                       <button
-                        onClick={async () => {
-                          // For pending-review (draft) bookings, skip approve and
-                          // go straight to confirm-and-send which activates + sends
-                          setActionLoading(booking.bookingId);
-                          setError(null);
-                          try {
-                            const res = await fetch(`/api/admin/booking/${booking.bookingId}/confirm-and-send`, {
-                              method: 'POST', headers,
-                              body: JSON.stringify({ sendClientEmail: false }),
-                            });
-                            const data = await res.json();
-                            if (!res.ok) throw new Error(data.error || 'Failed to activate');
-                            setSuccess('Draft booking activated — GCal event created and invoice sent');
-                            fetchBookings({ silent: true });
-                          } catch (err: any) {
-                            setError(err.message || 'Failed to activate booking');
-                          } finally {
-                            setActionLoading(null);
-                          }
-                        }}
+                        onClick={() => handleApproveAndInvoice(booking)}
                         disabled={isLoading}
                         className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#3B8A6E]/10 text-[#3B8A6E] hover:bg-[#3B8A6E] hover:text-white disabled:opacity-50 transition-all"
                       >
-                        {isLoading ? 'Activating...' : 'Activate & Confirm'}
+                        Review & Send Invoice
                       </button>
                     )}
                     {booking.status === 'approved' && (
