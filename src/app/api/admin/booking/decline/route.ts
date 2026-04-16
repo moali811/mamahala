@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
 async function findAlternativeSlots(
   bookingDate: string,
   durationMinutes: number,
+  clientTimezone?: string,
 ): Promise<Array<{ label: string; startIso: string }>> {
   const alternatives: Array<{ label: string; startIso: string }> = [];
 
@@ -79,7 +80,7 @@ async function findAlternativeSlots(
         if (alternatives.length >= 5) break;
         const d = new Date(slot.start);
         const label = d.toLocaleString('en-US', {
-          timeZone: booking.clientTimezone || 'America/Toronto',
+          timeZone: clientTimezone || 'America/Toronto',
           weekday: 'long',
           month: 'long',
           day: 'numeric',
@@ -125,6 +126,7 @@ async function processDecline(bookingId: string, reason?: string): Promise<{
   const alternativeSlots = await findAlternativeSlots(
     bookingDate,
     booking.durationMinutes,
+    booking.clientTimezone,
   ).catch(() => [] as Array<{ label: string; startIso: string }>);
 
   // Send decline email to client
