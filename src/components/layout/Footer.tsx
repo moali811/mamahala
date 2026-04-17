@@ -88,11 +88,8 @@ export default function Footer({ locale, messages }: FooterProps) {
 
             {/* Col 1: Brand */}
             <div className="col-span-2 md:col-span-1">
-              <Link href={`/${locale}`} className="flex items-center gap-3 mb-4">
-                <Image src="/images/logo-512.png" alt="Mama Hala Consulting" width={128} height={128} className="h-10 w-10 rounded-full object-cover" />
-                <span className="text-sm font-semibold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
-                  {isRTL ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting'}
-                </span>
+              <Link href={`/${locale}`} className="inline-flex items-center mb-4">
+                <Image src="/images/logo-new.png" alt="Mama Hala Consulting" width={512} height={512} className="h-16 w-auto object-contain" />
               </Link>
               <p className="text-sm text-[#6B6580] leading-relaxed mb-6">
                 {isRTL ? `${BUSINESS.taglineAr}.` : `${BUSINESS.tagline}.`}
