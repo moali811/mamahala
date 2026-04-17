@@ -309,35 +309,14 @@ export default function HomePage() {
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   const aboutRef = useRef<HTMLDivElement>(null);
-  const heroRef = useRef<HTMLElement>(null);
   const { serviceCategories } = useServices();
-
-  // Hero fade-out on scroll — lightweight, no layout thrashing
-  useEffect(() => {
-    const hero = heroRef.current;
-    if (!hero) return;
-    let ticking = false;
-    const onScroll = () => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const h = hero.offsetHeight;
-        const y = window.scrollY;
-        const opacity = Math.max(0, 1 - y / (h * 0.7));
-        hero.style.opacity = String(opacity);
-        ticking = false;
-      });
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
 
   return (
     <div className="overflow-hidden">
       {/* ================================================================ */}
-      {/*  SECTION 1: HERO — fixed to viewport, fades on scroll           */}
+      {/*  SECTION 1: HERO                                                */}
       {/* ================================================================ */}
-      <section ref={heroRef} className="fixed inset-x-0 top-0 z-0 h-screen bg-[#FDF8F4] pt-16">
+      <section className="relative min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
         {/* Editorial image — soft fade via CSS mask */}
         <div
           className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}
@@ -358,7 +337,7 @@ export default function HomePage() {
         <div className="absolute inset-x-0 bottom-0 top-[45%] z-[5] bg-gradient-to-t from-[#FDF8F4] via-[#FDF8F4]/75 to-transparent lg:hidden" />
 
         {/* Content layer */}
-        <div className="container-main relative z-10 flex flex-col justify-end lg:justify-center flex-1 pb-6 lg:pb-6 lg:pt-8">
+        <div className="container-main relative z-10 flex flex-col justify-end lg:justify-center min-h-[80vh] lg:min-h-[75vh] pb-6 lg:pb-6 lg:pt-8">
           <div className={`max-w-xl ${isRTL ? 'lg:mr-0 lg:ml-auto text-right' : 'lg:ml-0 lg:mr-auto'}`}>
             {/* Mobile: label as a pill that stays readable over the image */}
             <span
@@ -501,14 +480,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Placeholder — reserves space for the fixed hero + trust bar */}
-      <div className="h-screen" aria-hidden="true" />
-
-      {/* Content layer — scrolls over the fixed hero */}
-      <div className="relative z-10">
-
-      {/* Spacer before slides */}
-      <div className="h-8 lg:h-16 bg-[#FDF8F4]" />
+      {/* Spacer between hero and slides */}
+      <div className="h-16 lg:h-24 bg-[#FDF8F4]" />
 
       {/* ================================================================ */}
       {/*  EMPATHY SLIDESHOW — "You might be here because..."              */}
@@ -709,7 +682,6 @@ export default function HomePage() {
         headingEn={<>You Don't Have to Figure It Out <span className="text-[#7A3B5E] italic">Alone</span></>}
         headingAr={<>لا يجبُ أن تواجهَ الأمرَ <span className="text-[#7A3B5E] italic">وحدَك</span></>}
       />
-      </div>
     </div>
   );
 }
