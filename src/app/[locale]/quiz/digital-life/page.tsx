@@ -3,7 +3,7 @@
 import { Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Scale,
@@ -79,6 +79,15 @@ function DigitalLifeQuizInner() {
   const currentDimension = currentQuestion
     ? dimensions.find((d) => d.key === currentQuestion.dimension)
     : null;
+
+  const quizRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to quiz content on step change (critical for mobile)
+  useEffect(() => {
+    if (step > 0 && quizRef.current) {
+      quizRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [step]);
 
   // Handle shared results on mount
   useEffect(() => {
@@ -222,7 +231,7 @@ function DigitalLifeQuizInner() {
       </section>
 
       {/* Quiz Content */}
-      <section className="py-16 lg:py-20">
+      <section ref={quizRef} className="py-16 lg:py-20 scroll-mt-20">
         <div className="container-main max-w-4xl">
           <AnimatePresence mode="wait">
             {/* INTRO */}

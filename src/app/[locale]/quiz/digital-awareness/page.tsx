@@ -3,7 +3,7 @@
 import { Suspense } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Smartphone,
@@ -68,6 +68,7 @@ function DigitalAwarenessQuizInner() {
   const [showCounselorModal, setShowCounselorModal] = useState(false);
   const [sessionId, setSessionId] = useState(() => generateSessionId());
   const isSharedView = !!searchParams.get('r');
+  const quizRef = useRef<HTMLDivElement>(null);
 
   const totalQuestions = questions.length;
   const currentQuestion = step > 0 && step <= totalQuestions ? questions[step - 1] : null;
@@ -76,6 +77,13 @@ function DigitalAwarenessQuizInner() {
   const currentDimension = currentQuestion
     ? dimensions.find((d) => d.key === currentQuestion.dimension)
     : null;
+
+  // Scroll to quiz content on step change (critical for mobile)
+  useEffect(() => {
+    if (step > 0 && quizRef.current) {
+      quizRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [step]);
 
   // Handle shared results on mount
   useEffect(() => {
@@ -217,7 +225,7 @@ function DigitalAwarenessQuizInner() {
       </section>
 
       {/* Quiz Content */}
-      <section className="py-16 lg:py-20">
+      <section ref={quizRef} className="py-16 lg:py-20 scroll-mt-20">
         <div className="container-main max-w-4xl">
           <AnimatePresence mode="wait">
             {/* INTRO */}

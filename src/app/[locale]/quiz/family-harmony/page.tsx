@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart,
@@ -68,6 +68,14 @@ export default function FamilyHarmonyQuizPage() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [showCounselorModal, setShowCounselorModal] = useState(false);
   const [sessionId, setSessionId] = useState(() => generateSessionId());
+  const quizRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to quiz content on step change (critical for mobile)
+  useEffect(() => {
+    if (step > 0 && quizRef.current) {
+      quizRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [step]);
 
   const totalQuestions = questions.length;
   const currentQuestion = step > 0 && step <= totalQuestions ? questions[step - 1] : null;
@@ -184,7 +192,7 @@ export default function FamilyHarmonyQuizPage() {
       </section>
 
       {/* Quiz Content */}
-      <section className="py-16 lg:py-20">
+      <section ref={quizRef} className="py-16 lg:py-20 scroll-mt-20">
         <div className="container-main max-w-4xl">
           <AnimatePresence mode="wait">
             {/* INTRO */}
