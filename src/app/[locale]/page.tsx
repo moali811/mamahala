@@ -312,11 +312,11 @@ export default function HomePage() {
   const { serviceCategories } = useServices();
 
   return (
-    <div className="overflow-hidden">
+    <div>
       {/* ================================================================ */}
-      {/*  SECTION 1: HERO                                                */}
+      {/*  SECTION 1: HERO — sticky so content scrolls over it            */}
       {/* ================================================================ */}
-      <section className="relative min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
+      <section className="sticky top-0 z-0 min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
         {/* Editorial image — soft fade via CSS mask */}
         <div
           className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}
@@ -479,6 +479,9 @@ export default function HomePage() {
           })()}
         </div>
       </section>
+
+      {/* Everything below scrolls over the sticky hero */}
+      <div className="relative z-10">
 
       {/* Spacer between hero and slides */}
       <div className="h-16 lg:h-24 bg-[#FDF8F4]" />
@@ -682,6 +685,7 @@ export default function HomePage() {
         headingEn={<>You Don't Have to Figure It Out <span className="text-[#7A3B5E] italic">Alone</span></>}
         headingAr={<>لا يجبُ أن تواجهَ الأمرَ <span className="text-[#7A3B5E] italic">وحدَك</span></>}
       />
+      </div>
     </div>
   );
 }
