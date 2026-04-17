@@ -1132,7 +1132,8 @@ function DownloadsPageInner() {
             })}
           </div>
 
-          <MobileCarousel desktopGrid="sm:grid-cols-2 lg:grid-cols-3" gap={32} mobileWidth="85vw">
+          <div id="toolkit-grid" className="scroll-mt-24" />
+          <MobileCarousel desktopGrid="sm:grid-cols-2 lg:grid-cols-3" gap={32} mobileWidth="85vw" key={currentPage}>
             {paginatedResources.map((resource) => {
               const title = isRTL ? resource.title.ar : resource.title.en;
               const description = isRTL ? resource.description.ar : resource.description.en;
@@ -1187,12 +1188,12 @@ function DownloadsPageInner() {
 
                       {/* Action area */}
                       <div className="pt-4 border-t border-[#F3EFE8] flex flex-col gap-2">
-                        {/* ── Premium cards: interactive CTA only, no Peek Inside ── */}
+                        {/* ── Premium cards ── */}
                         {isPremium ? (
                           <>
                             <Link
                               href={`/${locale}/resources/toolkits/${resource.id}`}
-                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity bg-[#7A3B5E]"
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[#7A3B5E] text-sm font-semibold rounded-xl border-2 border-[#7A3B5E]/20 hover:border-[#7A3B5E]/40 hover:bg-[#7A3B5E]/5 transition-all"
                             >
                               <Sparkles className="w-4 h-4" />
                               {paidSlugs.has(resource.id)
@@ -1202,7 +1203,7 @@ function DownloadsPageInner() {
                             {paidSlugs.has(resource.id) ? (
                               <button
                                 onClick={() => handleDownload(resource.id)}
-                                className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#7A3B5E] text-xs font-medium hover:underline transition-colors"
+                                className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#4A4A5C] text-xs font-medium hover:underline transition-colors"
                               >
                                 {downloadedIds.has(resource.id) ? (
                                   <><Check className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلِ الـ PDF مَرَّةً أُخْرى' : 'Download PDF Again'}</>
@@ -1222,14 +1223,14 @@ function DownloadsPageInner() {
                           <>
                             <Link
                               href={`/${locale}/resources/toolkits/${resource.id}`}
-                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity bg-[#7A3B5E]"
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[#7A3B5E] text-sm font-semibold rounded-xl border-2 border-[#7A3B5E]/20 hover:border-[#7A3B5E]/40 hover:bg-[#7A3B5E]/5 transition-all"
                             >
                               <Sparkles className="w-4 h-4" />
                               {isRTL ? 'النسخة التفاعلية' : 'Try Interactive Version'}
                             </Link>
                             <button
                               onClick={() => openPreview(resource.id)}
-                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#7A3B5E] text-xs font-medium hover:underline transition-colors"
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#4A4A5C] text-xs font-medium hover:underline transition-colors"
                             >
                               <Eye className="w-3.5 h-3.5" />
                               {isRTL ? 'ألقِ نظرة' : 'Peek Inside'}
@@ -1239,20 +1240,19 @@ function DownloadsPageInner() {
                           /* ── Free toolkits, preview only ── */
                           <button
                             onClick={() => openPreview(resource.id)}
-                            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#7A3B5E] text-white text-sm font-semibold rounded-xl hover:bg-[#5E2D48] transition-colors"
+                            className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-[#7A3B5E] text-sm font-semibold rounded-xl border-2 border-[#7A3B5E]/20 hover:border-[#7A3B5E]/40 hover:bg-[#7A3B5E]/5 transition-all"
                           >
                             <Eye className="w-4 h-4" />
                             {isRTL ? 'ألقِ نظرة' : 'Peek Inside'}
                           </button>
                         )}
 
-                        {/* Free PDF download row — hidden on premium cards because the
-                            premium branch above handles the gated PDF state itself */}
+                        {/* Free PDF download row */}
                         {!isPremium && (
                           isUnlocked ? (
                             <button
                               onClick={() => handleDownload(resource.id)}
-                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#7A3B5E] text-xs font-medium hover:underline transition-colors"
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2 text-[#4A4A5C] text-xs font-medium hover:underline transition-colors"
                             >
                               {downloadedIds.has(resource.id) ? (
                                 <><Check className="w-3.5 h-3.5" /> {isRTL ? 'حمِّلْ مرّة أخرى' : 'Download Again'}</>
@@ -1278,7 +1278,7 @@ function DownloadsPageInner() {
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-12">
               <button
-                onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); document.getElementById('toolkit-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
                 disabled={currentPage === 1}
                 className="p-2.5 rounded-full border border-[#F3EFE8] bg-white text-[#4A4A5C] hover:bg-[#FAF7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               >
@@ -1287,10 +1287,10 @@ function DownloadsPageInner() {
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                 <button
                   key={page}
-                  onClick={() => { setCurrentPage(page); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                  onClick={() => { setCurrentPage(page); document.getElementById('toolkit-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
                   className={`w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
                     currentPage === page
-                      ? 'bg-[#7A3B5E] text-white shadow-md'
+                      ? 'bg-[#7A3B5E] text-white shadow-sm'
                       : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:bg-[#FAF7F2]'
                   }`}
                 >
@@ -1298,7 +1298,7 @@ function DownloadsPageInner() {
                 </button>
               ))}
               <button
-                onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); document.getElementById('toolkit-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
                 disabled={currentPage === totalPages}
                 className="p-2.5 rounded-full border border-[#F3EFE8] bg-white text-[#4A4A5C] hover:bg-[#FAF7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               >
