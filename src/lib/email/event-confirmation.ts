@@ -30,16 +30,77 @@ export function generateEventConfirmationEmail(params: EventConfirmationParams):
   const whatToBring = isAr ? event.whatToBringAr : event.whatToBringEn;
   const calendarUrl = generateGoogleCalendarUrl(event, locale);
   const customMessage = isAr ? event.confirmationMessageAr : event.confirmationMessageEn;
+  const isGauging = !!event.dateTBD;
 
   const locationIcon = event.locationType === 'online' ? '💻' : event.locationType === 'hybrid' ? '🔄' : '📍';
 
-  const heading = waitlisted
-    ? (isAr ? "أنت على قائمة الانتظار" : "You're on the Waitlist")
-    : (isAr ? "تم تسجيلك بنجاح!" : "You're Registered!");
+  // ── Heading & subheading adapt to lifecycle phase ────────────
+  let heading: string;
+  let subheading: string;
+  let iconBg: string;
+  let iconEmoji: string;
 
-  const subheading = waitlisted
-    ? (isAr ? `${firstName}، تم إضافتك لقائمة الانتظار. سنبلغك فور توفر مكان.` : `${firstName}, you've been added to the waitlist. We'll notify you if a spot opens up.`)
-    : (isAr ? `${firstName}، نحن متحمسون لرؤيتك!` : `${firstName}, we're excited to see you!`);
+  if (waitlisted) {
+    heading = isAr ? "أنت على قائمة الانتظار" : "You're on the Waitlist";
+    subheading = isAr
+      ? `${firstName}، تم إضافتك لقائمة الانتظار. سنبلغك فور توفر مكان.`
+      : `${firstName}, you've been added to the waitlist. We'll notify you if a spot opens up.`;
+    iconBg = '#C8A97D';
+    iconEmoji = '⏳';
+  } else if (isGauging) {
+    heading = isAr ? 'تمّ حجزُ مكانِك!' : 'Spot Saved!';
+    subheading = isAr
+      ? `${firstName}، أنتَ من أوّلِ مَنْ أبدى اهتمامًا. سنتواصلُ معك قريبًا بالتفاصيل.`
+      : `${firstName}, you're one of the first to show interest. We'll reach out soon with the details.`;
+    iconBg = '#7A3B5E';
+    iconEmoji = '✨';
+  } else {
+    heading = isAr ? "تم تسجيلك بنجاح!" : "You're Registered!";
+    subheading = isAr
+      ? `${firstName}، نحن متحمسون لرؤيتك!`
+      : `${firstName}, we're excited to see you!`;
+    iconBg = '#3B8A6E';
+    iconEmoji = '✓';
+  }
+
+  // ── Gauging-phase: show "what happens next" steps ───────────
+  const gaugingNextSteps = isGauging ? `
+  <tr><td style="padding:0 0 24px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:12px;border:1px solid #F3EFE8;">
+      <tr><td style="padding:24px;text-align:${align};">
+        <p style="margin:0 0 16px;font-size:13px;font-weight:700;color:#7A3B5E;text-transform:uppercase;letter-spacing:1px;">${isAr ? 'ما سيحدث بعد ذلك' : 'What Happens Next'}</p>
+        <table cellpadding="0" cellspacing="0" width="100%">
+          <tr>
+            <td style="padding:0 0 14px;vertical-align:top;width:36px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#F0E0D8;text-align:center;line-height:28px;font-size:13px;font-weight:700;color:#7A3B5E;">1</div>
+            </td>
+            <td style="padding:2px 0 14px 8px;font-size:14px;color:#4A4A5C;line-height:1.5;">
+              <strong style="color:#2D2A33;">${isAr ? 'نجمع المجموعة' : 'We gather the circle'}</strong><br/>
+              <span style="font-size:13px;color:#8E8E9F;">${isAr ? 'البرنامج يبدأ عندما يكون الفريق جاهزًا' : 'The program starts when the group is the right size'}</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0 0 14px;vertical-align:top;width:36px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#F0E0D8;text-align:center;line-height:28px;font-size:13px;font-weight:700;color:#7A3B5E;">2</div>
+            </td>
+            <td style="padding:2px 0 14px 8px;font-size:14px;color:#4A4A5C;line-height:1.5;">
+              <strong style="color:#2D2A33;">${isAr ? 'نؤكّد المواعيد' : 'We confirm the dates'}</strong><br/>
+              <span style="font-size:13px;color:#8E8E9F;">${isAr ? 'ستكون أوّل من يعرف' : "You'll be the first to know"}</span>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:0;vertical-align:top;width:36px;">
+              <div style="width:28px;height:28px;border-radius:50%;background:#F0E0D8;text-align:center;line-height:28px;font-size:13px;font-weight:700;color:#7A3B5E;">3</div>
+            </td>
+            <td style="padding:2px 0 0 8px;font-size:14px;color:#4A4A5C;line-height:1.5;">
+              <strong style="color:#2D2A33;">${isAr ? 'نرسل لك كلّ التفاصيل' : 'We send you all the details'}</strong><br/>
+              <span style="font-size:13px;color:#8E8E9F;">${isAr ? 'الجدول، الدفع، وما تحتاجه للبدء' : 'Schedule, payment, and everything you need'}</span>
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+  </td></tr>` : '';
 
   const content = `
   <table width="100%" cellpadding="0" cellspacing="0">
@@ -47,7 +108,7 @@ export function generateEventConfirmationEmail(params: EventConfirmationParams):
   <tr><td style="padding:0 0 24px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background:linear-gradient(135deg,#F0E0D8,#FAF0EC);border-radius:16px;overflow:hidden;">
       <tr><td style="padding:32px;text-align:center;">
-        <div style="width:56px;height:56px;border-radius:50%;background:${waitlisted ? '#C8A97D' : '#3B8A6E'};margin:0 auto 16px;line-height:56px;font-size:28px;">${waitlisted ? '⏳' : '✓'}</div>
+        <div style="width:56px;height:56px;border-radius:50%;background:${iconBg};margin:0 auto 16px;line-height:56px;font-size:28px;">${iconEmoji}</div>
         <h1 style="margin:0;font-size:28px;color:#2D2A33;font-family:Georgia,serif;">${heading}</h1>
         <p style="margin:8px 0 0;font-size:16px;color:#4A4A5C;">${subheading}</p>
         <p style="margin:12px 0 0;font-size:12px;color:#8E8E9F;">${isAr ? 'رقم التسجيل' : 'Registration ID'}: ${registrationId}</p>
@@ -61,16 +122,20 @@ export function generateEventConfirmationEmail(params: EventConfirmationParams):
       <tr><td style="padding:24px;text-align:${align};">
         <h2 style="margin:0 0 16px;font-size:22px;color:#2D2A33;font-family:Georgia,serif;">${title}</h2>
         <table cellpadding="0" cellspacing="0">
-          <tr><td style="padding:4px 12px 4px 0;font-size:14px;color:#8E8E9F;">📅</td><td style="padding:4px 0;font-size:14px;color:#4A4A5C;">${formattedDate}</td></tr>
-          <tr><td style="padding:4px 12px 4px 0;font-size:14px;color:#8E8E9F;">🕐</td><td style="padding:4px 0;font-size:14px;color:#4A4A5C;">${formattedTime}</td></tr>
+          ${isGauging ? '' : `<tr><td style="padding:4px 12px 4px 0;font-size:14px;color:#8E8E9F;">📅</td><td style="padding:4px 0;font-size:14px;color:#4A4A5C;">${formattedDate}</td></tr>`}
+          ${isGauging ? '' : `<tr><td style="padding:4px 12px 4px 0;font-size:14px;color:#8E8E9F;">🕐</td><td style="padding:4px 0;font-size:14px;color:#4A4A5C;">${formattedTime}</td></tr>`}
+          ${isGauging ? `<tr><td style="padding:4px 12px 4px 0;font-size:14px;color:#8E8E9F;">📅</td><td style="padding:4px 0;font-size:14px;color:#C8A97D;font-style:italic;">${isAr ? 'سيُعلَن قريبًا' : 'Coming soon'}</td></tr>` : ''}
           <tr><td style="padding:4px 12px 4px 0;font-size:14px;color:#8E8E9F;">${locationIcon}</td><td style="padding:4px 0;font-size:14px;color:#4A4A5C;">${location}</td></tr>
+          ${!isGauging && event.priceCAD ? `<tr><td style="padding:4px 12px 4px 0;font-size:14px;color:#8E8E9F;">💰</td><td style="padding:4px 0;font-size:14px;color:#4A4A5C;">$${event.priceCAD} CAD</td></tr>` : ''}
         </table>
       </td></tr>
     </table>
   </td></tr>
 
-  ${customMessage ? `
-  <!-- Custom Message -->
+  ${isGauging ? gaugingNextSteps : ''}
+
+  ${customMessage && !isGauging ? `
+  <!-- Custom Message (hidden during gauging — next-steps card replaces it) -->
   <tr><td style="padding:0 0 24px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8F5F0;border-radius:12px;border-left:4px solid #C8A97D;">
       <tr><td style="padding:16px 20px;font-size:14px;color:#4A4A5C;text-align:${align};">
@@ -79,8 +144,8 @@ export function generateEventConfirmationEmail(params: EventConfirmationParams):
     </table>
   </td></tr>` : ''}
 
-  ${!event.isFree && !waitlisted ? `
-  <!-- Payment Info -->
+  ${!event.isFree && !waitlisted && !isGauging ? `
+  <!-- Payment Info (only when dates are confirmed) -->
   <tr><td style="padding:0 0 24px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#FDF5F0;border-radius:12px;border:1px solid #D4836A30;">
       <tr><td style="padding:20px;text-align:center;">
@@ -93,16 +158,16 @@ export function generateEventConfirmationEmail(params: EventConfirmationParams):
     </table>
   </td></tr>` : ''}
 
-  <!-- Add to Calendar CTA -->
-  ${!waitlisted ? `
+  <!-- Add to Calendar CTA (only when dates are set) -->
+  ${!waitlisted && !isGauging ? `
   <tr><td style="padding:0 0 24px;text-align:center;">
     <a href="${calendarUrl}" target="_blank" style="display:inline-block;padding:14px 32px;background:#7A3B5E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600;">
       📅 ${isAr ? 'أضف إلى التقويم' : 'Add to Calendar'}
     </a>
   </td></tr>` : ''}
 
-  ${whatToBring && whatToBring.length > 0 && !waitlisted ? `
-  <!-- What to Bring -->
+  ${whatToBring && whatToBring.length > 0 && !waitlisted && !isGauging ? `
+  <!-- What to Bring (only when dates are set) -->
   <tr><td style="padding:0 0 24px;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:12px;border:1px solid #F3EFE8;">
       <tr><td style="padding:20px;text-align:${align};">
