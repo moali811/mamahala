@@ -544,7 +544,7 @@ export default function ProgramOverviewPage() {
       )}
 
       {/* ─── LEVEL ROADMAP ─── */}
-      <section id="curriculum" className="py-16 lg:py-24 bg-[#FAF7F2]">
+      <section id="curriculum" className="py-20 lg:py-28 bg-[#FAF7F2]">
         <div className="container-main">
           <ScrollReveal className="text-center mb-12">
             <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
@@ -826,7 +826,7 @@ export default function ProgramOverviewPage() {
       </section>
 
       {/* ─── ENROLLMENT ─── */}
-      <section id="enroll" className="py-16 lg:py-24 bg-white">
+      <section id="enroll" className="py-20 lg:py-28 bg-white">
         <div className="container-main">
           <ScrollReveal>
             <div className="max-w-lg mx-auto text-center">

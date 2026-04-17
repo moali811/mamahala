@@ -127,7 +127,7 @@ export default function ExecutiveFunctionQuizPage() {
   return (
     <div className="bg-[#FAF7F2] min-h-screen">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#7A3B5E]/8 hidden lg:block blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 hidden lg:block blur-3xl" />
@@ -346,7 +346,7 @@ export default function ExecutiveFunctionQuizPage() {
                 animate={{ opacity: 1, y: 0 }}
               >
                 <ScrollReveal>
-                  <div className="bg-white rounded-3xl p-10 lg:p-14 border border-[#F3EFE8] shadow-[0_20px_60px_rgba(0,0,0,0.06)]">
+                  <div className="bg-white rounded-3xl p-10 lg:p-14 border border-[#F3EFE8] shadow-[var(--shadow-elevated)]">
                     {/* Score circle */}
                     <div className="text-center mb-10">
                       <div

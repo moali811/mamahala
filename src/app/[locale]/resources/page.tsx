@@ -109,7 +109,7 @@ export default function ResourcesPage() {
       {/* ================================================================ */}
       <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]" />
         {/* Decorative orbs */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.08] blur-[80px]" />
@@ -211,7 +211,7 @@ export default function ResourcesPage() {
       {/* ================================================================ */}
       {/*  RESOURCE TYPE CARDS                                             */}
       {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+      <section className="py-20 lg:py-28 bg-[#FAF7F2]">
         <div className="container-main">
           <StaggerReveal className="flex flex-wrap justify-center gap-6">
             {resourceTypes.map((resource, index) => {

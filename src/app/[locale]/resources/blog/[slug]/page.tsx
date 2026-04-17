@@ -170,7 +170,7 @@ export default function BlogPostPage() {
       {/*  HERO                                                            */}
       {/* ================================================================ */}
       <section className="relative pt-32 pb-28 lg:pt-40 lg:pb-36 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]" />
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.08] blur-[80px]" />
           <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.08] blur-[80px]" />
@@ -258,11 +258,11 @@ export default function BlogPostPage() {
       {/* ================================================================ */}
       {/*  ARTICLE BODY                                                    */}
       {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+      <section className="py-20 lg:py-28 bg-[#FAF7F2]">
         <div className="container-main">
           <div className="max-w-3xl mx-auto">
             <ScrollReveal>
-              <article className="bg-white rounded-3xl p-8 lg:p-12 shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-[#F3EFE8]">
+              <article className="bg-white rounded-3xl p-8 lg:p-12 shadow-[var(--shadow-subtle)] border border-[#F3EFE8]">
                 <div className="space-y-5">
                   {content.map((block: string, index: number) => {
                     const trimmed = block.trim();
@@ -463,7 +463,7 @@ export default function BlogPostPage() {
       {/*  RELATED POSTS                                                   */}
       {/* ================================================================ */}
       {relatedPosts.length > 0 && (
-        <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+        <section className="py-20 lg:py-28 bg-[#FAF7F2]">
           <div className="container-main">
             <ScrollReveal className="text-center mb-12">
               <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-3">

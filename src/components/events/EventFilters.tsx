@@ -17,15 +17,8 @@ interface Props {
   suggestedAudience?: EventAudience;
 }
 
-/** Demographic color system — matches the Toolkits page pattern */
-const demographicColors: Record<string, string> = {
-  all: '#7A3B5E',        // plum (default)
-  youth: '#C4878A',      // warm rose
-  families: '#C8A97D',   // gold/sand
-  adults: '#5A8B6F',     // sage
-  couples: '#D4836A',    // terracotta
-  community: '#7A3B5E',  // plum
-};
+/** Single accent color for all active states */
+const ACTIVE_COLOR = '#7A3B5E';
 
 const audienceLabels: Record<string, { en: string; ar: string }> = {
   all: { en: 'All', ar: 'الكلّ' },
@@ -83,57 +76,16 @@ export default function EventFilters({ filters, onFiltersChange, locale }: Props
   const hasActiveFilter = filters.audience !== 'all' || filters.format !== 'all' || filters.price !== 'all';
 
   return (
-    <div className="space-y-3">
-      {/* Audience row — per-demographic colors on active */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8E8E9F] w-12 flex-shrink-0">
-          {isRTL ? 'لِمَن' : 'For'}
-        </span>
-        {Object.entries(audienceLabels).map(([key, labels]) => (
-          <Pill
-            key={key}
-            active={filters.audience === key}
-            activeColor={demographicColors[key] || '#7A3B5E'}
-            label={isRTL ? labels.ar : labels.en}
-            onClick={() => onFiltersChange({ ...filters, audience: key as Filters['audience'] })}
-          />
-        ))}
-      </div>
-
-      {/* Format + Price row */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8E8E9F] w-12 flex-shrink-0">
-          {isRTL ? 'كيف' : 'How'}
-        </span>
-        {Object.entries(formatLabels).map(([key, labels]) => (
-          <Pill
-            key={key}
-            active={filters.format === key}
-            label={isRTL ? labels.ar : labels.en}
-            onClick={() => onFiltersChange({ ...filters, format: key as Filters['format'] })}
-          />
-        ))}
-        <span className="text-[#E8E4DE] mx-1">|</span>
-        {Object.entries(priceLabels).map(([key, labels]) => (
-          <Pill
-            key={key}
-            active={filters.price === key}
-            label={isRTL ? labels.ar : labels.en}
-            onClick={() => onFiltersChange({ ...filters, price: key as Filters['price'] })}
-          />
-        ))}
-      </div>
-
-      {/* Clear button */}
-      {hasActiveFilter && (
-        <button
-          type="button"
-          onClick={() => onFiltersChange({ audience: 'all', format: 'all', price: 'all' })}
-          className="text-xs text-[#C4878A] hover:text-[#7A3B5E] font-medium transition-colors"
-        >
-          {isRTL ? 'مسحُ الفلاتر' : 'Clear filters'}
-        </button>
-      )}
+    <div className="flex flex-wrap items-center justify-center gap-2">
+      {Object.entries(audienceLabels).map(([key, labels]) => (
+        <Pill
+          key={key}
+          active={filters.audience === key}
+          activeColor={ACTIVE_COLOR}
+          label={isRTL ? labels.ar : labels.en}
+          onClick={() => onFiltersChange({ ...filters, audience: key as Filters['audience'] })}
+        />
+      ))}
     </div>
   );
 }

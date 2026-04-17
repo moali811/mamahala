@@ -147,7 +147,7 @@ export default function ServiceCategoryPage() {
   return (
     <div className="bg-[#FAF7F2]">
       {/* ─── HERO ─── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#C4878A]/8 hidden lg:block blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#C8A97D]/30 hidden lg:block blur-3xl" />
@@ -242,7 +242,7 @@ export default function ServiceCategoryPage() {
       )}
 
       {/* ─── SERVICES: Alternating visual sections ─── */}
-      <section className="py-16 lg:py-24">
+      <section className="py-20 lg:py-28">
         <div className="container-main">
           {services.map((service, i) => {
             const sName = isRTL ? service.nameAr : service.name;
@@ -256,7 +256,7 @@ export default function ServiceCategoryPage() {
                 <Link
                   href={`/${locale}/services/${category}/${service.slug}`}
                   id={`service-${service.slug}`}
-                  className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-0 lg:gap-0 mb-12 lg:mb-20 bg-white rounded-3xl overflow-hidden border border-[#F3EFE8] hover:shadow-[0_20px_60px_rgba(0,0,0,0.06)] transition-all duration-500 group cursor-pointer`}
+                  className={`flex flex-col ${isEven ? 'lg:flex-row' : 'lg:flex-row-reverse'} gap-0 lg:gap-0 mb-12 lg:mb-20 bg-white rounded-3xl overflow-hidden border border-[#F3EFE8] hover:shadow-[var(--shadow-elevated)] transition-all duration-500 group cursor-pointer`}
                 >
                   {/* Image */}
                   <div className="relative w-full lg:w-1/2 h-64 sm:h-80 lg:h-auto lg:min-h-[400px] overflow-hidden">

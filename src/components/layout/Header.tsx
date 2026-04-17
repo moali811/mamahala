@@ -423,7 +423,7 @@ export default function Header({ locale, messages }: HeaderProps) {
 
               <Link
                 href={getBookingUrl(locale as string)}
-                className="inline-flex items-center gap-1.5 rounded-full bg-[#7A3B5E] px-4 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-[#5E2D48] hover:shadow-[var(--shadow-glow-plum)] active:scale-[0.98]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-[#7A3B5E] px-4 py-1.5 text-xs font-semibold text-white transition-all duration-200 hover:bg-[#5E2D48] hover:shadow-[var(--shadow-elevated)] active:scale-[0.98]"
               >
                 <Calendar size={14} />
                 {nav.bookNow}

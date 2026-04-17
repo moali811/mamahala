@@ -172,7 +172,7 @@ export default function GiftPage() {
   return (
     <div className="bg-[#FAF7F2]">
       {/* ─── HERO ─── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#F0E0D8] via-[#F5E8E0] to-[#FAF0EC]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 left-[15%] w-80 h-80 rounded-full bg-[#C4878A]/6 blur-[100px]" />
           <div className="absolute bottom-10 right-[10%] w-96 h-96 rounded-full bg-[#C8A97D]/8 blur-[100px]" />
@@ -181,7 +181,7 @@ export default function GiftPage() {
           <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
             <Breadcrumb locale={locale} items={[{ label: messages.nav.home, href: `/${locale}` }, { label: isRTL ? 'هديّةُ رعاية' : 'Gift of Care' }]} />
           </motion.div>
-          <motion.div className="w-20 h-20 rounded-full bg-white/90 flex items-center justify-center mx-auto mt-8 mb-6 shadow-lg shadow-[#C4878A]/10" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
+          <motion.div className="w-20 h-20 rounded-full bg-white/90 flex items-center justify-center mx-auto mt-8 mb-6 shadow-[var(--shadow-card)]" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
             <Heart className="w-10 h-10 text-[#7A3B5E]" />
           </motion.div>
           <motion.h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#2D2A33] leading-[1.1]" style={{ fontFamily: 'var(--font-heading)' }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
@@ -375,7 +375,7 @@ export default function GiftPage() {
 
                 {/* Gift card preview */}
                 <div className="rounded-2xl overflow-hidden border border-[#E8D8D0]/50 shadow-lg mb-8">
-                  <div className="bg-gradient-to-br from-[#F0E0D8] via-[#F5E8E0] to-[#FAF0EC] p-8 sm:p-12 text-center">
+                  <div className="bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2] p-8 sm:p-12 text-center">
                     <p className="text-xs font-semibold tracking-[3px] uppercase text-[#C8A97D] mb-2">{isRTL ? 'هديّةُ رعايةٍ لك' : 'A Gift of Care For You'}</p>
                     <h3 className="text-3xl sm:text-4xl font-bold text-[#2D2A33] mb-4" style={{ fontFamily: 'var(--font-heading)' }}>{recipientName}</h3>
                     <div className="w-10 h-0.5 bg-[#C8A97D] mx-auto mb-4" />

@@ -122,7 +122,7 @@ export default function EventsPage() {
               initial={{ opacity: 0, y: 20, rotate: -8 }}
               animate={{ opacity: 1, y: 0, rotate: -6 }}
               transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute top-2 left-6 w-[220px] rounded-2xl bg-white/80 backdrop-blur-sm border border-[#F3EFE8] p-4 shadow-[0_8px_30px_rgba(122,59,94,0.08)]"
+              className="absolute top-2 left-6 w-[220px] rounded-2xl bg-white/80 backdrop-blur-sm border border-[#F3EFE8] p-4 shadow-[var(--shadow-card)]"
               style={{ transformOrigin: 'center' }}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -149,7 +149,7 @@ export default function EventsPage() {
               initial={{ opacity: 0, y: 20, rotate: 6 }}
               animate={{ opacity: 1, y: 0, rotate: 4 }}
               transition={{ duration: 0.8, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute top-16 right-0 w-[220px] rounded-2xl bg-white/90 backdrop-blur-sm border border-[#F3EFE8] p-4 shadow-[0_8px_30px_rgba(122,59,94,0.1)]"
+              className="absolute top-16 right-0 w-[220px] rounded-2xl bg-white/90 backdrop-blur-sm border border-[#F3EFE8] p-4 shadow-[var(--shadow-card)]"
               style={{ transformOrigin: 'center' }}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -176,7 +176,7 @@ export default function EventsPage() {
               initial={{ opacity: 0, y: 20, rotate: -3 }}
               animate={{ opacity: 1, y: 0, rotate: -2 }}
               transition={{ duration: 0.8, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute top-[140px] left-4 w-[220px] rounded-2xl bg-white border border-[#F3EFE8] p-4 shadow-[0_12px_40px_rgba(122,59,94,0.12)]"
+              className="absolute top-[140px] left-4 w-[220px] rounded-2xl bg-white border border-[#F3EFE8] p-4 shadow-[var(--shadow-elevated)]"
               style={{ transformOrigin: 'center' }}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -299,7 +299,7 @@ export default function EventsPage() {
       {/*  FILTERS — audience, format, price                              */}
       {/* ================================================================ */}
       {!loading && totalTopics > 3 && (
-        <section className="sticky top-16 z-30 pt-3 pb-3 bg-[#FAF7F2]/92 backdrop-blur-md border-b border-[#F0E8D8]">
+        <section className="sticky top-16 z-30 py-4 bg-[#FAF7F2] border-b border-[#F3EFE8]">
           <div className="container-main">
             <EventFilters
               filters={filters}
@@ -425,7 +425,7 @@ export default function EventsPage() {
       {/*  SECTION 2: SHAPE WHAT'S NEXT — Pulse / concept voting           */}
       {/* ================================================================ */}
       {hasPulse && (
-        <section className={`py-16 lg:py-24 ${hasUpcoming || hasFeatured ? 'bg-white' : 'bg-[#FAF7F2]'}`}>
+        <section className={`py-20 lg:py-28 ${hasUpcoming || hasFeatured ? 'bg-white' : 'bg-[#FAF7F2]'}`}>
           <div className="container-main">
             <ScrollReveal className="mb-10">
               <div className="flex items-center gap-3 mb-2">
@@ -491,7 +491,7 @@ export default function EventsPage() {
         const hiddenCount = Math.max(0, past.length - HOMEPAGE_LIMIT);
 
         return (
-        <section id="past-events" className="py-16 lg:py-24 bg-[#FAF7F2] scroll-mt-24">
+        <section id="past-events" className="py-20 lg:py-28 bg-[#FAF7F2] scroll-mt-24">
           <div className="container-main">
             <ScrollReveal className="mb-8">
               <div className="flex items-center gap-3 mb-2">
@@ -571,7 +571,7 @@ export default function EventsPage() {
       {/* ================================================================ */}
       {/*  REMINDER SIGNUP                                                 */}
       {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-white">
+      <section className="py-20 lg:py-28 bg-white">
         <div className="container-main">
           <ScrollReveal>
             <div className="py-12 px-8 rounded-3xl bg-[#FAF7F2] border border-[#F3EFE8]">

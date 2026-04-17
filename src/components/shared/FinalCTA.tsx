@@ -43,9 +43,7 @@ export default function FinalCTA({
   const defaultDescAr = 'محادثتُك الأولى مجّانيّة — ٣٠ دقيقة، بلا ضغط، بلا التزام.';
 
   return (
-    <section className="py-20 lg:py-28 gradient-cta-dark relative overflow-hidden">
-      <WaveDivider position="top" fillColor={fillColorAbove} variant="organic" />
-
+    <section className="py-24 lg:py-32 gradient-cta-dark relative overflow-hidden">
       <div className="container-main relative z-10">
         <ScrollReveal className="text-center max-w-3xl mx-auto">
           <h2

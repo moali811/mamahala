@@ -118,7 +118,7 @@ function GuidedScenarioFlow({
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
       >
-        <div className="bg-white rounded-3xl p-10 lg:p-14 border border-[#F3EFE8] shadow-[0_20px_60px_rgba(122,59,94,0.08)] max-w-lg mx-auto">
+        <div className="bg-white rounded-3xl p-10 lg:p-14 border border-[#F3EFE8] shadow-[var(--shadow-elevated)] max-w-lg mx-auto">
           <div className="w-16 h-16 rounded-full bg-[#C4878A]/10 flex items-center justify-center mx-auto mb-6">
             <Sparkles className="w-8 h-8 text-[#7A3B5E]" />
           </div>
@@ -316,7 +316,7 @@ export default function HomePage() {
       {/* ================================================================ */}
       {/*  SECTION 1: HERO                                                */}
       {/* ================================================================ */}
-      <section className="relative min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
+      <section className="relative min-h-[80vh] lg:min-h-[75vh] bg-[#FAF7F2] overflow-hidden -mt-16 pt-16">
         {/* Editorial image — soft fade via CSS mask */}
         <div
           className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}
@@ -406,7 +406,7 @@ export default function HomePage() {
         </div>
 
         {/* Trust bar — inside the fixed hero, fades with it */}
-        <div className="relative z-20 bg-[#FDF8F4]">
+        <div className="relative z-20 bg-[#FAF7F2]">
           {(() => {
             const trustItems = [
               {
@@ -481,7 +481,7 @@ export default function HomePage() {
       </section>
 
       {/* Spacer between hero and slides */}
-      <div className="h-16 lg:h-24 bg-[#FDF8F4]" />
+      <div className="h-16 lg:h-24 bg-[#FAF7F2]" />
 
       {/* ================================================================ */}
       {/*  EMPATHY SLIDESHOW — "You might be here because..."              */}
@@ -491,7 +491,7 @@ export default function HomePage() {
       {/* ================================================================ */}
       {/*  SERVICE SHOWCASE                                                */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-32 bg-white">
+      <section className="py-28 lg:py-36 bg-white">
         <div className="container-main">
           <ScrollReveal className="mb-16 text-center">
             <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-3">
@@ -624,7 +624,7 @@ export default function HomePage() {
       {/* ================================================================ */}
       {/*  PROCESS STEPS                                                   */}
       {/* ================================================================ */}
-      <section className="py-24 lg:py-32 bg-[#FAF7F2]">
+      <section className="py-28 lg:py-36 bg-[#FAF7F2]">
         <div className="container-main">
           <ScrollReveal className="text-center mb-16">
             <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-3">
@@ -747,7 +747,7 @@ function TestimonialsSection({
   const cat = catLinks[t.category];
 
   return (
-    <section className="py-24 lg:py-32 bg-white">
+    <section className="py-28 lg:py-36 bg-white">
       <div className="container-main">
         {/* Header */}
         <ScrollReveal className="text-center mb-14">
@@ -884,7 +884,7 @@ function BlogPreviewSection({
   }, [posts.length]);
 
   return (
-    <section className="py-24 lg:py-32 bg-[#FAF7F2]">
+    <section className="py-28 lg:py-36 bg-[#FAF7F2]">
       <div className="container-main">
         <ScrollReveal className="flex items-end justify-between mb-12">
           <div>
@@ -1050,7 +1050,7 @@ function MethodStepCard({ step, index, isRTL }: { step: { title: string; descrip
       className="group relative overflow-hidden rounded-2xl h-full cursor-default"
       whileHover={{ y: -6, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } }}
     >
-      <div className="relative bg-white border border-[#C8A97D]/15 group-hover:border-[#C8A97D]/40 rounded-2xl p-8 lg:p-10 h-full transition-all duration-500 group-hover:shadow-[0_20px_60px_rgba(200,169,125,0.2)] text-center flex flex-col items-center">
+      <div className="relative bg-white border border-[#C8A97D]/15 group-hover:border-[#C8A97D]/40 rounded-2xl p-8 lg:p-10 h-full transition-all duration-500 group-hover:shadow-[var(--shadow-elevated)] text-center flex flex-col items-center">
         <span className="text-[11px] font-bold tracking-[0.3em] uppercase text-[#C8A97D]/40 mb-5">
           {String(index + 1).padStart(2, '0')}
         </span>

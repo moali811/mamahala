@@ -74,7 +74,7 @@ export default function BlogListingPage() {
       {/*  HERO                                                            */}
       {/* ================================================================ */}
       <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]" />
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.08] blur-[80px]" />
           <div className="absolute bottom-0 left-[10%] w-[350px] h-[350px] rounded-full bg-[#C8A97D]/[0.12] blur-[80px]" />
@@ -175,29 +175,25 @@ export default function BlogListingPage() {
       {/* ================================================================ */}
       {/*  CATEGORY FILTER & BLOG GRID                                     */}
       {/* ================================================================ */}
-      <section className="py-16 lg:py-24 bg-[#FAF7F2]">
+      <section className="py-20 lg:py-28 bg-[#FAF7F2]">
         <div className="container-main">
           {/* Category Filter Tabs */}
           <ScrollReveal className="mb-12">
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-2">
               {['All', ...categories].map((cat) => {
                 const label = cat === 'All' ? (isRTL ? 'الكل' : 'All') : getCategoryLabel(cat, isRTL);
                 return (
-                  <motion.button
+                  <button
                     key={cat}
                     onClick={() => { setActiveCategory(cat); setCurrentPage(1); }}
-                    className={`
-                      px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300
-                      ${
-                        activeCategory === cat
-                          ? 'bg-[#7A3B5E] text-white shadow-[0_4px_12px_rgba(43,95,78,0.3)]'
-                          : 'bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] border border-[#F3EFE8]'
-                      }
-                    `}
-                    whileTap={{ scale: 0.97 }}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                      activeCategory === cat
+                        ? 'bg-[#7A3B5E] text-white shadow-sm'
+                        : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
+                    }`}
                   >
                     {label}
-                  </motion.button>
+                  </button>
                 );
               })}
             </div>

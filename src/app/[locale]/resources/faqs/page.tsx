@@ -57,7 +57,7 @@ export default function FAQsPage() {
       {/* ================================================================ */}
       <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
         {/* Gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]" />
         {/* Decorative orbs */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-10 right-[15%] w-[400px] h-[400px] rounded-full bg-[#C4878A]/[0.08] blur-[80px]" />
@@ -130,27 +130,25 @@ export default function FAQsPage() {
         <div className="container-main">
           {/* Tag filters — full width row */}
           <ScrollReveal className="mb-12">
-            <div className="flex flex-wrap gap-2 justify-center">
-              <motion.button
+            <div className="flex flex-wrap items-center justify-center gap-2">
+              <button
                 onClick={() => { setActiveTag(null); setOpenId(null); }}
-                className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all ${
-                  !activeTag ? 'bg-[#7A3B5E] text-white shadow-sm' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C8A97D]/30'
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
+                  !activeTag ? 'bg-[#7A3B5E] text-white shadow-sm' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
                 }`}
-                whileTap={{ scale: 0.97 }}
               >
                 {isRTL ? 'الكلّ' : 'All'}
-              </motion.button>
+              </button>
               {tags.map((tag, i) => (
-                <motion.button
+                <button
                   key={tag}
                   onClick={() => { setActiveTag(tag); setOpenId(null); }}
-                  className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all capitalize ${
-                    activeTag === tag ? 'bg-[#7A3B5E] text-white shadow-sm' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C8A97D]/30'
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 capitalize ${
+                    activeTag === tag ? 'bg-[#7A3B5E] text-white shadow-sm' : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
                   }`}
-                  whileTap={{ scale: 0.97 }}
                 >
                   {isRTL ? (tagToAr[tag] || tag) : tag}
-                </motion.button>
+                </button>
               ))}
             </div>
           </ScrollReveal>

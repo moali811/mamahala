@@ -175,10 +175,10 @@ export default function ResultsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.06)] border border-[#F3EFE8] print-card"
+            className="bg-white rounded-2xl overflow-hidden shadow-[var(--shadow-elevated)] border border-[#F3EFE8] print-card"
           >
             {/* Gradient Header */}
-            <div className="bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC] p-8 sm:p-10 print-header">
+            <div className="bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2] p-8 sm:p-10 print-header">
               {/* Logo for print */}
               <div className="hidden print:flex items-center justify-center gap-3 mb-4">
                 <img src="/images/logo-512.png" alt="Mama Hala Consulting" width={40} height={40} className="rounded-full" />

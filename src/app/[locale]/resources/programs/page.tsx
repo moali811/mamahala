@@ -420,7 +420,7 @@ export default function ProgramsPage() {
       </section>
 
       {/* ─── ALL PROGRAM CARDS ─── */}
-      <section id="all-programs" className="py-16 lg:py-24 bg-[#FAF7F2]">
+      <section id="all-programs" className="py-20 lg:py-28 bg-[#FAF7F2]">
         <div className="container-main">
           <ScrollReveal className="text-center mb-12">
             <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">

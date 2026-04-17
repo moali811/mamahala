@@ -133,7 +133,7 @@ export default function HookCarousel({ locale, isRTL }: Props) {
 
   return (
     <section
-      className="relative overflow-hidden bg-gradient-to-b from-[#FAF7F2] via-[#F9EDE8] to-[#FAF7F2]"
+      className="relative overflow-hidden bg-gradient-to-b from-[#FAF7F2] via-[#F8EDE8] to-[#FAF7F2]"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -202,7 +202,7 @@ export default function HookCarousel({ locale, isRTL }: Props) {
                 >
                   <Link
                     href={getBookingUrl(locale)}
-                    className="inline-flex items-center gap-2 bg-[#7A3B5E] text-white font-semibold px-8 py-4 rounded-full hover:bg-[#5E2D48] transition-all shadow-lg shadow-[#7A3B5E]/20 hover:shadow-xl hover:shadow-[#7A3B5E]/30"
+                    className="inline-flex items-center gap-2 bg-[#7A3B5E] text-white font-semibold px-8 py-4 rounded-full hover:bg-[#5E2D48] transition-all shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-elevated)]"
                   >
                     {isRTL ? 'ابدأ رحلتك' : 'Start Your Journey'}
                     {isRTL ? <ChevronLeft className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}

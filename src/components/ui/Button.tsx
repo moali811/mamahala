@@ -23,7 +23,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#7A3B5E] text-white hover:bg-[#5E2D48] shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-glow-plum)]',
+    'bg-[#7A3B5E] text-white hover:bg-[#5E2D48] shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-elevated)]',
   secondary:
     'bg-[#F3EFE8] text-[#7A3B5E] hover:bg-[#e8e2d8] border border-[#7A3B5E]/10',
   outline:
@@ -31,7 +31,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   ghost:
     'bg-transparent text-[#4A4A5C] hover:bg-[#F3EFE8] hover:text-[#7A3B5E]',
   plum:
-    'bg-[#7A3B5E] text-white hover:bg-[#5E2D48] shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-glow-plum)]',
+    'bg-[#7A3B5E] text-white hover:bg-[#5E2D48] shadow-[var(--shadow-subtle)] hover:shadow-[var(--shadow-elevated)]',
   terracotta:
     'bg-[#D4836A] text-white hover:bg-[#B96A52] shadow-[var(--shadow-subtle)]',
 };

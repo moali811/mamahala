@@ -263,7 +263,7 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
       {scenario && (
         <div className="px-6 -mt-8 relative z-10">
           <blockquote
-            className="bg-white rounded-2xl p-5 shadow-[0_8px_24px_rgba(0,0,0,0.06)] border-s-4"
+            className="bg-white rounded-2xl p-5 shadow-[var(--shadow-card)] border-s-4"
             style={{ borderColor: theme.primary }}
           >
             <p className="text-sm text-[#4A4A5C] leading-relaxed italic">

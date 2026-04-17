@@ -431,15 +431,15 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
       })()}
 
       {/* Category Tabs */}
-      <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="flex flex-wrap items-center justify-center gap-2">
         {serviceCategories.map(cat => (
           <button
             key={cat.key}
             onClick={() => setActiveCategory(cat.key)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+            className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 ${
               activeCategory === cat.key
-                ? 'bg-[#7A3B5E] text-white'
-                : 'bg-white text-[#8E8E9F] hover:bg-[#F5F0EB]'
+                ? 'bg-[#7A3B5E] text-white shadow-sm'
+                : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
             }`}
           >
             {isRTL ? cat.nameAr : cat.name}
@@ -739,7 +739,7 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
                       disabled={isPast || !hasSlots || isBlocked}
                       className={`relative aspect-square rounded-xl flex flex-col items-center justify-center text-sm transition-all ${
                         isSelected
-                          ? 'bg-[#7A3B5E] text-white font-bold shadow-lg shadow-[#7A3B5E]/20 scale-105'
+                          ? 'bg-[#7A3B5E] text-white font-bold shadow-[var(--shadow-card)] scale-105'
                           : isToday && hasSlots
                             ? 'bg-[#C8A97D]/10 text-[#7A3B5E] font-semibold ring-2 ring-[#C8A97D]/30 hover:bg-[#C8A97D]/20'
                             : hasSlots && !isPast
@@ -1173,7 +1173,7 @@ function InfoStep({ wizard, locale, isRTL }: StepProps) {
   };
 
   const inputClass = 'w-full px-4 py-3 rounded-xl border-0 bg-[#FAF7F2] text-sm text-[#2D2A33] placeholder-[#C0B8B0] focus:bg-white focus:ring-2 focus:ring-[#7A3B5E]/20 outline-none transition-all duration-300';
-  const glassCard = 'bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/60 shadow-[0_8px_32px_rgba(122,59,94,0.06)] hover:shadow-[0_12px_40px_rgba(122,59,94,0.1)] transition-shadow duration-500';
+  const glassCard = 'bg-white/80 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/60 shadow-[var(--shadow-card)] hover:shadow-[var(--shadow-elevated)] transition-shadow duration-500';
 
   // Country dropdown component (reused for phone + location)
   // Country picker as a fixed bottom sheet on mobile, absolute dropdown on desktop
@@ -1393,7 +1393,7 @@ function InfoStep({ wizard, locale, isRTL }: StepProps) {
               whileTap={{ scale: 0.97 }}
               className={`relative p-4 rounded-xl border-2 text-center transition-all duration-300 ${
                 mode === opt.key
-                  ? 'border-[#7A3B5E] bg-[#7A3B5E]/5 shadow-[0_4px_20px_rgba(122,59,94,0.12)]'
+                  ? 'border-[#7A3B5E] bg-[#7A3B5E]/5 shadow-[var(--shadow-card)]'
                   : 'border-[#F0ECE8] hover:border-[#C4878A]/30 bg-white'
               }`}
             >
@@ -1449,7 +1449,7 @@ function InfoStep({ wizard, locale, isRTL }: StepProps) {
         whileTap={{ scale: 0.98 }}
         className={`relative w-full py-3.5 rounded-xl text-white text-sm font-semibold transition-all duration-300 overflow-hidden ${
           allRequired
-            ? 'bg-[#7A3B5E] hover:bg-[#6A2E4E] shadow-lg shadow-[#7A3B5E]/20'
+            ? 'bg-[#7A3B5E] hover:bg-[#6A2E4E] shadow-[var(--shadow-card)]'
             : 'bg-[#C0B8B0] cursor-not-allowed'
         }`}
         initial={{ opacity: 0, y: 12 }}

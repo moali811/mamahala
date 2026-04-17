@@ -281,7 +281,7 @@ export default function CertificatePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="rounded-3xl border border-[#EDE3D0] overflow-hidden shadow-[0_4px_32px_-8px_rgba(122,59,94,0.08)]"
+          className="rounded-3xl border border-[#EDE3D0] overflow-hidden shadow-[var(--shadow-card)]"
           style={{ background: 'linear-gradient(180deg, #FFFDFA 0%, #FDF9F1 100%)' }}
         >
           {/* Top gradient border */}

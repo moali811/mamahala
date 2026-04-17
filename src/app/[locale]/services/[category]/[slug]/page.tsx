@@ -64,7 +64,7 @@ export default function ServiceDetailPage() {
   return (
     <div className="bg-[#FAF7F2]">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 right-10 w-72 h-72 rounded-full bg-[#C4878A]/8 hidden lg:block blur-3xl" />
         </div>
@@ -114,7 +114,7 @@ export default function ServiceDetailPage() {
         <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
-      <div className="container-main py-16 lg:py-24">
+      <div className="container-main py-20 lg:py-28">
         <div className="grid lg:grid-cols-3 gap-12">
           {/* Main Content */}
           <div className={`lg:col-span-2 space-y-16 lg:order-1 ${isRTL ? 'text-right' : ''}`}>

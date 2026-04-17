@@ -51,12 +51,10 @@
   --color-error: #C45B5B;
   --color-info: #5B8AC4;
 
-  /* Shadows — Warmed */
+  /* Shadows — neutral, no colored glows */
   --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
   --shadow-elevated: 0 8px 40px rgba(0, 0, 0, 0.08);
-  --shadow-glow-rose: 0 8px 30px rgba(181, 105, 107, 0.15);
-  --shadow-glow-plum: 0 8px 30px rgba(122, 59, 94, 0.15);
 
   /* Typography */
   --font-heading: var(--font-dm-serif), 'Georgia', serif;
@@ -70,17 +68,17 @@
   --duration-normal: 400ms;
   --duration-slow: 700ms;
 
-  /* Spacing */
+  /* Spacing — generous for breathing room */
   --container-padding: 1.5rem;
-  --section-padding-y: 6rem;
-  --section-padding-y-lg: 8rem;
+  --section-padding-y: 7rem;
+  --section-padding-y-lg: 9rem;
 }
 
 @media (min-width: 1024px) {
   :root {
     --container-padding: 4rem;
-    --section-padding-y: 8rem;
-    --section-padding-y-lg: 10rem;
+    --section-padding-y: 10rem;
+    --section-padding-y-lg: 12rem;
   }
 }
 
@@ -216,17 +214,30 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--color-cloud);
 }
 
-/* Gradient backgrounds */
+/* Gradient backgrounds — minimal warmth, fade in */
 @utility gradient-sage {
-  background: linear-gradient(135deg, #E8C4C0 0%, #F0D5CA 50%, #FAF0EC 100%);
+  background: linear-gradient(135deg, #F5E8E5 0%, #F8EDE8 50%, #FAF7F2 100%);
+  animation: sectionFadeIn 1s ease-out both;
 }
 
 @utility gradient-cta-dark {
-  background: linear-gradient(135deg, #EDD5CD 0%, #DFC0B8 40%, #C9A49C 100%);
+  background: linear-gradient(315deg, #F5E8E5 0%, #F8EDE8 50%, #FAF7F2 100%);
+  animation: sectionFadeIn 1.2s ease-out both;
 }
 
 @utility gradient-suit {
-  background: linear-gradient(135deg, #E8C4C0 0%, #D4ADA8 50%, #C4878A20 100%);
+  background: linear-gradient(135deg, #F5E8E5 0%, #F8EDE8 50%, #FAF7F2 100%);
+  animation: sectionFadeIn 1s ease-out both;
+}
+
+@keyframes sectionFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Apply fade-in to all hero/CTA gradient sections */
+[class*="from-[#F5E8E5]"] {
+  animation: sectionFadeIn 1s ease-out both;
 }
 
 @utility gradient-plum {

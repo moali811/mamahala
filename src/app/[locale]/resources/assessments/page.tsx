@@ -240,7 +240,7 @@ export default function AssessmentsPage() {
     <div className="overflow-hidden">
       {/* Hero */}
       <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]" />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]" />
 
         {/* Decorative stacked assessment cluster — desktop only */}
         <HeroDecorCluster
@@ -312,15 +312,15 @@ export default function AssessmentsPage() {
       <section className="py-12 lg:py-20 bg-[#FAF7F2]">
         <div className="container-main">
           {/* Category Filter Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 mb-10">
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
             {categoryTabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveCategory(tab.key)}
-                className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
                   activeCategory === tab.key
-                    ? 'bg-[#7A3B5E] text-white shadow-md'
-                    : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C8A97D]/30'
+                    ? 'bg-[#7A3B5E] text-white shadow-sm'
+                    : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
                 }`}
               >
                 {isRTL ? tab.ar : tab.en}

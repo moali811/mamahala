@@ -623,17 +623,17 @@ const typeIcons: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 const typeGradients: Record<string, string> = {
-  guide: 'from-[#E8D5E0] to-[#F5EBF1]',
-  worksheet: 'from-[#F0D5D6] to-[#F9ECEC]',
-  ebook: 'from-[#D5E3DA] to-[#EBF3EE]',
-  checklist: 'from-[#E8DDD0] to-[#F5EDE3]',
+  guide: 'from-[#F3EFE8] to-[#FAF7F2]',
+  worksheet: 'from-[#F3EFE8] to-[#FAF7F2]',
+  ebook: 'from-[#F3EFE8] to-[#FAF7F2]',
+  checklist: 'from-[#F3EFE8] to-[#FAF7F2]',
 };
 
 const typeIconColors: Record<string, string> = {
   guide: 'text-[#7A3B5E]',
-  worksheet: 'text-[#C4878A]',
-  ebook: 'text-[#5A8B6F]',
-  checklist: 'text-[#B08D57]',
+  worksheet: 'text-[#7A3B5E]',
+  ebook: 'text-[#7A3B5E]',
+  checklist: 'text-[#7A3B5E]',
 };
 
 const typeFilters = [
@@ -1112,88 +1112,24 @@ function DownloadsPageInner() {
             </ScrollReveal>
           )}
 
-          {/* Level 1: Demographic filter tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-3">
+          {/* Filter tabs — single level, one accent color */}
+          <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
             {demographicFilters.map((filter) => {
               const isActive = demographicFilter === filter.key;
-              const activeColor = filter.key !== 'all' ? demographicColors[filter.key] : '#7A3B5E';
               return (
                 <button
                   key={filter.key}
                   onClick={() => setDemographicFilter(filter.key)}
-                  className={`px-5 py-2.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
                     isActive
-                      ? 'text-white shadow-md'
-                      : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:bg-[#FAF7F2]'
+                      ? 'bg-[#7A3B5E] text-white shadow-sm'
+                      : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
                   }`}
-                  style={isActive ? { backgroundColor: activeColor } : undefined}
                 >
                   {isRTL ? filter.ar : filter.en}
                 </button>
               );
             })}
-          </div>
-
-          {/* Level 2: Theme chips (contextual — animate in when demographic selected) */}
-          <AnimatePresence mode="wait">
-            {demographicFilter !== 'all' && themesByDemographic[demographicFilter]?.length > 0 && (
-              <motion.div
-                key={demographicFilter}
-                initial={{ opacity: 0, y: -8, height: 0 }}
-                animate={{ opacity: 1, y: 0, height: 'auto' }}
-                exit={{ opacity: 0, y: -8, height: 0 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="overflow-hidden"
-              >
-                <div className="flex flex-wrap items-center justify-center gap-2 mb-3 pt-1">
-                  <button
-                    onClick={() => setThemeFilter('all')}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
-                      themeFilter === 'all'
-                        ? 'text-white'
-                        : 'bg-white text-[#6B6580] border border-[#F3EFE8] hover:bg-[#FAF7F2]'
-                    }`}
-                    style={themeFilter === 'all' ? { backgroundColor: `${demographicColors[demographicFilter]}CC` } : undefined}
-                  >
-                    {isRTL ? 'الكل' : 'All'}
-                  </button>
-                  {themesByDemographic[demographicFilter].map((theme) => {
-                    const isActive = themeFilter === theme.key;
-                    return (
-                      <button
-                        key={theme.key}
-                        onClick={() => setThemeFilter(theme.key)}
-                        className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-all duration-200 ${
-                          isActive
-                            ? 'text-white'
-                            : 'bg-white text-[#6B6580] border border-[#F3EFE8] hover:bg-[#FAF7F2]'
-                        }`}
-                        style={isActive ? { backgroundColor: `${demographicColors[demographicFilter]}CC` } : undefined}
-                      >
-                        {isRTL ? theme.ar : theme.en}
-                      </button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Type filter tabs */}
-          <div className="flex flex-wrap items-center justify-center gap-2 mb-6">
-            {typeFilters.map((filter) => (
-              <button
-                key={filter.key}
-                onClick={() => setTypeFilter(filter.key)}
-                className={`px-4 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
-                  typeFilter === filter.key
-                    ? 'bg-[#4A4A5C] text-white shadow-sm'
-                    : 'bg-white text-[#6B6580] border border-[#F3EFE8] hover:border-[#6B6580]/30 hover:bg-[#FAF7F2]'
-                }`}
-              >
-                {isRTL ? filter.ar : filter.en}
-              </button>
-            ))}
           </div>
 
           <MobileCarousel desktopGrid="sm:grid-cols-2 lg:grid-cols-3" gap={32} mobileWidth="85vw">
@@ -1210,52 +1146,28 @@ function DownloadsPageInner() {
               const priceCAD = dynamicPricing.toolkitFullAccessPrice;
 
               return (
-                <motion.div key={resource.id}
-                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#C4878A]/20 transition-all duration-300 h-full flex flex-col"
-                    whileHover={{ y: -6, boxShadow: '0 12px 48px rgba(0,0,0,0.1)' }}
-                    transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                <div key={resource.id}
+                    className="group relative bg-white rounded-2xl overflow-hidden border border-[#F3EFE8] hover:border-[#E8E4E0] hover:shadow-[var(--shadow-card)] transition-all duration-300 h-full flex flex-col"
                   >
                     {/* Accent stripe */}
-                    <div className={`h-1 bg-gradient-to-r ${typeGradients[resource.type] || 'from-[#F3EFE8] to-[#FAF7F2]'}`} />
+                    <div className="h-0.5 bg-[#F3EFE8]" />
 
                     <div className="p-5 flex-1 flex flex-col">
-                      {/* Compact header: icon + contextual labels + popular/new badge */}
+                      {/* Header: icon + type + optional badge */}
                       <div className="flex items-center justify-between mb-3 min-h-[2.25rem]">
                         <div className="flex items-center gap-2.5 min-w-0">
-                          <div
-                            className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-gradient-to-br ${typeGradients[resource.type] || 'from-[#F3EFE8] to-[#FAF7F2]'}`}
-                          >
-                            <TypeIcon className={`w-4.5 h-4.5 ${typeIconColors[resource.type] || 'text-[#7A3B5E]'}`} />
+                          <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 bg-[#FAF7F2]">
+                            <TypeIcon className="w-4.5 h-4.5 text-[#7A3B5E]" />
                           </div>
-                          {/* Only show type label when not filtered by type */}
-                          {typeFilter === 'all' && (
-                            <Badge variant="sage" size="sm">{typeLabel}</Badge>
-                          )}
-                          {/* Only show demographic label when not filtered by demographic */}
-                          {demographicFilter === 'all' && (
-                            <span
-                              className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold truncate"
-                              style={{
-                                backgroundColor: `${demographicColors[resource.category]}15`,
-                                color: demographicColors[resource.category],
-                              }}
-                            >
-                              {isRTL ? categoryLabels[resource.category].ar : categoryLabels[resource.category].en}
-                            </span>
-                          )}
+                          <span className="text-[11px] font-medium text-[#8E8E9F] uppercase tracking-wide">{typeLabel}</span>
                         </div>
-                        {/* Premium takes precedence, then Popular, then New */}
                         {isPremium ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] flex-shrink-0 shadow-sm">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#7A3B5E] text-white flex-shrink-0">
                             <Sparkles className="w-2.5 h-2.5" /> {isRTL ? 'مميّز' : 'Premium'}
                           </span>
                         ) : resource.popular ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#C8A97D] to-[#B08D57] flex-shrink-0">
-                            <TrendingUp className="w-2.5 h-2.5" /> {isRTL ? 'شائع' : 'Popular'}
-                          </span>
-                        ) : isNew(resource.dateAdded) ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold text-white bg-gradient-to-r from-[#C4878A] to-[#7A3B5E] flex-shrink-0">
-                            <Sparkles className="w-2.5 h-2.5" /> {isRTL ? 'جديد' : 'New'}
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#C8A97D] text-white flex-shrink-0">
+                            {isRTL ? 'شائع' : 'Popular'}
                           </span>
                         ) : null}
                       </div>
@@ -1280,7 +1192,7 @@ function DownloadsPageInner() {
                           <>
                             <Link
                               href={`/${locale}/resources/toolkits/${resource.id}`}
-                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity bg-gradient-to-r from-[#B08D57] to-[#7A3B5E] shadow-md"
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity bg-[#7A3B5E]"
                             >
                               <Sparkles className="w-4 h-4" />
                               {paidSlugs.has(resource.id)
@@ -1310,7 +1222,7 @@ function DownloadsPageInner() {
                           <>
                             <Link
                               href={`/${locale}/resources/toolkits/${resource.id}`}
-                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity bg-gradient-to-r from-[#7A3B5E] to-[#C4878A]"
+                              className="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 text-white text-sm font-semibold rounded-xl hover:opacity-90 transition-opacity bg-[#7A3B5E]"
                             >
                               <Sparkles className="w-4 h-4" />
                               {isRTL ? 'النسخة التفاعلية' : 'Try Interactive Version'}
@@ -1357,7 +1269,7 @@ function DownloadsPageInner() {
                         )}
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
               );
             })}
           </MobileCarousel>
