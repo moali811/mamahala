@@ -157,11 +157,11 @@ export default function Header({ locale, messages }: HeaderProps) {
             {/* Logo */}
             <Link href={`/${locale}`} className="flex shrink-0 items-center">
               <Image
-                src="/images/logo-new.png"
+                src="/images/logo-O.png"
                 alt="Mama Hala Consulting"
                 width={512}
                 height={512}
-                className="h-14 w-auto object-contain"
+                className="h-14 w-14 rounded-full object-cover"
                 priority
               />
             </Link>
@@ -478,7 +478,7 @@ export default function Header({ locale, messages }: HeaderProps) {
               {/* Compact header */}
               <div className="flex h-14 items-center justify-between px-4 border-b border-[#F3EFE8]">
                 <Link href={`/${locale}`} onClick={() => setMobileOpen(false)} className="flex items-center">
-                  <Image src="/images/logo-new.png" alt="Mama Hala" width={512} height={512} className="h-10 w-auto object-contain" />
+                  <Image src="/images/logo-O.png" alt="Mama Hala" width={512} height={512} className="h-10 w-10 rounded-full object-cover" />
                 </Link>
                 <button onClick={() => setMobileOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F3EFE8] text-[#4A4A5C]" aria-label="Close">
                   <X size={16} />
