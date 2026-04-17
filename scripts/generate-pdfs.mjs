@@ -102,6 +102,10 @@ const META = {
     subtitle: { en: '10 evidence-based rituals to rebuild closeness between partners', ar: '10 طقوسٍ مبنيّةٍ على أُسسٍ علميّةٍ لإعادةِ بناءِ القُربِ بين الشّريكين' },
     category: { en: 'Relationships', ar: 'العلاقات' },
   },
+  'digital-mirror-workbook': {
+    subtitle: { en: 'What your screen time reveals about your inner world', ar: 'ماذا يَكشِفُ وَقتُ شاشَتِكَ عَن عالَمِكَ الدَّاخِلِيّ' },
+    category: { en: 'Digital Wellness', ar: 'العافية الرقمية' },
+  },
 };
 
 // ---------------------------------------------------------------------------

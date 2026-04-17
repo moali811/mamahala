@@ -234,12 +234,124 @@ const toolkit: ToolkitMeta = {
           ],
         },
 
+        /* ── The 60-Second Self-Check ── */
+        {
+          kind: 'heading',
+          id: 's1-selfcheck-heading',
+          level: 2,
+          textEn: 'The 60-Second Self-Check',
+          textAr: 'الفَحصُ الذَّاتِيُّ في ٦٠ ثانِيَة',
+        },
+        {
+          kind: 'paragraph',
+          id: 's1-selfcheck-intro',
+          textEn: 'Before going further, answer these honestly. No score, no judgment — just a mirror. Check every statement that is true for you right now.',
+          textAr: 'قَبلَ المُتابَعَة، أجِبْ عَن هذِهِ بِصِدق. بِدونِ نَتيجَة، بِدونِ حُكم — فَقَط مِرآة. ضَعْ عَلامَةً عَلى كُلِّ عِبارَةٍ صَحيحَةٍ بالنِّسبَةِ لَكَ الآن.',
+        },
+        {
+          kind: 'checklist',
+          id: 's1-selfcheck',
+          titleEn: 'How many of these are true for you?',
+          titleAr: 'كَم مِن هذِهِ صَحيحَةٌ بالنِّسبَةِ لَك؟',
+          itemsEn: [
+            'I check my phone within 5 minutes of waking up — before I even get out of bed',
+            'I have opened an app, closed it, and opened the same app again within 30 seconds',
+            'I have felt a phantom vibration — my phone buzzing when it actually did not',
+            'I have composed a caption or response in my head during a real-life conversation',
+            'I have scrolled past my intended stop point because "just one more" turned into thirty minutes',
+            'I know more about what an online stranger had for lunch than what my partner felt today',
+            'I have felt genuine anxiety when my phone battery drops below 20%',
+            'I have picked up my phone to check the time and put it down 15 minutes later, still not knowing the time',
+          ],
+          itemsAr: [
+            'أتَفَقَّدُ هاتِفي خِلالَ ٥ دَقائِقَ مِنَ الاستيقاظ — قَبلَ أن أنهَضَ مِنَ السَّرير',
+            'فَتَحتُ تَطبيقًا، أغلَقتُه، وفَتَحتُ نَفسَ التَّطبيقِ مَرَّةً أُخرى خِلالَ ٣٠ ثانِيَة',
+            'شَعَرتُ بِاهتِزازٍ وَهمِيّ — هاتِفي يَهتَزُّ حينَ لَم يَكُنْ كَذلِكَ فِعلًا',
+            'صِغتُ تَعليقًا أو رَدًّا في رَأسي أثناءَ مُحادَثَةٍ حَقيقِيَّةٍ وَجهًا لِوَجه',
+            'تَجاوَزتُ نُقطَةَ تَوَقُّفي المَقصودَة لِأنَّ "واحِدَةً أُخرى فَقَط" تَحَوَّلَت إلى ثَلاثينَ دَقيقَة',
+            'أعرِفُ عَن غَداءِ شَخصٍ غَريبٍ عَلى الإنتِرنِت أكثَرَ مِمَّا أعرِفُ عَمَّا شَعَرَ بِهِ شَريكي اليَوم',
+            'شَعَرتُ بِقَلَقٍ حَقيقِيٍّ حينَ انخَفَضَت بَطَّارِيَّةُ هاتِفي عَن ٢٠٪',
+            'التَقَطتُ هاتِفي لِأتَفَقَّدَ الوَقت ووَضَعتُهُ بَعدَ ١٥ دَقيقَةً ولا أزالُ لا أعرِفُ الوَقت',
+          ],
+        },
+        {
+          kind: 'callout',
+          id: 's1-selfcheck-result',
+          variant: 'insight',
+          textEn: 'If you checked 3 or more, your phone is not a tool — it is a relationship. And like any relationship, it deserves to be examined. That is what the rest of this workbook is for.',
+          textAr: 'إذا وَضَعتَ عَلامَةً عَلى ٣ أو أكثَر، فَهاتِفُكَ لَيسَ أداة — إنَّهُ عَلاقَة. ومِثلُ أيِّ عَلاقَة، يَستَحِقُّ أن يُفحَص. هذا ما بَقِيَّةُ هذا الدَّفتَرِ مِن أجلِه.',
+        },
+
+        /* ── Your Digital Persona vs Your Real Self ── */
+        {
+          kind: 'heading',
+          id: 's1-persona-heading',
+          level: 2,
+          textEn: 'A Quick Experiment: Your Digital Persona vs Your Real Self',
+          textAr: 'تَجرِبَةٌ سَريعَة: شَخصِيَّتُكَ الرَّقمِيَّة مُقابِلَ ذاتِكَ الحَقيقِيَّة',
+        },
+        {
+          kind: 'comparison',
+          id: 's1-persona-vs-real',
+          titleEn: 'Two Versions of You',
+          titleAr: 'نُسخَتانِ مِنك',
+          left: {
+            labelEn: 'What Your Feed Says About You',
+            labelAr: 'ما تَقولُهُ تَغذِيَتُكَ عَنك',
+            pointsEn: [
+              'You are always doing interesting things',
+              'Your relationships are effortless and warm',
+              'You have strong opinions and clear values',
+              'You are thriving in your career',
+              'You are well-read, well-traveled, well-connected',
+            ],
+            pointsAr: [
+              'أنتَ دائِمًا تَفعَلُ أشياءَ مُثيرَة',
+              'عَلاقاتُكَ سَلِسَةٌ ودافِئَة',
+              'لَدَيكَ آراءٌ قَوِيَّةٌ وقِيَمٌ واضِحَة',
+              'أنتَ مُزدَهِرٌ في مَسيرَتِك',
+              'أنتَ مُثَقَّف ومُسافِر ومُتَّصِل',
+            ],
+          },
+          right: {
+            labelEn: 'What Is Actually True Right Now',
+            labelAr: 'ما هُوَ صَحيحٌ فِعلًا الآن',
+            pointsEn: [
+              'You spent last Sunday on the couch doom-scrolling for 3 hours',
+              'You had an argument with your partner that you have not resolved',
+              'You are not sure what you believe about most things anymore',
+              'You are exhausted and quietly questioning everything',
+              'You feel alone in a room full of "connections"',
+            ],
+            pointsAr: [
+              'قَضَيتَ الأحَدَ الماضي عَلى الأريكَةِ تَتَصَفَّحُ الكَوارِثَ لِمُدَّةِ ٣ ساعات',
+              'تَشاجَرتَ مَعَ شَريكِكَ ولَم تَحُلَّ الأمرَ بَعد',
+              'لَستَ مُتَأَكِّدًا مِمَّا تُؤمِنُ بِهِ بَعدَ الآن في مُعظَمِ الأشياء',
+              'أنتَ مُنهَكٌ وتُساءِلُ كُلَّ شَيءٍ بِهُدوء',
+              'تَشعُرُ بالوَحدَةِ في غُرفَةٍ مَليئَةٍ بـ"الاتِّصالات"',
+            ],
+          },
+        },
+        {
+          kind: 'paragraph',
+          id: 's1-gap-insight',
+          textEn: 'The gap between these two columns is not hypocrisy. It is the cost of performing your life instead of living it. And the wider that gap gets, the lonelier you feel — because the version of you that receives love and approval online is not the real you. In Part 3 of this workbook, we will trace exactly where that gap began.',
+          textAr: 'الفَجوَةُ بَينَ هذَينِ العَمودَينِ لَيسَت نِفاقًا. إنَّها ثَمَنُ أداءِ حَياتِكَ بَدَلاً مِن عَيشِها. وكُلَّما اتَّسَعَت تِلكَ الفَجوَة، كُلَّما شَعَرتَ بِمَزيدٍ مِنَ الوَحدَة — لِأنَّ النُّسخَةَ مِنكَ الَّتي تَتَلَقَّى الحُبَّ والقَبولَ عَلى الإنتِرنِت لَيسَت أنتَ الحَقيقِيّ. في الجُزءِ الثَّالِثِ مِن هذا الدَّفتَر، سَنَتَتَبَّعُ بالضَّبطِ أينَ بَدَأَت تِلكَ الفَجوَة.',
+        },
+
         /* ── Reflection + Screen Time Audit ── */
+        {
+          kind: 'heading',
+          id: 's1-reflection-heading',
+          level: 2,
+          textEn: 'The First Honest Question',
+          textAr: 'السُّؤالُ الصَّادِقُ الأوَّل',
+        },
         {
           kind: 'reflection-prompt',
           id: 's1-before-phone',
-          promptEn: "Close your eyes for ten seconds. Then answer honestly: What emotion do you feel RIGHT BEFORE you pick up your phone? Not during, not after — before. Name it. Is it boredom? Anxiety? Loneliness? Restlessness? The need to check if you're missing something? Write whatever comes up.",
-          promptAr: 'أغلِقْ عَينَيكَ لِعَشرِ ثَوانٍ. ثُمَّ أجِبْ بِصِدق: ما العاطِفَةُ الَّتي تَشعُرُ بِها قَبلَ أن تَلتَقِطَ هاتِفَك مُباشَرَةً؟ لَيسَ أثناء، وَلَيسَ بَعد — قَبل. سَمِّها. هَل هِيَ مَلَل؟ قَلَق؟ وَحدَة؟ عَدَمُ ارتِياح؟ الحاجَةُ لِلتَّحَقُّقِ مِمَّا إذا كُنتَ تُفَوِّتُ شَيئًا؟ اكتُبْ كُلَّ ما يَظهَر.',
+          promptEn: "Close your eyes for ten seconds. Then answer honestly: What emotion do you feel RIGHT BEFORE you pick up your phone? Not during, not after — before. Name it. Is it boredom? Anxiety? Loneliness? Restlessness? The need to check if you're missing something? Write whatever comes up. There is no wrong answer — only an honest one.",
+          promptAr: 'أغلِقْ عَينَيكَ لِعَشرِ ثَوانٍ. ثُمَّ أجِبْ بِصِدق: ما العاطِفَةُ الَّتي تَشعُرُ بِها قَبلَ أن تَلتَقِطَ هاتِفَك مُباشَرَةً؟ لَيسَ أثناء، وَلَيسَ بَعد — قَبل. سَمِّها. هَل هِيَ مَلَل؟ قَلَق؟ وَحدَة؟ عَدَمُ ارتِياح؟ الحاجَةُ لِلتَّحَقُّقِ مِمَّا إذا كُنتَ تُفَوِّتُ شَيئًا؟ اكتُبْ كُلَّ ما يَظهَر. لا إجابَةَ خاطِئَة — فَقَط إجابَةٌ صادِقَة.',
           minWords: 30,
         },
         {
@@ -269,6 +381,15 @@ const toolkit: ToolkitMeta = {
             { headerEn: 'Intentional?', headerAr: 'مَقصود؟', width: '10%' },
           ],
           rows: 8,
+        },
+
+        /* ── What Comes Next (teaser for locked sections) ── */
+        {
+          kind: 'callout',
+          id: 's1-teaser',
+          variant: 'insight',
+          textEn: 'You have just seen how the algorithm works on you. But here is the deeper question this workbook will answer: Why does it work so well on YOU specifically? In Part 2, you will discover which of the 5 Digital Archetypes you are. In Part 3, you will trace how your childhood attachment patterns became the algorithm\'s cheat code. In Part 4, you will understand the creator\'s paradox — why the more you share, the emptier you feel. And in Part 5, you will spend 21 days rebuilding your relationship with technology from the inside out. This free preview showed you the problem. The rest of the workbook gives you the tools.',
+          textAr: 'لَقَد رَأَيتَ لِلتَّوّ كَيفَ تَعمَلُ الخَوارِزمِيَّةُ عَلَيك. لكِنْ هُنا السُّؤالُ الأعمَقُ الَّذي سَيُجيبُ عَنهُ هذا الدَّفتَر: لِماذا تَعمَلُ بِهذِهِ الفَعَّالِيَّةِ عَلَيكَ أنتَ بالذَّات؟ في الجُزءِ الثَّاني، ستَكتَشِفُ أيَّ الأنماطِ الرَّقمِيَّةِ الخَمسَةِ أنت. في الجُزءِ الثَّالِث، ستَتَتَبَّعُ كَيفَ أصبَحَت أنماطُ تَعَلُّقِ طُفولَتِكَ الشِّفرَةَ السِّرِّيَّةَ لِلخَوارِزمِيَّة. في الجُزءِ الرَّابِع، ستَفهَمُ مُفارَقَةَ المُبدِع — لِماذا كُلَّما شارَكتَ أكثَر، شَعَرتَ بالفَراغِ أكثَر. وفي الجُزءِ الخامِس، ستَقضي ٢١ يَومًا تُعيدُ بِناءَ عَلاقَتِكَ بالتِّكنولوجيا مِنَ الدَّاخِل. هذِهِ المُعايَنَةُ المَجَّانِيَّةُ أظهَرَت لَكَ المُشكِلَة. بَقِيَّةُ الدَّفتَرِ تُعطيكَ الأدَوات.',
         },
       ],
     },
