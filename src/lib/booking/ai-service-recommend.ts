@@ -55,7 +55,7 @@ RULES:
 - If the client mentions a child/teen: prioritize Youth category
 - If the client mentions family/parent: prioritize Families category
 - If the client mentions partner/marriage: prioritize Couples category
-- If vague or general: default to anxiety-counseling or initial-consultation
+- If vague or general: default to individual-counseling or initial-consultation
 - Be warm and empathetic in your reasoning — this is a counseling practice
 - Respond in ${isArabic ? 'Arabic' : 'English'}
 - For each recommendation, explain briefly WHY it fits (1 sentence)

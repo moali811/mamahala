@@ -258,7 +258,7 @@ export const tiers: AdultingCheckTier[] = [
     summaryEn: "The fact that you took this quiz tells me something important — part of you knows you need support, and that part of you is right. University life can feel overwhelming, especially when you are juggling academics, independence, social pressure, and figuring out who you are all at once. You do not have to do this alone. Reaching out is not weakness; it is the smartest thing you can do for yourself right now.",
     summaryAr: 'حَقيقَةُ أنَّكَ أجرَيتَ هذا الاختِبارَ تُخبِرُني بِشَيءٍ مُهِمّ — جُزءٌ مِنكَ يَعرِفُ أنَّكَ تَحتاجُ دَعمًا، وهذا الجُزءُ مُحِقّ. الحَياةُ الجامِعِيَّةُ قَد تَبدو مُرهِقَة، خاصَّةً عِندَما تُوازِنُ بَينَ الدِّراسَةِ والاستِقلالِيَّةِ والضَّغطِ الاجتِماعِيِّ واكتِشافِ مَن أنتَ في آنٍ واحِد. لا يَجِبُ أن تَفعَلَ هذا بِمُفرَدِك. طَلَبُ المُساعَدَةِ لَيسَ ضَعفًا؛ إنَّهُ أذكى شَيءٍ يُمكِنُكَ فِعلُهُ لِنَفسِكَ الآن.',
     color: '#C4878A',
-    suggestedServices: ['anxiety-counseling', 'self-development-coaching'],
+    suggestedServices: ['individual-counseling', 'self-development-coaching'],
   },
   {
     min: 31,

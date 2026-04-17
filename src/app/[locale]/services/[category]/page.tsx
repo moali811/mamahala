@@ -39,7 +39,6 @@ const serviceImages: Record<string, string> = {
   'parenting-coaching': '/images/services/parenting-coaching.jpg',
   'tackling-child-tantrums': '/images/services/child-tantrums.jpg',
   'parental-stress-wellbeing': '/images/services/parental-wellbeing.jpg',
-  'anxiety-counseling': '/images/services/anxiety-counseling.jpg',
   'anger-management': '/images/services/anger-management.jpg',
   'university-student-session': '/images/service-students.jpg',
   'adhd-executive-function-coaching': '/images/services/adhd-coaching.jpg',
@@ -82,7 +81,7 @@ const categoryScenarios: Record<string, { en: string; ar: string; slug: string }
   adults: [
     { en: 'I just need someone to talk to', ar: 'أحتاج فقط من يتحدث إليّ', slug: 'individual-counseling' },
     { en: 'I\'m stuck in negative thinking', ar: 'أنا عالق في التفكير السلبي', slug: 'cbt-adults' },
-    { en: 'I\'m dealing with anxiety or worry', ar: 'أعاني من القلق والتوتر', slug: 'anxiety-counseling' },
+    { en: 'I\'m dealing with anxiety or worry', ar: 'أعاني من القلق والتوتر', slug: 'individual-counseling' },
     { en: 'I struggle with anger', ar: 'أعاني من مشاكل الغضب', slug: 'anger-management' },
     { en: 'I have trouble focusing (ADHD)', ar: 'أعاني من صعوبة التركيز', slug: 'adhd-executive-function-coaching' },
     { en: 'I want to improve my lifestyle', ar: 'أريد تحسين نمط حياتي', slug: 'lifestyle-coaching' },

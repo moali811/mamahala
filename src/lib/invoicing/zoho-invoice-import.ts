@@ -686,7 +686,7 @@ export async function previewZohoImport(
     const result = mapZohoItemNameToSlug(itemName);
     if (result.fellBack && itemName) {
       warnings.push(
-        `Unknown item "${itemName}" → fallback to anxiety-counseling (${a.legacyInvoiceNumber})`,
+        `Unknown item "${itemName}" → fallback to individual-counseling (${a.legacyInvoiceNumber})`,
       );
     }
   }

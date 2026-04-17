@@ -72,7 +72,7 @@ const SERVICE_NAMES: Record<string, string> = {
   'under-18-counseling': 'Under 18 Counseling',
   'parenting-coaching': 'Parenting Coaching',
   'cbt-youth': 'CBT / DBT',
-  'anxiety-counseling': 'Counseling Session',
+  'individual-counseling': 'Counseling Session',
   'couples-counseling': 'Couples Counseling',
   'family-relationship-strengthening': 'Family Counseling',
   'self-development-coaching': 'Self-Development',

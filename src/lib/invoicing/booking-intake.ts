@@ -241,7 +241,7 @@ export async function processBookingIntake(
   }
   if (!slugMapping.matched && slugMapping.original) {
     adminNoteParts.push(
-      `⚠ Unknown Cal.com event type "${slugMapping.original}" — fell back to anxiety-counseling. Edit the service below if needed.`,
+      `⚠ Unknown Cal.com event type "${slugMapping.original}" — fell back to individual-counseling. Edit the service below if needed.`,
     );
   }
   if (input.customerNotes) {

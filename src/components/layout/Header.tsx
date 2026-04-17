@@ -80,12 +80,13 @@ export default function Header({ locale, messages }: HeaderProps) {
   }, []);
 
   /* ── Build services mega-menu data ───────── */
+  const generalSlugs = new Set(['initial-consultation', 'online-phone-consultation']);
   const serviceCategoryData = serviceCategories.map((cat) => ({
     key: cat.key,
     label: nav[cat.key] || (isRTL ? cat.nameAr : cat.name),
     href: `/${locale}/services/${cat.key}`,
     services: allServices
-      .filter((s) => s.category === cat.key)
+      .filter((s) => s.category === cat.key && !generalSlugs.has(s.slug))
       .map((s) => ({
         label: isRTL ? s.nameAr : s.name,
         href: `/${locale}/services/${cat.key}/${s.slug}`,

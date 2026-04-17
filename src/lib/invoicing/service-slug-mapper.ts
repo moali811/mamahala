@@ -10,7 +10,7 @@
    - Lowercased, whitespace-normalized lookup
    - Distinct from the services catalog so we never rename slugs
      without breaking historical lookups
-   - Unknown items fall back to `anxiety-counseling` (the most
+   - Unknown items fall back to `individual-counseling` (the most
      generic counseling slug) and set `fellBack: true` so callers
      can surface a warning
 
@@ -74,27 +74,27 @@ const DIRECT_MAP: Record<string, string> = {
   'anger management coaching session': 'anger-management',
 
   // Adult counseling & assessment (genericized "Counseling session" variants)
-  'counseling session': 'anxiety-counseling',
-  'counseling sessions': 'anxiety-counseling',
-  'online counseling session': 'anxiety-counseling',
-  'online phone counseling session': 'anxiety-counseling',
-  'home counseling session': 'anxiety-counseling',
-  'consultation session': 'anxiety-counseling',
+  'counseling session': 'individual-counseling',
+  'counseling sessions': 'individual-counseling',
+  'online counseling session': 'individual-counseling',
+  'online phone counseling session': 'individual-counseling',
+  'home counseling session': 'individual-counseling',
+  'consultation session': 'individual-counseling',
 
   // Intake / assessment (1st session or follow-up)
-  '1st consultation assessment': 'anxiety-counseling',
-  '1st consultation assessment session': 'anxiety-counseling',
-  'consultation assessment': 'anxiety-counseling',
-  'assessment session': 'anxiety-counseling',
-  'assessment follow up': 'anxiety-counseling',
-  'behavior assessment': 'anxiety-counseling',
+  '1st consultation assessment': 'individual-counseling',
+  '1st consultation assessment session': 'individual-counseling',
+  'consultation assessment': 'individual-counseling',
+  'assessment session': 'individual-counseling',
+  'assessment follow up': 'individual-counseling',
+  'behavior assessment': 'individual-counseling',
 
   // Phone / virtual consultation
-  'phone consultation': 'anxiety-counseling',
-  'online phone consultation': 'anxiety-counseling',
+  'phone consultation': 'individual-counseling',
+  'online phone consultation': 'individual-counseling',
 
-  // Packages — default to anxiety-counseling since the package is session-type agnostic
-  '5 online sessions package': 'anxiety-counseling',
+  // Packages — default to individual-counseling since the package is session-type agnostic
+  '5 online sessions package': 'individual-counseling',
 };
 
 /**
@@ -124,7 +124,7 @@ const HEURISTIC_RULES: Array<{
 ];
 
 /** Fallback slug when nothing matches. */
-const FALLBACK_SLUG = 'anxiety-counseling';
+const FALLBACK_SLUG = 'individual-counseling';
 
 /**
  * Words that mark a line item as a surcharge/fee rather than a counseling
@@ -164,7 +164,7 @@ export interface SlugMapResult {
  * Examples:
  *   `Under 18 Counseling Session`     → `under-18-counseling`
  *   `Dialectical Behavioral Therapy`  → `cbt-youth`
- *   `Random Unknown Service`          → `anxiety-counseling` (fellBack: true)
+ *   `Random Unknown Service`          → `individual-counseling` (fellBack: true)
  */
 export function mapZohoItemNameToSlug(
   itemName: string | undefined,

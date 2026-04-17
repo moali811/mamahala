@@ -9,7 +9,7 @@
    so incoming bookings auto-match to the right service category
    (and thus the right pricing tier, invoice template, etc.).
 
-   Unknown Cal.com slugs fall back to `anxiety-counseling` with a
+   Unknown Cal.com slugs fall back to `individual-counseling` with a
    warning appended to the draft's admin note.
    ================================================================ */
 
@@ -19,11 +19,11 @@
  */
 const CAL_SLUG_TO_SERVICE: Record<string, string> = {
   // Intake / consultation
-  'initial-consultation': 'anxiety-counseling',
-  'free-consultation': 'anxiety-counseling',
-  'discovery-call': 'anxiety-counseling',
-  '30min': 'anxiety-counseling',
-  '60min': 'anxiety-counseling',
+  'initial-consultation': 'individual-counseling',
+  'free-consultation': 'individual-counseling',
+  'discovery-call': 'individual-counseling',
+  '30min': 'individual-counseling',
+  '60min': 'individual-counseling',
 
   // Youth (under-18)
   'under-18-counseling': 'under-18-counseling',
@@ -49,7 +49,7 @@ const CAL_SLUG_TO_SERVICE: Record<string, string> = {
   'dialectical-behavioral-therapy': 'cbt-youth',
 
   // Adult / individual
-  'anxiety-counseling': 'anxiety-counseling',
+  'individual-counseling': 'individual-counseling',
   'self-development': 'self-development-coaching',
   'life-coaching': 'life-coaching',
   'lifestyle-coaching': 'lifestyle-coaching',
@@ -78,7 +78,7 @@ const CAL_SLUG_TO_SERVICE: Record<string, string> = {
   'young-adult': 'university-student-session',
 };
 
-const FALLBACK_SLUG = 'anxiety-counseling';
+const FALLBACK_SLUG = 'individual-counseling';
 
 export interface CalServiceMapResult {
   slug: string;

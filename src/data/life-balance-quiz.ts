@@ -221,7 +221,7 @@ export const tiers: LifeBalanceTier[] = [
     summaryEn: "Thank you for being honest with yourself — that is the first step toward meaningful change. The areas you are struggling with are not a reflection of failure; they are an invitation to realign. Many people in this range discover that professional support helps them identify what truly matters and create a roadmap forward. You deserve to feel more alive.",
     summaryAr: 'شكرًا لصدقِك مع نفسِك — هذه الخطوةُ الأولى نحو تغييرٍ حقيقيّ. المجالاتُ التي تعاني فيها ليست انعكاسًا للفشل؛ بل هي دعوةٌ لإعادةِ التوازن. كثيرٌ من الأشخاصِ في هذا النطاقِ يكتشفون أنّ الدعمَ المهنيَّ يساعدُهم في تحديدِ ما يهمُّ حقًّا ورسمِ خريطةِ طريقٍ للمُضيّ قُدُمًا. أنت تستحقُّ أن تشعرَ بالحيويّة.',
     color: '#C4878A',
-    suggestedServices: ['anxiety-counseling', 'lifestyle-coaching', 'life-coaching'],
+    suggestedServices: ['individual-counseling', 'lifestyle-coaching', 'life-coaching'],
   },
   {
     min: 25,

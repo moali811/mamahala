@@ -47,40 +47,41 @@ export async function generateInvoicePdf(
   // ─── HEADER ────────────────────────────────────────────────
   let y = MARGIN + 5;
 
-  // Logo
+  // Logo — vertically centered with the 3-line text block
+  const logoSize = 14;
   const logoDataUrl = getMainLogoDataUrl();
   if (logoDataUrl) {
     try {
-      doc.addImage(logoDataUrl, 'PNG', MARGIN, y, 18, 18, undefined, 'FAST');
+      doc.addImage(logoDataUrl, 'PNG', MARGIN, y - 0.5, logoSize, logoSize, undefined, 'FAST');
     } catch { /* skip */ }
   }
 
-  // Company name + details
-  const brandX = MARGIN + 24;
+  // Company name + details — tight to logo
+  const brandX = MARGIN + logoSize + 4;
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(15);
+  doc.setFontSize(14);
   doc.setTextColor(...DARK);
   doc.text(settings.businessName || 'Mama Hala Consulting Group', brandX, y + 3);
 
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(...MUTED);
-  doc.text('Dr. Hala Ali, Certified Family Counselor', brandX, y + 8);
+  doc.text('Dr. Hala Ali, Certified Family Counselor', brandX, y + 7.5);
 
   const issuer = settings.issuerBlock;
-  doc.text(`${issuer.email}  |  ${issuer.phone}`, brandX, y + 12);
+  doc.text(`${issuer.email}  |  ${issuer.phone}`, brandX, y + 11);
 
   // Invoice number — right-aligned, understated
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
+  doc.setFontSize(7.5);
   doc.setTextColor(...MUTED);
-  doc.text('INVOICE', rightEdge, y, { align: 'right' });
+  doc.text('INVOICE', rightEdge, y + 1, { align: 'right' });
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(12);
+  doc.setFontSize(11);
   doc.setTextColor(...DARK);
   doc.text(invoice.invoiceNumber, rightEdge, y + 6, { align: 'right' });
 
-  y += 22;
+  y += 18;
 
   // ─── BALANCE DUE — the hero visual anchor ──────────────────
   // Light burgundy background at 8% opacity, big bold amount
@@ -354,7 +355,7 @@ export async function generateInvoicePdf(
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
   doc.setTextColor(...MUTED);
-  doc.text('HOW TO PAY', MARGIN, y);
+  doc.text('OTHER PAYMENT METHODS', MARGIN, y);
   y += 5;
 
   for (const block of allBlocks) {

@@ -35,14 +35,14 @@ import { getBookingUrl } from '@/config/business';
 
 // Map service slugs to their categories for building links
 const serviceCategories: Record<string, string> = {
-  'anxiety-counseling': 'adults',
+  'individual-counseling': 'adults',
   'self-development-coaching': 'adults',
   'life-coaching': 'adults',
 };
 
 // Human-readable service names
 const serviceNames: Record<string, { en: string; ar: string }> = {
-  'anxiety-counseling': { en: 'Anxiety Counseling', ar: 'استشارةُ القلق' },
+  'individual-counseling': { en: 'Individual Counseling', ar: 'الاستشارةُ الفرديّة' },
   'self-development-coaching': { en: 'Self-Development Coaching', ar: 'التوجيهُ لتطويرِ الذات' },
   'life-coaching': { en: 'Life Coaching', ar: 'التوجيهُ الحياتيّ' },
 };
