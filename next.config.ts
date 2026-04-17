@@ -4,6 +4,16 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async redirects() {
+    return [
+      // PDF QR codes and legacy links point to /book-a-session → redirect to native /book
+      {
+        source: '/:locale(en|ar)/book-a-session',
+        destination: '/:locale/book',
+        permanent: true,
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {
