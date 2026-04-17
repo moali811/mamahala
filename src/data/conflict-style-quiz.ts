@@ -46,7 +46,7 @@ export const styles: ConflictStyleProfile[] = [
     strengthsAr: 'تسعى لحلِّ الخلافاتِ من خلالِ الحوارِ الصادقِ وتقدِّرُ العدالةَ في كلِّ خلاف. تؤمنُ أنّ لكلِّ نزاعٍ حلًّا إذا كانَ كلا الطرفَين مستعدَّين للاستماعِ والعملِ معًا. شريكُك على الأرجحِ يشعرُ بالاحترامِ خلالَ المحادثاتِ الصعبة لأنّك تعطي الأولويّةَ للفهمِ على الانتصار.',
     growthEn: 'Sometimes you jump into problem-solving mode before your partner has finished feeling heard. Not every conversation needs a solution right away — sometimes your partner just needs you to sit with them in the discomfort before moving toward resolution. Practice pausing and asking: "Do you want me to listen, or help fix this?"',
     growthAr: 'أحيانًا تقفزُ إلى وضعِ حلِّ المشكلاتِ قبلَ أن يشعرَ شريكُك بأنّه مسموع. ليسَ كلُّ محادثةٍ تحتاجُ حلًّا فوريًّا — أحيانًا يحتاجُ شريكُك فقط أن تجلسَ معه في الضيقِ قبلَ التحرُّكِ نحوَ الحلّ. تدرَّبْ على التوقّفِ والسؤال: "هل تريدُني أن أستمعَ أم أساعدَ في الحلّ؟"',
-    suggestedServices: ['couples-counseling', 'pre-marital-education'],
+    suggestedServices: ['relationship-enrichment', 'couples-counseling'],
   },
   {
     key: 'protector',
@@ -70,7 +70,7 @@ export const styles: ConflictStyleProfile[] = [
     strengthsAr: 'تقدِّرُ الانسجامَ وتجلبُ طاقةً دبلوماسيّةً طبيعيّةً لعلاقتِك. أنتَ ماهرٌ في قراءةِ الأجواءِ ومعرفةِ متى تتجاوزُ الأمورَ الصغيرة. شريكُك على الأرجحِ يقدِّرُ حضورَك الهادئ والشعورَ بالأمانِ الذي تخلقُه بعدمِ تحويلِ كلِّ مسألةٍ إلى معركة.',
     growthEn: 'Your love for peace can sometimes come at the cost of your own needs. When you consistently avoid conflict, unspoken frustrations can quietly build into resentment. Learning to speak up — even when it feels uncomfortable — is an act of love for both yourself and your relationship. Your voice matters, even when it trembles.',
     growthAr: 'حبُّك للسلامِ قد يأتي أحيانًا على حسابِ احتياجاتِك. عندما تتجنّبُ الخلافَ باستمرار، يمكنُ أن تتراكمَ الإحباطاتُ المكبوتةُ بهدوءٍ لتصبحَ استياءً. تعلُّمُ التحدّثِ — حتّى عندما يبدو غيرَ مريح — هو فعلُ حبٍّ لنفسِك ولعلاقتِك. صوتُك مهمٌّ حتّى عندما يرتجف.',
-    suggestedServices: ['couples-counseling', 'pre-marital-education'],
+    suggestedServices: ['couples-counseling', 'relationship-enrichment'],
   },
   {
     key: 'reactor',

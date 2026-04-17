@@ -267,7 +267,7 @@ export const tiers: PreMarriageTier[] = [
     summaryEn: "You and your partner have clearly invested in your relationship. There are areas where you are well aligned, and others where deeper conversation could strengthen your foundation even further. Couples in this range often benefit greatly from guided pre-marital sessions — not because something is wrong, but because intentional preparation leads to thriving marriages.",
     summaryAr: 'من الواضحِ أنّكما استثمرتُما في علاقتِكما. هناك مجالاتٌ تتوافقان فيها جيّدًا، وأخرى يمكنُ أن يعزِّزَها حوارٌ أعمق. الأزواجُ في هذا النطاقِ غالبًا ما يستفيدون كثيرًا من جلساتِ ما قبلَ الزواج المُوجَّهة — ليسَ لأنّ هناكَ خطأً، بل لأنّ الإعدادَ المقصودَ يقودُ إلى زيجاتٍ مزدهرة.',
     color: '#C8A97D',
-    suggestedServices: ['pre-marital-education'],
+    suggestedServices: ['pre-marital-education', 'relationship-enrichment'],
   },
   {
     min: 56,
@@ -277,7 +277,7 @@ export const tiers: PreMarriageTier[] = [
     summaryEn: "This is wonderful. You and your partner have done meaningful work together — having the hard conversations, aligning on values, and building a strong communication foundation. Continue nurturing what you have. Even well-prepared couples benefit from enrichment sessions to keep growing together. Your marriage is starting on a beautiful foundation.",
     summaryAr: 'هذا رائع. لقد قمتُما بعملٍ مهمٍّ معًا — إجراءُ المحادثاتِ الصعبةِ والتوافقُ على القِيَم وبناءُ أساسٍ قويٍّ للتواصل. استمرّا في رعايةِ ما لديكما. حتّى الأزواجُ المستعدّون جيّدًا يستفيدون من جلساتِ الإثراءِ لمواصلةِ النموِّ معًا. زواجُكما يبدأُ على أساسٍ جميل.',
     color: '#25D366',
-    suggestedServices: ['couples-counseling'],
+    suggestedServices: ['relationship-enrichment', 'pre-marital-education'],
   },
 ];
 

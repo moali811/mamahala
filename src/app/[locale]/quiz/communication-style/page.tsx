@@ -37,6 +37,7 @@ const serviceCategories: Record<string, string> = {
   'couples-counseling': 'couples',
   'pre-marital-education': 'couples',
   'relationship-health-counseling': 'couples',
+  'relationship-enrichment': 'couples',
 };
 
 // Human-readable service names
@@ -44,6 +45,7 @@ const serviceNames: Record<string, { en: string; ar: string }> = {
   'couples-counseling': { en: 'Couples Counseling', ar: 'استشارةُ الأزواج' },
   'pre-marital-education': { en: 'Pre-Marital Education', ar: 'التثقيفُ ما قبلَ الزواج' },
   'relationship-health-counseling': { en: 'Relationship Health Counseling', ar: 'استشارةُ صحّةِ العلاقات' },
+  'relationship-enrichment': { en: 'Relationship Enrichment', ar: 'إثراءُ العلاقةِ الزّوجيّة' },
 };
 
 // Map dimension icon names to Lucide components

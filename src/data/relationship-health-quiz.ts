@@ -278,7 +278,7 @@ export const tiers: RelationshipHealthTier[] = [
     summaryEn: "Your relationship has real strengths, and there are areas where intentional effort could deepen your connection significantly. Many couples in this range find that a few guided sessions help them move from 'good' to 'great.' You have built something worth investing in — and small, consistent improvements can make all the difference.",
     summaryAr: 'علاقتُكما لها نقاطُ قوّةٍ حقيقيّة، وهناك مجالاتٌ يمكنُ فيها للجهدِ المُوجَّه أن يُعمِّقَ ترابطَكما بشكلٍ كبير. كثيرٌ من الأزواجِ في هذا النطاقِ يجدون أنّ بضعَ جلساتٍ مُوجَّهة تساعدُهم على الانتقالِ من "جيّد" إلى "رائع." لقد بنيتما شيئًا يستحقُّ الاستثمار — والتحسيناتُ الصغيرةُ والمستمرّةُ يمكنُ أن تصنعَ كلَّ الفرق.',
     color: '#C8A97D',
-    suggestedServices: ['couples-counseling', 'pre-marital-education'],
+    suggestedServices: ['couples-counseling', 'relationship-enrichment'],
   },
   {
     min: 59,
@@ -288,7 +288,7 @@ export const tiers: RelationshipHealthTier[] = [
     summaryEn: "This is beautiful to see. Your relationship reflects deep communication, mutual respect, emotional closeness, and a shared sense of purpose. Continue nurturing what you have — even thriving partnerships benefit from periodic enrichment and conscious appreciation. What you have built together is something truly special.",
     summaryAr: 'ما أجملَ رؤيةَ هذا. علاقتُكما تعكسُ تواصلاً عميقًا واحترامًا متبادلاً وقُربًا عاطفيًّا وإحساسًا مشتركًا بالهدف. استمرّا في رعايةِ ما لديكما — حتّى الشراكاتُ المزدهرةُ تستفيدُ من الإثراءِ الدوريِّ والتقديرِ الواعي. ما بنيتماه معًا شيءٌ مميّزٌ حقًّا.',
     color: '#25D366',
-    suggestedServices: ['couples-counseling'],
+    suggestedServices: ['relationship-enrichment'],
   },
 ];
 

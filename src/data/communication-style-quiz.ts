@@ -226,7 +226,7 @@ export const tiers: CommunicationStyleTier[] = [
     summaryEn: "You and your partner have a solid foundation with real room to grow. You are communicating in some areas but may be missing each other in others — and that is completely normal. Couples in this range often benefit from learning specific tools: how to fight fairly, how to listen without fixing, and how to repair after a rupture. A little guidance can turn good into great.",
     summaryAr: 'أنتما تملكان أساسًا متينًا مع مجالٍ حقيقيٍّ للنموّ. تتواصلان في بعضِ المجالاتِ لكن قد تفوتُكما أشياءُ في مجالاتٍ أخرى — وهذا طبيعيٌّ تمامًا. الأزواجُ في هذا النطاقِ غالبًا ما يستفيدون من تعلُّمِ أدواتٍ محدّدة: كيفَ تختلفان بإنصاف، وكيفَ تستمعان دونَ محاولةِ الإصلاح، وكيفَ تُصلحان بعدَ الخلاف. قليلٌ من التوجيهِ يمكنُ أن يحوِّلَ الجيّدَ إلى رائع.',
     color: '#C8A97D',
-    suggestedServices: ['couples-counseling', 'pre-marital-education'],
+    suggestedServices: ['couples-counseling', 'relationship-enrichment'],
   },
   {
     min: 45,
@@ -236,7 +236,7 @@ export const tiers: CommunicationStyleTier[] = [
     summaryEn: "What a beautiful reflection of the effort you both put into your relationship. You listen with intention, express yourselves with care, repair when things go wrong, and turn toward each other consistently. This does not mean your relationship is perfect — it means you have built the skills to navigate imperfection together. Keep nurturing what you have built.",
     summaryAr: 'يا له من انعكاسٍ جميلٍ للجهدِ الذي تبذلانِه في علاقتِكما. تستمعان بنيّةٍ صادقة وتعبِّران عن أنفسِكما بعنايةٍ وتُصلحان عندما تسوءُ الأمور وتستجيبان لبعضِكما باستمرار. هذا لا يعني أنّ علاقتَكما مثاليّة — بل يعني أنّكما بنيتما المهاراتِ للتعاملِ مع عدمِ الكمالِ معًا. استمرّا في رعايةِ ما بنيتُماه.',
     color: '#25D366',
-    suggestedServices: ['pre-marital-education'],
+    suggestedServices: ['relationship-enrichment'],
   },
 ];
 

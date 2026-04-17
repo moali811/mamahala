@@ -49,8 +49,14 @@ const serviceImages: Record<string, string> = {
   'cbt-adults': '/images/services/cbt-adults.jpg',
   'pre-marital-education': '/images/services/premarital.jpg',
   'couples-counseling': '/images/services/couple-counseling.jpg',
+  'relationship-enrichment': '/images/hala-counseling.png',
   'horticultural-plant-therapy': '/images/services/plant-therapy.jpg',
   'walk-and-talk': '/images/services/walk-talk-therapy.jpg',
+};
+
+// Custom focal-point overrides for portrait or off-centre images
+const serviceImagePosition: Record<string, string> = {
+  'relationship-enrichment': 'object-[50%_25%]',
 };
 
 // Category accent colors
@@ -91,6 +97,7 @@ const categoryScenarios: Record<string, { en: string; ar: string; slug: string }
   couples: [
     { en: 'We\'re getting married soon', ar: 'نحن مقبلون على الزواج', slug: 'pre-marital-education' },
     { en: 'Our relationship needs help', ar: 'علاقتنا تحتاج مساعدة', slug: 'couples-counseling' },
+    { en: 'We\'re happy — we want to grow together', ar: 'نحن سعداء — نريد أن ننمو معًا', slug: 'relationship-enrichment' },
   ],
   experiential: [
     { en: 'I prefer therapy outdoors', ar: 'أفضل العلاج في الهواء الطلق', slug: 'walk-and-talk' },
@@ -264,7 +271,7 @@ export default function ServiceCategoryPage() {
                       src={imgSrc}
                       alt={sName}
                       fill
-                      className="object-cover group-hover:scale-[1.03] transition-transform duration-700"
+                      className={`object-cover group-hover:scale-[1.03] transition-transform duration-700${serviceImagePosition[service.slug] ? ` ${serviceImagePosition[service.slug]}` : ''}`}
                       sizes="(max-width: 1024px) 100vw, 50vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent lg:hidden" />

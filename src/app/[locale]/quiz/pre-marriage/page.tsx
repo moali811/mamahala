@@ -34,12 +34,14 @@ import { getBookingUrl } from '@/config/business';
 const serviceCategories: Record<string, string> = {
   'pre-marital-education': 'couples',
   'couples-counseling': 'couples',
+  'relationship-enrichment': 'couples',
 };
 
 // Human-readable service names
 const serviceNames: Record<string, { en: string; ar: string }> = {
   'pre-marital-education': { en: 'Pre-Marital Education', ar: 'التثقيفُ ما قبلَ الزواج' },
   'couples-counseling': { en: 'Couples Counseling', ar: 'استشاراتُ الأزواج' },
+  'relationship-enrichment': { en: 'Relationship Enrichment', ar: 'إثراءُ العلاقةِ الزّوجيّة' },
 };
 
 // Map dimension icon names to Lucide components
