@@ -15,8 +15,10 @@ import type { NextRequest } from 'next/server';
 const BYPASS_COOKIE = 'mh_preview';
 
 export function proxy(request: NextRequest) {
-  // Gate only active when explicitly enabled.
-  if (process.env.COMING_SOON !== 'true') {
+  // Gate: coming-soon OR maintenance mode.
+  const isComingSoon = process.env.COMING_SOON === 'true';
+  const isMaintenance = process.env.MAINTENANCE === 'true';
+  if (!isComingSoon && !isMaintenance) {
     return NextResponse.next();
   }
 
@@ -54,6 +56,7 @@ export function proxy(request: NextRequest) {
   // so it skips Header/Footer). URL stays the same for the visitor.
   const rewriteUrl = new URL('/coming-soon', request.url);
   rewriteUrl.searchParams.set('lang', lang);
+  if (isMaintenance) rewriteUrl.searchParams.set('mode', 'maintenance');
 
   const response = NextResponse.rewrite(rewriteUrl);
   // Belt-and-suspenders: discourage any crawler that somehow

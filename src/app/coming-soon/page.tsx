@@ -7,6 +7,7 @@ import {
   Facebook,
   Youtube,
   Sparkles,
+  Wrench,
 } from 'lucide-react';
 import { BUSINESS } from '@/config/business';
 
@@ -30,7 +31,9 @@ export const metadata: Metadata = {
 
 type Lang = 'en' | 'ar';
 
-const COPY: Record<Lang, {
+type Mode = 'coming-soon' | 'maintenance';
+
+interface CopySet {
   eyebrow: string;
   headline: string;
   body: string;
@@ -41,41 +44,72 @@ const COPY: Record<Lang, {
   copyright: string;
   switchTo: string;
   switchToLabel: string;
-}> = {
-  en: {
-    eyebrow: 'Coming Soon',
-    headline: 'Our new home is almost ready',
-    body: "Warm, wise counsel for families in every season of life. We're putting the finishing touches on something beautiful — please check back soon.",
-    contactLabel: 'In the meantime, reach us here',
-    whatsapp: 'WhatsApp',
-    email: 'Email',
-    followUs: 'Follow us',
-    copyright: '© 2026 Mama Hala Consulting Group',
-    switchTo: 'ar',
-    switchToLabel: 'العربية',
+}
+
+const COPY: Record<Mode, Record<Lang, CopySet>> = {
+  'coming-soon': {
+    en: {
+      eyebrow: 'Coming Soon',
+      headline: 'Our new home is almost ready',
+      body: "Warm, wise counsel for families in every season of life. We're putting the finishing touches on something beautiful — please check back soon.",
+      contactLabel: 'In the meantime, reach us here',
+      whatsapp: 'WhatsApp',
+      email: 'Email',
+      followUs: 'Follow us',
+      copyright: '© 2026 Mama Hala Consulting Group',
+      switchTo: 'ar',
+      switchToLabel: 'العربية',
+    },
+    ar: {
+      eyebrow: 'قريباً',
+      headline: 'منصّتنا الجديدة على وشك الوصول',
+      body: 'رعايةٌ دافئةٌ وحكيمةٌ للعائلات في كلّ فصول الحياة. نعمل على اللمسات الأخيرة لشيءٍ جميل — نلتقي قريباً.',
+      contactLabel: 'تواصلوا معنا في هذه الأثناء',
+      whatsapp: 'واتساب',
+      email: 'البريد',
+      followUs: 'تابعونا',
+      copyright: '© 2026 مجموعة ماما هالة للاستشارات',
+      switchTo: 'en',
+      switchToLabel: 'English',
+    },
   },
-  ar: {
-    eyebrow: 'قريباً',
-    headline: 'منصّتنا الجديدة على وشك الوصول',
-    body: 'رعايةٌ دافئةٌ وحكيمةٌ للعائلات في كلّ فصول الحياة. نعمل على اللمسات الأخيرة لشيءٍ جميل — نلتقي قريباً.',
-    contactLabel: 'تواصلوا معنا في هذه الأثناء',
-    whatsapp: 'واتساب',
-    email: 'البريد',
-    followUs: 'تابعونا',
-    copyright: '© 2026 مجموعة ماما هالة للاستشارات',
-    switchTo: 'en',
-    switchToLabel: 'English',
+  maintenance: {
+    en: {
+      eyebrow: 'Be Right Back',
+      headline: "We're making things even better",
+      body: "Our site is briefly down for a quick update. Everything is safe — we'll be back shortly. Thank you for your patience.",
+      contactLabel: 'You can still reach us',
+      whatsapp: 'WhatsApp',
+      email: 'Email',
+      followUs: 'Follow us',
+      copyright: '© 2026 Mama Hala Consulting Group',
+      switchTo: 'ar',
+      switchToLabel: 'العربية',
+    },
+    ar: {
+      eyebrow: 'نعود حالاً',
+      headline: 'نعمل على تحسينات سريعة',
+      body: 'الموقعُ متوقّفٌ لفترةٍ قصيرةٍ لتحديثٍ سريع. كلّ شيءٍ بأمان — سنعودُ قريباً. شكراً لصبركم.',
+      contactLabel: 'يمكنكم التواصل معنا',
+      whatsapp: 'واتساب',
+      email: 'البريد',
+      followUs: 'تابعونا',
+      copyright: '© 2026 مجموعة ماما هالة للاستشارات',
+      switchTo: 'en',
+      switchToLabel: 'English',
+    },
   },
 };
 
 export default async function ComingSoonPage({
   searchParams,
 }: {
-  searchParams: Promise<{ lang?: string }>;
+  searchParams: Promise<{ lang?: string; mode?: string }>;
 }) {
-  const { lang: rawLang } = await searchParams;
+  const { lang: rawLang, mode: rawMode } = await searchParams;
   const lang: Lang = rawLang === 'ar' ? 'ar' : 'en';
-  const t = COPY[lang];
+  const mode: Mode = rawMode === 'maintenance' ? 'maintenance' : 'coming-soon';
+  const t = COPY[mode][lang];
   const isRTL = lang === 'ar';
   const serifFont = lang === 'ar' ? 'var(--font-tajawal)' : 'var(--font-dm-serif)';
   const bodyFont = lang === 'ar' ? 'var(--font-tajawal)' : 'var(--font-plus-jakarta)';
@@ -104,7 +138,7 @@ export default async function ComingSoonPage({
         }}
       >
         <Link
-          href={`/coming-soon?lang=${t.switchTo}`}
+          href={`/coming-soon?lang=${t.switchTo}${mode === 'maintenance' ? '&mode=maintenance' : ''}`}
           style={{
             fontSize: '13px',
             fontWeight: 600,
@@ -150,7 +184,7 @@ export default async function ComingSoonPage({
             marginBottom: '20px',
           }}
         >
-          <Sparkles size={24} strokeWidth={1.5} />
+          {mode === 'maintenance' ? <Wrench size={24} strokeWidth={1.5} /> : <Sparkles size={24} strokeWidth={1.5} />}
         </div>
 
         {/* Wordmark */}
