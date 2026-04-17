@@ -309,14 +309,35 @@ export default function HomePage() {
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
 
   const aboutRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
   const { serviceCategories } = useServices();
 
+  // Hero fade-out on scroll — lightweight, no layout thrashing
+  useEffect(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const h = hero.offsetHeight;
+        const y = window.scrollY;
+        const opacity = Math.max(0, 1 - y / (h * 0.7));
+        hero.style.opacity = String(opacity);
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
   return (
-    <div>
+    <div className="overflow-hidden">
       {/* ================================================================ */}
-      {/*  SECTION 1: HERO — sticky so content scrolls over it            */}
+      {/*  SECTION 1: HERO                                                */}
       {/* ================================================================ */}
-      <section className="sticky top-0 z-0 min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
+      <section ref={heroRef} className="relative min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
         {/* Editorial image — soft fade via CSS mask */}
         <div
           className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}
@@ -479,9 +500,6 @@ export default function HomePage() {
           })()}
         </div>
       </section>
-
-      {/* Everything below scrolls over the sticky hero */}
-      <div className="relative z-10">
 
       {/* Spacer between hero and slides */}
       <div className="h-16 lg:h-24 bg-[#FDF8F4]" />
@@ -685,7 +703,6 @@ export default function HomePage() {
         headingEn={<>You Don't Have to Figure It Out <span className="text-[#7A3B5E] italic">Alone</span></>}
         headingAr={<>لا يجبُ أن تواجهَ الأمرَ <span className="text-[#7A3B5E] italic">وحدَك</span></>}
       />
-      </div>
     </div>
   );
 }
