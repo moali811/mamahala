@@ -129,7 +129,7 @@ export default function ProgramsHeroVideo({ locale }: { locale: string }) {
         return (
           <div key={i} className="absolute inset-0" style={{ zIndex: i === cur ? 1 : 0, opacity: i === cur ? 1 : 0, transition: `opacity ${FADE_MS}ms ease-in-out` }}>
             <div style={{ position: 'absolute', inset: 0, transform: active[i] ? `scale(${kb.scale}) translate(${kb.tx}%, ${kb.ty}%)` : 'scale(1) translate(0,0)', transition: active[i] ? `transform ${SLIDE_DURATION + FADE_MS}ms ease-out` : 'none' }}>
-              <Image src={s.image} alt="" fill className="object-cover" style={{ objectPosition: s.objectPosition }} sizes="100vw" priority={i < 2} quality={90} />
+              <Image src={s.image} alt={s.en.eye} fill className="object-cover" style={{ objectPosition: s.objectPosition }} sizes="100vw" priority={i < 2} quality={90} />
             </div>
             <div className="absolute inset-0" style={{ background: isCTA ? 'linear-gradient(to top, rgba(0,0,0,0.80) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.20) 100%)' : 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.30) 50%, rgba(0,0,0,0.10) 100%)' }} />
             {PROGRAM_COLORS[i] && <div className="absolute inset-0" style={{ background: `${PROGRAM_COLORS[i]}18`, mixBlendMode: 'multiply' }} />}

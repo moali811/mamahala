@@ -181,7 +181,7 @@ export default function ResultsPage() {
             <div className="bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC] p-8 sm:p-10 print-header">
               {/* Logo for print */}
               <div className="hidden print:flex items-center justify-center gap-3 mb-4">
-                <img src="/images/logo-512.png" alt="" width={40} height={40} className="rounded-full" />
+                <img src="/images/logo-512.png" alt="Mama Hala Consulting" width={40} height={40} className="rounded-full" />
                 <span className="text-sm font-semibold text-[#7A3B5E]">Mama Hala Consulting</span>
               </div>
               <div className="text-center">

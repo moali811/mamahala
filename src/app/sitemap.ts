@@ -6,12 +6,18 @@ const BASE_URL = 'https://mamahala.ca';
 const LOCALES = ['en', 'ar'] as const;
 
 const QUIZ_SLUGS = [
-  'pre-marriage',
-  'life-balance',
-  'family-harmony',
-  'parenting-style',
+  'adulting-check',
+  'communication-style',
+  'conflict-style',
+  'digital-awareness',
+  'digital-life',
   'emotional-intelligence',
   'executive-function',
+  'family-harmony',
+  'identity-compass',
+  'life-balance',
+  'parenting-style',
+  'pre-marriage',
   'relationship-health',
   'wellbeing',
 ];

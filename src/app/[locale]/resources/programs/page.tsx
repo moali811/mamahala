@@ -98,12 +98,11 @@ export default function ProgramsPage() {
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
 
-  // ⚠️ TODO: Replace these placeholder testimonials with real student quotes before launch.
-  // These are representative samples written in authentic first-person voice to show structure.
+  // Placeholder testimonials — replace with real student feedback when available.
   const testimonials = [
     {
-      quoteEn: "I used to react. Now I pause. My daughter noticed before I did — she said, 'Mom, you're different at dinner now.' That was week four.",
-      quoteAr: 'كُنْتُ أَرُدُّ الفِعْلَ. الآنَ أَتَوَقَّف. اِبْنَتي لاحَظَتْ قبلي — قالَتْ: "ماما، أَنْتِ مُخْتَلِفَةٌ على العَشاءِ الآن." كانَ ذلِكَ الأُسْبوعَ الرّابِع.',
+      quoteEn: 'I learned to stop and think before I react. It made a real difference at home.',
+      quoteAr: 'تَعَلَّمْتُ أَنْ أَتَوَقَّفَ وَأُفَكِّرَ قَبْلَ أَنْ أَرُدَّ. أَحْدَثَ فَرْقاً حقيقيّاً في البَيْت.',
       name: 'Layla',
       program: 'Intentional Parent',
       programAr: 'الوَلِيُّ القاصِد',
@@ -112,8 +111,8 @@ export default function ProgramsPage() {
       color: '#7A3B5E',
     },
     {
-      quoteEn: "The teen brain journey changed how I hear my 15-year-old. 'I can't do this!' doesn't mean defiance anymore — it means her prefrontal cortex is offline and she needs me present, not persuasive.",
-      quoteAr: 'رِحْلَةُ دِماغِ المُراهِقِ غَيَّرَتْ كيفَ أَسْمَعُ ابْنَتي ذاتَ الخامِسَةَ عَشْرَة. "لا أَسْتَطيعُ!" لَمْ تَعُدْ تَعْني التَّحَدّي — بَلْ أَنَّ قِشْرَتَها الأَمامِيَّةَ مُغْلَقَة وَتَحْتاجُني حاضِراً، لا مُقْنِعاً.',
+      quoteEn: 'I understand my teenager so much better now. I listen differently and it shows.',
+      quoteAr: 'أَفْهَمُ مُراهِقَتي أَفْضَلَ بِكَثيرٍ الآن. أَسْتَمِعُ بِشَكْلٍ مُخْتَلِفٍ وَهذا يَظْهَر.',
       name: 'Dana',
       program: 'Raising Resilient Teens',
       programAr: 'تَرْبِيَةُ مُراهِقينَ أَقْوِياء',
@@ -122,8 +121,8 @@ export default function ProgramsPage() {
       color: '#C4878A',
     },
     {
-      quoteEn: "The reflection prompts felt small at first. Then I read my growth radar on the certificate — I'd moved from 2 to 5 on 'self-trust' across twelve weeks. I hadn't even noticed.",
-      quoteAr: 'بَدَتْ أَسْئِلَةُ التَّأَمُّلِ صَغيرَةً في البِدايَة. ثُمَّ قَرَأْتُ خَريطَةَ نُمُوّي على الشَّهادَة — اِنْتَقَلْتُ مِنْ ٢ إلى ٥ في "الثِّقَةِ بِالنَّفْسِ" خِلالَ اثْنَيْ عَشَرَ أُسْبوعاً. لَمْ أُلاحِظْ حَتّى.',
+      quoteEn: 'Small steps every week added up. By the end I felt more sure of myself than I expected.',
+      quoteAr: 'خُطُواتٌ صَغيرَةٌ كُلَّ أُسْبوعٍ تَراكَمَتْ. في النِّهايَةِ شَعَرْتُ بِثِقَةٍ أَكْبَرَ مِمّا تَوَقَّعْت.',
       name: 'Yasmin',
       program: 'Inner Compass',
       programAr: 'البَوْصَلَةُ الدّاخِلِيَّة',
@@ -755,8 +754,8 @@ export default function ProgramsPage() {
               <Shield className="w-3.5 h-3.5" style={{ color: '#3B8A6E' }} />
               <span>
                 {isRTL
-                  ? 'جَميعُ الشَّهاداتِ من طَلَبَةٍ أَتَمّوا البَرامِجَ فِعْلاً. تُنْشَرُ بِإذْنٍ.'
-                  : 'All testimonials are from students who actually completed the programs. Shared with permission.'}
+                  ? 'ابدأ المستوى الأول مجّاناً — بدون بطاقة، بدون التزام.'
+                  : 'Start Level 1 free — no card, no commitment.'}
               </span>
             </div>
           </ScrollReveal>

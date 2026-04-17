@@ -191,7 +191,7 @@ export default function EmpathySlideshow({
           >
             <Image
               src={s.image}
-              alt=""
+              alt={s.textEn}
               fill
               className="object-cover"
               style={s.objectPosition ? { objectPosition: s.objectPosition } : undefined}

@@ -542,6 +542,7 @@ export default function CertificatePage() {
           <img
             src="/images/logo-square.png"
             alt=""
+            role="presentation"
             crossOrigin="anonymous"
             style={{
               position: 'absolute',
@@ -651,7 +652,7 @@ export default function CertificatePage() {
                   background: 'rgba(200,169,125,0.06)',
                 }}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/images/logo-square.png" alt="" crossOrigin="anonymous" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
+                  <img src="/images/logo-square.png" alt="Mama Hala Consulting seal" crossOrigin="anonymous" style={{ width: '50px', height: '50px', objectFit: 'contain' }} />
                 </div>
               </div>
 
