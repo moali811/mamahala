@@ -56,7 +56,7 @@ const serviceImages: Record<string, string> = {
 
 // Custom focal-point overrides for portrait or off-centre images
 const serviceImagePosition: Record<string, string> = {
-  'relationship-enrichment': 'object-[50%_25%]',
+  'relationship-enrichment': 'object-top',
 };
 
 // Category accent colors
