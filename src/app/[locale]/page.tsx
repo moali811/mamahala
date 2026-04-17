@@ -333,11 +333,11 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-hidden">
       {/* ================================================================ */}
-      {/*  SECTION 1: HERO                                                */}
+      {/*  SECTION 1: HERO — fixed to viewport, fades on scroll           */}
       {/* ================================================================ */}
-      <section ref={heroRef} className="sticky top-0 z-0 min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden -mt-16 pt-16">
+      <section ref={heroRef} className="fixed inset-x-0 top-0 z-0 min-h-[80vh] lg:min-h-[75vh] bg-[#FDF8F4] overflow-hidden pt-16">
         {/* Editorial image — soft fade via CSS mask */}
         <div
           className={`absolute inset-y-0 ${isRTL ? 'left-0' : 'right-0'} w-full lg:w-[55%] 2xl:w-[60%] ${isRTL ? 'hero-mask-rtl' : 'hero-mask-ltr'}`}
@@ -358,7 +358,7 @@ export default function HomePage() {
         <div className="absolute inset-x-0 bottom-0 top-[45%] z-[5] bg-gradient-to-t from-[#FDF8F4] via-[#FDF8F4]/75 to-transparent lg:hidden" />
 
         {/* Content layer */}
-        <div className="container-main relative z-10 flex flex-col justify-end lg:justify-center min-h-[80vh] lg:min-h-[75vh] pb-6 lg:pb-6 lg:pt-8">
+        <div className="container-main relative z-10 flex flex-col justify-end lg:justify-center min-h-[calc(80vh-64px)] lg:min-h-[calc(75vh-64px)] pb-6 lg:pb-6 lg:pt-8">
           <div className={`max-w-xl ${isRTL ? 'lg:mr-0 lg:ml-auto text-right' : 'lg:ml-0 lg:mr-auto'}`}>
             {/* Mobile: label as a pill that stays readable over the image */}
             <span
@@ -428,7 +428,10 @@ export default function HomePage() {
 
       </section>
 
-      {/* Content layer — scrolls over the sticky hero */}
+      {/* Placeholder — reserves space for the fixed hero */}
+      <div className="min-h-[80vh] lg:min-h-[75vh]" aria-hidden="true" />
+
+      {/* Content layer — scrolls over the fixed hero */}
       <div className="relative z-10">
 
       {/* Trust bar — sits above the spacer, scrolls with content */}
