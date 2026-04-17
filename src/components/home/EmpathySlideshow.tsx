@@ -173,7 +173,7 @@ export default function EmpathySlideshow({
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-[55vh] sm:h-[60vh] md:h-[65vh] lg:h-[75vh] overflow-hidden"
+      className="relative w-full h-[55vh] sm:h-[60vh] md:h-[65vh] lg:h-[75vh] overflow-hidden bg-[#1a1a1a]"
     >
       {/* Image layers with Ken Burns */}
       {slides.map((s, i) => (
