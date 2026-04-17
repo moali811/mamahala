@@ -161,7 +161,7 @@ function DigitalAwarenessQuizInner() {
   return (
     <div className="bg-[#FAF7F2] min-h-screen">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#D4C5E0] via-[#E0D5E8] to-[#FAF0EC]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#E8C4C0] via-[#F0D5CA] to-[#FAF0EC]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-[#7A5B8A]/8 hidden lg:block blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-[#5A8B6F]/30 hidden lg:block blur-3xl" />

@@ -40,8 +40,11 @@ export function useServices() {
   const getServiceBySlug = (slug: string): Service | undefined =>
     services.find(s => s.slug === slug);
 
+  // Exclude general-purpose services (Free Consultation & Online/Phone Consultation)
+  // from category pages — they remain available for booking and admin workflows.
+  const generalSlugs = new Set(['initial-consultation', 'online-phone-consultation']);
   const getServicesByCategory = (category: ServiceCategory): Service[] =>
-    services.filter(s => s.category === category);
+    services.filter(s => s.category === category && !generalSlugs.has(s.slug));
 
   const getServiceCountByCategory = (category: ServiceCategory): number =>
     services.filter(s => s.category === category).length;
