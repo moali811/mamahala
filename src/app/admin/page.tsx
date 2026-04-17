@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import Image from 'next/image';
 import {
   BarChart3, Calendar, Users, FileText, Briefcase, MessageSquare,
   HelpCircle, BookOpen, ClipboardCheck, Settings, RefreshCw,
@@ -78,11 +79,11 @@ const NAV_ITEMS: { key: Module; label: string; icon: React.ReactNode; group: str
   { key: 'settings', label: 'Settings', icon: <Settings className="w-4.5 h-4.5" />, group: 'System' },
 ];
 
-// Mobile bottom bar — 5 real destinations like Zoho
+// Mobile bottom bar — 5 real destinations, Bookings first
 const MOBILE_TABS: { key: Module; label: string; icon: React.ReactNode }[] = [
-  { key: 'dashboard', label: 'Home', icon: <BarChart3 className="w-[22px] h-[22px]" /> },
   { key: 'bookings', label: 'Bookings', icon: <Calendar className="w-[22px] h-[22px]" /> },
   { key: 'invoices', label: 'Invoices', icon: <Receipt className="w-[22px] h-[22px]" /> },
+  { key: 'dashboard', label: 'Home', icon: <BarChart3 className="w-[22px] h-[22px]" /> },
   { key: 'leads', label: 'Clients', icon: <Users className="w-[22px] h-[22px]" /> },
   { key: 'settings', label: 'More', icon: <Menu className="w-[22px] h-[22px]" /> },
 ];
@@ -231,8 +232,11 @@ export default function AdminCommandCenter() {
       <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4">
         <form onSubmit={handleLogin} className="w-full max-w-sm">
           <div className="bg-white rounded-2xl border border-[#F3EFE8] p-8 text-center shadow-sm">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7A3B5E] to-[#C4878A] flex items-center justify-center mx-auto mb-4">
-              <Sparkles className="w-8 h-8 text-white" />
+            <div className="relative w-16 h-16 mx-auto mb-4">
+              <Image src="/images/logo-256.png" alt="Mama Hala" width={64} height={64} className="rounded-2xl" />
+              <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white border border-[#F3EFE8] flex items-center justify-center shadow-sm">
+                <Settings className="w-3.5 h-3.5 text-[#7A3B5E]" />
+              </div>
             </div>
             <h1 className="text-2xl font-bold text-[#2D2A33] mb-1" style={{ fontFamily: 'Georgia, serif' }}>
               Command Center
@@ -286,8 +290,11 @@ export default function AdminCommandCenter() {
         {/* Brand */}
         <div className="p-5 border-b border-[#F3EFE8]">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#7A3B5E] to-[#C4878A] flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-4.5 h-4.5 text-white" />
+            <div className="relative w-9 h-9 flex-shrink-0">
+              <Image src="/images/logo-256.png" alt="Mama Hala" width={36} height={36} className="rounded-xl" />
+              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-white border border-[#F3EFE8] flex items-center justify-center shadow-sm">
+                <Settings className="w-2.5 h-2.5 text-[#7A3B5E]" />
+              </div>
             </div>
             <div>
               <p className="text-sm font-bold text-[#2D2A33]">Mama Hala</p>
@@ -385,8 +392,11 @@ export default function AdminCommandCenter() {
           >
             <div className="p-4 border-b border-[#F3EFE8] flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#7A3B5E] to-[#C4878A] flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white" />
+                <div className="relative w-8 h-8 flex-shrink-0">
+                  <Image src="/images/logo-256.png" alt="Mama Hala" width={32} height={32} className="rounded-lg" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-white border border-[#F3EFE8] flex items-center justify-center shadow-sm">
+                    <Settings className="w-2 h-2 text-[#7A3B5E]" />
+                  </div>
                 </div>
                 <span className="text-sm font-bold text-[#2D2A33]">Mama Hala</span>
               </div>

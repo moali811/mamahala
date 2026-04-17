@@ -15,28 +15,28 @@ export async function GET(req: NextRequest) {
 
   try {
     const pricing = await getProductPricing();
-    return NextResponse.json({ pricing });
+    return NextResponse.json(pricing);
   } catch {
-    return NextResponse.json({ pricing: null });
+    return NextResponse.json({});
   }
 }
 
 /**
  * POST /api/admin/pricing — Save new pricing (admin-protected)
- * Body: { pricing: { toolkitFullAccessPrice: number, academyFullAccessPrice: number } }
+ * Body: { toolkitFullAccessPrice: number, academyFullAccessPrice: number }
  */
 export async function POST(req: NextRequest) {
   if (!authorize(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   try {
-    const { pricing } = await req.json() as { pricing: ProductPricing };
+    const body = await req.json() as ProductPricing;
 
     // ─── Validation ───────────────────────────────────────────
-    if (!pricing || typeof pricing !== 'object') {
-      return NextResponse.json({ error: 'Missing pricing object' }, { status: 400 });
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Missing pricing data' }, { status: 400 });
     }
 
-    const { toolkitFullAccessPrice, academyFullAccessPrice } = pricing;
+    const { toolkitFullAccessPrice, academyFullAccessPrice } = body;
 
     if (typeof toolkitFullAccessPrice !== 'number' || toolkitFullAccessPrice <= 0 || toolkitFullAccessPrice > 999) {
       return NextResponse.json({ error: 'Toolkit price must be between $1 and $999' }, { status: 400 });
