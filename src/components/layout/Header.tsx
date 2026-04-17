@@ -155,7 +155,7 @@ export default function Header({ locale, messages }: HeaderProps) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             {/* Logo */}
-            <Link href={`/${locale}`} className="flex shrink-0 items-center">
+            <Link href={`/${locale}`} className="flex shrink-0 items-center gap-3">
               <Image
                 src="/images/logo-O.png"
                 alt="Mama Hala Consulting"
@@ -164,6 +164,12 @@ export default function Header({ locale, messages }: HeaderProps) {
                 className="h-14 w-14 rounded-full object-cover"
                 priority
               />
+              <span
+                className="text-sm font-semibold text-[#7A3B5E]"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                {isRTL ? 'د. هالة علي | ماما هالة' : 'Dr. Hala Ali | Mama Hala'}
+              </span>
             </Link>
 
             {/* ═══════════════ Desktop Nav ═══════════════ */}
@@ -477,8 +483,11 @@ export default function Header({ locale, messages }: HeaderProps) {
             >
               {/* Compact header */}
               <div className="flex h-14 items-center justify-between px-4 border-b border-[#F3EFE8]">
-                <Link href={`/${locale}`} onClick={() => setMobileOpen(false)} className="flex items-center">
+                <Link href={`/${locale}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
                   <Image src="/images/logo-O.png" alt="Mama Hala" width={512} height={512} className="h-10 w-10 rounded-full object-cover" />
+                  <span className="text-sm font-semibold text-[#7A3B5E]" style={{ fontFamily: 'var(--font-heading)' }}>
+                    {isRTL ? 'د. هالة علي | ماما هالة' : 'Dr. Hala Ali | Mama Hala'}
+                  </span>
                 </Link>
                 <button onClick={() => setMobileOpen(false)} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F3EFE8] text-[#4A4A5C]" aria-label="Close">
                   <X size={16} />
