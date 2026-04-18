@@ -6,7 +6,8 @@ import { motion } from 'framer-motion';
 import {
   Shield, Database, User, Baby, Server, Mail, Share2, Clock,
   Cookie, Link as LinkIcon, Lock, AlertTriangle, Eye, Settings,
-  CheckCircle2, Phone,
+  CheckCircle2, Phone, Globe, Scale, Heart, Cpu, Trash2,
+  FileText, Brain,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { fadeUp, staggerContainer } from '@/lib/animations';
@@ -30,181 +31,327 @@ interface Section {
 }
 
 const sections: Section[] = [
+  /* ─── 01 ─── */
   {
-    id: 'disclaimer',
+    id: 'operator',
     icon: Shield,
-    title: 'Legal Disclaimer',
-    titleAr: 'إخلاء المسؤولية القانونية',
-    content: `We respect your privacy and are committed to protecting it through our compliance with this privacy policy (\u201cPolicy\u201d). This Policy commitment is based on the Personal Information Protection and Electronic Documents Act (Canada) (\u201cPIPEDA\u201d). This Policy describes the types of information we may collect from you or that you may provide (\u201cPersonal Information\u201d) on the www.mamahala.ca website (\u201cWebsite\u201d or \u201cService\u201d) and any of its related products and services (collectively, \u201cServices\u201d), and our practices for collecting, using, maintaining, protecting, and disclosing that Personal Information. It also describes the choices available to you regarding our use of your Personal Information and how you can access and update it.\n\nThis Policy is a legally binding agreement between you (\u201cUser\u201d, \u201cyou\u201d or \u201cyour\u201d) and this Website operator (\u201cOperator\u201d, \u201cwe\u201d, \u201cus\u201d or \u201cour\u201d). If you are entering into this agreement on behalf of a business or other legal entity, you represent that you have the authority to bind such entity to this agreement, in which case the terms \u201cUser\u201d, \u201cyou\u201d or \u201cyour\u201d shall refer to such entity. If you do not have such authority, or if you do not agree with the terms of this agreement, you must not accept this agreement and may not access and use the Website and Services. By accessing and using the Website and Services, you acknowledge that you have read, understood, and agree to be bound by the terms of this Policy. This Policy does not apply to the practices of companies that we do not own or control, or to individuals that we do not employ or manage.`,
-    contentAr: `نحن نحترم خصوصيتك ونلتزم بحمايتها من خلال امتثالنا لسياسة الخصوصية هذه. يستند هذا الالتزام إلى قانون حماية المعلومات الشخصية والوثائق الإلكترونية (كندا) ("PIPEDA"). تصف هذه السياسة أنواع المعلومات التي قد نجمعها منك أو التي قد تقدمها ("المعلومات الشخصية") على موقع mamahala.ca وممارساتنا في جمعها واستخدامها وحمايتها والكشف عنها.`,
+    title: 'Operator Identity & Scope',
+    titleAr: 'هوية المشغل ونطاق السياسة',
+    content: `This Privacy Policy (\u201cPolicy\u201d) is issued by Mama Hala Consulting (\u201cOperator\u201d, \u201cwe\u201d, \u201cus\u201d, or \u201cour\u201d), a professional counseling practice operated by Dr. Hala Ali, with the following physical presence:\n\n\u2022 Canada: 430 Hazeldean Rd, Ottawa, ON K2L 1E8, Canada\n\u2022 United Arab Emirates: Dubai, UAE\n\nContact: admin@mamahala.ca | +1 613-222-2104\n\nThis Policy applies to the mamahala.ca website (\u201cWebsite\u201d), all related products, services, and digital platforms (collectively, \u201cServices\u201d), including in-person counseling sessions in Canada and the UAE, online counseling sessions delivered to clients worldwide, the Mama Hala Academy, downloadable toolkits, quizzes, the AI Chat Companion, and all related communications.\n\nThis Policy is legally binding between you (\u201cUser\u201d, \u201cyou\u201d, or \u201cyour\u201d) and the Operator. By accessing or using the Website and Services, you acknowledge that you have read, understood, and agree to be bound by this Policy, regardless of your geographic location. If you do not agree, you must not access or use the Website and Services.`,
+    contentAr: `صدرت سياسة الخصوصية هذه (\u201cالسياسة\u201d) عن ماما هالة للاستشارات (\u201cالمشغّل\u201d أو \u201cنحن\u201d) وهي ممارسة استشارية مهنية تديرها د. هالة علي، ولها تواجد فعلي في:\n\n\u2022 كندا: 430 هازلدين رود، أوتاوا، أونتاريو K2L 1E8\n\u2022 الإمارات العربية المتحدة: دبي\n\nللتواصل: admin@mamahala.ca | 2104-222-613-1+\n\nتسري هذه السياسة على موقع mamahala.ca (\u201cالموقع\u201d) وجميع المنتجات والخدمات والمنصات الرقمية ذات الصلة (يُشار إليها مجتمعة بـ \u201cالخدمات\u201d)، بما في ذلك جلسات الاستشارة الحضورية في كندا والإمارات، والجلسات عبر الإنترنت للعملاء حول العالم، وأكاديمية ماما هالة، ومجموعات الأدوات القابلة للتنزيل، والاختبارات، ومرافق الذكاء الاصطناعي، وجميع الاتصالات ذات الصلة.\n\nهذه السياسة ملزمة قانونياً بينك (\u201cالمستخدم\u201d أو \u201cأنت\u201d) وبين المشغّل. باستخدامك للموقع والخدمات، فإنك تُقرّ بأنك قرأت هذه السياسة وفهمتها ووافقت على الالتزام بها، بصرف النظر عن موقعك الجغرافي. إذا لم توافق، يجب عليك عدم استخدام الموقع والخدمات.`,
     highlight: true,
   },
+  /* ─── 02 ─── */
   {
-    id: 'automatic',
-    icon: Server,
-    title: 'Automatic Collection of Information',
-    titleAr: 'الجمع التلقائي للمعلومات',
-    content: `When you open the Website, our servers may automatically record information that your browser sends. Information collected automatically is used only to identify potential cases of abuse and establish statistical information regarding the usage and traffic of the Website and Services. This statistical information is not otherwise aggregated in such a way that would identify any particular User of the system.`,
-    contentAr: `عند فتح الموقع، قد تسجل خوادمنا تلقائياً المعلومات التي يرسلها متصفحك. تُستخدم المعلومات المجمعة تلقائياً فقط لتحديد حالات الإساءة المحتملة وإنشاء معلومات إحصائية حول استخدام الموقع وحركة المرور.`,
-  },
-  {
-    id: 'personal-info',
-    icon: User,
-    title: 'Collection of Personal Information',
-    titleAr: 'جمع المعلومات الشخصية',
-    content: `You can access and use the Website and Services without telling us who you are or revealing any information by which someone could identify you as a specific, identifiable individual. If, however, you wish to use some of the features offered on the Website, you may be asked to provide certain Personal Information (for example, your name and e-mail address).\n\nWe receive and store any information you knowingly provide to us when you publish content, or fill any forms on the Website. When required, this information may include the following:`,
-    contentAr: `يمكنك الوصول إلى الموقع والخدمات واستخدامها دون الكشف عن هويتك. ومع ذلك، إذا كنت ترغب في استخدام بعض الميزات، فقد يُطلب منك تقديم معلومات شخصية معينة.`,
+    id: 'legal-frameworks',
+    icon: Scale,
+    title: 'Legal Frameworks & Compliance Standards',
+    titleAr: 'الأطر القانونية ومعايير الامتثال',
+    content: `Mama Hala Consulting is registered and operates in both Canada and the United Arab Emirates, and provides online services to clients globally. We are committed to meeting or exceeding the requirements of all applicable privacy and data protection laws, including but not limited to:`,
+    contentAr: `ماما هالة للاستشارات مسجّلة وتعمل في كلٍّ من كندا والإمارات العربية المتحدة، وتقدم خدمات عبر الإنترنت للعملاء حول العالم. نلتزم بالوفاء بمتطلبات جميع قوانين الخصوصية وحماية البيانات المعمول بها أو تجاوزها، بما في ذلك على سبيل المثال لا الحصر:`,
     list: [
-      'Account details (such as user name, unique user ID, password, etc)',
-      'Contact information (such as email address, phone number, etc)',
-      'Basic personal information (such as name, country of residence, etc)',
-      'Sensitive personal information (such as ethnicity, religious beliefs, mental health, etc)',
-      'Geolocation data of your device (such as latitude and longitude)',
-      'Information about other individuals (such as your family members, friends, etc)',
-      'Any other materials you willingly submit to us (such as articles, images, feedback, etc)',
+      'PIPEDA \u2014 Personal Information Protection and Electronic Documents Act (Canada)',
+      'PHIPA \u2014 Personal Health Information Protection Act (Ontario) \u2014 applicable to counseling and mental health records',
+      'CASL \u2014 Canadian Anti-Spam Legislation',
+      'UAE PDPL \u2014 Federal Decree-Law No. 45 of 2021 on the Protection of Personal Data, and its Executive Regulations',
+      'UAE Consumer Protection Law \u2014 Federal Law No. 15 of 2020',
+      'GDPR-aligned standards \u2014 We voluntarily adopt the EU General Data Protection Regulation\u2019s principles as our global baseline, providing all clients worldwide with the highest standard of data protection regardless of location',
+      'OECD Privacy Principles \u2014 Our practices align with internationally recognized principles of fair information practices',
     ],
     listAr: [
-      'تفاصيل الحساب (مثل اسم المستخدم وكلمة المرور)',
-      'معلومات الاتصال (مثل البريد الإلكتروني ورقم الهاتف)',
-      'المعلومات الشخصية الأساسية (مثل الاسم وبلد الإقامة)',
-      'المعلومات الشخصية الحساسة (مثل العرق والمعتقدات الدينية والصحة النفسية)',
-      'بيانات الموقع الجغرافي لجهازك',
-      'معلومات عن أفراد آخرين (مثل أفراد عائلتك)',
-      'أي مواد أخرى تقدمها طوعاً',
+      'PIPEDA \u2014 قانون حماية المعلومات الشخصية والوثائق الإلكترونية (كندا)',
+      'PHIPA \u2014 قانون حماية المعلومات الصحية الشخصية (أونتاريو) \u2014 ينطبق على سجلات الاستشارات والصحة النفسية',
+      'CASL \u2014 التشريع الكندي لمكافحة الرسائل غير المرغوب فيها',
+      'قانون حماية البيانات الشخصية الإماراتي \u2014 المرسوم بقانون اتحادي رقم 45 لسنة 2021 بشأن حماية البيانات الشخصية ولائحته التنفيذية',
+      'قانون حماية المستهلك الإماراتي \u2014 القانون الاتحادي رقم 15 لسنة 2020',
+      'معايير متوافقة مع اللائحة العامة لحماية البيانات (GDPR) \u2014 نتبنى طوعياً مبادئ اللائحة الأوروبية كمعيار أساسي عالمي، مما يوفر لجميع العملاء في أنحاء العالم أعلى مستوى من حماية البيانات',
+      'مبادئ منظمة التعاون والتنمية الاقتصادية للخصوصية \u2014 تتوافق ممارساتنا مع المبادئ المعترف بها دولياً لممارسات المعلومات العادلة',
     ],
-    afterList: 'You can choose not to provide us with your Personal Information, but then you may not be able to take advantage of some of the features on the Website.',
-    afterListAr: 'يمكنك اختيار عدم تزويدنا بمعلوماتك الشخصية، ولكن قد لا تتمكن من الاستفادة من بعض ميزات الموقع.',
+    afterList: 'Where these frameworks differ, we apply the stricter standard. Our goal is to provide every client, regardless of location, with the most robust privacy protections available under any applicable law.',
+    afterListAr: 'حيثما تختلف هذه الأطر القانونية، نطبّق المعيار الأكثر صرامة. هدفنا هو توفير أقوى حماية ممكنة للخصوصية لكل عميل، بصرف النظر عن موقعه.',
   },
+  /* ─── 03 ─── */
   {
-    id: 'children',
-    icon: Baby,
-    title: 'Privacy of Children',
-    titleAr: 'خصوصية الأطفال',
-    content: `We do not knowingly collect any Personal Information from children under the age of 13. If you are under the age of 13, please do not submit any Personal Information through the Website and Services. We encourage parents and legal guardians to monitor their children\u2019s Internet usage and to help enforce this Policy by instructing their children never to provide Personal Information through the Website and Services without their permission.`,
-    contentAr: `نحن لا نجمع عن علم أي معلومات شخصية من الأطفال دون سن 13 عاماً. نشجع الآباء والأوصياء القانونيين على مراقبة استخدام أطفالهم للإنترنت.`,
+    id: 'data-collection',
+    icon: Database,
+    title: 'Data We Collect',
+    titleAr: 'البيانات التي نجمعها',
+    content: `We collect and process personal data only where we have a lawful basis to do so and only to the extent necessary to provide our Services. You can browse the Website without revealing your identity; however, certain features require you to provide information. The categories of data we may collect include:`,
+    contentAr: `نجمع البيانات الشخصية ونعالجها فقط عندما يكون لدينا أساس قانوني للقيام بذلك وبالقدر اللازم لتقديم خدماتنا فقط. يمكنك تصفح الموقع دون الكشف عن هويتك؛ ومع ذلك، تتطلب بعض الميزات تقديم معلومات. تشمل فئات البيانات التي قد نجمعها:`,
+    list: [
+      'Identity & Contact Data \u2014 Full name, email address, phone number, country of residence, timezone, preferred language, salutation',
+      'Booking & Scheduling Data \u2014 Service selected, appointment date and time, session mode (online or in-person), session duration, client notes, preferred language for session',
+      'Payment & Billing Data \u2014 Transaction amounts, currency, payment method type, billing address (where provided). Note: We do NOT store credit card numbers or bank account details; all payment card data is processed exclusively by our PCI-DSS compliant payment processor',
+      'Health & Counseling Data (Sensitive) \u2014 AI-generated intake notes, session preparation tips, counseling context, service recommendations, assessment results, and any information you voluntarily share during sessions or via forms. This data is classified as sensitive personal data under all applicable laws and receives heightened protection',
+      'Educational & Program Data \u2014 Academy enrollment status, course progress, module completion, quiz answers and scores, toolkit downloads, certificate records',
+      'Communications Data \u2014 Contact form messages, email correspondence, chat transcripts with our AI Companion, newsletter subscription status',
+      'Behavioral & Analytics Data \u2014 Pages visited, services browsed, event registrations, toolkit downloads, quiz participation, referral source. This data is collected in aggregate and used only for service improvement',
+      'Technical Data \u2014 IP address (used for rate limiting and abuse prevention only, not for profiling), browser type, device information, session identifiers, cookies and local storage data as described in this Policy',
+    ],
+    listAr: [
+      'بيانات الهوية والاتصال \u2014 الاسم الكامل، البريد الإلكتروني، رقم الهاتف، بلد الإقامة، المنطقة الزمنية، اللغة المفضلة، المسمى',
+      'بيانات الحجز والجدولة \u2014 الخدمة المختارة، تاريخ ووقت الموعد، نمط الجلسة (عبر الإنترنت أو حضورياً)، مدة الجلسة، ملاحظات العميل، اللغة المفضلة للجلسة',
+      'بيانات الدفع والفوترة \u2014 مبالغ المعاملات، العملة، نوع طريقة الدفع، عنوان الفوترة. ملاحظة: نحن لا نخزّن أرقام بطاقات الائتمان أو تفاصيل الحسابات المصرفية؛ تتم معالجة جميع بيانات بطاقات الدفع حصرياً بواسطة معالج الدفع المتوافق مع PCI-DSS ',
+      'البيانات الصحية والاستشارية (حساسة) \u2014 ملاحظات القبول المولّدة بالذكاء الاصطناعي، نصائح التحضير للجلسات، السياق الاستشاري، توصيات الخدمة، نتائج التقييم، وأي معلومات تشاركها طوعاً خلال الجلسات أو عبر النماذج. تُصنّف هذه البيانات كبيانات شخصية حساسة بموجب جميع القوانين المعمول بها وتحظى بحماية مشددة',
+      'البيانات التعليمية والبرامجية \u2014 حالة التسجيل في الأكاديمية، تقدم الدورات، إتمام الوحدات، إجابات ونتائج الاختبارات، تنزيلات مجموعات الأدوات، سجلات الشهادات',
+      'بيانات الاتصالات \u2014 رسائل نموذج الاتصال، المراسلات عبر البريد الإلكتروني، محادثات مرافق الذكاء الاصطناعي، حالة الاشتراك في النشرة الإخبارية',
+      'البيانات السلوكية والتحليلية \u2014 الصفحات التي تمت زيارتها، الخدمات المتصفحة، تسجيلات الفعاليات، تنزيلات مجموعات الأدوات، المشاركة في الاختبارات، مصدر الإحالة. تُجمع هذه البيانات بشكل إجمالي وتُستخدم فقط لتحسين الخدمة',
+      'البيانات التقنية \u2014 عنوان IP (يُستخدم لتقييد المعدل ومنع إساءة الاستخدام فقط، وليس للتنميط)، نوع المتصفح، معلومات الجهاز، معرّفات الجلسة، ملفات تعريف الارتباط وبيانات التخزين المحلي كما هو موضح في هذه السياسة',
+    ],
+    afterList: 'You may choose not to provide certain information, but this may limit your ability to use specific features of the Services.',
+    afterListAr: 'يمكنك اختيار عدم تقديم معلومات معينة، لكن هذا قد يحد من قدرتك على استخدام ميزات محددة من الخدمات.',
   },
+  /* ─── 04 ─── */
+  {
+    id: 'sensitive-data',
+    icon: Heart,
+    title: 'Sensitive Data & Mental Health Information',
+    titleAr: 'البيانات الحساسة ومعلومات الصحة النفسية',
+    content: `As a professional counseling practice, we may collect and process sensitive personal data related to your mental health, emotional well-being, family circumstances, and personal life. This includes information you share during counseling sessions, booking intake forms, AI-generated session notes and preparation tips, and assessment or quiz results.\n\nThis data receives the highest level of protection under all applicable laws:\n\n\u2022 Under PHIPA (Ontario): We act as a Health Information Custodian and handle your personal health information in accordance with Part II of the Act, including the requirement for express consent before collection, use, or disclosure.\n\u2022 Under UAE PDPL (Article 7): Sensitive personal data requires explicit and informed consent, which we obtain before processing.\n\u2022 Under GDPR-aligned standards: This data constitutes special category data, processed only with your explicit consent or where necessary for healthcare purposes.\n\nSensitive data is never used for marketing, analytics, or any purpose other than providing you with counseling services and improving your care. It is never shared with third parties for commercial purposes.`,
+    contentAr: `بصفتنا ممارسة استشارية مهنية، قد نجمع ونعالج بيانات شخصية حساسة تتعلق بصحتك النفسية ورفاهيتك العاطفية وظروفك العائلية وحياتك الشخصية. يشمل ذلك المعلومات التي تشاركها خلال جلسات الاستشارة، ونماذج القبول، وملاحظات الجلسات ونصائح التحضير المولّدة بالذكاء الاصطناعي، ونتائج التقييم والاختبارات.\n\nتحظى هذه البيانات بأعلى مستوى من الحماية بموجب جميع القوانين المعمول بها:\n\n\u2022 بموجب PHIPA (أونتاريو): نعمل كأمين على المعلومات الصحية ونتعامل مع معلوماتك الصحية الشخصية وفقاً للجزء الثاني من القانون، بما في ذلك شرط الحصول على موافقة صريحة قبل الجمع أو الاستخدام أو الإفصاح.\n\u2022 بموجب قانون حماية البيانات الإماراتي (المادة 7): تتطلب البيانات الشخصية الحساسة موافقة صريحة ومستنيرة، والتي نحصل عليها قبل المعالجة.\n\u2022 بموجب معايير متوافقة مع GDPR: تُصنّف هذه البيانات كبيانات فئة خاصة، ولا تُعالج إلا بموافقتك الصريحة أو عند الضرورة لأغراض الرعاية الصحية.\n\nلا تُستخدم البيانات الحساسة أبداً لأغراض التسويق أو التحليلات أو أي غرض آخر غير تقديم خدمات الاستشارة لك وتحسين رعايتك. ولا تُشارك مع أطراف ثالثة لأغراض تجارية.`,
+    highlight: true,
+  },
+  /* ─── 05 ─── */
   {
     id: 'use-processing',
-    icon: Database,
-    title: 'Use and Processing of Collected Information',
-    titleAr: 'استخدام ومعالجة المعلومات المجمعة',
-    content: `We act as a data controller and a data processor when handling Personal Information, unless we have entered into a data processing agreement with you in which case you would be the data controller and we would be the data processor.\n\nIn order to make the Website and Services available to you, or to meet a legal obligation, we may need to collect and use certain Personal Information. If you do not provide the information that we request, we may not be able to provide you with the requested products or services. Any of the information we collect from you may be used for the following purposes:`,
-    contentAr: `نعمل كمتحكم في البيانات ومعالج للبيانات عند التعامل مع المعلومات الشخصية. قد نحتاج إلى جمع واستخدام معلومات شخصية معينة لتوفير الموقع والخدمات.`,
+    icon: Settings,
+    title: 'How We Use Your Data',
+    titleAr: 'كيف نستخدم بياناتك',
+    content: `We act as both a data controller and data processor when handling Personal Information. We process your data only for specific, legitimate purposes:`,
+    contentAr: `نعمل كمتحكم في البيانات ومعالج للبيانات عند التعامل مع المعلومات الشخصية. نعالج بياناتك فقط لأغراض محددة ومشروعة:`,
     list: [
-      'Create and manage user accounts',
-      'Send administrative information',
-      'Send product and service updates',
-      'Respond to inquiries and offer support',
-      'Request user feedback',
-      'Improve user experience',
-      'Enforce terms and conditions and policies',
-      'Protect from abuse and malicious users',
-      'Respond to legal requests and prevent harm',
-      'Run and operate the Website and Services',
+      'Service Delivery \u2014 Managing bookings, conducting counseling sessions, providing academy courses, delivering toolkits and resources',
+      'Payment Processing \u2014 Processing payments through our secure payment processor, generating invoices and receipts, managing billing records',
+      'AI-Powered Support \u2014 Generating session preparation tips, intake summaries, and service recommendations to enhance your counseling experience',
+      'Communications \u2014 Sending booking confirmations, session reminders, receipts, and responding to your inquiries',
+      'Account Management \u2014 Maintaining your account, tracking course progress, managing session history',
+      'Service Improvement \u2014 Analyzing aggregate usage patterns (not individual behavior) to improve our Website and Services',
+      'Legal & Regulatory Compliance \u2014 Meeting obligations under PIPEDA, PHIPA, UAE PDPL, tax law, and other applicable regulations',
+      'Safety & Security \u2014 Preventing abuse, detecting fraud, enforcing our terms, and protecting the rights and safety of users',
+      'Marketing (Consent-Based Only) \u2014 Sending newsletters and service updates only to users who have expressly opted in, in full compliance with CASL and UAE PDPL requirements',
     ],
     listAr: [
-      'إنشاء وإدارة حسابات المستخدمين',
-      'إرسال معلومات إدارية',
-      'إرسال تحديثات المنتجات والخدمات',
-      'الرد على الاستفسارات وتقديم الدعم',
-      'طلب ملاحظات المستخدمين',
-      'تحسين تجربة المستخدم',
-      'تطبيق الشروط والأحكام والسياسات',
-      'الحماية من الإساءة والمستخدمين الضارين',
-      'الاستجابة للطلبات القانونية ومنع الضرر',
-      'تشغيل الموقع والخدمات',
+      'تقديم الخدمات \u2014 إدارة الحجوزات، إجراء جلسات الاستشارة، تقديم دورات الأكاديمية، توفير مجموعات الأدوات والموارد',
+      'معالجة المدفوعات \u2014 معالجة المدفوعات عبر معالج الدفع الآمن، إصدار الفواتير والإيصالات، إدارة سجلات الفوترة',
+      'الدعم المدعوم بالذكاء الاصطناعي \u2014 إنشاء نصائح التحضير للجلسات وملخصات القبول وتوصيات الخدمة لتعزيز تجربتك الاستشارية',
+      'الاتصالات \u2014 إرسال تأكيدات الحجز وتذكيرات الجلسات والإيصالات والرد على استفساراتك',
+      'إدارة الحساب \u2014 الحفاظ على حسابك، تتبع تقدم الدورات، إدارة سجل الجلسات',
+      'تحسين الخدمة \u2014 تحليل أنماط الاستخدام الإجمالية (وليس السلوك الفردي) لتحسين موقعنا وخدماتنا',
+      'الامتثال القانوني والتنظيمي \u2014 الوفاء بالالتزامات بموجب PIPEDA وPHIPA وقانون حماية البيانات الإماراتي وقانون الضرائب واللوائح المعمول بها الأخرى',
+      'السلامة والأمان \u2014 منع إساءة الاستخدام، كشف الاحتيال، تطبيق شروطنا، وحماية حقوق المستخدمين وسلامتهم',
+      'التسويق (بالموافقة فقط) \u2014 إرسال النشرات الإخبارية وتحديثات الخدمة فقط للمستخدمين الذين اختاروا الاشتراك صراحةً، بما يتوافق تماماً مع متطلبات CASL وقانون حماية البيانات الإماراتي',
     ],
-    afterList: 'We may also combine or aggregate some of your Personal Information in order to better serve you and to improve and update our Website and Services. Note that under some legislations we may be allowed to process information until you object to such processing by opting out, without having to rely on consent or any other of the legal bases.',
-    afterListAr: 'قد نقوم أيضاً بدمج أو تجميع بعض معلوماتك الشخصية لخدمتك بشكل أفضل ولتحسين وتحديث موقعنا وخدماتنا.',
+    afterList: 'We will never sell your personal data to third parties. We do not engage in automated decision-making or profiling that produces legal effects concerning you without human oversight.',
+    afterListAr: 'لن نبيع بياناتك الشخصية لأطراف ثالثة أبداً. ولا نشارك في اتخاذ القرارات الآلية أو التنميط الذي يُنتج آثاراً قانونية تخصّك دون إشراف بشري.',
   },
+  /* ─── 06 ─── */
   {
-    id: 'email',
-    icon: Mail,
-    title: 'Email Policies',
-    titleAr: 'سياسات البريد الإلكتروني',
-    content: `If you choose to correspond with us through email, we may retain the content of your email messages together with your email address and our responses. We provide the same protections for these electronic communications that we employ in the maintenance of information received online, mail, and telephone. All e-mails sent by us will be in compliance with the Canadian Anti-Spam Legislation (\u201cCASL\u201d), including clearly stating who the e-mail is from and provide clear information on how to contact the sender.`,
-    contentAr: `إذا اخترت التواصل معنا عبر البريد الإلكتروني، فقد نحتفظ بمحتوى رسائلك مع عنوان بريدك الإلكتروني وردودنا. جميع رسائل البريد الإلكتروني المرسلة منا ستكون متوافقة مع التشريع الكندي لمكافحة الرسائل غير المرغوب فيها ("CASL").`,
+    id: 'legal-basis',
+    icon: Scale,
+    title: 'Legal Basis for Processing',
+    titleAr: 'الأساس القانوني للمعالجة',
+    content: `We process your personal data only where we have a lawful basis to do so. The legal bases we rely on depend on the applicable law and the nature of the processing:\n\n\u2022 Consent: Where you have given clear, informed, and voluntary consent to the processing of your data for specific purposes. You may withdraw consent at any time without affecting the lawfulness of processing carried out before withdrawal.\n\u2022 Contract Performance: Where processing is necessary to perform our obligations under a contract with you (e.g., delivering counseling sessions you have booked and paid for).\n\u2022 Legal Obligation: Where processing is necessary to comply with a legal obligation (e.g., tax reporting, responding to lawful government requests, PHIPA health record retention requirements).\n\u2022 Legitimate Interest: Where processing is necessary for our legitimate interests, provided those interests are not overridden by your rights and freedoms (e.g., improving our services, ensuring security).\n\u2022 Vital Interests: In exceptional circumstances, where processing is necessary to protect someone\u2019s life or physical safety.\n\nFor sensitive data (including mental health information), we rely exclusively on your explicit consent, obtained before processing begins. Under PHIPA, we process personal health information only as permitted by the Act, including with your express consent.`,
+    contentAr: `نعالج بياناتك الشخصية فقط عندما يكون لدينا أساس قانوني للقيام بذلك. تعتمد الأسس القانونية التي نستند إليها على القانون المعمول به وطبيعة المعالجة:\n\n\u2022 الموافقة: عندما تمنح موافقة واضحة ومستنيرة وطوعية على معالجة بياناتك لأغراض محددة. يمكنك سحب الموافقة في أي وقت دون التأثير على مشروعية المعالجة التي تمت قبل السحب.\n\u2022 تنفيذ العقد: عندما تكون المعالجة ضرورية لأداء التزاماتنا بموجب عقد معك (مثل تقديم جلسات الاستشارة التي حجزتها ودفعت ثمنها).\n\u2022 الالتزام القانوني: عندما تكون المعالجة ضرورية للامتثال لالتزام قانوني (مثل الإقرار الضريبي، الاستجابة للطلبات الحكومية المشروعة، متطلبات الاحتفاظ بالسجلات الصحية بموجب PHIPA).\n\u2022 المصلحة المشروعة: عندما تكون المعالجة ضرورية لمصالحنا المشروعة، شريطة ألا تطغى تلك المصالح على حقوقك وحرياتك (مثل تحسين خدماتنا، ضمان الأمان).\n\u2022 المصالح الحيوية: في ظروف استثنائية، عندما تكون المعالجة ضرورية لحماية حياة شخص ما أو سلامته الجسدية.\n\nبالنسبة للبيانات الحساسة (بما في ذلك معلومات الصحة النفسية)، نعتمد حصرياً على موافقتك الصريحة، التي نحصل عليها قبل بدء المعالجة. بموجب PHIPA، نعالج المعلومات الصحية الشخصية فقط وفقاً لما يسمح به القانون، بما في ذلك بموافقتك الصريحة.`,
   },
+  /* ─── 07 ─── */
   {
-    id: 'disclosure',
+    id: 'ai-processing',
+    icon: Cpu,
+    title: 'AI & Automated Processing',
+    titleAr: 'الذكاء الاصطناعي والمعالجة الآلية',
+    content: `We use third-party artificial intelligence technology to enhance certain aspects of our Services. We believe in full transparency about how AI is used in our practice:\n\n\u2022 AI Chat Companion: An AI-powered conversational assistant is available for general informational support related to our academy courses and resources. It does not provide clinical advice, diagnoses, or therapeutic interventions.\n\u2022 Session Preparation: AI may generate intake summaries, session preparation tips, and service recommendations based on information you provide during the booking process.\n\u2022 Administrative Support: AI assists with invoice descriptions, email drafting, and other administrative tasks.\n\nImportant safeguards:\n\n\u2022 AI does not make clinical or therapeutic decisions \u2014 all counseling decisions are made by Dr. Hala.\n\u2022 AI-generated content is reviewed and supplemented by professional judgment.\n\u2022 You have the right to request human review of any AI-generated assessment or recommendation.\n\u2022 Data processed by AI is transmitted to our AI service provider\u2019s servers in the United States, subject to their privacy practices and our contractual safeguards.\n\u2022 AI outputs are never used to profile or make automated decisions that produce legal effects concerning you.`,
+    contentAr: `نستخدم تقنية الذكاء الاصطناعي من طرف ثالث لتعزيز جوانب معينة من خدماتنا. نؤمن بالشفافية الكاملة حول كيفية استخدام الذكاء الاصطناعي في ممارستنا:\n\n\u2022 مرافق الذكاء الاصطناعي: مساعد محادثة مدعوم بالذكاء الاصطناعي متاح للدعم المعلوماتي العام المتعلق بدورات الأكاديمية ومواردنا. لا يقدم نصائح سريرية أو تشخيصات أو تدخلات علاجية.\n\u2022 التحضير للجلسات: قد يُنشئ الذكاء الاصطناعي ملخصات القبول ونصائح التحضير للجلسات وتوصيات الخدمة بناءً على المعلومات التي تقدمها أثناء عملية الحجز.\n\u2022 الدعم الإداري: يساعد الذكاء الاصطناعي في وصف الفواتير وصياغة البريد الإلكتروني والمهام الإدارية الأخرى.\n\nضمانات مهمة:\n\n\u2022 لا يتخذ الذكاء الاصطناعي قرارات سريرية أو علاجية \u2014 جميع القرارات الاستشارية تتخذها د. هالة.\n\u2022 يتم مراجعة المحتوى المولّد بالذكاء الاصطناعي واستكماله بالحكم المهني.\n\u2022 لك الحق في طلب مراجعة بشرية لأي تقييم أو توصية مولّدة بالذكاء الاصطناعي.\n\u2022 تُنقل البيانات المعالجة بالذكاء الاصطناعي إلى خوادم مزود خدمة الذكاء الاصطناعي في الولايات المتحدة، وتخضع لممارسات الخصوصية الخاصة بهم وضماناتنا التعاقدية.\n\u2022 لا تُستخدم مخرجات الذكاء الاصطناعي أبداً للتنميط أو اتخاذ قرارات آلية تُنتج آثاراً قانونية تخصّك.`,
+    highlight: true,
+  },
+  /* ─── 08 ─── */
+  {
+    id: 'third-party',
     icon: Share2,
-    title: 'Disclosure of Information',
-    titleAr: 'الإفصاح عن المعلومات',
-    content: `Depending on the requested Services or as necessary to complete any transaction or provide any Service you have requested, we may share your information with our affiliates, contracted companies, and service providers (collectively, \u201cService Providers\u201d) we rely upon to assist in the operation of the Website and Services available to you and whose privacy policies are consistent with ours or who agree to abide by our policies with respect to Personal Information. We will not share any information with unaffiliated third parties.\n\nWe may also disclose any Personal Information we collect, use or receive if required or permitted by law, and when we believe in good faith that disclosure is necessary to protect our rights, protect your safety or the safety of others, investigate fraud, or respond to a government request.`,
-    contentAr: `قد نشارك معلوماتك مع شركائنا ومقدمي الخدمات لمساعدتنا في تشغيل الموقع والخدمات. لن نشارك أي معلومات مع أطراف ثالثة غير مرتبطة. قد نكشف عن أي معلومات شخصية إذا كان ذلك مطلوباً أو مسموحاً به بموجب القانون.`,
+    title: 'Third-Party Data Processors',
+    titleAr: 'معالجو البيانات من الأطراف الثالثة',
+    content: `We share your data only with trusted third-party service providers who are essential to the operation of our Services. Each processor is bound by contractual obligations to protect your data. We do not sell or share your data with unaffiliated third parties for their own purposes.\n\nOur data processors and their roles:`,
+    contentAr: `نشارك بياناتك فقط مع مقدمي خدمات موثوقين من أطراف ثالثة ضروريين لتشغيل خدماتنا. كل معالج ملتزم بالتزامات تعاقدية لحماية بياناتك. لا نبيع أو نشارك بياناتك مع أطراف ثالثة غير مرتبطة لأغراضهم الخاصة.\n\nمعالجو بياناتنا وأدوارهم:`,
+    list: [
+      'Payment Processor (United States) \u2014 A PCI-DSS Level 1 certified payment processor handles all payment card transactions. We never store credit card numbers on our servers.',
+      'Email Delivery Service (United States) \u2014 A professional email delivery service processes transactional and marketing emails on our behalf, handling email addresses and message content.',
+      'Calendar & Video Conferencing Platform (United States) \u2014 A secure calendar and video conferencing platform manages appointment scheduling and hosts online counseling sessions. Appointment details and participant email addresses are shared.',
+      'AI Service Provider (United States) \u2014 A third-party AI service provider powers the Chat Companion, session preparation tools, and administrative support features. Processes text data submitted to AI features.',
+      'Cloud Hosting & Computing Provider (United States) \u2014 A cloud hosting platform provides website hosting, serverless computing, and edge delivery. Processes all data transmitted through the Website.',
+      'Managed Database Service (United States) \u2014 A managed database service hosts session data, analytics, lead records, and booking information.',
+    ],
+    listAr: [
+      'معالج المدفوعات (الولايات المتحدة) \u2014 معالج دفع معتمد بمستوى PCI-DSS الأول يتعامل مع جميع معاملات بطاقات الدفع. لا نخزّن أبداً أرقام بطاقات الائتمان على خوادمنا.',
+      'خدمة توصيل البريد الإلكتروني (الولايات المتحدة) \u2014 خدمة توصيل بريد إلكتروني احترافية تعالج رسائل المعاملات والتسويق نيابة عنا، وتتعامل مع عناوين البريد الإلكتروني ومحتوى الرسائل.',
+      'منصة التقويم ومؤتمرات الفيديو (الولايات المتحدة) \u2014 منصة تقويم ومؤتمرات فيديو آمنة تدير جدولة المواعيد وتستضيف جلسات الاستشارة عبر الإنترنت. تُشارك تفاصيل المواعيد وعناوين البريد الإلكتروني للمشاركين.',
+      'مزود خدمة الذكاء الاصطناعي (الولايات المتحدة) \u2014 مزود خدمة ذكاء اصطناعي من طرف ثالث يُشغّل مرافق المحادثة وأدوات التحضير للجلسات وميزات الدعم الإداري. يعالج البيانات النصية المقدمة لميزات الذكاء الاصطناعي.',
+      'مزود الاستضافة السحابية والحوسبة (الولايات المتحدة) \u2014 منصة استضافة سحابية توفر استضافة الموقع والحوسبة بدون خادم والتسليم عبر الحافة. تعالج جميع البيانات المنقولة عبر الموقع.',
+      'خدمة قواعد البيانات المُدارة (الولايات المتحدة) \u2014 خدمة قواعد بيانات مُدارة تستضيف بيانات الجلسات والتحليلات وسجلات العملاء ومعلومات الحجز.',
+    ],
+    afterList: 'We may also disclose personal data if required by law, court order, or government request, or if necessary in good faith to protect our rights, your safety, or the safety of others, to investigate fraud, or to respond to a lawful government request in any jurisdiction where we operate.',
+    afterListAr: 'قد نكشف أيضاً عن البيانات الشخصية إذا كان ذلك مطلوباً بموجب القانون أو أمر المحكمة أو طلب حكومي، أو إذا كان ذلك ضرورياً بحسن نية لحماية حقوقنا أو سلامتك أو سلامة الآخرين، أو للتحقيق في الاحتيال، أو للاستجابة لطلب حكومي مشروع في أي ولاية قضائية نعمل فيها.',
   },
+  /* ─── 09 ─── */
   {
-    id: 'retention',
-    icon: Clock,
-    title: 'Retention of Information',
-    titleAr: 'الاحتفاظ بالمعلومات',
-    content: `We will retain and use your Personal Information for the period necessary to comply with our legal obligations, to enforce our agreements, resolve disputes, and unless a longer retention period is required or permitted by law. We may use any aggregated data derived from or incorporating your Personal Information after you update or delete it, but not in a manner that would identify you personally.`,
-    contentAr: `سنحتفظ بمعلوماتك الشخصية ونستخدمها للفترة اللازمة للامتثال لالتزاماتنا القانونية وتنفيذ اتفاقياتنا وحل النزاعات.`,
+    id: 'cross-border',
+    icon: Globe,
+    title: 'Cross-Border & International Data Transfers',
+    titleAr: 'نقل البيانات عبر الحدود والدولية',
+    content: `Because we operate in multiple jurisdictions and use service providers based in different countries, your personal data may be transferred across international borders.\n\nRegardless of where you are located, data submitted through our Website is processed on servers in Canada and may be further processed by our sub-processors in the United States (as described in the Third-Party Data Processors section above).\n\nWe ensure the protection of your data during cross-border transfers through the following safeguards:\n\n\u2022 TLS 1.3 encryption for all data in transit\n\u2022 Encryption at rest for all stored data\n\u2022 Contractual obligations with all processors requiring equivalent data protection standards\n\u2022 Data minimization \u2014 we only transfer data that is necessary for the specific processing purpose\n\u2022 Under UAE PDPL Article 22: We ensure that data is transferred only to jurisdictions or organizations providing adequate levels of protection, or with your explicit consent\n\u2022 Under PIPEDA: We use contractual and other means to ensure your data receives comparable protection when processed outside Canada\n\u2022 Under GDPR-aligned standards: Our transfers are supported by appropriate safeguards consistent with Chapter V of the GDPR\n\nBy using our Services, you acknowledge and consent to the transfer and processing of your data as described in this section. If you have concerns about data transfers to a specific jurisdiction, please contact us before submitting personal data.`,
+    contentAr: `نظراً لأننا نعمل في ولايات قضائية متعددة ونستخدم مقدمي خدمات مقيمين في بلدان مختلفة، قد تُنقل بياناتك الشخصية عبر الحدود الدولية.\n\nبصرف النظر عن موقعك، تتم معالجة البيانات المقدمة عبر موقعنا على خوادم في كندا وقد تتم معالجتها كذلك من قبل معالجينا الفرعيين في الولايات المتحدة (كما هو موضح في قسم معالجي البيانات من الأطراف الثالثة أعلاه).\n\nنضمن حماية بياناتك أثناء عمليات النقل عبر الحدود من خلال الضمانات التالية:\n\n\u2022 تشفير TLS 1.3 لجميع البيانات أثناء النقل\n\u2022 تشفير جميع البيانات المخزنة في حالة السكون\n\u2022 التزامات تعاقدية مع جميع المعالجين تتطلب معايير حماية بيانات معادلة\n\u2022 تقليل البيانات \u2014 ننقل فقط البيانات الضرورية لغرض المعالجة المحدد\n\u2022 بموجب المادة 22 من قانون حماية البيانات الإماراتي: نضمن نقل البيانات فقط إلى ولايات قضائية أو منظمات توفر مستويات حماية كافية، أو بموافقتك الصريحة\n\u2022 بموجب PIPEDA: نستخدم وسائل تعاقدية وغيرها لضمان حصول بياناتك على حماية مماثلة عند معالجتها خارج كندا\n\u2022 بموجب معايير متوافقة مع GDPR: تُدعم عمليات النقل لدينا بضمانات مناسبة متسقة مع الفصل الخامس من GDPR\n\nباستخدامك لخدماتنا، فإنك تُقرّ وتوافق على نقل ومعالجة بياناتك كما هو موضح في هذا القسم. إذا كانت لديك مخاوف بشأن نقل البيانات إلى ولاية قضائية معينة، يرجى الاتصال بنا قبل تقديم البيانات الشخصية.`,
   },
+  /* ─── 10 ─── */
   {
     id: 'cookies',
     icon: Cookie,
-    title: 'Cookies',
-    titleAr: 'ملفات تعريف الارتباط',
-    content: `Our Website and Services may use \u201ccookies\u201d to help personalize your online experience. We may contract with third-party service providers to assist us in better understanding our site visitors. These service providers are not permitted to use the information collected on our behalf except to help us conduct and improve our business.`,
-    contentAr: `قد يستخدم موقعنا وخدماتنا "ملفات تعريف الارتباط" للمساعدة في تخصيص تجربتك عبر الإنترنت. قد نتعاقد مع مقدمي خدمات من جهات خارجية لمساعدتنا في فهم زوار موقعنا بشكل أفضل.`,
+    title: 'Cookies & Local Storage',
+    titleAr: 'ملفات تعريف الارتباط والتخزين المحلي',
+    content: `Our Website uses a limited number of cookies and local storage mechanisms, exclusively for functional purposes. We do not use third-party advertising or tracking cookies.\n\nCookies we set:`,
+    contentAr: `يستخدم موقعنا عدداً محدوداً من ملفات تعريف الارتباط وآليات التخزين المحلي، حصرياً لأغراض وظيفية. لا نستخدم ملفات تعريف الارتباط الإعلانية أو التتبعية من أطراف ثالثة.\n\nملفات تعريف الارتباط التي نضعها:`,
+    list: [
+      'booking_session \u2014 Functional cookie (HttpOnly, Secure, SameSite=Lax). Maintains your session when managing bookings. Expires at end of browser session.',
+      'academy_session \u2014 Functional cookie (HttpOnly, Secure, SameSite=Lax). Maintains your session when accessing academy content. Expires at end of browser session.',
+      'mh_preview \u2014 Internal administrative cookie used only by the Operator for testing purposes. Not set for regular users.',
+      'SessionStorage keys \u2014 Used for analytics deduplication to prevent counting the same page view multiple times. Cleared when you close the browser tab. No personal data is stored.',
+    ],
+    listAr: [
+      'booking_session \u2014 ملف تعريف ارتباط وظيفي (HttpOnly, Secure, SameSite=Lax). يحافظ على جلستك عند إدارة الحجوزات. تنتهي صلاحيته عند انتهاء جلسة المتصفح.',
+      'academy_session \u2014 ملف تعريف ارتباط وظيفي (HttpOnly, Secure, SameSite=Lax). يحافظ على جلستك عند الوصول إلى محتوى الأكاديمية. تنتهي صلاحيته عند انتهاء جلسة المتصفح.',
+      'mh_preview \u2014 ملف تعريف ارتباط إداري داخلي يستخدمه المشغّل فقط لأغراض الاختبار. لا يُعيّن للمستخدمين العاديين.',
+      'مفاتيح SessionStorage \u2014 تُستخدم لإلغاء تكرار التحليلات لمنع حساب نفس مشاهدة الصفحة عدة مرات. تُمسح عند إغلاق علامة تبويب المتصفح. لا يتم تخزين بيانات شخصية.',
+    ],
+    afterList: 'You can manage or delete cookies through your browser settings. Disabling functional cookies may affect your ability to use certain features such as booking management and academy access. For detailed instructions on managing cookies, consult your browser\u2019s help documentation.',
+    afterListAr: 'يمكنك إدارة أو حذف ملفات تعريف الارتباط من خلال إعدادات متصفحك. قد يؤثر تعطيل ملفات تعريف الارتباط الوظيفية على قدرتك على استخدام ميزات معينة مثل إدارة الحجوزات والوصول إلى الأكاديمية. للحصول على تعليمات مفصلة حول إدارة ملفات تعريف الارتباط، راجع وثائق مساعدة متصفحك.',
   },
+  /* ─── 11 ─── */
   {
-    id: 'links',
-    icon: LinkIcon,
-    title: 'Links to Other Resources',
-    titleAr: 'الروابط إلى موارد أخرى',
-    content: `The Website and Services may contain links to other resources that are not owned or controlled by us. Please be aware that we are not responsible for the privacy practices of such other resources or third parties. We encourage you to be aware when you leave the Website and Services and to read the privacy statements of each and every resource that may collect Personal Information.`,
-    contentAr: `قد يحتوي الموقع والخدمات على روابط لموارد أخرى ليست مملوكة أو خاضعة لسيطرتنا. يرجى العلم أننا لسنا مسؤولين عن ممارسات الخصوصية لتلك الموارد.`,
+    id: 'retention',
+    icon: Clock,
+    title: 'Data Retention',
+    titleAr: 'الاحتفاظ بالبيانات',
+    content: `We retain your personal data only for as long as necessary to fulfill the purposes for which it was collected, or as required by law. Our retention periods are:`,
+    contentAr: `نحتفظ ببياناتك الشخصية فقط للمدة اللازمة لتحقيق الأغراض التي جُمعت من أجلها، أو حسب ما يتطلبه القانون. فترات الاحتفاظ لدينا هي:`,
+    list: [
+      'Health & Counseling Records \u2014 7 years from the date of the last session, as required by PHIPA and applicable professional standards',
+      'Payment & Billing Records \u2014 7 years, as required by Canada Revenue Agency and UAE Federal Tax Authority regulations',
+      'Contact Inquiries \u2014 2 years from the date of submission, or until you request deletion',
+      'Academy & Course Progress \u2014 Duration of your enrollment plus 2 years, or until you request deletion',
+      'Analytics Data \u2014 Rolling 12-month window for aggregate statistics; individual event records deleted after 12 months',
+      'Session Cookies \u2014 Expire at the end of your browser session',
+      'Email Communications \u2014 Retained for the duration of our business relationship plus 2 years',
+      'AI Chat Transcripts \u2014 Retained for a maximum of 30 days for quality assurance, then permanently deleted',
+    ],
+    listAr: [
+      'السجلات الصحية والاستشارية \u2014 7 سنوات من تاريخ آخر جلسة، وفقاً لمتطلبات PHIPA والمعايير المهنية المعمول بها',
+      'سجلات الدفع والفوترة \u2014 7 سنوات، وفقاً لمتطلبات وكالة الإيرادات الكندية وهيئة الضرائب الاتحادية الإماراتية',
+      'استفسارات الاتصال \u2014 سنتان من تاريخ التقديم، أو حتى تطلب الحذف',
+      'تقدم الأكاديمية والدورات \u2014 مدة تسجيلك بالإضافة إلى سنتين، أو حتى تطلب الحذف',
+      'بيانات التحليلات \u2014 نافذة متجددة مدتها 12 شهراً للإحصاءات الإجمالية؛ تُحذف سجلات الأحداث الفردية بعد 12 شهراً',
+      'ملفات تعريف ارتباط الجلسة \u2014 تنتهي صلاحيتها عند انتهاء جلسة المتصفح',
+      'اتصالات البريد الإلكتروني \u2014 يُحتفظ بها طوال مدة علاقتنا التجارية بالإضافة إلى سنتين',
+      'نصوص محادثات الذكاء الاصطناعي \u2014 يُحتفظ بها لمدة أقصاها 30 يوماً لضمان الجودة، ثم تُحذف نهائياً',
+    ],
+    afterList: 'After the applicable retention period expires, we securely delete or anonymize the data. Where we retain aggregated or anonymized data for statistical purposes, such data cannot be used to identify you.',
+    afterListAr: 'بعد انتهاء فترة الاحتفاظ المعمول بها، نحذف البيانات بشكل آمن أو نجعلها مجهولة الهوية. عندما نحتفظ ببيانات مجمّعة أو مجهولة الهوية لأغراض إحصائية، لا يمكن استخدام هذه البيانات لتحديد هويتك.',
   },
+  /* ─── 12 ─── */
+  {
+    id: 'rights-canada',
+    icon: Eye,
+    title: 'Your Rights (Canada)',
+    titleAr: 'حقوقك (كندا)',
+    content: `If you are located in Canada, you have the following rights under PIPEDA and, where applicable, PHIPA:\n\n\u2022 Right of Access: You may request access to your personal data and receive confirmation of whether it is being processed. Under PIPEDA Principle 9, we will respond within 30 days.\n\u2022 Right to Correction: You may request correction of inaccurate or incomplete personal data.\n\u2022 Right to Withdraw Consent: You may withdraw your consent to the processing of your data at any time by contacting us. This may affect our ability to provide certain Services.\n\u2022 Right to Complain: You may file a complaint with the Office of the Privacy Commissioner of Canada (OPC) at priv.gc.ca if you believe your privacy rights have been violated.\n\u2022 PHIPA Rights: If your data includes personal health information collected in Ontario, you have additional rights under PHIPA, including the right to request access to your health records, request corrections, and receive an accounting of disclosures.\n\nTo exercise any of these rights, contact us at admin@mamahala.ca. We will respond within 30 days of receiving your verified request. We will not charge a fee for reasonable access requests.`,
+    contentAr: `إذا كنت مقيماً في كندا، فلديك الحقوق التالية بموجب PIPEDA وPHIPA حيثما ينطبق:\n\n\u2022 حق الوصول: يمكنك طلب الوصول إلى بياناتك الشخصية وتلقي تأكيد بشأن ما إذا كانت قيد المعالجة. بموجب المبدأ 9 من PIPEDA، سنستجيب خلال 30 يوماً.\n\u2022 حق التصحيح: يمكنك طلب تصحيح البيانات الشخصية غير الدقيقة أو غير المكتملة.\n\u2022 حق سحب الموافقة: يمكنك سحب موافقتك على معالجة بياناتك في أي وقت عن طريق الاتصال بنا. قد يؤثر هذا على قدرتنا على تقديم خدمات معينة.\n\u2022 حق الشكوى: يمكنك تقديم شكوى إلى مكتب مفوض الخصوصية الكندي (OPC) على priv.gc.ca إذا كنت تعتقد أن حقوق خصوصيتك قد انتُهكت.\n\u2022 حقوق PHIPA: إذا كانت بياناتك تتضمن معلومات صحية شخصية جُمعت في أونتاريو، فلديك حقوق إضافية بموجب PHIPA، بما في ذلك حق طلب الوصول إلى سجلاتك الصحية، وطلب التصحيحات، وتلقي كشف حساب بالإفصاحات.\n\nلممارسة أي من هذه الحقوق، اتصل بنا على admin@mamahala.ca. سنستجيب خلال 30 يوماً من تلقي طلبك الموثق. لن نفرض رسوماً على طلبات الوصول المعقولة.`,
+  },
+  /* ─── 13 ─── */
+  {
+    id: 'rights-uae',
+    icon: Eye,
+    title: 'Your Rights (UAE)',
+    titleAr: 'حقوقك (الإمارات)',
+    content: `If you are located in the United Arab Emirates, you have the following rights under the UAE Personal Data Protection Law (PDPL), Federal Decree-Law No. 45 of 2021:\n\n\u2022 Right of Access (Article 13): You may request access to your personal data that we hold.\n\u2022 Right to Rectification (Article 14): You may request correction of inaccurate personal data.\n\u2022 Right to Erasure (Article 15): You may request deletion of your personal data, subject to legal retention requirements.\n\u2022 Right to Restriction (Article 16): You may request that we restrict the processing of your data in certain circumstances.\n\u2022 Right to Data Portability (Article 17): You may request to receive your personal data in a structured, commonly used, machine-readable format.\n\u2022 Right to Object (Article 18): You may object to the processing of your personal data for specific purposes, including direct marketing.\n\u2022 Right Against Automated Decisions (Article 19): You have the right not to be subject to decisions based solely on automated processing, including profiling, which produce legal effects concerning you.\n\u2022 Right to Complain: You may file a complaint with the UAE Data Office if you believe your data protection rights have been violated.\n\nTo exercise any of these rights, contact us at admin@mamahala.ca. We will respond within 30 days. There is no fee for exercising your rights.`,
+    contentAr: `إذا كنت مقيماً في الإمارات العربية المتحدة، فلديك الحقوق التالية بموجب قانون حماية البيانات الشخصية الإماراتي (PDPL)، المرسوم بقانون اتحادي رقم 45 لسنة 2021:\n\n\u2022 حق الوصول (المادة 13): يمكنك طلب الوصول إلى بياناتك الشخصية التي نحتفظ بها.\n\u2022 حق التصحيح (المادة 14): يمكنك طلب تصحيح البيانات الشخصية غير الدقيقة.\n\u2022 حق المحو (المادة 15): يمكنك طلب حذف بياناتك الشخصية، مع مراعاة متطلبات الاحتفاظ القانونية.\n\u2022 حق التقييد (المادة 16): يمكنك طلب تقييد معالجة بياناتك في ظروف معينة.\n\u2022 حق نقل البيانات (المادة 17): يمكنك طلب تلقي بياناتك الشخصية بتنسيق منظم وشائع الاستخدام وقابل للقراءة آلياً.\n\u2022 حق الاعتراض (المادة 18): يمكنك الاعتراض على معالجة بياناتك الشخصية لأغراض محددة، بما في ذلك التسويق المباشر.\n\u2022 حق الرفض للقرارات الآلية (المادة 19): لك الحق في عدم الخضوع لقرارات تستند فقط إلى المعالجة الآلية، بما في ذلك التنميط، التي تُنتج آثاراً قانونية تخصّك.\n\u2022 حق الشكوى: يمكنك تقديم شكوى إلى مكتب البيانات الإماراتي إذا كنت تعتقد أن حقوق حماية بياناتك قد انتُهكت.\n\nلممارسة أي من هذه الحقوق، اتصل بنا على admin@mamahala.ca. سنستجيب خلال 30 يوماً. لا توجد رسوم لممارسة حقوقك.`,
+  },
+  /* ─── 14 ─── */
+  {
+    id: 'rights-international',
+    icon: Globe,
+    title: 'Your Rights (International Clients)',
+    titleAr: 'حقوقك (العملاء الدوليون)',
+    content: `If you are located outside Canada and the UAE, we apply GDPR-grade data protection rights as our global minimum standard. Regardless of your location, you have the right to:\n\n\u2022 Access your personal data and obtain a copy\n\u2022 Rectify inaccurate or incomplete data\n\u2022 Request erasure of your data (\u201cright to be forgotten\u201d), subject to legal retention requirements\n\u2022 Restrict or object to certain types of processing\n\u2022 Receive your data in a portable format\n\u2022 Withdraw your consent at any time, without affecting the lawfulness of processing before withdrawal\n\u2022 Not be subject to decisions based solely on automated processing that produce legal effects\n\u2022 Lodge a complaint with your local data protection authority\n\nWe commit to responding to all data subject requests within 30 days, regardless of your location. Contact us at admin@mamahala.ca to exercise any right. If your country has specific data protection legislation that grants you additional rights, we will honor those rights to the extent they are brought to our attention.`,
+    contentAr: `إذا كنت مقيماً خارج كندا والإمارات العربية المتحدة، فإننا نطبق حقوق حماية البيانات بمستوى GDPR كمعيار أدنى عالمي. بصرف النظر عن موقعك، لديك الحق في:\n\n\u2022 الوصول إلى بياناتك الشخصية والحصول على نسخة\n\u2022 تصحيح البيانات غير الدقيقة أو غير المكتملة\n\u2022 طلب محو بياناتك (\u201cالحق في النسيان\u201d)، مع مراعاة متطلبات الاحتفاظ القانونية\n\u2022 تقييد أو الاعتراض على أنواع معينة من المعالجة\n\u2022 تلقي بياناتك بتنسيق قابل للنقل\n\u2022 سحب موافقتك في أي وقت، دون التأثير على مشروعية المعالجة قبل السحب\n\u2022 عدم الخضوع لقرارات تستند فقط إلى المعالجة الآلية التي تُنتج آثاراً قانونية\n\u2022 تقديم شكوى إلى هيئة حماية البيانات المحلية الخاصة بك\n\nنلتزم بالاستجابة لجميع طلبات أصحاب البيانات خلال 30 يوماً، بصرف النظر عن موقعك. اتصل بنا على admin@mamahala.ca لممارسة أي حق. إذا كان لبلدك تشريع محدد لحماية البيانات يمنحك حقوقاً إضافية، فسنحترم تلك الحقوق بالقدر الذي تُبلغ به إلينا.`,
+  },
+  /* ─── 15 ─── */
+  {
+    id: 'deletion',
+    icon: Trash2,
+    title: 'Data Deletion & Erasure Requests',
+    titleAr: 'طلبات حذف البيانات ومحوها',
+    content: `You may request the deletion of your personal data at any time by emailing admin@mamahala.ca with the subject line \u201cData Deletion Request.\u201d\n\nUpon receiving your verified request, we will:\n\n\u2022 Acknowledge receipt within 5 business days\n\u2022 Complete the deletion within 30 days\n\u2022 Notify our third-party processors to delete your data from their systems\n\u2022 Provide written confirmation of deletion upon completion\n\nExceptions: We may be required to retain certain data beyond your deletion request where required by law, including:\n\n\u2022 Health records: 7 years under PHIPA and professional standards\n\u2022 Financial/tax records: 7 years under CRA and UAE FTA requirements\n\u2022 Records needed for ongoing legal proceedings or regulatory investigations\n\nIn such cases, we will inform you of the specific legal basis for retention and the anticipated retention period. Retained data will be limited to the minimum necessary and will not be used for any other purpose.`,
+    contentAr: `يمكنك طلب حذف بياناتك الشخصية في أي وقت عن طريق إرسال بريد إلكتروني إلى admin@mamahala.ca مع سطر الموضوع \u201cطلب حذف البيانات.\u201d\n\nعند تلقي طلبك الموثق، سنقوم بما يلي:\n\n\u2022 الإقرار بالاستلام خلال 5 أيام عمل\n\u2022 إتمام الحذف خلال 30 يوماً\n\u2022 إخطار معالجي الأطراف الثالثة لحذف بياناتك من أنظمتهم\n\u2022 تقديم تأكيد مكتوب بالحذف عند الانتهاء\n\nالاستثناءات: قد يُطلب منا الاحتفاظ ببعض البيانات بما يتجاوز طلب الحذف الخاص بك حيثما يتطلب القانون ذلك، بما في ذلك:\n\n\u2022 السجلات الصحية: 7 سنوات بموجب PHIPA والمعايير المهنية\n\u2022 السجلات المالية/الضريبية: 7 سنوات بموجب متطلبات CRA وهيئة الضرائب الاتحادية الإماراتية\n\u2022 السجلات اللازمة للإجراءات القانونية الجارية أو التحقيقات التنظيمية\n\nفي هذه الحالات، سنُبلغك بالأساس القانوني المحدد للاحتفاظ وفترة الاحتفاظ المتوقعة. ستقتصر البيانات المحتفظ بها على الحد الأدنى الضروري ولن تُستخدم لأي غرض آخر.`,
+  },
+  /* ─── 16 ─── */
+  {
+    id: 'children',
+    icon: Baby,
+    title: 'Children\u2019s Privacy',
+    titleAr: 'خصوصية الأطفال',
+    content: `Our Services are not directed at children, and we do not knowingly collect personal data from minors without appropriate parental or guardian consent.\n\n\u2022 Canada: We do not knowingly collect personal information from individuals under the age of 13 without verified parental consent.\n\u2022 UAE: Processing of personal data of individuals under 18 years of age for sensitive purposes requires the consent of a parent or legal guardian, in accordance with UAE PDPL.\n\u2022 Internationally: We comply with the higher of the applicable age threshold in the user\u2019s jurisdiction.\n\nIf you are a parent or guardian and believe your child has provided personal data without your consent, please contact us at admin@mamahala.ca and we will promptly delete such data.\n\nWhere our counseling services involve minors (e.g., family counseling), parental or guardian consent is obtained before any personal data is collected, and additional safeguards are applied to protect the minor\u2019s information.`,
+    contentAr: `خدماتنا ليست موجهة للأطفال، ولا نجمع عن علم بيانات شخصية من القاصرين دون موافقة مناسبة من الوالد أو الوصي.\n\n\u2022 كندا: لا نجمع عن علم معلومات شخصية من أفراد تقل أعمارهم عن 13 عاماً دون موافقة أبوية موثقة.\n\u2022 الإمارات: تتطلب معالجة البيانات الشخصية للأفراد الذين تقل أعمارهم عن 18 عاماً لأغراض حساسة موافقة الوالد أو الوصي القانوني، وفقاً لقانون حماية البيانات الإماراتي.\n\u2022 دولياً: نمتثل للحد الأعلى من عتبة العمر المعمول بها في الولاية القضائية للمستخدم.\n\nإذا كنت والداً أو وصياً وتعتقد أن طفلك قد قدم بيانات شخصية دون موافقتك، يرجى الاتصال بنا على admin@mamahala.ca وسنحذف هذه البيانات على الفور.\n\nعندما تتضمن خدماتنا الاستشارية قاصرين (مثل الاستشارة الأسرية)، يتم الحصول على موافقة الوالد أو الوصي قبل جمع أي بيانات شخصية، ويتم تطبيق ضمانات إضافية لحماية معلومات القاصر.`,
+  },
+  /* ─── 17 ─── */
+  {
+    id: 'data-breach',
+    icon: AlertTriangle,
+    title: 'Data Breach Notification',
+    titleAr: 'الإخطار بخرق البيانات',
+    content: `We maintain comprehensive security measures to protect your data. In the unlikely event of a data breach involving your personal information, we will:\n\n\u2022 Initiate an internal investigation within 24 hours of discovering the breach\n\u2022 Assess the scope, cause, and risk of harm to affected individuals\n\u2022 Under PIPEDA: Report to the Office of the Privacy Commissioner of Canada and notify affected individuals as soon as feasible if the breach creates a real risk of significant harm (as required by the Digital Privacy Act)\n\u2022 Under UAE PDPL: Notify the UAE Data Office in accordance with the timelines specified in the Executive Regulations\n\u2022 Under GDPR-aligned standards: Notify relevant authorities within 72 hours where the breach is likely to result in a risk to individuals\u2019 rights and freedoms\n\u2022 Notify affected individuals directly via email, including the nature of the breach, the data involved, steps taken, and recommended protective measures\n\u2022 Document the breach and our response in a breach register maintained for regulatory purposes`,
+    contentAr: `نحافظ على تدابير أمنية شاملة لحماية بياناتك. في حالة حدوث خرق للبيانات يتضمن معلوماتك الشخصية (وهو أمر مستبعد)، سنقوم بما يلي:\n\n\u2022 بدء تحقيق داخلي خلال 24 ساعة من اكتشاف الخرق\n\u2022 تقييم نطاق وسبب ومخاطر الضرر للأفراد المتضررين\n\u2022 بموجب PIPEDA: الإبلاغ إلى مكتب مفوض الخصوصية الكندي وإخطار الأفراد المتضررين في أقرب وقت ممكن إذا كان الخرق يُنشئ خطراً حقيقياً بضرر جسيم (وفقاً لقانون الخصوصية الرقمي)\n\u2022 بموجب قانون حماية البيانات الإماراتي: إخطار مكتب البيانات الإماراتي وفقاً للجداول الزمنية المحددة في اللائحة التنفيذية\n\u2022 بموجب معايير متوافقة مع GDPR: إخطار السلطات المعنية خلال 72 ساعة حيث يُحتمل أن يُشكّل الخرق خطراً على حقوق وحريات الأفراد\n\u2022 إخطار الأفراد المتضررين مباشرة عبر البريد الإلكتروني، بما في ذلك طبيعة الخرق والبيانات المعنية والخطوات المتخذة والتدابير الوقائية الموصى بها\n\u2022 توثيق الخرق واستجابتنا في سجل خروقات يُحفظ لأغراض تنظيمية`,
+    highlight: true,
+  },
+  /* ─── 18 ─── */
   {
     id: 'security',
     icon: Lock,
     title: 'Information Security',
     titleAr: 'أمن المعلومات',
-    content: `We maintain reasonable administrative, technical, and physical safeguards in an effort to protect against unauthorized access, use, modification, and disclosure of Personal Information in our control and custody. However, no data transmission over the Internet or wireless network can be guaranteed. Therefore, while we strive to protect your Personal Information, you acknowledge that (i) there are security and privacy limitations of the Internet which are beyond our control; (ii) the security, integrity, and privacy of any and all information and data exchanged between you and the Website and Services cannot be guaranteed; and (iii) any such information and data may be viewed or tampered with in transit by a third party, despite best efforts.`,
-    contentAr: `نحافظ على ضمانات إدارية وتقنية ومادية معقولة لحماية المعلومات الشخصية من الوصول غير المصرح به أو الاستخدام أو التعديل أو الكشف. ومع ذلك، لا يمكن ضمان أي نقل بيانات عبر الإنترنت.`,
-    highlight: true,
+    content: `We implement and maintain industry-standard administrative, technical, and physical safeguards to protect your personal data:\n\n\u2022 Encryption: TLS 1.3 encryption for all data in transit; encryption at rest for stored data\n\u2022 Access Controls: Strict role-based access; administrative access protected by authentication\n\u2022 Secure Payment Processing: PCI-DSS Level 1 certified payment processor; no card data stored on our servers\n\u2022 Rate Limiting: IP-based rate limiting on all forms and API endpoints to prevent abuse\n\u2022 Spam Prevention: Multi-layered bot detection including honeypot fields, timing analysis, and disposable email blocking\n\u2022 Secure Sessions: HttpOnly, Secure, SameSite cookie attributes\n\u2022 Distributed Locking: Prevents double-booking and concurrent data conflicts\n\u2022 Regular Updates: We keep all software dependencies updated to patch known vulnerabilities\n\nWhile we strive to protect your data using these measures, no method of transmission over the Internet or electronic storage is 100% secure. We cannot guarantee absolute security, but we commit to promptly addressing any security vulnerabilities that come to our attention.`,
+    contentAr: `ننفذ ونحافظ على ضمانات إدارية وتقنية ومادية بمعايير الصناعة لحماية بياناتك الشخصية:\n\n\u2022 التشفير: تشفير TLS 1.3 لجميع البيانات أثناء النقل؛ تشفير البيانات المخزنة في حالة السكون\n\u2022 التحكم في الوصول: وصول صارم قائم على الأدوار؛ الوصول الإداري محمي بالمصادقة\n\u2022 معالجة دفع آمنة: معالج دفع معتمد بمستوى PCI-DSS الأول ؛ لا يتم تخزين بيانات البطاقات على خوادمنا\n\u2022 تقييد المعدل: تقييد معدل قائم على عنوان IP على جميع النماذج ونقاط نهاية API لمنع إساءة الاستخدام\n\u2022 منع الرسائل المزعجة: كشف متعدد الطبقات للروبوتات يشمل حقول المصيدة وتحليل التوقيت وحظر البريد الإلكتروني المؤقت\n\u2022 جلسات آمنة: سمات ملفات تعريف الارتباط HttpOnly وSecure وSameSite\n\u2022 القفل الموزع: يمنع الحجز المزدوج وتعارضات البيانات المتزامنة\n\u2022 تحديثات منتظمة: نحافظ على تحديث جميع تبعيات البرمجيات لسد الثغرات المعروفة\n\nبينما نسعى لحماية بياناتك باستخدام هذه التدابير، لا توجد طريقة نقل عبر الإنترنت أو تخزين إلكتروني آمنة بنسبة 100%. لا يمكننا ضمان الأمان المطلق، لكننا نلتزم بمعالجة أي ثغرات أمنية تصل إلى علمنا على الفور.`,
   },
+  /* ─── 19 ─── */
   {
-    id: 'data-breach',
-    icon: AlertTriangle,
-    title: 'Data Breach',
-    titleAr: 'خرق البيانات',
-    content: `In the event we become aware that the security of the Website and Services has been compromised or Users\u2019 Personal Information has been disclosed to unrelated third parties as a result of external activity, including, but not limited to, security attacks or fraud, we reserve the right to take reasonably appropriate measures, including, but not limited to, investigation and reporting, as well as notification to and cooperation with law enforcement authorities. In the event of a data breach, we will make reasonable efforts to notify affected individuals if we believe that there is a reasonable risk of harm to the User as a result of the breach or if notice is otherwise required by law. When we do, we will probably post a notice on the Website.`,
-    contentAr: `في حالة علمنا بأن أمن الموقع قد تم اختراقه، نحتفظ بالحق في اتخاذ التدابير المناسبة بما في ذلك التحقيق والإبلاغ والتعاون مع سلطات إنفاذ القانون. سنبذل جهوداً معقولة لإخطار الأفراد المتضررين.`,
+    id: 'email-communications',
+    icon: Mail,
+    title: 'Email & Communications',
+    titleAr: 'البريد الإلكتروني والاتصالات',
+    content: `We send emails through a professional email delivery service. All electronic communications comply with the Canadian Anti-Spam Legislation (CASL) and applicable UAE and international anti-spam regulations.\n\n\u2022 Transactional Emails: Booking confirmations, session reminders, payment receipts, and account notifications are sent based on your contract with us and do not require separate marketing consent.\n\u2022 Marketing Emails: Newsletters, service updates, and promotional content are sent only with your express opt-in consent.\n\u2022 Every marketing email includes a clear, one-click unsubscribe mechanism.\n\u2022 We honor unsubscribe requests within 10 business days (CASL requirement).\n\u2022 We do not purchase email lists or send unsolicited commercial messages.\n\nIf you correspond with us via email, we may retain the content of your messages, your email address, and our responses for the purpose of resolving your inquiry and maintaining a record of our communications.`,
+    contentAr: `نرسل رسائل البريد الإلكتروني عبر خدمة توصيل بريد إلكتروني احترافية. تمتثل جميع الاتصالات الإلكترونية للتشريع الكندي لمكافحة الرسائل غير المرغوب فيها (CASL) ولوائح مكافحة الرسائل غير المرغوب فيها المعمول بها في الإمارات ودولياً.\n\n\u2022 رسائل المعاملات: تُرسل تأكيدات الحجز وتذكيرات الجلسات وإيصالات الدفع وإشعارات الحساب بناءً على عقدك معنا ولا تتطلب موافقة تسويقية منفصلة.\n\u2022 رسائل التسويق: تُرسل النشرات الإخبارية وتحديثات الخدمة والمحتوى الترويجي فقط بموافقتك الصريحة.\n\u2022 يتضمن كل بريد تسويقي آلية إلغاء اشتراك واضحة بنقرة واحدة.\n\u2022 نحترم طلبات إلغاء الاشتراك خلال 10 أيام عمل (متطلب CASL).\n\u2022 لا نشتري قوائم بريد إلكتروني أو نرسل رسائل تجارية غير مرغوب فيها.\n\nإذا تواصلت معنا عبر البريد الإلكتروني، قد نحتفظ بمحتوى رسائلك وعنوان بريدك الإلكتروني وردودنا لغرض حل استفسارك والحفاظ على سجل اتصالاتنا.`,
   },
+  /* ─── 20 ─── */
   {
-    id: 'access',
-    icon: Eye,
-    title: 'Access to Personal Information',
-    titleAr: 'الوصول إلى المعلومات الشخصية',
-    content: `We will respond promptly to any request for access to your personal information and will advise you of the cost, if any, prior to the retrieval of such records or information. We will not respond to requests for access to personal information that are frivolous, vexatious or repetitious. In certain circumstances, we may be unable to provide access to some or all of the personal information that we hold about you.`,
-    contentAr: `سنستجيب بسرعة لأي طلب للوصول إلى معلوماتك الشخصية وسننصحك بالتكلفة، إن وجدت، قبل استرجاع هذه السجلات.`,
+    id: 'links',
+    icon: LinkIcon,
+    title: 'Links to Third-Party Resources',
+    titleAr: 'الروابط لموارد الأطراف الثالثة',
+    content: `Our Website may contain links to external websites, resources, or services not owned or controlled by us. We are not responsible for the privacy practices, content, or data collection of any third-party websites. We encourage you to review the privacy policy of every external site you visit.\n\nOur linking to a third-party website does not constitute endorsement of that site\u2019s privacy practices or content.`,
+    contentAr: `قد يحتوي موقعنا على روابط لمواقع أو موارد أو خدمات خارجية ليست مملوكة أو خاضعة لسيطرتنا. نحن لسنا مسؤولين عن ممارسات الخصوصية أو المحتوى أو جمع البيانات لأي مواقع تابعة لأطراف ثالثة. نشجعك على مراجعة سياسة الخصوصية لكل موقع خارجي تزوره.\n\nربطنا بموقع طرف ثالث لا يُشكّل تأييداً لممارسات الخصوصية أو محتوى ذلك الموقع.`,
   },
+  /* ─── 21 ─── */
   {
     id: 'changes',
     icon: Settings,
-    title: 'Changes and Amendments',
+    title: 'Changes & Amendments',
     titleAr: 'التغييرات والتعديلات',
-    content: `We reserve the right to modify this Policy or its terms related to the Website and Services at any time at our discretion. When we do, we will probably revise the updated date at the bottom of this page. An updated version of this Policy will be effective immediately upon the posting of the revised Policy unless otherwise specified. Your continued use of the Website and Services after the effective date of the revised Policy (or such other act specified at that time) will constitute your consent to those changes.`,
-    contentAr: `نحتفظ بالحق في تعديل هذه السياسة في أي وقت وفقاً لتقديرنا. عندما نفعل ذلك، سنقوم على الأرجح بمراجعة التاريخ المحدث في أسفل هذه الصفحة.`,
+    content: `We reserve the right to update this Policy at any time to reflect changes in our practices, technology, legal requirements, or other factors. When we make changes:\n\n\u2022 We will update the \u201cEffective Date\u201d at the top of this page.\n\u2022 For material changes that significantly affect how we process your data, we will notify you via email at least 30 days before the changes take effect.\n\u2022 Your continued use of the Website and Services after the effective date of the revised Policy constitutes your acceptance of the changes.\n\u2022 If you do not agree with the revised Policy, you should discontinue use of the Services and contact us to exercise your data rights.`,
+    contentAr: `نحتفظ بالحق في تحديث هذه السياسة في أي وقت لتعكس التغييرات في ممارساتنا أو التكنولوجيا أو المتطلبات القانونية أو عوامل أخرى. عندما نُجري تغييرات:\n\n\u2022 سنقوم بتحديث \u201cتاريخ السريان\u201d في أعلى هذه الصفحة.\n\u2022 بالنسبة للتغييرات الجوهرية التي تؤثر بشكل كبير على كيفية معالجتنا لبياناتك، سنُخطرك عبر البريد الإلكتروني قبل 30 يوماً على الأقل من سريان التغييرات.\n\u2022 يُعتبر استمرارك في استخدام الموقع والخدمات بعد تاريخ سريان السياسة المعدلة قبولاً منك للتغييرات.\n\u2022 إذا لم توافق على السياسة المعدلة، يجب عليك التوقف عن استخدام الخدمات والاتصال بنا لممارسة حقوقك في البيانات.`,
   },
-  {
-    id: 'acceptance',
-    icon: CheckCircle2,
-    title: 'Acceptance of This Policy',
-    titleAr: 'قبول هذه السياسة',
-    content: `You acknowledge that you have read this Policy and agree to all its terms and conditions. By accessing and using the Website and Services and submitting your information you agree to be bound by this Policy. If you do not agree to abide by the terms of this Policy, you are not authorized to access or use the Website and Services.`,
-    contentAr: `أنت تقر بأنك قد قرأت هذه السياسة وتوافق على جميع شروطها وأحكامها. من خلال الوصول إلى الموقع والخدمات وتقديم معلوماتك، فإنك توافق على الالتزام بهذه السياسة.`,
-  },
+  /* ─── 22 ─── */
   {
     id: 'contact',
     icon: Phone,
-    title: 'Contacting Us',
-    titleAr: 'اتصل بنا',
-    content: `Any questions about these terms of service and privacy policy should be addressed to us via our contact form.`,
-    contentAr: `أي أسئلة حول شروط الخدمة وسياسة الخصوصية يجب توجيهها إلينا عبر نموذج الاتصال الخاص بنا.`,
+    title: 'Contact & Complaints',
+    titleAr: 'الاتصال والشكاوى',
+    content: `If you have any questions, concerns, or complaints about this Privacy Policy or our data practices, or if you wish to exercise any of your data rights, please contact us:\n\nMama Hala Consulting\nAttn: Privacy Inquiries\n430 Hazeldean Rd, Ottawa, ON K2L 1E8, Canada\nEmail: admin@mamahala.ca\nPhone: +1 613-222-2104\n\nRegulatory Authorities:\n\n\u2022 Canada: Office of the Privacy Commissioner of Canada (OPC) \u2014 priv.gc.ca | 1-800-282-1376\n\u2022 Ontario (Health Info): Information and Privacy Commissioner of Ontario \u2014 ipc.on.ca\n\u2022 UAE: UAE Data Office \u2014 For complaints regarding personal data processing under UAE PDPL\n\u2022 International: You may also contact your local data protection authority if you believe your privacy rights have been violated.\n\nWe take all privacy concerns seriously and will respond to your inquiry within 30 days.`,
+    contentAr: `إذا كانت لديك أي أسئلة أو مخاوف أو شكاوى حول سياسة الخصوصية هذه أو ممارسات البيانات لدينا، أو إذا كنت ترغب في ممارسة أي من حقوقك في البيانات، يرجى الاتصال بنا:\n\nماما هالة للاستشارات\nعناية: استفسارات الخصوصية\n430 هازلدين رود، أوتاوا، أونتاريو K2L 1E8، كندا\nالبريد الإلكتروني: admin@mamahala.ca\nالهاتف: 2104-222-613-1+\n\nالسلطات التنظيمية:\n\n\u2022 كندا: مكتب مفوض الخصوصية الكندي (OPC) \u2014 priv.gc.ca | 1376-282-800-1\n\u2022 أونتاريو (المعلومات الصحية): مفوض المعلومات والخصوصية في أونتاريو \u2014 ipc.on.ca\n\u2022 الإمارات: مكتب البيانات الإماراتي \u2014 للشكاوى المتعلقة بمعالجة البيانات الشخصية بموجب قانون حماية البيانات الإماراتي\n\u2022 دولياً: يمكنك أيضاً الاتصال بهيئة حماية البيانات المحلية في بلدك إذا كنت تعتقد أن حقوق خصوصيتك قد انتُهكت.\n\nنأخذ جميع مخاوف الخصوصية على محمل الجد وسنرد على استفسارك خلال 30 يوماً.`,
     isLast: true,
   },
 ];
@@ -261,21 +408,29 @@ export default function PrivacyPolicyPage() {
               className="text-lg text-[#6B6580] mt-4 max-w-2xl"
             >
               {isRTL
-                ? 'نحن نحترم خصوصيتك ونلتزم بحمايتها'
-                : 'Your privacy matters to us. This policy explains how we collect, use, and protect your personal information in compliance with PIPEDA.'}
+                ? 'خصوصيتك تهمنا. توضح هذه السياسة كيف نجمع ونستخدم ونحمي معلوماتك الشخصية بما يتوافق مع القوانين الكندية والإماراتية والمعايير الدولية.'
+                : 'Your privacy matters to us. This policy explains how we collect, use, and protect your personal information in compliance with Canadian, UAE, and international data protection standards.'}
             </motion.p>
             <motion.div
               variants={fadeUp}
               custom={3}
-              className="flex items-center gap-4 mt-6 text-sm text-[#6B6580]"
+              className="flex items-center gap-3 mt-6 text-sm text-[#6B6580] flex-wrap"
             >
               <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
                 <Clock className="w-3.5 h-3.5" />
-                {isRTL ? 'آخر تحديث: 29.11.2022' : 'Last updated: 29.11.2022'}
+                {isRTL ? 'تاريخ السريان: 19.04.2026' : 'Effective: April 19, 2026'}
               </span>
               <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
                 <Shield className="w-3.5 h-3.5" />
-                PIPEDA Compliant
+                PIPEDA / PHIPA
+              </span>
+              <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
+                <Globe className="w-3.5 h-3.5" />
+                UAE PDPL
+              </span>
+              <span className="inline-flex items-center gap-1.5 bg-[#C4878A]/10 px-3 py-1.5 rounded-full">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                {isRTL ? 'متوافق عالمياً' : 'Globally Compliant'}
               </span>
             </motion.div>
           </motion.div>
@@ -366,7 +521,7 @@ export default function PrivacyPolicyPage() {
                     {sectionContent.split('\n\n').map((paragraph, pi) => (
                       <p
                         key={pi}
-                        className="text-[#4A4A5C] leading-relaxed mb-4 last:mb-0 text-[15px]"
+                        className="text-[#4A4A5C] leading-relaxed mb-4 last:mb-0 text-[15px] whitespace-pre-line"
                       >
                         {paragraph}
                       </p>
@@ -401,7 +556,7 @@ export default function PrivacyPolicyPage() {
                           className="inline-flex items-center gap-2 text-sm font-semibold text-white bg-[#C4878A] px-5 py-3 rounded-xl hover:bg-[#244F41] transition-colors shadow-sm"
                         >
                           <Phone className="w-4 h-4" />
-                          {isRTL ? 'نموذج الاتصال' : 'Contact Us'}
+                          {isRTL ? 'اتصل بنا' : 'Contact Us'}
                         </Link>
                       </div>
                     )}
