@@ -132,7 +132,12 @@ export async function GET(request: NextRequest) {
     // ─── Retry GCal events for missing ones ──────────────────
     const bookingsMissingCal = bookings.filter(b => !b.calendarEventId && b.status === 'confirmed');
     if (bookingsMissingCal.length > 0) {
-      gcalRetries = await retryMissingCalendarEvents(bookingsMissingCal);
+      try {
+        gcalRetries = await retryMissingCalendarEvents(bookingsMissingCal);
+      } catch (gcalErr) {
+        console.error('[Booking Reminders] GCal retry failed (non-blocking):', gcalErr);
+        gcalRetries = 0;
+      }
     }
 
     return NextResponse.json({

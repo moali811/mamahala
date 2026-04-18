@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
               <p style="${emailStyles.text}">You're now enrolled! Your learning journey is ready to begin.</p>
               <p style="${emailStyles.text}">Take your time with each module — real growth happens when we reflect, not just read.</p>
               <div style="text-align:center;margin:24px 0 8px;">
-                <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app'}/en/programs/${programSlug}#curriculum" style="${emailStyles.button}">Start Learning</a>
+                <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca'}/en/programs/${programSlug}#curriculum" style="${emailStyles.button}">Start Learning</a>
               </div>
             </div>
           `),

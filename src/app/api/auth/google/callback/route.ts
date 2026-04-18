@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const CLIENT_ID = process.env.GOOGLE_CALENDAR_CLIENT_ID ?? '';
 const CLIENT_SECRET = process.env.GOOGLE_CALENDAR_CLIENT_SECRET ?? '';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 const REDIRECT_URI = `${SITE_URL}/api/auth/google/callback`;
 
 export async function GET(request: NextRequest) {
@@ -95,7 +95,7 @@ function renderPage(success: boolean, content: string): string {
     <div style="width:56px;height:56px;border-radius:50%;background:#FFF5F5;display:inline-flex;align-items:center;justify-content:center;font-size:28px;color:#C45B5B;margin:0 0 20px;line-height:56px;">&#10007;</div>
     <h1 style="margin:0 0 12px;font-size:20px;color:#4A4A5C;">Authorization Failed</h1>
     <p style="margin:0 0 20px;font-size:14px;color:#8E8E9F;">${content}</p>
-    <a href="${SITE_URL}/api/auth/google/authorize?key=${process.env.ADMIN_PASSWORD || ''}" style="display:inline-block;padding:12px 28px;background:#7A3B5E;color:white;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600;">Try Again</a>
+    <a href="${SITE_URL}/api/auth/google/authorize" style="display:inline-block;padding:12px 28px;background:#7A3B5E;color:white;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600;">Try Again</a>
   </div>
 </body></html>`;
 }

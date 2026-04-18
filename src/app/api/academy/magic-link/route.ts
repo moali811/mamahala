@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
 /**
  * POST /api/academy/magic-link

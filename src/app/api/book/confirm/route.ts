@@ -67,12 +67,40 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: `Unknown service: ${body.serviceSlug}` }, { status: 400 });
     }
 
-    // ─── Validate slot is still available ────────────────────
+    // ─── Validate slot is still available (with distributed lock) ─
     const date = body.startTime.slice(0, 10);
+    const lockKey = `booking:lock:${date}:${body.startTime}`;
+    let lockAcquired = false;
+
+    // Try to acquire a short-lived lock to prevent double-booking
+    if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+      try {
+        const { kv } = await import('@vercel/kv');
+        // NX = only set if key doesn't exist; EX = auto-expire after 30 seconds
+        const result = await kv.set(lockKey, '1', { nx: true, ex: 30 });
+        if (!result) {
+          return NextResponse.json(
+            { error: 'This time slot is being booked by another client. Please try again.' },
+            { status: 409 },
+          );
+        }
+        lockAcquired = true;
+      } catch {
+        // If KV fails, proceed without lock (fail open)
+      }
+    }
+
     const busySlots = await fetchBusySlots(date, date);
     const slotCheck = await isSlotAvailable(date, body.startTime, body.endTime, busySlots);
 
     if (!slotCheck.available) {
+      // Release lock if we acquired one
+      if (lockAcquired) {
+        try {
+          const { kv } = await import('@vercel/kv');
+          await kv.del(lockKey);
+        } catch {}
+      }
       return NextResponse.json(
         { error: 'Time slot is no longer available', reason: slotCheck.reason },
         { status: 409 },

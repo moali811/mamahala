@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { trackEvent } from '@/lib/analytics';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
+import { limitNewsletter, getClientIp } from '@/lib/rate-limit';
 
 /* ================================================================
    Smart Newsletter/Signup Endpoint
@@ -14,7 +15,7 @@ interface EmailTemplate {
 }
 
 function getTemplate(email: string, source: string): EmailTemplate {
-  const baseUrl = 'https://mama-hala-website.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
   // ─── EVENT NOTIFICATIONS ───
   if (source === 'events-reminder') {
@@ -119,6 +120,12 @@ function getTemplate(email: string, source: string): EmailTemplate {
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rl = await limitNewsletter(ip);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+    }
+
     const { email, source } = await request.json();
 
     if (!email || !email.includes('@') || !email.includes('.')) {
@@ -138,7 +145,7 @@ export async function POST(request: Request) {
         const template = getTemplate(email, normalizedSource);
 
         // Admin notification
-        const adminSend = await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
+        const adminSend = await resend.emails.send({ bcc: process.env.CONTACT_FORM_BCC || undefined,
           from: fromEmail,
           to: adminEmail,
           subject: template.adminSubject,
@@ -160,7 +167,7 @@ export async function POST(request: Request) {
         }
 
         // Subscriber email
-        const subSend = await resend.emails.send({ bcc: 'mo.ali811@gmail.com',
+        const subSend = await resend.emails.send({ bcc: process.env.CONTACT_FORM_BCC || undefined,
           from: fromEmail,
           to: email,
           subject: template.subject,

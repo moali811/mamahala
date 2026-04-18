@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { generateEventReminderEmail } from '@/lib/email/event-notify';
 import { mergeEventOverrides } from '@/lib/event-merge';
@@ -19,7 +19,12 @@ interface Registration {
  * Checks all events with dates tomorrow, sends to registered attendees.
  * Idempotent via KV flag.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   if (!KV_AVAILABLE) {
     return NextResponse.json({ message: 'KV not configured, skipping' });
   }

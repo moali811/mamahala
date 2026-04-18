@@ -161,7 +161,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                 alt="Mama Hala Consulting"
                 width={512}
                 height={512}
-                className="h-14 w-14 rounded-full object-cover ring-1 ring-[#D4ADA8]/25"
+                className="h-11 w-11 rounded-full object-cover ring-1 ring-[#D4ADA8]/25"
                 priority
               />
               <span

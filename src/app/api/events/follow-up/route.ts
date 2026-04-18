@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { mergeEventOverrides } from '@/lib/event-merge';
 import { events as staticEvents } from '@/data/events';
@@ -20,7 +20,12 @@ interface Registration {
  * Links attendees to related 1:1 services.
  * Idempotent via KV flag.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  const cronSecret = process.env.CRON_SECRET;
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
   if (!KV_AVAILABLE) {
     return NextResponse.json({ message: 'KV not configured, skipping' });
   }
@@ -56,7 +61,7 @@ export async function GET() {
       if (!registrations || registrations.length === 0) continue;
 
       const relatedService = event.relatedServiceSlug ? getServiceBySlug(event.relatedServiceSlug) : undefined;
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app';
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
       try {
         const { Resend } = await import('resend');

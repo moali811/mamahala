@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServiceBySlug, getCategoryInfo } from '@/data/services';
 import { generateGiftEmail } from '@/lib/email/gift-template';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
+import { limitGift, getClientIp } from '@/lib/rate-limit';
 
 interface GiftRequest {
   gifterName: string;
@@ -18,6 +19,12 @@ interface GiftRequest {
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request);
+    const rl = await limitGift(ip);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+    }
+
     const body: GiftRequest = await request.json();
 
     const { gifterName, gifterEmail, recipientName, recipientEmail, category, serviceSlug, occasion, occasionAr, message, locale } = body;

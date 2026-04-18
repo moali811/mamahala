@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDashboardStats } from '@/lib/analytics';
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'mamahala2026';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 export async function GET(request: NextRequest) {
   const auth = request.headers.get('authorization');

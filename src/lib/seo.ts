@@ -19,7 +19,7 @@ interface PageSEO {
 const BASE_URL = 'https://mamahala.ca';
 const SITE_NAME = 'Mama Hala Consulting';
 const SITE_NAME_AR = 'ماما هالة للاستشارات';
-const DEFAULT_OG_IMAGE = '/images/logo-512.png';
+const DEFAULT_OG_IMAGE = '/images/og-image.png';
 
 export function generatePageMetadata(locale: string, page: PageSEO): Metadata {
   const isAr = locale === 'ar';

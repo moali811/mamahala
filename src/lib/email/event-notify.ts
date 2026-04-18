@@ -23,7 +23,7 @@ export function generateDateAnnouncementEmail(event: SmartEvent, locale: string)
   const formattedDate = getFormattedDate(event, locale);
   const formattedTime = getFormattedTime(event, locale);
   const locationIcon = event.locationType === 'online' ? '💻' : event.locationType === 'hybrid' ? '🔄' : '📍';
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
   const eventsUrl = `${siteUrl}/${locale}/resources/events#${event.slug}`;
 
   const content = `
@@ -160,7 +160,7 @@ export function generatePulseThresholdEmail(event: SmartEvent, pulseCount: numbe
         <tr><td style="padding:6px 0;font-weight:600;">Pulse Count:</td><td>${pulseCount}</td></tr>
         <tr><td style="padding:6px 0;font-weight:600;">Type:</td><td>${event.type}</td></tr>
       </table>
-      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app'}/admin/events" style="display:inline-block;padding:12px 24px;background:#7A3B5E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">
+      <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca'}/admin/events" style="display:inline-block;padding:12px 24px;background:#7A3B5E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:14px;font-weight:600;">
         Open Events Manager
       </a>
     </div>`;

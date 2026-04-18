@@ -13,17 +13,35 @@ import { getGeoFromHeaders } from '@/lib/region';
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const isAr = locale === 'ar';
+  const description = isAr
+    ? 'استشاراتٌ وتوجيهٌ مهنيّ للأفراد والأزواج والعائلات. مستشارة أسريّة معتمدة.'
+    : 'Professional counseling and guidance for individuals, couples, and families.';
+  const title = isAr ? 'د. هالة علي | مجموعة ماما هالة للاستشارات' : 'Dr. Hala Ali | Mama Hala Consulting Group';
   return {
     title: {
-      default: isAr ? 'د. هالة علي | مجموعة ماما هالة للاستشارات' : 'Dr. Hala Ali | Mama Hala Consulting Group',
+      default: title,
       template: isAr ? '%s | ماما هالة' : '%s | Mama Hala',
     },
-    description: isAr
-      ? 'استشاراتٌ وتوجيهٌ مهنيّ للأفراد والأزواج والعائلات. مستشارة أسريّة معتمدة.'
-      : 'Professional counseling and guidance for individuals, couples, and families.',
+    description,
     alternates: {
-      canonical: `/${locale}`,
-      languages: { en: '/en', ar: '/ar' },
+      canonical: `https://mamahala.ca/${locale}`,
+      languages: { en: '/en', ar: '/ar', 'x-default': '/en' },
+    },
+    openGraph: {
+      title,
+      description,
+      url: `https://mamahala.ca/${locale}`,
+      siteName: isAr ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting',
+      locale: isAr ? 'ar_AE' : 'en_CA',
+      alternateLocale: isAr ? ['ar_SA', 'ar_EG', 'en_CA'] : ['ar_AE', 'ar_SA'],
+      type: 'website',
+      images: [{ url: '/images/og-image.png', width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/images/og-image.png'],
     },
   };
 }

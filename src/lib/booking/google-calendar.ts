@@ -298,8 +298,10 @@ export async function createCalendarEvent(
       });
     }
 
-    // Store the mapping
-    await setCalendarEventId(booking.bookingId, eventId).catch(() => {});
+    // Store the mapping — log failures so they can be diagnosed
+    await setCalendarEventId(booking.bookingId, eventId).catch((err) => {
+      console.error(`[GCal] Failed to persist event ID for booking ${booking.bookingId}:`, err);
+    });
 
     // Invalidate busy cache for this date
     const date = booking.startTime.slice(0, 10);

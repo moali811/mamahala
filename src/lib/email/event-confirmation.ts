@@ -178,7 +178,7 @@ export function generateEventConfirmationEmail(params: EventConfirmationParams):
   </td></tr>` : ''}
 
   ${(() => {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
     const relatedService = event.relatedServiceSlug ? getServiceBySlug(event.relatedServiceSlug) : undefined;
     if (!relatedService || waitlisted) return '';
     const serviceName = isAr ? relatedService.nameAr : relatedService.name;

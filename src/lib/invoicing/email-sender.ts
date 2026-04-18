@@ -209,7 +209,8 @@ export async function sendInvoiceEmail(
   });
 
   if (error) {
-    throw new Error(`Resend error: ${error.message ?? 'unknown'}`);
+    const errDetail = (error as any).message || (error as any).name || JSON.stringify(error);
+    throw new Error(`Resend error: ${errDetail}`);
   }
 
   return { messageId: data?.id ?? '' };
@@ -263,7 +264,8 @@ export async function sendReceiptEmail(
   });
 
   if (error) {
-    throw new Error(`Resend error: ${error.message ?? 'unknown'}`);
+    const errDetail = (error as any).message || (error as any).name || JSON.stringify(error);
+    throw new Error(`Resend error: ${errDetail}`);
   }
 
   return { messageId: data?.id ?? '' };

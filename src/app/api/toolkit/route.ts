@@ -23,7 +23,7 @@ function getRelatedToolkits(toolkitId: string, isAr: boolean): { name: string; u
     .slice(0, 2)
     .map(([id]) => ({
       name: isAr ? (toolkitNames[id]?.ar || id) : (toolkitNames[id]?.en || id),
-      url: `https://mama-hala-website.vercel.app/toolkits/pdf/${isAr ? `ar/${id}` : id}.pdf`,
+      url: `https://mamahala.ca/toolkits/pdf/${isAr ? `ar/${id}` : id}.pdf`,
     }));
   return related;
 }
@@ -117,7 +117,7 @@ export async function POST(request: Request) {
                   : "We're glad you took this step. Click the button below to download your toolkit instantly."}
               </p>
               <div style="text-align:center;margin:0 0 24px;">
-                <a href="https://mama-hala-website.vercel.app/toolkits/pdf/${toolkitId}.pdf" style="${emailStyles.button}">
+                <a href="https://mamahala.ca/toolkits/pdf/${toolkitId}.pdf" style="${emailStyles.button}">
                   ${isAr ? 'حمِّلْ أداتَك الآن' : 'Download Your Toolkit'}
                 </a>
               </div>
@@ -145,7 +145,7 @@ export async function POST(request: Request) {
                     ? 'هل تحتاجُ دعمًا شخصيًّا؟ محادثتُك الأولى مجّانيّة — 30 دقيقة بلا التزام.'
                     : 'Need personalized support? Your first conversation is free — 30 minutes, no commitment.'}
                 </p>
-                <a href="https://mama-hala-website.vercel.app/${isAr ? 'ar' : 'en'}/book" style="${emailStyles.button}">
+                <a href="https://mamahala.ca/${isAr ? 'ar' : 'en'}/book" style="${emailStyles.button}">
                   ${isAr ? 'احجِزْ استشارتَك المجّانيّة' : 'Book Your Free Consultation'}
                 </a>
               </div>

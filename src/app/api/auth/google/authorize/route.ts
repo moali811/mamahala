@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 const CLIENT_ID = process.env.GOOGLE_CALENDAR_CLIENT_ID ?? '';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mama-hala-website.vercel.app';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 const REDIRECT_URI = `${SITE_URL}/api/auth/google/callback`;
 
 const SCOPES = [

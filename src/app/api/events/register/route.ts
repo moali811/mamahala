@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 import { getEventBySlug } from '@/data/events';
 import { trackEvent } from '@/lib/analytics';
 import { generateEventConfirmationEmail, generateAdminEventNotification } from '@/lib/email/event-confirmation';
+import { limitEventRegister, getClientIp } from '@/lib/rate-limit';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
@@ -13,6 +14,12 @@ const ADMIN_EMAIL = process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca';
 
 export async function POST(request: NextRequest) {
   try {
+    const ip = getClientIp(request);
+    const rl = await limitEventRegister(ip);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'TOO_MANY_REQUESTS', message: 'Please try again later.' }, { status: 429 });
+    }
+
     const body = await request.json();
     const { slug, firstName, lastName, email, phone, locale = 'en' } = body;
 

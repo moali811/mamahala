@@ -55,18 +55,9 @@ export const metadata: Metadata = {
     locale: 'en_CA',
     alternateLocale: ['ar_AE', 'ar_SA', 'ar_EG'],
     siteName: 'Mama Hala Consulting',
-    images: [
-      {
-        url: '/images/logo-512.png',
-        width: 512,
-        height: 512,
-        alt: 'Mama Hala Consulting — Dr. Hala Ali',
-      },
-    ],
   },
   twitter: {
     card: 'summary_large_image',
-    images: ['/images/logo-512.png'],
   },
 };
 
