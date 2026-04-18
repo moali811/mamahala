@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -122,64 +122,104 @@ const baseQuestions: QuizQuestion[] = [
   },
 ];
 
-function getRecommendations(answers: QuizAnswer[]) {
-  const who = answers.find((a) => a.question === 1)?.answer;
-  const concern = answers.find((a) => a.question === 2)?.answer;
+// Hand-curated recommendation map: [who][concern] → service slugs in priority order.
+// Cross-category picks are intentional (e.g. ADHD coaching for children, parenting-coaching for couples).
+const recommendationMap: Record<string, Record<string, string[]>> = {
+  child: {
+    emotions: ['managing-big-emotions', 'cbt-youth', 'under-18-counseling'],
+    behavior: ['under-18-counseling', 'managing-big-emotions', 'cbt-youth'],
+    focus:    ['cbt-youth', 'under-18-counseling', 'adhd-executive-function-coaching'],
+    anxiety:  ['cbt-youth', 'managing-big-emotions', 'under-18-counseling'],
+    social:   ['social-confidence-friendship', 'bullying-support', 'under-18-counseling'],
+    school:   ['cbt-youth', 'under-18-counseling', 'supporting-children-through-change'],
+  },
+  teen: {
+    behavior: ['teen-behavioral-coaching', 'under-18-counseling', 'cbt-youth'],
+    emotions: ['managing-big-emotions', 'cbt-youth', 'under-18-counseling'],
+    anxiety:  ['cbt-youth', 'under-18-counseling', 'managing-big-emotions'],
+    screens:  ['teen-behavioral-coaching', 'cbt-youth', 'under-18-counseling'],
+    identity: ['under-18-counseling', 'social-confidence-friendship', 'cbt-youth'],
+    academic: ['teen-behavioral-coaching', 'cbt-youth', 'under-18-counseling'],
+  },
+  myself: {
+    anxiety:     ['individual-counseling', 'cbt-adults'],
+    depression:  ['individual-counseling', 'cbt-adults'],
+    anger:       ['anger-management', 'cbt-adults', 'individual-counseling'],
+    growth:      ['life-coaching', 'self-development-coaching', 'lifestyle-coaching'],
+    'self-esteem': ['self-development-coaching', 'individual-counseling', 'cbt-adults'],
+    lifestyle:   ['lifestyle-coaching', 'life-coaching', 'self-development-coaching'],
+  },
+  couple: {
+    premarital:    ['pre-marital-education', 'relationship-enrichment', 'couples-counseling'],
+    communication: ['couples-counseling', 'relationship-enrichment'],
+    trust:         ['couples-counseling', 'relationship-enrichment'],
+    intimacy:      ['couples-counseling', 'relationship-enrichment'],
+    conflict:      ['couples-counseling', 'relationship-enrichment'],
+    parenting:     ['couples-counseling', 'parenting-coaching'],
+  },
+  family: {
+    parenting:      ['parenting-coaching', 'tackling-child-tantrums', 'parental-stress-wellbeing'],
+    communication:  ['family-relationship-strengthening', 'parenting-coaching'],
+    transition:     ['family-relationship-strengthening', 'parental-stress-wellbeing', 'supporting-children-through-change'],
+    dynamics:       ['family-relationship-strengthening', 'parenting-coaching', 'parental-stress-wellbeing'],
+    teens:          ['family-relationship-strengthening', 'parenting-coaching', 'teen-behavioral-coaching'],
+    wellbeing:      ['family-relationship-strengthening', 'parental-stress-wellbeing', 'parenting-coaching'],
+  },
+};
 
-  let recommended: typeof services = [];
+const categoryFallback: Record<string, string> = {
+  child: 'youth', teen: 'youth', myself: 'adults', couple: 'couples', family: 'families',
+};
 
-  if (who === 'child') {
-    recommended = services.filter((s) => s.category === 'youth');
-    if (concern === 'emotions') recommended = recommended.filter((s) => s.slug.includes('emotion') || s.slug.includes('cbt'));
-    else if (concern === 'behavior') recommended = recommended.filter((s) => s.slug.includes('behavioral'));
-    else if (concern === 'focus') recommended = recommended.filter((s) => s.slug.includes('adhd') || s.slug.includes('executive') || s.slug.includes('cbt'));
-    else if (concern === 'anxiety') recommended = recommended.filter((s) => s.slug.includes('anxiety') || s.slug.includes('cbt') || s.slug.includes('emotion'));
-    else if (concern === 'social') recommended = recommended.filter((s) => s.slug.includes('bullying') || s.slug.includes('social') || s.slug.includes('emotion'));
-    else if (concern === 'school') recommended = recommended.filter((s) => s.slug.includes('adhd') || s.slug.includes('executive') || s.slug.includes('behavioral'));
-  } else if (who === 'teen') {
-    recommended = services.filter((s) => s.category === 'youth');
-    if (concern === 'behavior') recommended = recommended.filter((s) => s.slug.includes('behavioral') || s.slug.includes('teen'));
-    else if (concern === 'emotions') recommended = recommended.filter((s) => s.slug.includes('emotion') || s.slug.includes('cbt'));
-    else if (concern === 'anxiety') recommended = recommended.filter((s) => s.slug.includes('anxiety') || s.slug.includes('cbt') || s.slug.includes('emotion'));
-    else if (concern === 'screens') recommended = recommended.filter((s) => s.slug.includes('behavioral') || s.slug.includes('teen'));
-    else if (concern === 'identity') recommended = recommended.filter((s) => s.slug.includes('self') || s.slug.includes('emotion') || s.slug.includes('cbt'));
-    else if (concern === 'academic') recommended = recommended.filter((s) => s.slug.includes('adhd') || s.slug.includes('executive') || s.slug.includes('behavioral'));
-  } else if (who === 'couple') {
-    recommended = services.filter((s) => s.category === 'couples');
-    if (concern === 'premarital') recommended = recommended.filter((s) => s.slug.includes('pre-marriage') || s.slug.includes('premarital'));
-    else if (concern === 'communication') recommended = recommended.filter((s) => s.slug.includes('communication') || s.slug.includes('couples-counseling'));
-    else if (concern === 'trust') recommended = recommended.filter((s) => s.slug.includes('counseling') || s.slug.includes('restoration'));
-    else if (concern === 'intimacy') recommended = recommended.filter((s) => s.slug.includes('counseling') || s.slug.includes('enrichment'));
-    else if (concern === 'conflict') recommended = recommended.filter((s) => s.slug.includes('conflict') || s.slug.includes('counseling'));
-    else if (concern === 'parenting') recommended = recommended.filter((s) => s.slug.includes('co-parenting') || s.slug.includes('parenting'));
-  } else if (who === 'family') {
-    recommended = services.filter((s) => s.category === 'families');
-    if (concern === 'parenting') recommended = recommended.filter((s) => s.slug.includes('parenting') || s.slug.includes('education'));
-    else if (concern === 'communication') recommended = recommended.filter((s) => s.slug.includes('communication') || s.slug.includes('family-counseling'));
-    else if (concern === 'transition') recommended = recommended.filter((s) => s.slug.includes('crisis') || s.slug.includes('counseling'));
-    else if (concern === 'dynamics') recommended = recommended.filter((s) => s.slug.includes('counseling') || s.slug.includes('parenting'));
-    else if (concern === 'teens') recommended = [...services.filter((s) => s.category === 'families'), ...services.filter((s) => s.category === 'youth' && s.slug.includes('teen'))];
-    else if (concern === 'wellbeing') recommended = recommended.filter((s) => s.slug.includes('enrichment') || s.slug.includes('education') || s.slug.includes('parenting'));
-  } else {
-    // myself
-    recommended = services.filter((s) => s.category === 'adults');
-    if (concern === 'anxiety') recommended = recommended.filter((s) => s.slug.includes('anxiety') || s.slug.includes('cbt') || s.slug.includes('stress'));
-    else if (concern === 'depression') recommended = recommended.filter((s) => s.slug.includes('cbt') || s.slug.includes('counseling') || s.slug.includes('self'));
-    else if (concern === 'anger') recommended = recommended.filter((s) => s.slug.includes('anger') || s.slug.includes('cbt'));
-    else if (concern === 'growth') recommended = recommended.filter((s) => s.slug.includes('life-coaching') || s.slug.includes('self-development') || s.slug.includes('lifestyle'));
-    else if (concern === 'self-esteem') recommended = recommended.filter((s) => s.slug.includes('self') || s.slug.includes('cbt') || s.slug.includes('coaching'));
-    else if (concern === 'lifestyle') recommended = recommended.filter((s) => s.slug.includes('lifestyle') || s.slug.includes('coaching') || s.slug.includes('wellness'));
+interface RecommendationResult {
+  main: typeof services;
+  startHere: (typeof services)[number] | null;
+  bonus: (typeof services)[number] | null;
+}
+
+function getRecommendations(answers: QuizAnswer[]): RecommendationResult {
+  const who = answers.find((a) => a.question === 1)?.answer || '';
+  const concern = answers.find((a) => a.question === 2)?.answer || '';
+  const experience = answers.find((a) => a.question === 3)?.answer || '';
+  const mode = answers.find((a) => a.question === 4)?.answer || '';
+
+  // 1. Look up curated slugs
+  const slugs = recommendationMap[who]?.[concern] ?? [];
+  let matched = slugs
+    .map((slug) => services.find((s) => s.slug === slug))
+    .filter((s): s is (typeof services)[number] => s != null);
+
+  // 2. Fallback: all services in the category
+  if (matched.length === 0) {
+    const cat = categoryFallback[who];
+    if (cat) matched = services.filter((s) => s.category === cat);
+  }
+  // 3. Last resort
+  if (matched.length === 0) {
+    const consultation = services.find((s) => s.slug === 'initial-consultation');
+    if (consultation) matched = [consultation];
   }
 
-  // Fallback: if no specific match, show all in category, or consultation
-  if (recommended.length === 0) {
-    if (who === 'child' || who === 'teen') recommended = services.filter((s) => s.category === 'youth');
-    else if (who === 'couple') recommended = services.filter((s) => s.category === 'couples');
-    else if (who === 'family') recommended = services.filter((s) => s.category === 'families');
-    else recommended = services.filter((s) => s.category === 'adults');
+  // 4. Q3: first-timers get the free consultation as a "Start here" card
+  let startHere: (typeof services)[number] | null = null;
+  if (experience === 'no') {
+    const consultation = services.find((s) => s.slug === 'initial-consultation');
+    if (consultation && !matched.some((s) => s.slug === 'initial-consultation')) {
+      startHere = consultation;
+      matched = matched.slice(0, 2); // keep top 2 so total = 3
+    }
   }
-  if (recommended.length === 0) recommended = services.filter((s) => s.slug === 'initial-consultation' || s.slug === 'online-consultation');
-  return recommended.slice(0, 3);
+
+  // 5. Q4: flexible users get a walk-and-talk bonus suggestion
+  let bonus: (typeof services)[number] | null = null;
+  if (mode === 'flexible') {
+    const walkAndTalk = services.find((s) => s.slug === 'walk-and-talk');
+    if (walkAndTalk && !matched.some((s) => s.slug === 'walk-and-talk')) {
+      bonus = walkAndTalk;
+    }
+  }
+
+  return { main: matched.slice(0, 3), startHere, bonus };
 }
 
 export default function QuizPage() {
@@ -190,6 +230,8 @@ export default function QuizPage() {
   const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
   const BackIcon = isRTL ? ChevronRight : ChevronLeft;
 
+  const quizRef = useRef<HTMLDivElement>(null);
+
   // Scroll to top on mount to ensure hero is fully visible
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -198,6 +240,13 @@ export default function QuizPage() {
   const [step, setStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer[]>([]);
   const [showResults, setShowResults] = useState(false);
+
+  // Scroll to quiz section on every step change and results
+  useEffect(() => {
+    if ((step > 0 || showResults) && quizRef.current) {
+      quizRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [step, showResults]);
 
   // Dynamically build Q2 based on Q1 answer
   const whoAnswer = answers.find((a) => a.question === 1)?.answer || '';
@@ -222,7 +271,10 @@ export default function QuizPage() {
     }
   };
 
-  const recommendations = showResults ? getRecommendations(answers) : [];
+  const result = showResults ? getRecommendations(answers) : null;
+  const recommendations = result?.main ?? [];
+  const startHere = result?.startHere ?? null;
+  const bonus = result?.bonus ?? null;
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen">
@@ -245,7 +297,7 @@ export default function QuizPage() {
         <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
-      <div className="max-w-2xl mx-auto px-6 py-16">
+      <div ref={quizRef} className="max-w-2xl mx-auto px-6 py-16 scroll-mt-20">
         {!showResults ? (
           <>
             {/* Progress Bar */}
@@ -356,15 +408,46 @@ export default function QuizPage() {
             </div>
 
             <div className="space-y-4">
+              {/* Start Here card for first-time users */}
+              {startHere && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-gradient-to-br from-[#7A3B5E]/5 to-[#C8A97D]/10 rounded-2xl p-6 border-2 border-dashed border-[#C8A97D]/40"
+                >
+                  <Badge variant="sage" size="sm" className="mb-3">
+                    {isRTL ? 'ابدأ من هنا' : 'Start Here'}
+                  </Badge>
+                  <h3 className="text-lg font-bold text-[#2D2A33] mb-1" style={{ fontFamily: 'var(--font-heading)' }}>
+                    {isRTL ? startHere.nameAr : startHere.name}
+                  </h3>
+                  <p className="text-sm text-[#8E8E9F] mb-1">{isRTL ? startHere.shortDescAr : startHere.shortDesc}</p>
+                  <p className="text-xs text-[#7A3B5E] font-medium mb-4">
+                    {isRTL ? 'مثالي إذا كنت جديدًا على الاستشارة — بدون التزام' : 'Perfect if you\'re new to counseling — no commitment'}
+                  </p>
+                  <Badge variant="neutral" size="sm">{startHere.duration}</Badge>
+                  <div className="flex gap-3 mt-5">
+                    <Button as="a" href={getBookingUrl(locale as string)} size="sm" icon={<Calendar className="w-4 h-4" />}>
+                      {messages.services.bookOnline}
+                    </Button>
+                    <Button as="a" href={`/${locale}/services/${startHere.category}/${startHere.slug}`} variant="ghost" size="sm">
+                      {messages.services.learnMore}
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Main recommended services */}
               {recommendations.map((service, i) => {
                 const sName = isRTL ? service.nameAr : service.name;
                 const sDesc = isRTL ? service.shortDescAr : service.shortDesc;
+                const delay = startHere ? (i + 1) * 0.15 : i * 0.15;
                 return (
                   <motion.div
                     key={service.slug}
                     initial={{ opacity: 0, y: 15 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.15 }}
+                    transition={{ delay }}
                     className="bg-white rounded-2xl p-6 border border-[#F3EFE8] shadow-[var(--shadow-subtle)]"
                   >
                     {i === 0 && (
@@ -393,6 +476,37 @@ export default function QuizPage() {
                   </motion.div>
                 );
               })}
+
+              {/* Bonus experiential suggestion for flexible users */}
+              {bonus && (
+                <motion.div
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: (recommendations.length + (startHere ? 1 : 0)) * 0.15 }}
+                  className="bg-[#F3EFE8]/60 rounded-2xl p-5 border border-[#E8E2D8]"
+                >
+                  <p className="text-xs font-semibold text-[#8E8E9F] uppercase tracking-wide mb-2">
+                    {isRTL ? 'قد يعجبك أيضًا' : 'You might also like'}
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
+                        {isRTL ? bonus.nameAr : bonus.name}
+                      </h3>
+                      <p className="text-sm text-[#8E8E9F] mt-0.5">{isRTL ? bonus.shortDescAr : bonus.shortDesc}</p>
+                    </div>
+                    <Button
+                      as="a"
+                      href={`/${locale}/services/${bonus.category}/${bonus.slug}`}
+                      variant="ghost"
+                      size="sm"
+                      className="flex-shrink-0"
+                    >
+                      {messages.services.learnMore}
+                    </Button>
+                  </div>
+                </motion.div>
+              )}
             </div>
 
             <div className="mt-10 text-center space-y-4">
