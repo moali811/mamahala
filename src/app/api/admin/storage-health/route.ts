@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
         do {
           const [nextCursor, keys] = await kv.scan(cursor, { match: pattern, count: 100 });
           count += keys.length;
-          cursor = nextCursor;
+          cursor = Number(nextCursor);
         } while (cursor !== 0);
         counts[name] = count;
         totalKeys += count;
@@ -56,19 +56,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Get Redis INFO for memory usage
-    let memoryUsedMB = 0;
-    try {
-      const info = await kv.info('memory') as string;
-      const match = info.match(/used_memory:(\d+)/);
-      if (match) {
-        memoryUsedMB = parseInt(match[1]) / (1024 * 1024);
-      }
-    } catch {
-      // INFO not available on all plans — estimate from key count
-      // Rough estimate: ~2KB per key average
-      memoryUsedMB = (totalKeys * 2) / 1024;
-    }
+    // Estimate memory usage (~2KB per key average)
+    const memoryUsedMB = (totalKeys * 2) / 1024;
 
     const storagePercent = (memoryUsedMB / KV_STORAGE_LIMIT_MB) * 100;
 
