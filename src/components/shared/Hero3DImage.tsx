@@ -104,7 +104,7 @@ export default function Hero3DImage({ src, alt, isRTL, maskClass }: Props) {
           alt={alt}
           fill
           priority
-          quality={85}
+          quality={100}
           sizes="(min-width: 1536px) 60vw, (min-width: 1024px) 55vw, 100vw"
           className="object-cover object-top"
           placeholder="blur"

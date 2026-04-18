@@ -161,7 +161,7 @@ export default function Header({ locale, messages }: HeaderProps) {
                 alt="Mama Hala Consulting"
                 width={512}
                 height={512}
-                className="h-11 w-11 rounded-full object-cover ring-1 ring-[#D4ADA8]/25"
+                className="h-11 w-11 rounded-full object-cover scale-[1.15] ring-1 ring-[#D4ADA8]/25"
                 priority
               />
               <span
@@ -484,7 +484,7 @@ export default function Header({ locale, messages }: HeaderProps) {
               {/* Compact header */}
               <div className="flex h-14 items-center justify-between px-4 border-b border-[#F3EFE8]">
                 <Link href={`/${locale}`} onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
-                  <Image src="/images/logo-new.png" alt="Mama Hala" width={512} height={512} className="h-10 w-10 rounded-full object-cover ring-1 ring-[#D4ADA8]/25" />
+                  <Image src="/images/logo-new.png" alt="Mama Hala" width={512} height={512} className="h-10 w-10 rounded-full object-cover scale-[1.15] ring-1 ring-[#D4ADA8]/25" />
                   <span className="text-sm font-semibold text-[#7A3B5E]" style={{ fontFamily: 'var(--font-heading)' }}>
                     {isRTL ? 'د. هالة علي | ماما هالة' : 'Dr. Hala Ali | Mama Hala'}
                   </span>

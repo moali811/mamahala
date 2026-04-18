@@ -89,7 +89,7 @@ export default function Footer({ locale, messages }: FooterProps) {
             {/* Col 1: Brand */}
             <div className="col-span-2 md:col-span-1">
               <Link href={`/${locale}`} className="inline-flex items-center mb-4">
-                <Image src="/images/logo-new.png" alt="Mama Hala Consulting" width={512} height={512} className="h-24 w-24 rounded-full object-cover ring-1 ring-[#D4ADA8]/25" />
+                <Image src="/images/logo-new.png" alt="Mama Hala Consulting" width={512} height={512} className="h-24 w-24 rounded-full object-cover scale-[1.15] ring-1 ring-[#D4ADA8]/25" />
               </Link>
               <p className="text-sm text-[#6B6580] leading-relaxed mb-6">
                 {isRTL ? `${BUSINESS.taglineAr}.` : `${BUSINESS.tagline}.`}

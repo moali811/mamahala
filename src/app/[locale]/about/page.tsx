@@ -586,8 +586,8 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
               </div>
               <div className={`relative lg:col-span-2 min-h-[250px] lg:min-h-full`}>
                 <Image src="/images/hala-office.jpg" alt="Dr. Hala Ali" fill className="object-cover object-center" />
-                <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-transparent via-[#3D2B2E]/60 to-[#3D2B2E] hidden lg:block`} />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#3D2B2E]/80 to-transparent lg:hidden" />
+                <div className={`absolute inset-0 ${isRTL ? 'bg-gradient-to-r' : 'bg-gradient-to-l'} from-transparent via-[#3D2B2E]/30 to-[#3D2B2E] hidden lg:block`} />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#3D2B2E]/50 to-transparent lg:hidden" />
               </div>
             </div>
           </div>
