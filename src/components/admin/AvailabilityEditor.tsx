@@ -894,6 +894,35 @@ export default function AvailabilityEditor({ password }: Props) {
             onChange={v => updateRules({ cancellationPolicyHours: v })}
           />
 
+          {/* ─── Session Mode ────────────────────────────── */}
+          <div className="pt-2">
+            <p className="text-[10px] font-semibold text-[#8E8E9F] uppercase tracking-widest mb-2 px-1">
+              Session Mode
+            </p>
+          </div>
+
+          <div className="bg-white rounded-xl border border-[#F0ECE8] p-3">
+            <div className="flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-[#2D2A33]">In-person bookings</p>
+                <p className="text-[10px] text-[#8E8E9F] mt-1 leading-relaxed">
+                  When enabled, clients in your region can choose in-person sessions. When disabled, only online sessions are available.
+                </p>
+              </div>
+              <div className="shrink-0">
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={rules.inPersonEnabled ?? true}
+                    onChange={e => updateRules({ inPersonEnabled: e.target.checked })}
+                    className="sr-only peer"
+                  />
+                  <div className="w-9 h-5 bg-[#E8E4DE] peer-focus:ring-2 peer-focus:ring-[#7A3B5E]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-[#E8E4DE] after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#3B8A6E]" />
+                </label>
+              </div>
+            </div>
+          </div>
+
           {/* ─── Smart Hold Settings ─────────────────────── */}
           <div className="pt-2">
             <p className="text-[10px] font-semibold text-[#8E8E9F] uppercase tracking-widest mb-2 px-1">

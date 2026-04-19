@@ -3,6 +3,7 @@ import { getServiceBySlug, getCategoryInfo } from '@/data/services';
 import { generateGiftEmail } from '@/lib/email/gift-template';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { limitGift, getClientIp } from '@/lib/rate-limit';
+import { spamCheck, isValidEmail } from '@/lib/spam-guard';
 
 interface GiftRequest {
   gifterName: string;
@@ -25,7 +26,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
 
-    const body: GiftRequest = await request.json();
+    const body = await request.json() as GiftRequest & Record<string, unknown>;
 
     const { gifterName, gifterEmail, recipientName, recipientEmail, category, serviceSlug, occasion, occasionAr, message, locale } = body;
 
@@ -34,7 +35,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    if (!gifterEmail.includes('@') || !recipientEmail.includes('@')) {
+    // Spam check
+    const spam = spamCheck(body);
+    if (spam.blocked) {
+      return NextResponse.json({ error: 'Request blocked' }, { status: 400 });
+    }
+    if (!isValidEmail(gifterEmail) || !isValidEmail(recipientEmail)) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
     }
 

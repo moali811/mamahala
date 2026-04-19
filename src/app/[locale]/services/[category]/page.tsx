@@ -21,6 +21,7 @@ import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import FinalCTA from '@/components/shared/FinalCTA';
 import ContextualFAQ from '@/components/ui/ContextualFAQ';
+import PageTracker from '@/components/analytics/PageTracker';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   GraduationCap, Users, User, Heart, Leaf, Sparkles, Sprout, Smile, TreePine,
@@ -153,6 +154,7 @@ export default function ServiceCategoryPage() {
 
   return (
     <div className="bg-[#FAF7F2]">
+      <PageTracker type="service_detail_view" source={category as string} locale={locale as string} />
       {/* ─── HERO ─── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">

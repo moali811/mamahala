@@ -5,8 +5,9 @@
  */
 
 import { kv } from '@vercel/kv';
+import { BUSINESS } from '@/config/business';
 
-export type EventType = 'toolkit_download' | 'newsletter_signup' | 'booking_visit' | 'contact_form' | 'page_view' | 'service_detail_view' | 'event_registration' | 'event_to_service_click' | 'event_to_booking';
+export type EventType = 'toolkit_download' | 'newsletter_signup' | 'booking_visit' | 'contact_form' | 'page_view' | 'service_detail_view' | 'event_registration' | 'event_to_service_click' | 'event_to_booking' | 'quiz_completion';
 
 export interface AnalyticsEvent {
   type: EventType;
@@ -29,10 +30,26 @@ export interface LeadRecord {
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
+/** VIP/admin emails — their activity is excluded from analytics */
+const INTERNAL_EMAILS = new Set(BUSINESS.vipEmails.map(e => e.toLowerCase().trim()));
+
+/** Check if an event should be excluded from analytics (admin/testing traffic) */
+export function isInternalTraffic(email?: string, skipTracking?: boolean): boolean {
+  if (skipTracking) return true;
+  if (email && INTERNAL_EMAILS.has(email.toLowerCase().trim())) return true;
+  return false;
+}
+
 /**
  * Track an analytics event
  */
-export async function trackEvent(event: Omit<AnalyticsEvent, 'timestamp' | 'date'>) {
+export async function trackEvent(event: Omit<AnalyticsEvent, 'timestamp' | 'date'> & { skipTracking?: boolean }) {
+  // Skip tracking for admin/VIP traffic
+  if (isInternalTraffic(event.email, event.skipTracking)) {
+    console.log(`[Analytics] SKIPPED (internal): ${event.type}`, event.email || '');
+    return;
+  }
+
   const now = new Date();
   const timestamp = now.toISOString();
   const date = timestamp.split('T')[0]; // YYYY-MM-DD

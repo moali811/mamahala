@@ -76,7 +76,7 @@ export default function ResourcesModule({ stats }: ResourcesModuleProps) {
             <TrendingUp className="w-4 h-4 text-[#7A3B5E]" /> Download Rankings
           </h3>
           <div className="space-y-4">
-            {entries.length === 0 ? (
+            {totalDownloads === 0 ? (
               <p className="text-sm text-[#8E8E9F] text-center py-8">No downloads yet.</p>
             ) : (
               entries.map((toolkit, i) => {

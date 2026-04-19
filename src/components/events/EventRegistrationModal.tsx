@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Check, CalendarDays, Clock, MapPin, Loader2, AlertCircle, UserPlus } from 'lucide-react';
@@ -8,6 +8,7 @@ import type { SmartEvent } from '@/types';
 import Badge from '@/components/ui/Badge';
 import AddToCalendar from './AddToCalendar';
 import { getFormattedDate, getFormattedTime, getFormattedPrice } from '@/data/events';
+import Honeypot from '@/components/ui/Honeypot';
 
 interface Props {
   event: SmartEvent;
@@ -29,6 +30,7 @@ export default function EventRegistrationModal({ event, locale, isOpen, onClose 
   const [registrationId, setRegistrationId] = useState('');
   const [spotsLeft, setSpotsLeft] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const hpRef = useRef<HTMLDivElement>(null);
 
   const title = isRTL ? event.titleAr : event.titleEn;
   const location = isRTL ? event.locationNameAr : event.locationNameEn;
@@ -45,6 +47,8 @@ export default function EventRegistrationModal({ event, locale, isOpen, onClose 
     setErrorMsg('');
 
     try {
+      const hpField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_hp"]');
+      const tField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_t"]');
       const res = await fetch('/api/events/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -55,6 +59,8 @@ export default function EventRegistrationModal({ event, locale, isOpen, onClose 
           email: email.trim(),
           phone: phone.trim() || undefined,
           locale,
+          _hp: hpField?.value || '',
+          _t: Number(tField?.value) || 0,
         }),
       });
 
@@ -155,6 +161,7 @@ export default function EventRegistrationModal({ event, locale, isOpen, onClose 
               {/* ─── FORM STATE ─── */}
               {(status === 'idle' || status === 'error' || status === 'submitting') && (
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  <div ref={hpRef}><Honeypot /></div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-sm font-medium text-[#4A4A5C] mb-1.5">

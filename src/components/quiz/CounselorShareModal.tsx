@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Send, Check, MessageCircle, Mail, Loader2, Download } from 'lucide-react';
 import { BUSINESS } from '@/config/business';
+import Honeypot from '@/components/ui/Honeypot';
 
 interface CounselorShareModalProps {
   isOpen: boolean;
@@ -40,6 +41,7 @@ export default function CounselorShareModal({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const hpRef = useRef<HTMLDivElement>(null);
 
   const resultsPageUrl = `${typeof window !== 'undefined' ? window.location.origin : 'https://mamahala.ca'}/${locale}/quiz/results/${sessionId}`;
 
@@ -69,6 +71,8 @@ export default function CounselorShareModal({
     setStatus('loading');
 
     try {
+      const hpField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_hp"]');
+      const tField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_t"]');
       await fetch('/api/quiz-share', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -86,6 +90,8 @@ export default function CounselorShareModal({
           dimensionLabels,
           dominantStyle,
           locale,
+          _hp: hpField?.value || '',
+          _t: Number(tField?.value) || 0,
         }),
       });
 
@@ -174,6 +180,7 @@ export default function CounselorShareModal({
             ) : (
               /* Form State */
               <form onSubmit={handleSubmit} className="p-5">
+                <div ref={hpRef}><Honeypot /></div>
                 <p className="text-sm text-[#6B6580] mb-5">
                   {isRTL
                     ? 'أدخِلْ اسمَك وبريدَك لحفظِ النتائجِ ومشاركتِها مع د. هالة.'

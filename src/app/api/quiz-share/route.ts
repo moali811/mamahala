@@ -3,6 +3,8 @@ import { kv } from '@vercel/kv';
 import { Resend } from 'resend';
 import { trackEvent } from '@/lib/analytics';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
+import { spamCheck, isValidEmail } from '@/lib/spam-guard';
+import { getClientIp, limitQuizShare } from '@/lib/rate-limit';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const ADMIN_EMAIL = process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca';
@@ -102,6 +104,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // Spam & rate-limit checks
+    const spam = spamCheck(body);
+    if (spam.blocked) {
+      return NextResponse.json({ error: 'Request blocked' }, { status: 400 });
+    }
+    if (email && !isValidEmail(email)) {
+      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
+    }
+    const ip = getClientIp(request);
+    const rl = await limitQuizShare(ip);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+    }
+
     const shareUrl = `https://mamahala.ca/${locale || 'en'}/quiz/${quizSlug}?sid=${sessionId}`;
 
     const result = {
@@ -162,7 +178,7 @@ export async function POST(request: Request) {
 
     // Track event
     await trackEvent({
-      type: 'quiz_completion' as any,
+      type: 'quiz_completion',
       email,
       source: `${quizSlug}-shared`,
       locale: locale || 'en',

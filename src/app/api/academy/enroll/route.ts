@@ -4,6 +4,8 @@ import { Resend } from 'resend';
 import { trackEvent } from '@/lib/analytics';
 import { isAdminEmail } from '@/lib/admin';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
+import { spamCheck, isValidEmail } from '@/lib/spam-guard';
+import { getClientIp, limitAcademyEnroll } from '@/lib/rate-limit';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -11,10 +13,25 @@ const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboa
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, name, programSlug } = await request.json();
+    const body = await request.json();
+    const { email, name, programSlug } = body;
 
     if (!email || !programSlug) {
       return NextResponse.json({ error: 'Email and program slug required' }, { status: 400 });
+    }
+
+    // Spam & rate-limit checks
+    const spam = spamCheck(body);
+    if (spam.blocked) {
+      return NextResponse.json({ error: 'Request blocked' }, { status: 400 });
+    }
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
+    }
+    const ip = getClientIp(request);
+    const rl = await limitAcademyEnroll(ip);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
 
     const normalizedEmail = email.toLowerCase().trim();

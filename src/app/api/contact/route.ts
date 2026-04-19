@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { limitContact, getClientIp } from '@/lib/rate-limit';
+import { spamCheck, isValidEmail } from '@/lib/spam-guard';
 
 /** Escape HTML special characters to prevent injection in email bodies */
 function esc(str: string): string {
@@ -33,12 +34,18 @@ export async function POST(request: Request) {
     const preferredLang = body.preferredLang;
     const formType = body.formType;
 
+    // Spam check
+    const spam = spamCheck(body);
+    if (spam.blocked) {
+      return NextResponse.json({ error: 'Request blocked' }, { status: 400 });
+    }
+
     // Flexible validation — at minimum need name and email
     if (!name || !email) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    if (!email.includes('@')) {
+    if (!isValidEmail(email)) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
     }
 

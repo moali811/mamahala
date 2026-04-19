@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Check, Loader2 } from 'lucide-react';
+import Honeypot from '@/components/ui/Honeypot';
 
 interface Props {
   locale: string;
@@ -12,6 +13,7 @@ export default function EventReminderSignup({ locale }: Props) {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const isRTL = locale === 'ar';
+  const hpRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,10 +21,12 @@ export default function EventReminderSignup({ locale }: Props) {
 
     setStatus('loading');
     try {
+      const hpField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_hp"]');
+      const tField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_t"]');
       const res = await fetch('/api/newsletter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source: 'events-reminder' }),
+        body: JSON.stringify({ email, source: 'events-reminder', _hp: hpField?.value || '', _t: Number(tField?.value) || 0 }),
       });
       setStatus(res.ok ? 'success' : 'error');
     } catch {
@@ -67,6 +71,7 @@ export default function EventReminderSignup({ locale }: Props) {
             onSubmit={handleSubmit}
             className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto"
           >
+            <div ref={hpRef}><Honeypot /></div>
             <input
               type="email"
               value={email}

@@ -70,3 +70,27 @@ export function limitGift(ip: string) {
   const hour = Math.floor(Date.now() / 3_600_000);
   return check(`rl:gift:${ip}:${hour}`, 5, 3600);
 }
+
+/** Quiz share: 5 per hour per IP */
+export function limitQuizShare(ip: string) {
+  const hour = Math.floor(Date.now() / 3_600_000);
+  return check(`rl:quiz-share:${ip}:${hour}`, 5, 3600);
+}
+
+/** Academy enroll: 5 per hour per IP */
+export function limitAcademyEnroll(ip: string) {
+  const hour = Math.floor(Date.now() / 3_600_000);
+  return check(`rl:academy-enroll:${ip}:${hour}`, 5, 3600);
+}
+
+/** Magic link (account + academy): 5 per hour per IP */
+export function limitMagicLink(ip: string) {
+  const hour = Math.floor(Date.now() / 3_600_000);
+  return check(`rl:magic-link:${ip}:${hour}`, 5, 3600);
+}
+
+/** Booking confirm: 5 per hour per IP */
+export function limitBooking(ip: string) {
+  const hour = Math.floor(Date.now() / 3_600_000);
+  return check(`rl:booking:${ip}:${hour}`, 5, 3600);
+}

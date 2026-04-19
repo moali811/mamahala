@@ -24,6 +24,7 @@ import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import HeroDecorCluster from '@/components/ui/HeroDecorCluster';
 import FinalCTA from '@/components/shared/FinalCTA';
+import PageTracker from '@/components/analytics/PageTracker';
 
 /*
  * Strategic order based on visitor psychology:
@@ -104,6 +105,7 @@ export default function ResourcesPage() {
 
   return (
     <div className="overflow-hidden">
+      <PageTracker type="page_view" source="resources" locale={locale as string} />
       {/* ================================================================ */}
       {/*  HERO                                                            */}
       {/* ================================================================ */}

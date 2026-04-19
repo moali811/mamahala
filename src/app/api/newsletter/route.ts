@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { trackEvent } from '@/lib/analytics';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { limitNewsletter, getClientIp } from '@/lib/rate-limit';
+import { spamCheck, isValidEmail } from '@/lib/spam-guard';
 
 /* ================================================================
    Smart Newsletter/Signup Endpoint
@@ -126,9 +127,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
 
-    const { email, source } = await request.json();
+    const body = await request.json();
+    const { email, source } = body;
 
-    if (!email || !email.includes('@') || !email.includes('.')) {
+    const spam = spamCheck(body);
+    if (spam.blocked) {
+      return NextResponse.json({ error: 'Request blocked' }, { status: 400 });
+    }
+    if (!email || !isValidEmail(email)) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
     }
 

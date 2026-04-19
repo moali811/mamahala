@@ -12,7 +12,7 @@ export async function POST(request: Request) {
 
     // Track quiz completion
     await trackEvent({
-      type: 'quiz_completion' as any,
+      type: 'quiz_completion',
       source: quizSlug,
       locale: locale || 'en',
     });

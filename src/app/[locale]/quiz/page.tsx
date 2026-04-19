@@ -17,6 +17,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import WaveDivider from '@/components/ui/WaveDivider';
 import { getBookingUrl } from '@/config/business';
+import PageTracker from '@/components/analytics/PageTracker';
 
 interface QuizAnswer {
   question: number;
@@ -278,6 +279,7 @@ export default function QuizPage() {
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen">
+      <PageTracker type="page_view" source="quiz-hub" locale={locale as string} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#7A3B5E] via-[#7A3B5E] to-[#5E2D48]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -427,7 +429,7 @@ export default function QuizPage() {
                   </p>
                   <Badge variant="neutral" size="sm">{startHere.duration}</Badge>
                   <div className="flex gap-3 mt-5">
-                    <Button as="a" href={getBookingUrl(locale as string)} size="sm" icon={<Calendar className="w-4 h-4" />}>
+                    <Button as="a" href={getBookingUrl(locale as string, startHere.slug)} size="sm" icon={<Calendar className="w-4 h-4" />}>
                       {messages.services.bookOnline}
                     </Button>
                     <Button as="a" href={`/${locale}/services/${startHere.category}/${startHere.slug}`} variant="ghost" size="sm">
@@ -461,7 +463,7 @@ export default function QuizPage() {
                     <p className="text-sm text-[#8E8E9F] mb-4">{sDesc}</p>
                     <Badge variant="neutral" size="sm">{service.duration}</Badge>
                     <div className="flex gap-3 mt-5">
-                      <Button as="a" href={getBookingUrl(locale as string)} size="sm" icon={<Calendar className="w-4 h-4" />}>
+                      <Button as="a" href={getBookingUrl(locale as string, service.slug)} size="sm" icon={<Calendar className="w-4 h-4" />}>
                         {messages.services.bookOnline}
                       </Button>
                       <Button

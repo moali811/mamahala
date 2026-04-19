@@ -2,6 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useState, useRef } from 'react';
+import Honeypot from '@/components/ui/Honeypot';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Gift, Heart, Send, ChevronDown, Check, CheckCircle2,
@@ -46,6 +47,7 @@ export default function GiftPage() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const wizardRef = useRef<HTMLDivElement | null>(null);
+  const hpRef = useRef<HTMLDivElement>(null);
 
   // Form state
   const [recipientName, setRecipientName] = useState('');
@@ -95,6 +97,8 @@ export default function GiftPage() {
     setSending(true);
     setError(null);
     try {
+      const hpField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_hp"]');
+      const tField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_t"]');
       const res = await fetch('/api/gift/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -109,6 +113,8 @@ export default function GiftPage() {
           occasionAr: occasionLabel?.ar || '',
           message: personalMessage || '',
           locale,
+          _hp: hpField?.value || '',
+          _t: Number(tField?.value) || 0,
         }),
       });
 
@@ -236,6 +242,7 @@ export default function GiftPage() {
          ═══════════════════════════════════════════════════════════════ */}
       <section className="py-20 bg-white" ref={wizardRef}>
         <div className="container-main max-w-2xl">
+          <div ref={hpRef}><Honeypot /></div>
 
           {/* Progress bar */}
           {typeof step === 'number' && (

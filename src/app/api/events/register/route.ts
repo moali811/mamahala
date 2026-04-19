@@ -5,6 +5,7 @@ import { getEventBySlug } from '@/data/events';
 import { trackEvent } from '@/lib/analytics';
 import { generateEventConfirmationEmail, generateAdminEventNotification } from '@/lib/email/event-confirmation';
 import { limitEventRegister, getClientIp } from '@/lib/rate-limit';
+import { spamCheck } from '@/lib/spam-guard';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
@@ -22,6 +23,12 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { slug, firstName, lastName, email, phone, locale = 'en' } = body;
+
+    // Spam check
+    const spam = spamCheck(body);
+    if (spam.blocked) {
+      return NextResponse.json({ error: 'SPAM_BLOCKED', message: 'Request blocked.' }, { status: 400 });
+    }
 
     // 1. Validate
     if (!slug || !firstName || !lastName || !email) {

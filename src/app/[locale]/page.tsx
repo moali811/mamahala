@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import FinalCTA from '@/components/shared/FinalCTA';
+import PageTracker from '@/components/analytics/PageTracker';
 import {
   ArrowRight,
   ArrowLeft,
@@ -313,6 +314,7 @@ export default function HomePage() {
 
   return (
     <div className="overflow-hidden">
+      <PageTracker type="page_view" source="home" locale={locale as string} />
       {/* ================================================================ */}
       {/*  SECTION 1: HERO                                                */}
       {/* ================================================================ */}

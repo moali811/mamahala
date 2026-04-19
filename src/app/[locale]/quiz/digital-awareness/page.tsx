@@ -539,7 +539,7 @@ function DigitalAwarenessQuizInner() {
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                       <Button
                         as="a"
-                        href={getBookingUrl(locale as string)}
+                        href={getBookingUrl(locale as string, 'initial-consultation')}
                         size="lg"
                         icon={<Calendar className="w-5 h-5" />}
                       >

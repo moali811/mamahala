@@ -32,6 +32,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import Button from '@/components/ui/Button';
 import WaveDivider from '@/components/ui/WaveDivider';
 import ChatForm from '@/components/ui/ChatForm';
+import PageTracker from '@/components/analytics/PageTracker';
 
 const mediaTypes = [
   { value: '', label: 'Choose one', labelAr: 'اختر واحدًا' },
@@ -72,6 +73,7 @@ export default function AboutPage() {
 
   return (
     <div className="overflow-hidden">
+      <PageTracker type="page_view" source="about" locale={locale as string} />
       {/* ================================================================ */}
       {/*  HERO — Editorial Split                                         */}
       {/* ================================================================ */}
@@ -245,7 +247,7 @@ export default function AboutPage() {
                     <p className="text-xl lg:text-2xl text-[#2D2A33] leading-relaxed italic" style={{ fontFamily: 'var(--font-heading)' }}>
                       {isRTL
                         ? 'بوصفي أمًّا لمراهقَين، وزوجةً وَفيّة، ومستشارةً تنبضُ بالعطاء — كرّستُ حياتي لتعزيزِ عافيةِ الأُسَر.'
-                        : "As a mother of two teenagers, a devoted wife, and a compassionate counselor — I've committed my life to strengthening the well-being of families."
+                        : "As a mother of two young adults, a devoted wife, and a compassionate counselor — I've committed my life to strengthening the well-being of families."
                       }
                     </p>
                   </div>

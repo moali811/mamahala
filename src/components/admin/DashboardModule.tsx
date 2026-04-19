@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import {
   Users, Download, Mail, Calendar, MessageSquare,
   Target, Globe, Flame, ThermometerSun, Snowflake,
-  ArrowUpRight, ArrowDownRight, Sparkles, Zap, Eye, BookOpen,
+  ArrowUpRight, ArrowDownRight, Sparkles, Zap, Eye, BookOpen, BarChart3,
 } from 'lucide-react';
 
 const TOOLKIT_NAMES: Record<string, string> = {
@@ -120,15 +120,21 @@ export default function DashboardModule({ stats, leads }: DashboardModuleProps) 
   return (
     <div className="space-y-6">
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+        <StatCard label="Page Views" value={(totals.page_view || 0) + (totals.service_detail_view || 0) + (totals.booking_visit || 0)}
+          icon={<Eye className="w-5 h-5" />} color="#5A8B6E" subtitle="all tracked pages" />
         <StatCard label="Total Leads" value={stats?.totalLeads || 0} icon={<Users className="w-5 h-5" />} color="#7A3B5E"
           subtitle={metrics ? `${metrics.hotLeads} hot · ${metrics.warmLeads} warm` : undefined} />
+        <StatCard label="Booking Visits" value={totals.booking_visit || 0} prevValue={metrics?.lastWeekBookings}
+          icon={<Calendar className="w-5 h-5" />} color="#C8A97D" subtitle="vs last week" />
+      </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Service Views" value={totals.service_detail_view || 0}
+          icon={<BarChart3 className="w-5 h-5" />} color="#8B6AA0" />
         <StatCard label="Downloads" value={totals.toolkit_download || 0} prevValue={metrics?.lastWeekDownloads}
           icon={<Download className="w-5 h-5" />} color="#C4878A" subtitle="vs last week" />
         <StatCard label="Subscribers" value={totals.newsletter_signup || 0} prevValue={metrics?.lastWeekSubs}
           icon={<Mail className="w-5 h-5" />} color="#C8A97D" subtitle="vs last week" />
-        <StatCard label="Booking Visits" value={totals.booking_visit || 0} prevValue={metrics?.lastWeekBookings}
-          icon={<Calendar className="w-5 h-5" />} color="#5A8B6E" subtitle="vs last week" />
         <StatCard label="Contact Forms" value={totals.contact_form || 0}
           icon={<MessageSquare className="w-5 h-5" />} color="#D4836A" />
       </div>
@@ -141,15 +147,21 @@ export default function DashboardModule({ stats, leads }: DashboardModuleProps) 
             Conversion Funnel
           </h3>
           <div className="space-y-3">
-            {[
-              { label: 'Booking Page Visits', value: metrics?.bookingVisits || 0, color: '#5A8B6E', width: 100 },
-              { label: 'Toolkit Downloads', value: metrics?.downloads || 0, color: '#7A3B5E',
-                width: metrics?.bookingVisits ? Math.max(((metrics.downloads) / metrics.bookingVisits) * 100, 15) : 80 },
-              { label: 'Newsletter Signups', value: metrics?.subscribers || 0, color: '#C8A97D',
-                width: metrics?.bookingVisits ? Math.max(((metrics.subscribers) / metrics.bookingVisits) * 100, 10) : 60 },
-              { label: 'Contact Forms', value: metrics?.contacts || 0, color: '#D4836A',
-                width: metrics?.bookingVisits ? Math.max(((metrics.contacts) / metrics.bookingVisits) * 100, 5) : 40 },
-            ].map((step) => (
+            {(() => {
+              const pageViews = (totals.page_view || 0) + (totals.service_detail_view || 0) + (totals.booking_visit || 0);
+              const top = pageViews || 1;
+              return [
+                { label: 'Page Views', value: pageViews, color: '#5A8B6E', width: pageViews ? 100 : 0 },
+                { label: 'Booking Visits', value: metrics?.bookingVisits || 0, color: '#7A3B5E',
+                  width: Math.max(((metrics?.bookingVisits || 0) / top) * 100, metrics?.bookingVisits ? 15 : 0) },
+                { label: 'Downloads', value: metrics?.downloads || 0, color: '#C4878A',
+                  width: Math.max(((metrics?.downloads || 0) / top) * 100, metrics?.downloads ? 10 : 0) },
+                { label: 'Signups', value: metrics?.subscribers || 0, color: '#C8A97D',
+                  width: Math.max(((metrics?.subscribers || 0) / top) * 100, metrics?.subscribers ? 8 : 0) },
+                { label: 'Contacts', value: metrics?.contacts || 0, color: '#D4836A',
+                  width: Math.max(((metrics?.contacts || 0) / top) * 100, metrics?.contacts ? 5 : 0) },
+              ];
+            })().map((step) => (
               <div key={step.label}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-xs text-[#4A4A5C]">{step.label}</span>
@@ -161,10 +173,10 @@ export default function DashboardModule({ stats, leads }: DashboardModuleProps) 
               </div>
             ))}
           </div>
-          {metrics?.bookingVisits && metrics.contacts ? (
+          {(totals.page_view || totals.booking_visit) && metrics?.contacts ? (
             <div className="mt-4 p-3 bg-[#FAF7F2] rounded-lg">
               <p className="text-[10px] text-[#8E8E9F]">Visitor to Contact Rate</p>
-              <p className="text-lg font-bold text-[#7A3B5E]">{Math.round((metrics.contacts / metrics.bookingVisits) * 100)}%</p>
+              <p className="text-lg font-bold text-[#7A3B5E]">{Math.round((metrics.contacts / ((totals.page_view || 0) + (totals.service_detail_view || 0) + (totals.booking_visit || 0))) * 100)}%</p>
             </div>
           ) : null}
         </div>

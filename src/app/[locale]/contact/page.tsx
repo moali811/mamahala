@@ -17,6 +17,7 @@ import ScrollReveal from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import WaveDivider from '@/components/ui/WaveDivider';
 import ChatForm, { type ChatStep } from '@/components/ui/ChatForm';
+import PageTracker from '@/components/analytics/PageTracker';
 
 /* ================================================================
    Contact Page — AI-Feel Conversational Chat Form
@@ -354,6 +355,7 @@ export default function ContactPage() {
 
   return (
     <div className="overflow-hidden">
+      <PageTracker type="page_view" source="contact" locale={locale as string} />
       {/* ── HERO ── */}
       <section className="relative bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2] overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">

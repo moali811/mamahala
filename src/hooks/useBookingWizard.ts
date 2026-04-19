@@ -2,7 +2,7 @@
    useBookingWizard — Multi-step booking state management
    ================================================================ */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ServiceRecommendation, BookingConfirmationResult, SessionMode } from '@/lib/booking/types';
 
 export type BookingStep = 'intake' | 'service' | 'datetime' | 'info' | 'confirm' | 'success';
@@ -71,6 +71,9 @@ export function useBookingWizard() {
   const [formData, setFormData] = useState<BookingFormData>(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Honeypot: record mount time for timing-based bot detection
+  const mountTime = useRef(Date.now());
 
   const stepIndex = STEP_ORDER.indexOf(step);
 
@@ -148,6 +151,8 @@ export function useBookingWizard() {
           sessionMode: formData.sessionMode,
           notes: formData.notes || undefined,
           aiIntakeNotes: formData.intakeText || undefined,
+          _hp: '',
+          _t: mountTime.current,
         }),
       });
 

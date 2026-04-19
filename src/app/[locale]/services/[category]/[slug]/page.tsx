@@ -24,6 +24,7 @@ import { getServicePricingForRegion } from '@/data/services';
 import { getOnlinePriceForVisitor } from '@/lib/pricing-engine';
 import { PRICING_TIERS, getBandForCountry } from '@/config/pricing';
 import { getBookingUrl } from '@/config/business';
+import PageTracker from '@/components/analytics/PageTracker';
 
 export default function ServiceDetailPage() {
   const params = useParams();
@@ -63,6 +64,7 @@ export default function ServiceDetailPage() {
 
   return (
     <div className="bg-[#FAF7F2]">
+      <PageTracker type="service_detail_view" source={slug as string} locale={locale as string} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#F5E8E5] via-[#F8EDE8] to-[#FAF7F2]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">

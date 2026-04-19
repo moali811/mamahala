@@ -7,15 +7,29 @@ import { createMagicToken, consumeMagicToken, createBookingSession } from '@/lib
 import { getCustomer } from '@/lib/invoicing/customer-store';
 import { cookies } from 'next/headers';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
+import { spamCheck, isValidEmail } from '@/lib/spam-guard';
+import { getClientIp, limitMagicLink } from '@/lib/rate-limit';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json();
+    const body = await request.json();
+    const { email } = body;
 
-    if (!email?.includes('@')) {
+    if (!email || !isValidEmail(email)) {
       return NextResponse.json({ error: 'Valid email required' }, { status: 400 });
+    }
+
+    // Spam & rate-limit checks
+    const spam = spamCheck(body);
+    if (spam.blocked) {
+      return NextResponse.json({ error: 'Request blocked' }, { status: 400 });
+    }
+    const ip = getClientIp(request);
+    const rl = await limitMagicLink(ip);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
     }
 
     const normalizedEmail = email.toLowerCase().trim();

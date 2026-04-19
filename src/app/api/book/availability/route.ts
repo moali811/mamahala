@@ -55,6 +55,7 @@ export async function GET(request: NextRequest) {
       timezone: effectiveTimezone,
       clientTimezone: clientTz,
       slots,
+      inPersonEnabled: rules.inPersonEnabled ?? true,
     };
 
     return NextResponse.json(response, {

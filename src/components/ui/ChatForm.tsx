@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, CheckCircle2, Loader2, ChevronDown } from 'lucide-react';
+import Honeypot from '@/components/ui/Honeypot';
 
 /* ================================================================
    ChatForm — Conversational AI-Feel Form Component
@@ -109,6 +110,7 @@ export default function ChatForm({
   const chatEndRef = useRef<HTMLDivElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const hpRef = useRef<HTMLDivElement>(null);
 
   type ChatBubble = { from: 'bot' | 'user'; text: string; isWidget?: boolean };
 
@@ -261,9 +263,11 @@ export default function ChatForm({
     addBotMessage(isRTL ? 'جارِ الإرسال...' : 'Sending your message...');
 
     try {
+      const hpField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_hp"]');
+      const tField = hpRef.current?.querySelector<HTMLInputElement>('input[name="_t"]');
       const res = await fetch(endpoint, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...data, ...extraData, locale }),
+        body: JSON.stringify({ ...data, ...extraData, locale, _hp: hpField?.value || '', _t: Number(tField?.value) || 0 }),
       });
       if (res.ok) {
         setSent(true);
@@ -284,6 +288,7 @@ export default function ChatForm({
   // ── Render ──
   return (
     <div className="bg-white rounded-2xl sm:rounded-3xl shadow-[var(--shadow-card)] overflow-hidden flex flex-col" style={{ minHeight: '420px', maxHeight: '600px' }}>
+      <div ref={hpRef}><Honeypot /></div>
       {/* Header */}
       <div className="flex items-center gap-3 px-6 py-4 border-b border-[#F3EFE8] bg-gradient-to-r from-[#FAF7F2] to-white flex-shrink-0">
         <div className="relative">

@@ -187,6 +187,10 @@ export interface AvailabilityRules {
   /** Free cancellation window in hours before session (default 24). */
   cancellationPolicyHours: number;
 
+  // ─── Session Mode Settings ─────────────────────────────────────
+  /** When false, in-person option is hidden from the booking form. Default true. */
+  inPersonEnabled?: boolean;
+
   // ─── Smart Hold Settings ────────────────────────────────────────
   /** Hours to hold a slot for pending_approval before auto-action (default 4). */
   holdDurationHours?: number;
@@ -296,6 +300,7 @@ export interface AvailabilityResponse {
   timezone: string;
   clientTimezone: string;
   slots: TimeSlot[];
+  inPersonEnabled?: boolean;
 }
 
 export interface MonthAvailabilityResponse {
@@ -327,5 +332,6 @@ export const DEFAULT_AVAILABILITY_RULES: AvailabilityRules = {
   advanceBookingDays: 60,
   minimumNoticeHours: 2,
   cancellationPolicyHours: 24,
+  inPersonEnabled: true,
   updatedAt: new Date().toISOString(),
 };

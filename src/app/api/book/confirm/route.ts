@@ -9,10 +9,10 @@
    5. Send "request received" email to client
    6. Send admin notification to Dr. Hala with approve/decline links
 
-   Dr. Hala reviews → approves → invoice sent → client pays →
-   booking becomes "confirmed" → GCal event + Meet link created.
+   Dr. Hala reviews → approves → GCal event + Meet link created →
+   confirmation email sent to client.
 
-   Free sessions (discovery calls) skip approval → immediate confirmed.
+   ALL bookings (including free consultations) require Dr. Hala's approval.
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -27,6 +27,8 @@ import { getCustomer } from '@/lib/invoicing/customer-store';
 import { services } from '@/data/services';
 import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
 import type { Booking, BookingConfirmationResult, SessionMode } from '@/lib/booking/types';
+import { spamCheck, isValidEmail } from '@/lib/spam-guard';
+import { getClientIp, limitBooking } from '@/lib/rate-limit';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
@@ -47,7 +49,18 @@ interface ConfirmRequest {
 
 export async function POST(request: NextRequest) {
   try {
-    const body: ConfirmRequest = await request.json();
+    const body = await request.json() as ConfirmRequest & Record<string, unknown>;
+
+    // ─── Spam & rate-limit checks ───────────────────────────
+    const spam = spamCheck(body);
+    if (spam.blocked) {
+      return NextResponse.json({ error: 'Request blocked' }, { status: 400 });
+    }
+    const ip = getClientIp(request);
+    const rl = await limitBooking(ip);
+    if (!rl.allowed) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
+    }
 
     // ─── Validate required fields ────────────────────────────
     if (!body.serviceSlug || !body.startTime || !body.endTime || !body.clientName || !body.clientEmail || !body.clientTimezone) {
@@ -57,8 +70,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!body.clientEmail.includes('@')) {
-      return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
+    const emailValid = isValidEmail(body.clientEmail);
+    console.log('[Booking] Email validation:', { email: body.clientEmail, valid: emailValid });
+    if (!emailValid) {
+      return NextResponse.json({ error: 'Please provide a valid email address.' }, { status: 400 });
     }
 
     // ─── Validate service exists ─────────────────────────────
@@ -141,21 +156,16 @@ export async function POST(request: NextRequest) {
       durationMinutes,
       startTime: body.startTime,
       endTime: body.endTime,
-      // Free sessions → confirmed immediately; paid → pending Dr. Hala's review
-      status: isFreeSession ? 'confirmed' : 'pending_approval',
+      // ALL bookings require Dr. Hala's approval first
+      status: 'pending_approval',
       source: 'native',
       aiIntakeNotes: body.aiIntakeNotes,
-      ...(isFreeSession
-        ? { confirmedAt: now }
-        : {
-            // Smart Hold: block this slot immediately and set auto-approve timer.
-            // Hold duration is configurable in admin settings (default 4 hours).
-            holdExpiresAt: (() => {
-              const rules = availabilityRules;
-              const holdHours = rules?.holdDurationHours ?? 4;
-              return new Date(Date.now() + holdHours * 3600_000).toISOString();
-            })(),
-          }),
+      // Smart Hold: block this slot immediately and set auto-approve timer.
+      holdExpiresAt: (() => {
+        const rules = availabilityRules;
+        const holdHours = rules?.holdDurationHours ?? 4;
+        return new Date(Date.now() + holdHours * 3600_000).toISOString();
+      })(),
       createdAt: now,
       updatedAt: now,
     };
@@ -164,9 +174,8 @@ export async function POST(request: NextRequest) {
     await saveBooking(booking);
 
     // ─── Run processBookingIntake (customer + draft invoice) ─
-    // Skip invoice creation for free sessions (e.g. discovery calls)
     let draftId = '';
-    if (!isFreeSession) try {
+    try {
       const intakeResult = await processBookingIntake({
         source: 'native',
         bookingId,
@@ -190,20 +199,7 @@ export async function POST(request: NextRequest) {
     // ─── Generate manage token ───────────────────────────────
     const manageToken = await createManageToken(bookingId);
 
-    // ─── For free sessions: create GCal event + Meet link now ─
-    // Awaited so the Meet link is available before building the email
-    if (isFreeSession) {
-      try {
-        const calResult = await createCalendarEvent(booking);
-        if (calResult) {
-          booking.calendarEventId = calResult.eventId;
-          if (calResult.meetLink) booking.meetLink = calResult.meetLink;
-          await saveBooking(booking);
-        }
-      } catch (err) {
-        console.error('[Booking Confirm] GCal failed:', err);
-      }
-    }
+    // GCal event + Meet link created ONLY after Dr. Hala approves (via admin dashboard)
 
     // ─── Generate AI prep tips (non-blocking) ────────────────
     const prepPromise = generateSessionPrepTips(
@@ -225,12 +221,12 @@ export async function POST(request: NextRequest) {
 
     // ─── Send email to client ────────────────────────────────
     const prepTips = finalBooking.aiPrepTips?.split('\n---\n') ?? [];
-    const { subject, html, icsContent } = buildConfirmationEmail({
+    const { subject, html } = buildConfirmationEmail({
       booking: finalBooking,
       manageToken,
       prepTips,
       aiMessage: finalBooking.aiConfirmationMessage,
-      isFreeSession,
+      isFreeSession: false, // Never treat as confirmed at submission — all require approval
     });
 
     // CRITICAL: these sends MUST be awaited, not fire-and-forget.
@@ -254,11 +250,10 @@ export async function POST(request: NextRequest) {
         to: finalBooking.clientEmail,
         subject,
         html,
-        icsContent: isFreeSession ? icsContent : undefined, // Only attach ICS for confirmed (free) sessions
       }).catch(err => console.error('[Booking Confirm] Client email failed:', err)),
-      // Notify Dr. Hala (with approve/decline links for paid sessions)
+      // Notify Dr. Hala with approve/decline links — ALL bookings need approval
       notifyAdmin(
-        isFreeSession ? 'new-booking' : 'pending-approval',
+        'pending-approval',
         finalBooking,
       ).catch(err => console.error('[Booking Confirm] Admin notification failed:', err)),
     ]);

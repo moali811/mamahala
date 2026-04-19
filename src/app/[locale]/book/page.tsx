@@ -24,6 +24,7 @@ import { useBookingWizard, type BookingStep } from '@/hooks/useBookingWizard';
 import type { ServiceRecommendation, TimeSlot, DayAvailability, SessionMode } from '@/lib/booking/types';
 import type { ServiceCategory, Service } from '@/types';
 import Breadcrumb from '@/components/layout/Breadcrumb';
+import PageTracker from '@/components/analytics/PageTracker';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Sparkles, Users, User, Heart, Leaf, GraduationCap, Shield, Baby, Compass,
@@ -51,6 +52,8 @@ export default function BookPage() {
 
   const wizard = useBookingWizard();
   const { step, stepIndex, formData, isLoading, error } = wizard;
+  const [providerTimezone, setProviderTimezone] = useState('America/Toronto');
+  const [inPersonEnabled, setInPersonEnabled] = useState(true);
 
   const BackArrow = isRTL ? ChevronRight : ChevronLeft;
   const ForwardArrow = isRTL ? ChevronLeft : ChevronRight;
@@ -100,6 +103,7 @@ export default function BookPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF7F2]" dir={isRTL ? 'rtl' : 'ltr'}>
+      <PageTracker type="booking_visit" source="booking" locale={locale} />
       {/* Breadcrumb */}
       <div className="max-w-3xl mx-auto px-4 pt-6">
         <Breadcrumb
@@ -185,8 +189,8 @@ export default function BookPage() {
           >
             {step === 'intake' && <IntakeStep wizard={wizard} locale={locale} isRTL={isRTL} />}
             {step === 'service' && <ServiceStep wizard={wizard} locale={locale} isRTL={isRTL} />}
-            {step === 'datetime' && <DateTimeStep wizard={wizard} locale={locale} isRTL={isRTL} />}
-            {step === 'info' && <InfoStep wizard={wizard} locale={locale} isRTL={isRTL} />}
+            {step === 'datetime' && <DateTimeStep wizard={wizard} locale={locale} isRTL={isRTL} onProviderTimezone={setProviderTimezone} onInPersonEnabled={setInPersonEnabled} />}
+            {step === 'info' && <InfoStep wizard={wizard} locale={locale} isRTL={isRTL} providerTimezone={providerTimezone} inPersonEnabled={inPersonEnabled} />}
             {step === 'confirm' && <ConfirmStep wizard={wizard} locale={locale} isRTL={isRTL} />}
             {step === 'success' && <SuccessStep wizard={wizard} locale={locale} isRTL={isRTL} />}
           </motion.div>
@@ -481,7 +485,7 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
 // Dynamic layout: calendar starts full-width centered, then animates
 // to the left when a date is selected, revealing time slots on the right.
 
-function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
+function DateTimeStep({ wizard, locale, isRTL, onProviderTimezone, onInPersonEnabled }: StepProps & { onProviderTimezone?: (tz: string) => void; onInPersonEnabled?: (v: boolean) => void }) {
   const [currentMonth, setCurrentMonth] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
@@ -507,7 +511,7 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
       .then(r => r.json())
       .then(data => {
         setMonthData(data.dates ?? []);
-        if (data.timezone) setProviderTimezone(data.timezone);
+        if (data.timezone) { setProviderTimezone(data.timezone); onProviderTimezone?.(data.timezone); }
       })
       .catch(() => setMonthData([]))
       .finally(() => setLoadingMonth(false));
@@ -524,7 +528,8 @@ function DateTimeStep({ wizard, locale, isRTL }: StepProps) {
         setDaySlots(data.slots ?? []);
         // Also refresh the provider timezone from the day fetch — in case
         // the admin changed it between month and day loads.
-        if (data.timezone) setProviderTimezone(data.timezone);
+        if (data.timezone) { setProviderTimezone(data.timezone); onProviderTimezone?.(data.timezone); }
+        if (typeof data.inPersonEnabled === 'boolean') onInPersonEnabled?.(data.inPersonEnabled);
         // Scroll to slots on mobile (delay for animation)
         setTimeout(() => {
           slotsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1108,7 +1113,7 @@ function SmartField({ icon: Icon, label, valid, children }: {
   );
 }
 
-function InfoStep({ wizard, locale, isRTL }: StepProps) {
+function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = true }: StepProps & { providerTimezone: string; inPersonEnabled?: boolean }) {
   const detectedCountry = detectCountryFromTimezone(wizard.formData.clientTimezone);
 
   const [name, setName] = useState(wizard.formData.clientName);
@@ -1122,7 +1127,18 @@ function InfoStep({ wizard, locale, isRTL }: StepProps) {
   });
   const [phoneCountry, setPhoneCountry] = useState<CountryInfo>(detectedCountry);
   const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
-  const [mode, setMode] = useState<SessionMode>(wizard.formData.sessionMode);
+  // Location-aware session mode: show In-Person only when Dr. Hala is in the client's region
+  const isInOttawa = providerTimezone?.includes('Toronto') || providerTimezone?.includes('Eastern');
+  const isInDubai = providerTimezone?.includes('Dubai') || providerTimezone?.includes('Gulf');
+  const clientCountry = wizard.formData.clientCountry;
+  // Admin toggle overrides everything; location logic is secondary
+  const sameRegion = (isInOttawa && ['CA', 'US'].includes(clientCountry)) || (isInDubai && ['AE', 'SA', 'KW', 'BH', 'QA', 'OM'].includes(clientCountry));
+  const showInPerson = inPersonEnabled && sameRegion;
+  // Different region but admin allows in-person → show travel hint
+  const isLocationMismatch = inPersonEnabled && !sameRegion && (isInOttawa || isInDubai);
+  const [showTravelHint, setShowTravelHint] = useState(false);
+  const providerCity = isInDubai ? (isRTL ? 'دبي' : 'Dubai') : (isRTL ? 'أوتاوا' : 'Ottawa');
+  const [mode, setMode] = useState<SessionMode>(wizard.formData.sessionMode === 'inPerson' && !showInPerson && !showTravelHint ? 'online' : wizard.formData.sessionMode);
   const [notes, setNotes] = useState(wizard.formData.notes || wizard.formData.intakeText);
   const [showNotes, setShowNotes] = useState(!!notes);
   const [preferredLang, setPreferredLang] = useState<'en' | 'ar'>(
@@ -1380,11 +1396,16 @@ function InfoStep({ wizard, locale, isRTL }: StepProps) {
           {isRTL ? 'إعداد الجلسة' : 'Session Setup'}
         </p>
 
-        {/* Session Mode — visual cards */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
+        {/* Session Mode — visual cards (location-aware) */}
+        <div className={`grid ${(showInPerson || showTravelHint) ? 'grid-cols-2' : 'grid-cols-1 max-w-xs mx-auto'} gap-3 mb-4`}>
           {([
             { key: 'online' as SessionMode, icon: Video, label: isRTL ? 'عبر الإنترنت' : 'Online', desc: isRTL ? 'مكالمة فيديو من أي مكان' : 'Video call from anywhere' },
-            { key: 'inPerson' as SessionMode, icon: Building2, label: isRTL ? 'شخصياً' : 'In-Person', desc: isRTL ? 'مكتب أوتاوا، 430 هازلدين' : 'Ottawa, 430 Hazeldean Rd' },
+            ...((showInPerson || showTravelHint) ? [{
+              key: 'inPerson' as SessionMode,
+              icon: Building2,
+              label: isInDubai ? (isRTL ? 'شخصياً — دبي' : 'In-Person — Dubai') : (isRTL ? 'شخصياً — أوتاوا' : 'In-Person — Ottawa'),
+              desc: isInDubai ? (isRTL ? 'جلسة حضوريّة في دبي' : 'Face-to-face session in Dubai') : (isRTL ? 'مكتب أوتاوا، 430 هازلدين' : 'Ottawa, 430 Hazeldean Rd'),
+            }] : []),
           ]).map(opt => (
             <motion.button
               key={opt.key}
@@ -1415,6 +1436,32 @@ function InfoStep({ wizard, locale, isRTL }: StepProps) {
             </motion.button>
           ))}
         </div>
+
+        {/* Travel hint — shown when client is in a different region than Dr. Hala */}
+        <AnimatePresence>
+          {isLocationMismatch && !showTravelHint && (
+            <motion.button
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              type="button"
+              onClick={() => setShowTravelHint(true)}
+              className="w-full flex items-center gap-2.5 px-4 py-3 -mt-1 mb-4 rounded-xl bg-gradient-to-r from-[#C8A97D]/8 to-[#7A3B5E]/5 border border-[#C8A97D]/20 text-start hover:border-[#C8A97D]/40 transition-colors group"
+            >
+              <span className="text-base flex-shrink-0">✈️</span>
+              <span className="flex-1 min-w-0">
+                <span className="text-xs text-[#4A4A5C] leading-relaxed">
+                  {isRTL
+                    ? <>د. هالة تستقبلُ حاليًّا في <strong className="text-[#7A3B5E]">{providerCity}</strong>. ترغبُ بزيارتِها شخصيًّا؟</>
+                    : <>Dr. Hala is currently seeing clients in <strong className="text-[#7A3B5E]">{providerCity}</strong>. Willing to visit?</>}
+                </span>
+              </span>
+              <span className="text-[10px] font-semibold text-[#C8A97D] group-hover:text-[#7A3B5E] transition-colors whitespace-nowrap flex-shrink-0">
+                {isRTL ? 'حجز شخصي ←' : 'Book In-Person →'}
+              </span>
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         {/* Notes — collapsible */}
         {!showNotes ? (
@@ -1475,6 +1522,7 @@ function InfoStep({ wizard, locale, isRTL }: StepProps) {
 // ─── Step 5: Confirmation ───────────────────────────────────────
 
 function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
+  const [consent, setConsent] = useState(false);
   const { formData, confirmBooking, isLoading } = wizard;
   const dateStr = new Date(formData.selectedStartTime).toLocaleDateString(
     isRTL ? 'ar' : 'en-US',
@@ -1549,9 +1597,24 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
         )}
       </div>
 
+      {/* Consent */}
+      <label className="flex items-start gap-3 cursor-pointer bg-[#FAF7F2] rounded-xl p-4 border border-[#F0ECE8]">
+        <input
+          type="checkbox"
+          checked={consent}
+          onChange={(e) => setConsent(e.target.checked)}
+          className="mt-0.5 w-4 h-4 rounded border-[#D4ADA8] accent-[#7A3B5E] flex-shrink-0"
+        />
+        <span className="text-[11px] text-[#6B6580] leading-relaxed">
+          {isRTL
+            ? 'أوافقُ على أنّ المعلوماتِ المقدَّمةَ دقيقةٌ وأنّني أفهمُ أنّ هذا الطلبَ يخضعُ لمراجعةِ د. هالة. أوافقُ على سياسة الخصوصيّة وشروط الحجز.'
+            : 'I confirm that the information provided is accurate and understand this request is subject to Dr. Hala\'s review. I agree to the Privacy Policy and Booking Policy.'}
+        </span>
+      </label>
+
       <button
         onClick={confirmBooking}
-        disabled={isLoading}
+        disabled={isLoading || !consent}
         className="w-full py-3.5 rounded-xl bg-[#7A3B5E] text-white font-semibold hover:bg-[#6A2E4E] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
       >
         {isLoading ? (

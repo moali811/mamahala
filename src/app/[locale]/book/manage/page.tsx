@@ -181,46 +181,71 @@ function ManageBookingInner() {
 
         <div className="space-y-5">
           {view === 'done' ? (
-            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center space-y-4">
-              <div className="w-16 h-16 rounded-full bg-[#3B8A6E]/10 flex items-center justify-center mx-auto">
-                <Check className="w-8 h-8 text-[#3B8A6E]" />
+            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="space-y-5">
+              {/* Status card */}
+              <div className="bg-white rounded-2xl p-8 border border-[#F0ECE8] text-center">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.1 }}
+                  className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                    doneAction === 'reschedule' ? 'bg-[#3B8A6E]/10' : 'bg-[#8E8E9F]/10'
+                  }`}
+                >
+                  {doneAction === 'reschedule'
+                    ? <RefreshCw className="w-8 h-8 text-[#3B8A6E]" />
+                    : <X className="w-7 h-7 text-[#8E8E9F]" />
+                  }
+                </motion.div>
+                <h2 className="text-xl font-bold text-[#4A4A5C] mb-1" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>
+                  {doneAction === 'reschedule'
+                    ? (isRTL ? 'تمت إعادة الجدولة بنجاح!' : 'Successfully Rescheduled!')
+                    : (isRTL ? 'تم إلغاء الحجز' : 'Booking Cancelled')}
+                </h2>
+                <p className="text-sm text-[#8E8E9F] mb-5">
+                  {doneAction === 'reschedule'
+                    ? (isRTL ? 'تم تحديث موعدك وإرسال التأكيد إلى بريدك الإلكتروني.' : 'Your appointment has been updated and a confirmation sent to your email.')
+                    : (isRTL ? 'تم إرسال تأكيد الإلغاء إلى بريدك الإلكتروني.' : 'A cancellation confirmation has been sent to your email.')}
+                </p>
+                <a
+                  href={`/${locale}/book`}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#6A2E4E] transition-all"
+                >
+                  <Calendar className="w-4 h-4" />
+                  {isRTL ? 'حجز جلسة جديدة' : 'Book a New Session'}
+                </a>
               </div>
-              <h2 className="text-xl font-bold text-[#4A4A5C]" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>
-                {doneAction === 'reschedule'
-                  ? (isRTL ? 'تمت إعادة الجدولة!' : 'Rescheduled!')
-                  : (isRTL ? 'تم الإلغاء' : 'Cancelled')}
-              </h2>
-              <div className="bg-white rounded-2xl p-5 border border-[#F0ECE8] space-y-3">
-                <div className="flex items-center gap-2 text-sm text-[#4A4A5C]">
-                  <Mail className="w-4 h-4 text-[#C8A97D]" />
-                  <span>{isRTL ? 'تم إرسال التحديث إلى بريدك الإلكتروني.' : 'A confirmation has been sent to your email.'}</span>
-                </div>
-                {doneAction === 'reschedule' && (
-                  <div className="flex items-center gap-2 text-sm text-[#4A4A5C]">
-                    <Calendar className="w-4 h-4 text-[#C8A97D]" />
-                    <span>{isRTL ? 'تحقق من تقويمك للموعد الجديد.' : 'Check your calendar for the updated time.'}</span>
-                  </div>
-                )}
-              </div>
-              <a
-                href={`/${locale}/book`}
-                className="inline-block px-6 py-2.5 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#6A2E4E] transition-all"
-              >
-                {isRTL ? 'حجز جلسة جديدة' : 'Book a New Session'}
-              </a>
 
-              {/* Engagement nudge after action */}
-              <div className="flex gap-2 mt-2 justify-center">
-                <a href={`/${locale}/resources/assessments`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] underline underline-offset-2 transition-colors">
-                  {isRTL ? 'تقييم ذاتي' : 'Self Check-in'}
+              {/* Warm encouragement card */}
+              {doneAction === 'cancel' && (
+                <div className="bg-gradient-to-br from-[#7A3B5E]/5 to-[#C8A97D]/8 rounded-2xl p-6 border border-[#C8A97D]/15 text-center">
+                  <p className="text-sm text-[#4A4A5C] leading-relaxed">
+                    {isRTL
+                      ? 'نأملُ أن نراكَ قريبًا. تذكّرْ أنّ الاهتمامَ بنفسِكَ ليسَ ترفًا — بل هو ضرورة.'
+                      : "We hope to see you soon. Remember, taking care of yourself isn't a luxury — it's a necessity."}
+                  </p>
+                </div>
+              )}
+
+              {/* Engagement links */}
+              <div className="space-y-2">
+                <p className="text-[10px] font-semibold text-[#C8A97D] uppercase tracking-[0.15em] px-1">
+                  {isRTL ? 'في الأثناء' : 'In the meantime'}
+                </p>
+                <a href={`/${locale}/resources/assessments`} className="flex items-center gap-3 p-3.5 bg-white rounded-xl border border-[#F0ECE8] hover:border-[#C8A97D]/40 transition-all group">
+                  <Heart className="w-4 h-4 text-[#7A3B5E] shrink-0" />
+                  <span className="text-sm text-[#4A4A5C] group-hover:text-[#7A3B5E] transition-colors">{isRTL ? 'تقييم ذاتي سريع' : 'Take a Quick Self Check-in'}</span>
+                  <ChevronRight className={`w-3.5 h-3.5 text-[#C0B8B0] ml-auto shrink-0 ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
-                <span className="text-[#E8E0D8]">|</span>
-                <a href={`/${locale}/resources/downloads`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] underline underline-offset-2 transition-colors">
-                  {isRTL ? 'موارد مجانية' : 'Free Resources'}
+                <a href={`/${locale}/resources/downloads`} className="flex items-center gap-3 p-3.5 bg-white rounded-xl border border-[#F0ECE8] hover:border-[#C8A97D]/40 transition-all group">
+                  <BookOpen className="w-4 h-4 text-[#C8A97D] shrink-0" />
+                  <span className="text-sm text-[#4A4A5C] group-hover:text-[#7A3B5E] transition-colors">{isRTL ? 'موارد مجانية' : 'Explore Free Resources'}</span>
+                  <ChevronRight className={`w-3.5 h-3.5 text-[#C0B8B0] ml-auto shrink-0 ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
-                <span className="text-[#E8E0D8]">|</span>
-                <a href={`/${locale}/resources/blog`} className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] underline underline-offset-2 transition-colors">
-                  {isRTL ? 'المدوّنة' : 'Blog'}
+                <a href={`/${locale}/resources/blog`} className="flex items-center gap-3 p-3.5 bg-white rounded-xl border border-[#F0ECE8] hover:border-[#C8A97D]/40 transition-all group">
+                  <Sparkles className="w-4 h-4 text-[#C4878A] shrink-0" />
+                  <span className="text-sm text-[#4A4A5C] group-hover:text-[#7A3B5E] transition-colors">{isRTL ? 'اقرأ من مدوّنتنا' : 'Read Our Blog'}</span>
+                  <ChevronRight className={`w-3.5 h-3.5 text-[#C0B8B0] ml-auto shrink-0 ${isRTL ? 'rotate-180' : ''}`} />
                 </a>
               </div>
             </motion.div>
