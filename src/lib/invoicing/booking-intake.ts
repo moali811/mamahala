@@ -26,6 +26,7 @@ import { saveDraft, getSettings } from './kv-store';
 import { generateDraftId } from './invoice-number';
 import { mapCalSlugToService, type CalServiceMapResult } from './cal-service-map';
 import { countryNameToISO2 } from './country-iso';
+import { getEffectiveTimezone } from '@/lib/booking/provider-location';
 
 export interface BookingIntakeInput {
   /** Source platform. `cal-com` for Cal.com webhooks, `native` for Phase 5. */
@@ -136,16 +137,28 @@ function inferCountry(
   return 'CA';
 }
 
-function formatBookingDate(isoStart: string, clientTimezone?: string): string {
+/**
+ * Format a booking's start time for display in invoice subject lines.
+ *
+ * Uses the provider's effective timezone for that moment (i.e. wherever
+ * Dr. Hala is on the session date — home-base, travel schedule, or
+ * manual override). This keeps the subject anchored to the calendar
+ * event the client also receives (both sides show the same wall-clock
+ * time). A short timezone abbreviation (EDT / GST / …) is appended so
+ * the time is never ambiguous for clients in a different zone.
+ */
+async function formatBookingDate(isoStart: string): Promise<string> {
   try {
     const d = new Date(isoStart);
+    const tz = await getEffectiveTimezone(d);
     return d.toLocaleString('en-US', {
-      ...(clientTimezone ? { timeZone: clientTimezone } : {}),
+      timeZone: tz,
       weekday: 'long',
       month: 'long',
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
+      timeZoneName: 'short',
     });
   } catch {
     return isoStart;
@@ -220,7 +233,7 @@ export async function processBookingIntake(
 
   // ─── 6. Build the draft invoice ─────────────────────────────────
   const now = new Date().toISOString();
-  const bookingLabel = formatBookingDate(input.startTime, input.clientTimezone);
+  const bookingLabel = await formatBookingDate(input.startTime);
   const isBundledAnchor =
     input.seriesContext?.mode === 'bundled'
     && input.seriesContext.isAnchor === true;
