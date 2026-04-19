@@ -39,8 +39,8 @@ const tajawal = Tajawal({
 export const metadata: Metadata = {
   metadataBase: new URL('https://mamahala.ca'),
   title: {
-    default: 'Dr. Hala Ali | Mama Hala',
-    template: '%s | Mama Hala',
+    default: 'Dr. Hala Ali | Mama Hala Consulting',
+    template: '%s',
   },
   description:
     'Professional counseling and guidance for individuals, couples, and families. Certified family counselor serving Dubai and Canada, supporting clients globally.',
