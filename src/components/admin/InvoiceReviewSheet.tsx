@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Send, Loader2, Calendar, Clock, Video, Building2,
   User, Globe, ChevronDown, Eye, AlertCircle, CreditCard,
-  Mail, Tag,
+  Mail, Tag, DollarSign,
 } from 'lucide-react';
 import { services, serviceCategories } from '@/data/services';
 import {
@@ -581,6 +581,127 @@ export default function InvoiceReviewSheet({
                     </label>
                   )}
                 </div>
+              </Section>
+
+              {/* Manual price override — bypasses all auto-pricing. Renders
+                  inline in Step 2 so the admin can adjust the total without
+                  leaving the review sheet. */}
+              <Section title="Manual price override (optional)" icon={<DollarSign className="w-4 h-4" />}>
+                <label className="flex items-center gap-2 text-sm text-[#4A4A5C] mb-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={localDraft.manualPrice?.enabled ?? false}
+                    onChange={e =>
+                      updateDraft({
+                        manualPrice: e.target.checked
+                          ? {
+                              enabled: true,
+                              perSessionLocal: localDraft.manualPrice?.perSessionLocal ?? 0,
+                              currency: localDraft.manualPrice?.currency,
+                              reason: localDraft.manualPrice?.reason,
+                            }
+                          : undefined,
+                      })
+                    }
+                    className="w-4 h-4 accent-[#7A3B5E]"
+                  />
+                  Override the auto-computed price
+                </label>
+                {localDraft.manualPrice?.enabled && (
+                  <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <Field label="Per-session amount">
+                        <input
+                          type="number"
+                          min={0}
+                          step={1}
+                          value={localDraft.manualPrice.perSessionLocal || ''}
+                          onChange={e =>
+                            updateDraft({
+                              manualPrice: {
+                                ...localDraft.manualPrice!,
+                                perSessionLocal: Number(e.target.value) || 0,
+                              },
+                            })
+                          }
+                          className={inputClass}
+                          placeholder="200"
+                        />
+                      </Field>
+                      <Field label="Currency">
+                        <input
+                          value={localDraft.manualPrice.currency ?? localDraft.displayCurrency ?? 'CAD'}
+                          onChange={e =>
+                            updateDraft({
+                              manualPrice: {
+                                ...localDraft.manualPrice!,
+                                currency: e.target.value.toUpperCase().slice(0, 3),
+                              },
+                            })
+                          }
+                          onBlur={e => {
+                            const typos: Record<string, string> = {
+                              UAE: 'AED', KSA: 'SAR', UK: 'GBP',
+                              USA: 'USD', EU: 'EUR', AUS: 'AUD',
+                            };
+                            const v = e.target.value.toUpperCase();
+                            if (typos[v]) {
+                              updateDraft({
+                                manualPrice: {
+                                  ...localDraft.manualPrice!,
+                                  currency: typos[v],
+                                },
+                              });
+                            }
+                          }}
+                          list="override-currency-options"
+                          className={`${inputClass} font-mono uppercase`}
+                          placeholder="CAD"
+                        />
+                        <datalist id="override-currency-options">
+                          <option value="CAD" />
+                          <option value="USD" />
+                          <option value="AED" />
+                          <option value="SAR" />
+                          <option value="KWD" />
+                          <option value="QAR" />
+                          <option value="BHD" />
+                          <option value="OMR" />
+                          <option value="EUR" />
+                          <option value="GBP" />
+                          <option value="CHF" />
+                          <option value="JOD" />
+                          <option value="LBP" />
+                          <option value="ILS" />
+                          <option value="TRY" />
+                          <option value="EGP" />
+                          <option value="MAD" />
+                          <option value="TND" />
+                          <option value="DZD" />
+                          <option value="LYD" />
+                        </datalist>
+                      </Field>
+                    </div>
+                    <Field label="Reason (for audit)">
+                      <input
+                        value={localDraft.manualPrice.reason ?? ''}
+                        onChange={e =>
+                          updateDraft({
+                            manualPrice: {
+                              ...localDraft.manualPrice!,
+                              reason: e.target.value,
+                            },
+                          })
+                        }
+                        className={inputClass}
+                        placeholder="e.g. returning-client rate, bundled discount, special arrangement"
+                      />
+                    </Field>
+                    <p className="text-[10px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1">
+                      When enabled, this price replaces all auto-pricing (band, complexity, package, sliding scale).
+                    </p>
+                  </div>
+                )}
               </Section>
 
               {/* Subject */}
