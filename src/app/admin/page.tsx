@@ -509,7 +509,7 @@ export default function AdminCommandCenter() {
           {activeModule === 'services' && <ServicesModule password={password} />}
           {activeModule === 'testimonials' && <TestimonialsModule password={password} />}
           {activeModule === 'faqs' && <FAQsModule password={password} />}
-          {activeModule === 'resources' && <ResourcesModule stats={stats} />}
+          {activeModule === 'resources' && <ResourcesModule password={password} />}
           {activeModule === 'bookings' && <BookingsModule password={password} />}
           {activeModule === 'invoices' && <InvoicesModule password={password} />}
           {activeModule === 'quiz-results' && <QuizResultsModule quizResults={quizResults} />}
