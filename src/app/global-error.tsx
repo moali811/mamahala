@@ -82,7 +82,7 @@ export default function GlobalError({
             marginTop: '48px',
           }}
         >
-          &copy; {new Date().getFullYear()} Mama Hala Consulting Group
+          &copy; {new Date().getFullYear()} Mama Hala
         </p>
       </body>
     </html>

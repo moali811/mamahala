@@ -23,7 +23,7 @@ import { BUSINESS } from '@/config/business';
    ================================================================ */
 
 export const metadata: Metadata = {
-  title: 'Coming Soon — Mama Hala Consulting',
+  title: 'Coming Soon — Mama Hala',
   description:
     "Our new home is almost ready. Warm, wise counsel for families in every season of life.",
   robots: { index: false, follow: false },
@@ -56,7 +56,7 @@ const COPY: Record<Mode, Record<Lang, CopySet>> = {
       whatsapp: 'WhatsApp',
       email: 'Email',
       followUs: 'Follow us',
-      copyright: '© 2026 Mama Hala Consulting Group',
+      copyright: '© 2026 Mama Hala',
       switchTo: 'ar',
       switchToLabel: 'العربية',
     },
@@ -82,7 +82,7 @@ const COPY: Record<Mode, Record<Lang, CopySet>> = {
       whatsapp: 'WhatsApp',
       email: 'Email',
       followUs: 'Follow us',
-      copyright: '© 2026 Mama Hala Consulting Group',
+      copyright: '© 2026 Mama Hala',
       switchTo: 'ar',
       switchToLabel: 'العربية',
     },

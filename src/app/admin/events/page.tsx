@@ -331,7 +331,7 @@ export default function AdminEventsPage() {
             <h1 className="text-xl font-bold text-[#2D2A33] mb-1" style={{ fontFamily: 'Georgia, serif' }}>
               Events Manager
             </h1>
-            <p className="text-sm text-[#8E8E9F] mb-6">Mama Hala Consulting</p>
+            <p className="text-sm text-[#8E8E9F] mb-6">MamaHala Content Management System</p>
 
             <div className="relative mb-4">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E9F]" />

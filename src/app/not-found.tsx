@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { Home } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: '404 — Page Not Found | Mama Hala Consulting',
+  title: '404 — Page Not Found | Mama Hala',
   robots: { index: false, follow: true },
 };
 
@@ -82,7 +82,7 @@ export default function RootNotFound() {
           marginTop: '48px',
         }}
       >
-        &copy; {new Date().getFullYear()} Mama Hala Consulting Group
+        &copy; {new Date().getFullYear()} Mama Hala
       </p>
     </div>
   );

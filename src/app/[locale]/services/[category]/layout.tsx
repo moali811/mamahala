@@ -38,7 +38,7 @@ export async function generateMetadata({
       description,
       url,
       type: 'website',
-      siteName: isAr ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting',
+      siteName: isAr ? 'ماما هالة' : 'Mama Hala',
       locale: isAr ? 'ar_AE' : 'en_CA',
       alternateLocale: isAr ? ['ar_SA', 'ar_EG', 'en_CA'] : ['ar_AE', 'ar_SA'],
       images: [{ url: `${BASE_URL}/images/og-image.png`, width: 1200, height: 630, alt: title }],

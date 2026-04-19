@@ -51,7 +51,7 @@ export async function generateMetadata({
       title,
       description,
       type: 'website',
-      siteName: isAr ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting',
+      siteName: isAr ? 'ماما هالة' : 'Mama Hala',
       images: [{ url: `${BASE_URL}/images/og-image.png`, width: 1200, height: 630, alt: title }],
     },
     twitter: {
