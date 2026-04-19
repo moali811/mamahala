@@ -469,7 +469,7 @@ export default function BlogModule({ password }: Props) {
                       <button onClick={() => setExpandedSlug(expanded ? null : post.slug)} className="flex-1 min-w-0 text-left">
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-sm font-semibold text-[#2D2A33] truncate">{post.title}</h3>
-                          {post.source === 'cms' && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#C8A97D]/10 text-[#C8A97D] font-semibold uppercase">CMS</span>}
+                          {post.source === 'cms' && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#C8A97D]/10 text-[#C8A97D] font-semibold uppercase">MCMS</span>}
                           {post.featured && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#7A3B5E]/10 text-[#7A3B5E] font-semibold uppercase">Featured</span>}
                           {!post.published && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#8E8E9F]/10 text-[#8E8E9F] font-semibold uppercase">Draft</span>}
                         </div>

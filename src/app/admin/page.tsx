@@ -239,9 +239,9 @@ export default function AdminCommandCenter() {
               </div>
             </div>
             <h1 className="text-2xl font-bold text-[#2D2A33] mb-1" style={{ fontFamily: 'Georgia, serif' }}>
-              Command Center
+              MCMS
             </h1>
-            <p className="text-sm text-[#8E8E9F] mb-6">Mama Hala Consulting</p>
+            <p className="text-sm text-[#8E8E9F] mb-6">MamaHala Content Management System</p>
 
             <div className="relative mb-4">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8E8E9F]" />
@@ -271,7 +271,7 @@ export default function AdminCommandCenter() {
             </label>
 
             <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#5E2D48] transition-colors disabled:opacity-60">
-              {loading ? 'Connecting...' : 'Open Command Center'}
+              {loading ? 'Connecting...' : 'Open MCMS'}
             </button>
           </div>
         </form>
@@ -298,7 +298,7 @@ export default function AdminCommandCenter() {
             </div>
             <div>
               <p className="text-sm font-bold text-[#2D2A33]">Mama Hala</p>
-              <p className="text-[10px] text-[#8E8E9F]">Command Center</p>
+              <p className="text-[10px] text-[#8E8E9F]">MCMS</p>
             </div>
           </div>
         </div>

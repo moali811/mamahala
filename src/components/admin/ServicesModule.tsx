@@ -636,7 +636,7 @@ export default function ServicesModule({ password }: Props) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <p className="text-sm font-medium text-[#2D2A33] truncate">{service.name}</p>
-                          {service.source === 'cms' && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#C8A97D]/10 text-[#C8A97D] font-semibold uppercase">CMS</span>}
+                          {service.source === 'cms' && <span className="text-[9px] px-1.5 py-0.5 rounded bg-[#C8A97D]/10 text-[#C8A97D] font-semibold uppercase">MCMS</span>}
                         </div>
                         <p className="text-xs text-[#8E8E9F] truncate">{service.shortDesc}</p>
                       </div>
