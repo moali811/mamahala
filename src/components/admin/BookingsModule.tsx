@@ -884,17 +884,31 @@ export default function BookingsModule({ password }: Props) {
                     showNotifyToggle: false,
                     onConfirm: async () => {
                       setConfirmDialog(null);
+                      const total = selectedIds.size;
+                      let deleted = 0;
+                      const failedIds: string[] = [];
                       for (const id of selectedIds) {
                         try {
-                          await fetch('/api/admin/booking/delete', {
+                          const res = await fetch('/api/admin/booking/delete', {
                             method: 'POST',
                             headers,
                             body: JSON.stringify({ bookingId: id }),
                           });
-                        } catch { /* continue */ }
+                          if (res.ok) deleted += 1;
+                          else failedIds.push(id);
+                        } catch {
+                          failedIds.push(id);
+                        }
                       }
                       setSelectedIds(new Set());
-                      setSuccess(`Deleted ${selectedIds.size} booking(s)`);
+                      if (failedIds.length > 0) {
+                        console.error('Failed to delete bookings:', failedIds);
+                        setError(
+                          `Deleted ${deleted} of ${total} booking${total === 1 ? '' : 's'} — ${failedIds.length} failed. Check console for details.`,
+                        );
+                      } else {
+                        setSuccess(`Deleted ${deleted} booking${deleted === 1 ? '' : 's'}`);
+                      }
                       fetchBookings({ silent: true });
                     },
                   });

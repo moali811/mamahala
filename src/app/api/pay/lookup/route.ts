@@ -21,6 +21,7 @@ import { getSettings } from '@/lib/invoicing/kv-store';
 import { services } from '@/data/services';
 import { resolveCardPayUrl } from '@/lib/invoicing/stripe-checkout';
 import { BUSINESS } from '@/config/business';
+import { getClientIp, limitPayLookup } from '@/lib/rate-limit';
 
 export interface PayConciergeData {
   invoiceNumber: string;
@@ -68,6 +69,18 @@ export async function GET(request: NextRequest) {
   const token = request.nextUrl.searchParams.get('token');
   if (!token) {
     return NextResponse.json({ error: 'Missing token' }, { status: 400 });
+  }
+
+  // Rate-limit per IP — fails open if KV is down. Tokens are UUIDs (122
+  // bits entropy) so brute-force is infeasible; this limit blocks bot
+  // enumeration or timing-attack loops without affecting real clients.
+  const ip = getClientIp(request);
+  const rl = await limitPayLookup(ip);
+  if (!rl.allowed) {
+    return NextResponse.json(
+      { error: 'Too many lookups — please wait a moment and try again.' },
+      { status: 429 },
+    );
   }
 
   const invoice = await getInvoiceByPaymentToken(token);

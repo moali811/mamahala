@@ -3310,7 +3310,8 @@ function DashboardTab({
     }).format(n);
 
   const s = dashboard.summary;
-  const deltaPositive = s.mtdDeltaPct >= 0;
+  const hasPriorMonthData = s.mtdDeltaPct !== null;
+  const deltaPositive = hasPriorMonthData && s.mtdDeltaPct! >= 0;
 
   return (
     <div className="space-y-5">
@@ -3320,12 +3321,16 @@ function DashboardTab({
           label="MTD Revenue"
           value={fmtCAD(s.mtdRevenueCAD)}
           subtitle={
-            <span
-              className={`inline-flex items-center gap-0.5 ${deltaPositive ? 'text-emerald-700' : 'text-rose-700'}`}
-            >
-              {deltaPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-              {Math.abs(s.mtdDeltaPct).toFixed(0)}% vs last month
-            </span>
+            hasPriorMonthData ? (
+              <span
+                className={`inline-flex items-center gap-0.5 ${deltaPositive ? 'text-emerald-700' : 'text-rose-700'}`}
+              >
+                {deltaPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                {Math.abs(s.mtdDeltaPct!).toFixed(0)}% vs last month
+              </span>
+            ) : (
+              <span className="text-[#8E8E9F]">No prior-month data yet</span>
+            )
           }
           accent="#7A3B5E"
         />

@@ -10,7 +10,12 @@ import type { StoredInvoice } from './types';
 
 export interface DashboardSummaryCards {
   mtdRevenueCAD: number;
-  mtdDeltaPct: number; // vs last month
+  /**
+   * Percent change vs last month. `null` means there is no prior-month
+   * data to compare against (e.g. first month of operation) — the UI
+   * should render "no prior data" instead of a misleading +100%.
+   */
+  mtdDeltaPct: number | null;
   outstandingCAD: number;
   outstandingCount: number;
   overdueCAD: number;
@@ -295,12 +300,14 @@ export function buildDashboardView(records: StoredInvoice[]): DashboardView {
     }
   }
 
-  // Compute MTD delta
+  // Compute MTD delta. When there's no prior-month data we return null
+  // so the UI can render a neutral "no prior data" state instead of a
+  // misleading +100% growth pill.
   const mtdDeltaPct =
     lastMonthRevenueCAD > 0
       ? ((mtdRevenueCAD - lastMonthRevenueCAD) / lastMonthRevenueCAD) * 100
       : mtdRevenueCAD > 0
-      ? 100
+      ? null
       : 0;
 
   // Trend → array

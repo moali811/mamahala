@@ -167,8 +167,13 @@ export async function POST(req: NextRequest) {
           status: 'confirmed',
           confirmedAt,
           paidAt,
-          paidAmountCents: Math.round(updated.breakdown.totalCAD * 100),
-          paidCurrency: 'CAD',
+          // Record the paid amount + currency in the invoice's own currency
+          // (AED, EUR, CAD, …), not CAD. Falls back to CAD total only when
+          // the displayCurrency is unknown.
+          paidAmountCents: Math.round(
+            (updated.breakdown.totalLocal ?? updated.breakdown.totalCAD) * 100,
+          ),
+          paidCurrency: updated.breakdown.displayCurrency || 'CAD',
           paymentMethod: method,
           ...(meetLink ? { meetLink } : {}),
           ...(calendarEventId ? { calendarEventId } : {}),

@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authorize } from '@/lib/invoicing/auth';
 import { getDashboardStats } from '@/lib/analytics';
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-
 export async function GET(request: NextRequest) {
-  const auth = request.headers.get('authorization');
-  const token = auth?.replace('Bearer ', '');
-
-  if (token !== ADMIN_PASSWORD) {
+  if (!authorize(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

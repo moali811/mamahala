@@ -94,3 +94,12 @@ export function limitBooking(ip: string) {
   const hour = Math.floor(Date.now() / 3_600_000);
   return check(`rl:booking:${ip}:${hour}`, 5, 3600);
 }
+
+/** Pay-concierge token lookup: 60 per hour per IP. Tokens are 122-bit
+ *  UUIDs so brute-force is infeasible, but the limit stops a bot from
+ *  hammering the endpoint for enumeration / timing attacks. Real clients
+ *  only hit this a handful of times per payment session. */
+export function limitPayLookup(ip: string) {
+  const hour = Math.floor(Date.now() / 3_600_000);
+  return check(`rl:pay-lookup:${ip}:${hour}`, 60, 3600);
+}

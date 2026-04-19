@@ -872,28 +872,67 @@ export async function ensureInitialsForCustomer(
 }
 
 /**
- * Atomically bump a customer's `nextInvoiceSeq` by 1 and persist. Returns
- * the sequence number that was CURRENT before the bump — i.e. the one
- * the caller should use for the invoice number being created.
+ * Atomically bump a customer's invoice sequence. Returns the sequence
+ * number the caller should stamp onto the new invoice (and guarantees
+ * it is unique per customer, even under concurrent sends).
  *
- * Example: if the customer had `nextInvoiceSeq = 5`, this returns `5` and
- * persists `nextInvoiceSeq = 6` for the next call.
+ * Uses Redis INCR on a dedicated counter key, which is atomic on the
+ * Upstash/Vercel KV backend. The Customer record's `nextInvoiceSeq`
+ * field is still mirrored afterwards for display purposes, but it is
+ * not the authoritative counter any longer.
+ *
+ * Migration: on first use for a customer, the counter key is seeded
+ * from the existing `customer.nextInvoiceSeq` (minus 1) so the very
+ * first INCR returns that same pre-existing value. Two concurrent
+ * seeds are safe — both write the same value; only the final INCR
+ * determines uniqueness.
  */
 export async function bumpInvoiceSeq(email: string): Promise<number> {
   if (!KV_AVAILABLE) return 1;
-  const customer = await getCustomer(email);
-  if (!customer) return 1;
+  const emailLower = email.toLowerCase();
+  const counterKey = `invoice-seq:${emailLower}`;
 
-  const current = customer.nextInvoiceSeq ?? 1;
-  const updated: Customer = {
-    ...customer,
-    nextInvoiceSeq: current + 1,
-    updatedAt: new Date().toISOString(),
-  };
   try {
-    await kv.set(KEY_CUSTOMER(email), updated);
+    // Seed the atomic counter from the existing customer record
+    // on first use, so we don't restart sequences at 1 for customers
+    // who already have invoices in KV.
+    const existingCounter = await kv.get<number>(counterKey);
+    if (existingCounter === null || existingCounter === undefined) {
+      const customer = await getCustomer(emailLower);
+      const seedValue = Math.max(0, (customer?.nextInvoiceSeq ?? 1) - 1);
+      await kv.set(counterKey, seedValue);
+    }
+
+    // Atomic read-modify-write; returns the NEW value. This is the
+    // sequence number we stamp on the new invoice.
+    const next = await kv.incr(counterKey);
+
+    // Mirror on the customer record for list-view display (best-effort).
+    const customer = await getCustomer(emailLower);
+    if (customer) {
+      await kv.set(KEY_CUSTOMER(emailLower), {
+        ...customer,
+        nextInvoiceSeq: next + 1,
+        updatedAt: new Date().toISOString(),
+      });
+    }
+    return next;
   } catch {
-    /* swallow */
+    // Fallback to the old non-atomic path on any KV error. Not perfectly
+    // safe under concurrency but preserves availability if INCR is
+    // unavailable for some reason.
+    const customer = await getCustomer(emailLower);
+    if (!customer) return 1;
+    const current = customer.nextInvoiceSeq ?? 1;
+    try {
+      await kv.set(KEY_CUSTOMER(emailLower), {
+        ...customer,
+        nextInvoiceSeq: current + 1,
+        updatedAt: new Date().toISOString(),
+      });
+    } catch {
+      /* swallow */
+    }
+    return current;
   }
-  return current;
 }

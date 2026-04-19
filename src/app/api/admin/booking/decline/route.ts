@@ -227,13 +227,15 @@ async function processDecline(bookingId: string, reason?: string): Promise<{
 
 function renderResultPage(success: boolean, message: string): string {
   const icon = success ? '&#10003;' : '&#10007;';
-  const iconBg = success ? '#FFF5F5' : '#FFF5F5';
+  const iconBg = success ? '#F0FAF5' : '#FFF5F5';
+  const iconColor = success ? '#3B8A6E' : '#C45B5B';
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Request ${success ? 'Declined' : 'Error'}</title></head>
 <body style="margin:0;padding:60px 20px;background:#FAF7F2;font-family:'Segoe UI',sans-serif;text-align:center;">
   <div style="max-width:400px;margin:0 auto;background:white;border-radius:16px;padding:40px;box-shadow:0 2px 12px rgba(0,0,0,0.06);">
-    <p style="margin:0 0 12px;font-size:14px;color:#8E8E9F;line-height:1.5;">${message}</p>
+    <div style="width:56px;height:56px;border-radius:50%;background:${iconBg};color:${iconColor};font-size:28px;line-height:56px;margin:0 auto 20px;">${icon}</div>
+    <p style="margin:0 0 20px;font-size:14px;color:#4A4A5C;line-height:1.5;">${message}</p>
     <a href="${SITE_URL}/admin" style="display:inline-block;padding:12px 28px;background:#7A3B5E;color:white;text-decoration:none;border-radius:10px;font-size:14px;font-weight:600;">Go to Dashboard</a>
   </div>
 </body></html>`;

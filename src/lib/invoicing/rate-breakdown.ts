@@ -179,6 +179,16 @@ export function computeRateBreakdown(
     const subCADRaw = convert(subtotal, manualCurrency, 'CAD');
     const subCAD = Math.round(isFinite(subCADRaw) ? subCADRaw : 0);
 
+    // Soft floor warning — the policy floor is CAD $60 per session. Manual
+    // override is allowed to go below (for barter / donation / special
+    // arrangements) but we surface a warning so accidental under-billing
+    // (typo: $25 instead of $250) doesn't ship silently.
+    const perSessionCADRaw = convert(perSession, manualCurrency, 'CAD');
+    const perSessionCAD = Math.round(isFinite(perSessionCADRaw) ? perSessionCADRaw : 0);
+    if (perSessionCAD > 0 && perSessionCAD < 60 && !warning) {
+      warning = `Manual price is below the CAD $60 policy floor (≈ CAD ${perSessionCAD}/session). If this is intentional (barter, hardship, donation) note it in the reason field.`;
+    }
+
     // Tax (manual HST for CA only)
     const taxResult = computeManualTax(
       subtotal,

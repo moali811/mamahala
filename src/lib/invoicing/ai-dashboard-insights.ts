@@ -75,7 +75,7 @@ export async function generateDashboardCommentary(
 
   const dataContext = `
 CURRENT STATE (as of ${new Date().toISOString().slice(0, 10)}):
-- MTD revenue (paid): CA$${Math.round(summary.mtdRevenueCAD).toLocaleString()} (${summary.mtdDeltaPct >= 0 ? '+' : ''}${Math.round(summary.mtdDeltaPct)}% vs last month)
+- MTD revenue (paid): CA$${Math.round(summary.mtdRevenueCAD).toLocaleString()}${summary.mtdDeltaPct === null ? ' (no prior-month data)' : ` (${summary.mtdDeltaPct >= 0 ? '+' : ''}${Math.round(summary.mtdDeltaPct)}% vs last month)`}
 - YTD revenue: CA$${Math.round(summary.ytdRevenueCAD).toLocaleString()}
 - Outstanding: CA$${Math.round(summary.outstandingCAD).toLocaleString()} across ${summary.outstandingCount} invoices
 - Overdue: CA$${Math.round(summary.overdueCAD).toLocaleString()} across ${overdueCount} invoices
