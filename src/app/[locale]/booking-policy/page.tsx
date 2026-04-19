@@ -163,8 +163,8 @@ export default function BookingPolicyPage() {
     {
       icon: Video,
       text: t(
-        'Sessions are conducted online via secure video conferencing.',
-        'انضم إلى جلستك عبر الإنترنت في الوقت المحدد مع اتصال إنترنت مستقر'
+        'Sessions are conducted online via secure video conferencing, or in-person in Ottawa, Canada or Dubai, UAE.',
+        'تُجرى الجلسات عبر الإنترنت عبر مؤتمرات فيديو آمنة، أو حضورياً في أوتاوا، كندا أو دبي، الإمارات.'
       ),
     },
     {
@@ -185,7 +185,14 @@ export default function BookingPolicyPage() {
       icon: Clock,
       text: t(
         'Be on time \u2014 sessions start and end as scheduled. Late arrivals will not be extended.',
-        'الحضور في الموعد يساعدنا في تقديم أفضل خدمة لك'
+        'كن في الموعد \u2014 تبدأ الجلسات وتنتهي في الوقت المحدد. لن يتم تمديد الوقت للمتأخرين.'
+      ),
+    },
+    {
+      icon: Lock,
+      text: t(
+        'Recording sessions is strictly prohibited without prior written consent from both parties.',
+        'تسجيل الجلسات محظور بشكل صارم دون موافقة خطية مسبقة من كلا الطرفين.'
       ),
     },
   ];
@@ -259,15 +266,15 @@ export default function BookingPolicyPage() {
               className="mt-5 text-lg md:text-xl text-[#6B6580] max-w-2xl leading-relaxed"
             >
               {t(
-                'Our commitment to quality service starts with clear, transparent policies. Everything you need to know before your session.',
-                'يرجى قراءة سياسة الحجز قبل حجز جلستك'
+                'Our commitment to quality service starts with clear, transparent policies. Everything you need to know before your session. This policy is part of our Terms & Conditions.',
+                'يرجى قراءة سياسة الحجز قبل حجز جلستك. هذه السياسة جزء من الشروط والأحكام الخاصة بنا.'
               )}
             </motion.p>
 
             <motion.div variants={fadeUp} custom={3} className="mt-6">
               <span className="inline-flex items-center gap-2 text-xs font-medium text-[#6B6580] bg-[#C4878A]/[0.08] px-4 py-2 rounded-full border border-[#C4878A]/10">
                 <Clock className="w-3.5 h-3.5" />
-                {t('Last updated: 29.11.2022', 'آخر تحديث: 29.11.2022')}
+                {t('Effective: April 19, 2026', 'تاريخ السريان: 19.04.2026')}
               </span>
             </motion.div>
           </motion.div>
