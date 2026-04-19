@@ -80,6 +80,14 @@ export interface Booking {
   aiConfirmationMessage?: string;
   aiReminderContent?: string;
 
+  // AI Compose trace — populated when created via the natural-language compose flow
+  aiComposeTrace?: {
+    nlInput: string;
+    turns: number;
+    toolCalls: Array<{ name: string; ok: boolean }>;
+    tokensUsed?: { input: number; output: number; cacheRead?: number };
+  };
+
   // Linked records
   draftId?: string;           // InvoiceDraft from processBookingIntake()
   invoiceId?: string;         // StoredInvoice if sent

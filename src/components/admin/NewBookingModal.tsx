@@ -46,6 +46,7 @@ import type { Service, ServiceCategory } from '@/types';
 import type { InvoiceDraft } from '@/lib/invoicing/types';
 import type { Booking } from '@/lib/booking/types';
 import InvoiceReviewSheet from './InvoiceReviewSheet';
+import AIComposeBar, { type ComposedFilled } from './AIComposeBar';
 
 interface Props {
   open: boolean;
@@ -230,6 +231,14 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     draft: InvoiceDraft;
   } | null>(null);
 
+  // ─── AI Compose summary (shown on Step 1 after AI fills fields) ───
+  const [aiComposeSummary, setAiComposeSummary] = useState<{
+    fieldsFilled: number;
+    resolvedDateLabel: string;
+    clientEmail: string;
+    isNewClient: boolean;
+  } | null>(null);
+
   // ─── Derived ───────────────────────────────────────────────
   const selectedService = useMemo(
     () => services.find(s => s.slug === serviceSlug),
@@ -270,6 +279,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     setSeriesSkips(new Set());
     setError(null);
     setStep2(null);
+    setAiComposeSummary(null);
   }, [open]);
 
   // ─── Effect: auto-clear errors ─────────────────────────────
@@ -493,6 +503,116 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     setActiveSection,
   ]);
 
+  // ─── Handler: AI Compose draft ready → jump to Step 2 ─────
+  const handleAIDraftReady = useCallback(
+    async ({
+      bookingId,
+      draftId,
+      filled,
+    }: {
+      bookingId: string;
+      draftId: string | null;
+      filled: ComposedFilled;
+      kind: 'single' | 'series';
+      seriesId?: string;
+    }) => {
+      setError(null);
+
+      // Mirror AI-resolved fields into Step 1 form state so that if
+      // the admin clicks "← Back" from Step 2, everything is filled.
+      setServiceSlug(filled.serviceSlug);
+      setSessionMode(filled.sessionMode);
+      setClientName(filled.client.name);
+      setClientEmail(filled.client.email);
+      setClientPhone(filled.client.phone || '');
+      setClientTimezone(filled.client.timezone);
+      setClientCountry(filled.client.country);
+      setNotes(filled.notes || '');
+      setSelectedDate(filled.startIso.slice(0, 10));
+      setSelectedSlot({ start: filled.startIso, end: filled.endIso, available: true });
+      if (filled.recurring) {
+        setIsRecurring(true);
+        setRecurringFrequency(filled.recurring.cadence);
+        setRecurringCount(filled.recurring.count);
+        setRecurringInvoiceMode(filled.recurring.invoiceMode || 'per-session');
+      }
+
+      // Remember summary so we can show verification banner in Step 2
+      const providerTz = providerLoc?.timezone ?? 'America/Toronto';
+      const resolvedDateLabel = formatSlotDateInTz(filled.startIso, providerTz)
+        + ' · ' + formatSlotInTz(filled.startIso, providerTz);
+      const fieldsFilled = Object.values({
+        service: !!filled.serviceSlug,
+        mode: !!filled.sessionMode,
+        date: !!filled.startIso,
+        client: !!filled.client.name,
+        email: !!filled.client.email,
+        tz: !!filled.client.timezone,
+        notes: !!filled.notes,
+      }).filter(Boolean).length;
+      setAiComposeSummary({
+        fieldsFilled,
+        resolvedDateLabel,
+        clientEmail: filled.client.email,
+        isNewClient: !filled.clientWasExisting,
+      });
+
+      // If free session with no draft, activate immediately (matches manual flow)
+      if (!draftId) {
+        setSubmitting(true);
+        try {
+          const actRes = await fetch(`/api/admin/booking/${bookingId}/confirm-and-send`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ sendClientEmail: false }),
+          });
+          const actData = await actRes.json();
+          if (!actRes.ok) throw new Error(actData.error || 'Failed to activate booking');
+          onCreated();
+          onClose();
+        } catch (err: unknown) {
+          setError(err instanceof Error ? err.message : 'Failed to activate');
+        } finally {
+          setSubmitting(false);
+        }
+        return;
+      }
+
+      // Paid: fetch the invoice draft, construct synthetic Booking, go to Step 2
+      try {
+        const draftRes = await fetch(`/api/admin/invoices/drafts?id=${draftId}`, { headers });
+        const draftData = await draftRes.json();
+        if (!draftData.draft) throw new Error('Could not load invoice draft');
+
+        const booking: Booking = {
+          bookingId,
+          clientEmail: filled.client.email,
+          clientName: filled.client.name,
+          clientPhone: filled.client.phone,
+          clientTimezone: filled.client.timezone,
+          clientCountry: filled.client.country,
+          preferredLanguage: 'en',
+          serviceSlug: filled.serviceSlug,
+          serviceName: filled.serviceName,
+          sessionMode: filled.sessionMode,
+          durationMinutes: filled.durationMinutes,
+          startTime: filled.startIso,
+          endTime: filled.endIso,
+          status: 'pending-review',
+          source: 'manual',
+          clientNotes: filled.notes || undefined,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        setStep2({ booking, draft: draftData.draft });
+        setCurrentStep(2);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'Failed to load draft');
+      }
+    },
+    [headers, providerLoc, onCreated, onClose],
+  );
+
   // ─── Handler: Step 2 Confirm & Send ────────────────────────
   const handleConfirmSend = useCallback(async () => {
     if (!step2) return;
@@ -627,6 +747,31 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
 
               {/* ── Scrollable body ── */}
               <div className="px-4 sm:px-6 py-4 space-y-3 overflow-y-auto flex-1 min-h-0 overscroll-contain">
+                {/* AI Compose bar — shown only in Step 1 */}
+                {currentStep === 1 && (
+                  <AIComposeBar password={password} onDraftReady={handleAIDraftReady} />
+                )}
+
+                {/* Verification banner — shown after AI fills fields, in both steps */}
+                {aiComposeSummary && (
+                  <div className="flex items-start gap-2.5 px-3.5 py-2.5 rounded-xl bg-[#FFFBF5] border border-[#C8A97D]/40">
+                    <Sparkles className="w-4 h-4 text-[#C8A97D] shrink-0 mt-0.5" />
+                    <div className="text-[11px] text-[#4A4A5C] leading-snug flex-1">
+                      <span className="font-semibold text-[#7A3B5E]">AI filled {aiComposeSummary.fieldsFilled} fields.</span>{' '}
+                      Please verify the date{' '}
+                      <span className="font-bold text-[#2D2A33]">{aiComposeSummary.resolvedDateLabel}</span>
+                      {' '}and client email{' '}
+                      <span className="font-mono text-[#2D2A33]">{aiComposeSummary.clientEmail}</span>
+                      {aiComposeSummary.isNewClient && (
+                        <span className="ml-1.5 px-1.5 py-0.5 rounded bg-[#C8A97D]/15 text-[#7A3B5E] text-[9px] uppercase tracking-wide font-semibold">
+                          new client
+                        </span>
+                      )}
+                      {' '}before confirming.
+                    </div>
+                  </div>
+                )}
+
                 {currentStep === 1 ? (
                   <Step1Content
                     serviceSlug={serviceSlug}
