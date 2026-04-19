@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { HelpCircle, Plus, Sparkles, Loader2, Trash2, Edit3, Save, X, Wand2, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Tag } from 'lucide-react';
+import { HelpCircle, Plus, Sparkles, Loader2, Trash2, Edit3, Save, X, Wand2, ChevronDown, ChevronUp, ArrowUp, ArrowDown, Tag, AlertTriangle } from 'lucide-react';
 import TranslateButton from './TranslateButton';
 import UndoToast, { useUndo } from './UndoToast';
+import { ArabicField, ArabicTextarea } from './ArabicField';
 
 interface CMSFAQ {
   id: string; question: string; questionAr: string;
@@ -24,6 +25,7 @@ export default function FAQsModule({ password }: Props) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [form, setForm] = useState({ question: '', questionAr: '', answer: '', answerAr: '', tag: 'General', tagAr: 'عام' });
+  const [saveError, setSaveError] = useState<string | null>(null);
   const { undoAction, pushUndo, clearUndo } = useUndo();
 
   const fetchItems = useCallback(async () => {
@@ -52,16 +54,29 @@ export default function FAQsModule({ password }: Props) {
   };
 
   const handleSave = async () => {
-    if (!form.question.trim() || !form.answer.trim()) return;
+    setSaveError(null);
+    if (!form.question.trim() || !form.answer.trim()) {
+      setSaveError('English question and answer are required.');
+      return;
+    }
     setSaving(true);
     try {
-      await fetch('/api/admin/content', {
+      const res = await fetch('/api/admin/content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
         body: JSON.stringify({ type: 'faq', action: editing ? 'update' : 'create', data: { ...(editing ? { id: editing.id } : {}), ...form } }),
       });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        const details = Array.isArray(j.details) ? ' — ' + j.details.join(' ') : '';
+        setSaveError((j.error || 'Save failed') + details);
+        setSaving(false);
+        return;
+      }
       setEditorOpen(false); setEditing(null); fetchItems();
-    } catch { /* */ }
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Save failed');
+    }
     setSaving(false);
   };
 
@@ -175,12 +190,20 @@ export default function FAQsModule({ password }: Props) {
 
           <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Answer (English) *</label><textarea value={form.answer} onChange={(e) => setForm(p => ({ ...p, answer: e.target.value }))} rows={4} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none" /></div>
 
-          <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">Answer (Arabic) <TranslateButton text={form.answer} onTranslated={(t) => setForm(p => ({ ...p, answerAr: t }))} password={password} contentType="FAQ answer" compact /></label><textarea value={form.answerAr} onChange={(e) => setForm(p => ({ ...p, answerAr: e.target.value }))} rows={4} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none" dir="rtl" /></div>
+          <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">Answer (Arabic) <TranslateButton text={form.answer} onTranslated={(t) => setForm(p => ({ ...p, answerAr: t }))} password={password} contentType="FAQ answer" compact /></label><ArabicTextarea value={form.answerAr} onChange={(e) => setForm(p => ({ ...p, answerAr: e.target.value }))} rows={4} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm resize-none" /></div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">Question (Arabic) <TranslateButton text={form.question} onTranslated={(t) => setForm(p => ({ ...p, questionAr: t }))} password={password} contentType="FAQ question" compact /></label><input value={form.questionAr} onChange={(e) => setForm(p => ({ ...p, questionAr: e.target.value }))} dir="rtl" className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm" /></div>
+            <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1 flex items-center justify-between">Question (Arabic) <TranslateButton text={form.question} onTranslated={(t) => setForm(p => ({ ...p, questionAr: t }))} password={password} contentType="FAQ question" compact /></label><ArabicField value={form.questionAr} onChange={(e) => setForm(p => ({ ...p, questionAr: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm" /></div>
             <div><label className="block text-sm font-medium text-[#4A4A5C] mb-1">Category</label><select value={form.tag} onChange={(e) => setForm(p => ({ ...p, tag: e.target.value }))} className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm bg-white capitalize">{allTags.map(t => <option key={t} value={t}>{t}</option>)}</select></div>
           </div>
+
+          {saveError && (
+            <div className="px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2">
+              <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+              <span className="flex-1">{saveError}</span>
+              <button type="button" onClick={() => setSaveError(null)}><X className="w-3 h-3" /></button>
+            </div>
+          )}
 
           <div className="flex gap-3">
             <button onClick={handleSave} disabled={saving} className="px-6 py-2.5 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold disabled:opacity-50 flex items-center gap-2">{saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />} Save</button>
@@ -253,6 +276,7 @@ function CategoryFAQsEditor({ password }: { password: string }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     // Always load from public API first (has defaults + CMS overrides merged)
@@ -303,6 +327,7 @@ function CategoryFAQsEditor({ password }: { password: string }) {
   };
 
   const handleSave = async () => {
+    setSaveError(null);
     setSaving(true);
     try {
       const res = await fetch('/api/admin/category-faqs', {
@@ -310,8 +335,18 @@ function CategoryFAQsEditor({ password }: { password: string }) {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${password}` },
         body: JSON.stringify({ category: activeCat, faqs: catFaqs[activeCat] || [] }),
       });
-      if (res.ok) { setSaved(true); setEditingIdx(null); setTimeout(() => setSaved(false), 3000); }
-    } catch { /* ignore */ }
+      if (res.ok) {
+        setSaved(true);
+        setEditingIdx(null);
+        setTimeout(() => setSaved(false), 3000);
+      } else {
+        const j = await res.json().catch(() => ({}));
+        const details = Array.isArray(j.details) ? ' — ' + j.details.slice(0, 4).join(' ') : '';
+        setSaveError((j.error || 'Save failed') + details);
+      }
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Save failed');
+    }
     setSaving(false);
   };
 
@@ -372,11 +407,11 @@ function CategoryFAQsEditor({ password }: { password: string }) {
               <div className="px-5 pb-4 space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div><label className="text-[10px] text-[#8E8E9F]">Question (EN)</label><input value={faq.q} onChange={(e) => updateFaq(i, 'q', e.target.value)} className="w-full px-2 py-1.5 rounded border border-[#E8E4DE] text-sm" /></div>
-                  <div><label className="text-[10px] text-[#8E8E9F]">Question (AR)</label><input value={faq.qAr} onChange={(e) => updateFaq(i, 'qAr', e.target.value)} dir="rtl" className="w-full px-2 py-1.5 rounded border border-[#E8E4DE] text-sm" /></div>
+                  <div><label className="text-[10px] text-[#8E8E9F]">Question (AR)</label><ArabicField value={faq.qAr} onChange={(e) => updateFaq(i, 'qAr', e.target.value)} className="w-full px-2 py-1.5 rounded border border-[#E8E4DE] text-sm" /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div><label className="text-[10px] text-[#8E8E9F]">Answer (EN)</label><textarea value={faq.a} onChange={(e) => updateFaq(i, 'a', e.target.value)} rows={3} className="w-full px-2 py-1.5 rounded border border-[#E8E4DE] text-sm resize-none" /></div>
-                  <div><label className="text-[10px] text-[#8E8E9F]">Answer (AR)</label><textarea value={faq.aAr} onChange={(e) => updateFaq(i, 'aAr', e.target.value)} rows={3} dir="rtl" className="w-full px-2 py-1.5 rounded border border-[#E8E4DE] text-sm resize-none" /></div>
+                  <div><label className="text-[10px] text-[#8E8E9F]">Answer (AR)</label><ArabicTextarea value={faq.aAr} onChange={(e) => updateFaq(i, 'aAr', e.target.value)} rows={3} className="w-full px-2 py-1.5 rounded border border-[#E8E4DE] text-sm resize-none" /></div>
                 </div>
               </div>
             )}
@@ -388,7 +423,7 @@ function CategoryFAQsEditor({ password }: { password: string }) {
         )}
       </div>
 
-      <div className="flex items-center gap-3 mt-4">
+      <div className="flex items-center gap-3 mt-4 flex-wrap">
         <button onClick={addFaq} className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-[#F3EFE8] text-xs font-medium text-[#7A3B5E] hover:bg-[#7A3B5E] hover:text-white transition-colors">
           <Plus className="w-3 h-3" /> Add FAQ
         </button>
@@ -397,6 +432,13 @@ function CategoryFAQsEditor({ password }: { password: string }) {
         </button>
         {saved && <span className="text-xs text-[#3B8A6E]">Saved!</span>}
       </div>
+      {saveError && (
+        <div className="mt-3 px-3 py-2 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2">
+          <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+          <span className="flex-1">{saveError}</span>
+          <button type="button" onClick={() => setSaveError(null)}><X className="w-3 h-3" /></button>
+        </div>
+      )}
     </div>
   );
 }

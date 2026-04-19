@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
+import { validateCategoryFaqs } from '@/lib/admin/content-validation';
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
@@ -28,6 +29,21 @@ export async function POST(req: NextRequest) {
 
   try {
     const { category, faqs } = await req.json();
+
+    if (typeof category !== 'string' || !category.trim()) {
+      return NextResponse.json({ error: 'Missing category' }, { status: 400 });
+    }
+
+    // Bilingual enforcement — every FAQ in the list must carry both EN
+    // and AR question + answer, and the AR values must contain Arabic
+    // characters (not English typed into the AR field).
+    const result = validateCategoryFaqs(faqs);
+    if (!result.valid) {
+      return NextResponse.json(
+        { error: 'Bilingual validation failed', details: result.errors },
+        { status: 400 },
+      );
+    }
 
     // Get existing
     const raw = await kv.get('cms:category-faqs');

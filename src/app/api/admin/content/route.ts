@@ -148,6 +148,20 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'KV storage not configured' }, { status: 500 });
   }
 
+  // Bilingual enforcement — every piece of published content must carry
+  // both EN and AR versions of each required field. Blocks create/update
+  // only; delete + reorder don't touch content bodies so they pass.
+  if (action === 'create' || action === 'update') {
+    const { validateContent } = await import('@/lib/admin/content-validation');
+    const result = validateContent(type, data);
+    if (!result.valid) {
+      return NextResponse.json(
+        { error: 'Bilingual validation failed', details: result.errors },
+        { status: 400 },
+      );
+    }
+  }
+
   try {
     // Get current CMS items
     const raw = await kv.get(KV_KEYS[type]);
