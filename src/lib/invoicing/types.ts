@@ -413,6 +413,15 @@ export interface RecurringSchedule {
   active: boolean;
   /** When TRUE, generated invoices are sent immediately; when FALSE, left as drafts. */
   autoSend: boolean;
+  /**
+   * IANA timezone the anchor is interpreted in (e.g. "America/Toronto").
+   * Optional for backwards compatibility — legacy schedules without a
+   * timezone are treated as UTC, matching the original behaviour. New
+   * schedules should always set this so a "fire on the 15th" schedule
+   * really fires on the local 15th instead of UTC 00:00 (which can be
+   * the previous day in North American timezones).
+   */
+  timezone?: string;
   /* Telemetry */
   nextRunAt: string;
   lastRunAt?: string;

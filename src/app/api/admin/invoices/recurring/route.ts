@@ -62,6 +62,10 @@ export async function POST(req: NextRequest) {
       startDate: body.startDate,
       endDate: body.endDate,
       autoSend: body.autoSend,
+      // Optional: admin may pass an IANA timezone (e.g. "America/Toronto").
+      // createSchedule defaults to 'America/Toronto' (home base) when
+      // omitted so the anchor day is interpreted locally, not UTC.
+      timezone: typeof body.timezone === 'string' ? body.timezone : undefined,
     });
 
     if (!schedule) {
