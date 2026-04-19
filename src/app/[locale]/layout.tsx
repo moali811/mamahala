@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       title,
       description,
       url: `https://mamahala.ca/${locale}`,
-      siteName: isAr ? 'ماما هالة للاستشارات' : 'Mama Hala Consulting',
+      siteName: isAr ? 'ماما هالة' : 'Mama Hala',
       locale: isAr ? 'ar_AE' : 'en_CA',
       alternateLocale: isAr ? ['ar_SA', 'ar_EG', 'en_CA'] : ['ar_AE', 'ar_SA'],
       type: 'website',
