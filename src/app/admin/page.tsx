@@ -12,6 +12,7 @@ import {
 import DashboardModule from '@/components/admin/DashboardModule';
 import EventsModule from '@/components/admin/EventsModule';
 import LeadsModule from '@/components/admin/LeadsModule';
+import ClientsModule from '@/components/admin/ClientsModule';
 import BlogModule from '@/components/admin/BlogModule';
 import ServicesModule from '@/components/admin/ServicesModule';
 import TestimonialsModule from '@/components/admin/TestimonialsModule';
@@ -50,6 +51,7 @@ interface Lead {
 type Module =
   | 'dashboard'
   | 'events'
+  | 'clients'
   | 'leads'
   | 'blog'
   | 'services'
@@ -66,7 +68,7 @@ const NAV_ITEMS: { key: Module; label: string; icon: React.ReactNode; group: str
   { key: 'bookings', label: 'Bookings', icon: <Calendar className="w-4.5 h-4.5" />, group: 'primary' },
   { key: 'invoices', label: 'Invoices', icon: <Receipt className="w-4.5 h-4.5" />, group: 'primary' },
   { key: 'dashboard', label: 'Dashboard', icon: <BarChart3 className="w-4.5 h-4.5" />, group: 'primary' },
-  { key: 'leads', label: 'Clients', icon: <Users className="w-4.5 h-4.5" />, group: 'primary' },
+  { key: 'clients', label: 'Clients', icon: <Users className="w-4.5 h-4.5" />, group: 'primary' },
   // Manage
   { key: 'events', label: 'Events', icon: <Calendar className="w-4.5 h-4.5" />, group: 'Manage' },
   { key: 'blog', label: 'Blog', icon: <FileText className="w-4.5 h-4.5" />, group: 'Manage' },
@@ -74,6 +76,7 @@ const NAV_ITEMS: { key: Module; label: string; icon: React.ReactNode; group: str
   { key: 'testimonials', label: 'Testimonials', icon: <Star className="w-4.5 h-4.5" />, group: 'Manage' },
   { key: 'faqs', label: 'FAQs', icon: <HelpCircle className="w-4.5 h-4.5" />, group: 'Manage' },
   { key: 'resources', label: 'Resources', icon: <BookOpen className="w-4.5 h-4.5" />, group: 'Manage' },
+  { key: 'leads', label: 'Leads', icon: <Sparkles className="w-4.5 h-4.5" />, group: 'Manage' },
   { key: 'quiz-results', label: 'Quizzes', icon: <ClipboardCheck className="w-4.5 h-4.5" />, group: 'Manage' },
   // System
   { key: 'settings', label: 'Settings', icon: <Settings className="w-4.5 h-4.5" />, group: 'System' },
@@ -84,7 +87,7 @@ const MOBILE_TABS: { key: Module; label: string; icon: React.ReactNode }[] = [
   { key: 'bookings', label: 'Bookings', icon: <Calendar className="w-[22px] h-[22px]" /> },
   { key: 'invoices', label: 'Invoices', icon: <Receipt className="w-[22px] h-[22px]" /> },
   { key: 'dashboard', label: 'Home', icon: <BarChart3 className="w-[22px] h-[22px]" /> },
-  { key: 'leads', label: 'Clients', icon: <Users className="w-[22px] h-[22px]" /> },
+  { key: 'clients', label: 'Clients', icon: <Users className="w-[22px] h-[22px]" /> },
   { key: 'settings', label: 'More', icon: <Menu className="w-[22px] h-[22px]" /> },
 ];
 
@@ -500,6 +503,7 @@ export default function AdminCommandCenter() {
         <main className="p-4 sm:p-6">
           {activeModule === 'dashboard' && <DashboardModule stats={stats} leads={leads} />}
           {activeModule === 'events' && <EventsModule password={password} />}
+          {activeModule === 'clients' && <ClientsModule password={password} />}
           {activeModule === 'leads' && <LeadsModule leads={leads} password={password} searchQuery={searchQuery} onSearchChange={setSearchQuery} />}
           {activeModule === 'blog' && <BlogModule password={password} />}
           {activeModule === 'services' && <ServicesModule password={password} />}
@@ -524,7 +528,7 @@ export default function AdminCommandCenter() {
           {MOBILE_TABS.map(item => {
             const isMore = item.key === 'settings';
             const isActive = isMore
-              ? !['dashboard', 'bookings', 'invoices', 'leads'].includes(activeModule)
+              ? !['dashboard', 'bookings', 'invoices', 'clients'].includes(activeModule)
               : activeModule === item.key;
             return (
               <button

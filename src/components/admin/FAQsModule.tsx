@@ -235,7 +235,15 @@ export default function FAQsModule({ password }: Props) {
 }
 
 // ─── CATEGORY FAQs EDITOR ───
-const SERVICE_CATEGORIES = ['youth', 'families', 'adults', 'couples', 'experiential'];
+// Pulls EN/AR display names from the services data so the tabs match
+// what clients see on the public service-category pages.
+const SERVICE_CATEGORIES: Array<{ key: string; name: string; nameAr: string }> = [
+  { key: 'youth', name: 'Youth', nameAr: 'النّاشئة' },
+  { key: 'families', name: 'Families', nameAr: 'الأُسَر' },
+  { key: 'adults', name: 'Adults', nameAr: 'البالغون' },
+  { key: 'couples', name: 'Couples', nameAr: 'الأزواج' },
+  { key: 'experiential', name: 'Experiential', nameAr: 'العلاج التجريبي' },
+];
 
 function CategoryFAQsEditor({ password }: { password: string }) {
   const [catFaqs, setCatFaqs] = useState<Record<string, { q: string; qAr: string; a: string; aAr: string }[]>>({});
@@ -317,11 +325,12 @@ function CategoryFAQsEditor({ password }: { password: string }) {
       </h2>
 
       {/* Category tabs */}
-      <div className="flex gap-1 bg-white rounded-lg border border-[#F3EFE8] p-1 mb-4">
+      <div className="flex gap-1 bg-white rounded-lg border border-[#F3EFE8] p-1 mb-4 overflow-x-auto">
         {SERVICE_CATEGORIES.map(cat => (
-          <button key={cat} onClick={() => { setActiveCat(cat); setEditingIdx(null); setExpandedIdx(null); }}
-            className={`px-3 py-1.5 rounded-md text-xs font-medium capitalize transition-all ${activeCat === cat ? 'bg-[#7A3B5E] text-white' : 'text-[#4A4A5C] hover:bg-[#FAF7F2]'}`}>
-            {cat}
+          <button key={cat.key} onClick={() => { setActiveCat(cat.key); setEditingIdx(null); setExpandedIdx(null); }}
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all whitespace-nowrap ${activeCat === cat.key ? 'bg-[#7A3B5E] text-white' : 'text-[#4A4A5C] hover:bg-[#FAF7F2]'}`}>
+            {cat.name}
+            <span className="ml-1 opacity-60 text-[10px]">({(catFaqs[cat.key] || []).length})</span>
           </button>
         ))}
       </div>
