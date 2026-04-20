@@ -22,8 +22,9 @@ import {
   PLUM, PLUM_DEEP, GOLD, GOLD_LIGHT, CREAM, DARK, TEXT, MUTED,
   LIGHT, WHITE, GREEN, PALE_GREEN, ROW_TINT,
   PAGE_WIDTH, PAGE_HEIGHT, MARGIN, CONTENT_WIDTH,
-  formatDate, hr, sectionLabel, wrap,
+  formatDate, hr, sectionLabel, wrap, drawText,
 } from './pdf-shared';
+import { registerArabicFont } from './pdf-fonts';
 import { BUSINESS } from '@/config/business';
 
 export interface ReceiptInput {
@@ -38,6 +39,7 @@ export async function generateReceiptPdf(
   settings: InvoiceSettings,
 ): Promise<Buffer> {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  registerArabicFont(doc);
   const invoice = input.invoice;
   const service = services.find((s) => s.slug === invoice.draft.serviceSlug);
   const serviceName = service?.name ?? invoice.draft.serviceSlug;
@@ -211,14 +213,14 @@ export async function generateReceiptPdf(
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(...DARK);
-  doc.text(invoice.draft.client.name, MARGIN, y);
+  drawText(doc, invoice.draft.client.name, MARGIN, y, { weight: 'bold' });
   y += 5;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(...TEXT);
-  doc.text(invoice.draft.client.email, MARGIN, y);
+  drawText(doc, invoice.draft.client.email, MARGIN, y);
   y += 4;
-  doc.text(invoice.draft.client.country, MARGIN, y);
+  drawText(doc, invoice.draft.client.country, MARGIN, y);
   y += 6;
 
   hr(doc, y);
@@ -233,7 +235,7 @@ export async function generateReceiptPdf(
     const subjectLines = wrap(doc, invoice.draft.subject.trim(), CONTENT_WIDTH);
     const toDraw = subjectLines.slice(0, 3);
     for (const line of toDraw) {
-      doc.text(line, MARGIN, y);
+      drawText(doc, line, MARGIN, y);
       y += 4.5;
     }
     y += 3;

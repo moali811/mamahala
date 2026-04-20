@@ -20,8 +20,9 @@ import {
   PLUM, PLUM_DEEP, GOLD, CREAM, DARK, TEXT, MUTED,
   LIGHT, WHITE, GREEN,
   PAGE_WIDTH, PAGE_HEIGHT, MARGIN, CONTENT_WIDTH,
-  formatDate, hr, wrap,
+  formatDate, hr, wrap, drawText,
 } from './pdf-shared';
+import { registerArabicFont } from './pdf-fonts';
 import { BUSINESS } from '@/config/business';
 import { buildPaymentConciergeUrl } from './stripe-checkout';
 
@@ -30,6 +31,7 @@ export async function generateInvoicePdf(
   settings: InvoiceSettings,
 ): Promise<Buffer> {
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  registerArabicFont(doc);
   const service = services.find((s) => s.slug === invoice.draft.serviceSlug);
   const serviceName = service?.name ?? invoice.draft.serviceSlug;
   const bd = invoice.breakdown;
@@ -143,15 +145,15 @@ export async function generateInvoicePdf(
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(...DARK);
-  doc.text(invoice.draft.client.name, MARGIN, y);
+  drawText(doc, invoice.draft.client.name, MARGIN, y, { weight: 'bold' });
   y += 4.5;
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
   doc.setTextColor(...TEXT);
-  doc.text(invoice.draft.client.email, MARGIN, y);
+  drawText(doc, invoice.draft.client.email, MARGIN, y);
   y += 3.5;
-  doc.text(invoice.draft.client.country || '', MARGIN, y);
+  drawText(doc, invoice.draft.client.country || '', MARGIN, y);
   y += 3.5;
 
   // Right: dates — right-aligned to match invoice number and amounts
@@ -187,7 +189,7 @@ export async function generateInvoicePdf(
     doc.setTextColor(...TEXT);
     const subLines = wrap(doc, invoice.draft.subject.trim(), CONTENT_WIDTH);
     for (const line of subLines.slice(0, 2)) {
-      doc.text(line, MARGIN, y);
+      drawText(doc, line, MARGIN, y);
       y += 4;
     }
     y += 3;
@@ -218,7 +220,7 @@ export async function generateInvoicePdf(
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9.5);
       doc.setTextColor(...DARK);
-      doc.text((item.description || '(untitled)').slice(0, 60), colDesc + 2, y);
+      drawText(doc, (item.description || '(untitled)').slice(0, 60), colDesc + 2, y);
       doc.text(String(item.quantity), colQty, y, { align: 'center' });
       doc.text(formatPrice(item.unitPriceLocal, bd.displayCurrency), colRate, y, { align: 'right' });
       doc.setFont('helvetica', 'bold');
@@ -401,7 +403,7 @@ export async function generateInvoicePdf(
     y += 4;
     doc.setTextColor(...TEXT);
     for (const line of wrap(doc, effectiveNotes, CONTENT_WIDTH)) {
-      doc.text(line, MARGIN, y);
+      drawText(doc, line, MARGIN, y);
       y += 3.5;
     }
     y += 3;

@@ -6,6 +6,7 @@
    ================================================================ */
 
 import type { jsPDF } from 'jspdf';
+import { ARABIC_FONT_NAME, containsArabic } from './pdf-fonts';
 
 // ─── Brand palette as RGB tuples ─────────────────────────────────
 export const PLUM: [number, number, number] = [122, 59, 94];
@@ -70,4 +71,59 @@ export function sectionLabel(
 /** Word-wrap text to a max width in mm, returns array of lines. */
 export function wrap(doc: jsPDF, text: string, maxWidth: number): string[] {
   return doc.splitTextToSize(text, maxWidth) as string[];
+}
+
+/**
+ * Draw text that may contain Arabic (or other RTL scripts). When
+ * Arabic is detected, temporarily switches to the registered
+ * Tajawal font with R2L direction; otherwise leaves the current
+ * font untouched. Preserves the caller's font/weight/size/color
+ * state on exit. Falls back to plain rendering if Tajawal failed
+ * to register (dev without TTFs).
+ *
+ * `weight` controls which Tajawal face is used for Arabic runs
+ * ("normal" or "bold"). Pass the same weight you'd use with
+ * helvetica; the helper matches it.
+ */
+export function drawText(
+  doc: jsPDF,
+  text: string,
+  x: number,
+  y: number,
+  opts: {
+    weight?: 'normal' | 'bold' | 'italic';
+    align?: 'left' | 'center' | 'right';
+    maxWidth?: number;
+  } = {},
+): void {
+  if (!text) return;
+  const align = opts.align ?? 'left';
+  const weight = opts.weight ?? 'normal';
+
+  if (!containsArabic(text)) {
+    doc.text(text, x, y, opts.maxWidth ? { align, maxWidth: opts.maxWidth } : { align });
+    return;
+  }
+
+  // Snapshot current font so we can restore after the Arabic run.
+  const prevFont = doc.getFont();
+  // Arabic uses only normal/bold — italic falls back to normal.
+  const arabicWeight = weight === 'bold' ? 'bold' : 'normal';
+
+  try {
+    doc.setFont(ARABIC_FONT_NAME, arabicWeight);
+  } catch {
+    // Font not registered — render as-is (will mojibake but won't crash).
+    doc.text(text, x, y, opts.maxWidth ? { align, maxWidth: opts.maxWidth } : { align });
+    return;
+  }
+
+  doc.setR2L(true);
+  doc.text(text, x, y, opts.maxWidth ? { align, maxWidth: opts.maxWidth } : { align });
+  doc.setR2L(false);
+
+  // Restore previous font.
+  try {
+    doc.setFont(prevFont.fontName, prevFont.fontStyle);
+  } catch { /* best-effort */ }
 }
