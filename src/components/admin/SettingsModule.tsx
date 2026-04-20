@@ -51,7 +51,7 @@ const DEFAULT_SETTINGS: Settings = {
   location: BUSINESS.location,
   locationAr: BUSINESS.locationAr,
   calUsername: BUSINESS.calUsername,
-  stat1Value: '500+', stat1LabelEn: 'Families Supported', stat1LabelAr: 'عائلة تم دعمها', stat1DescEn: 'since 2018', stat1DescAr: 'منذ ٢٠١٨',
+  stat1Value: '10000+', stat1LabelEn: 'Families Supported', stat1LabelAr: 'عائلة تم دعمها', stat1DescEn: 'since 2018', stat1DescAr: 'منذ ٢٠١٨',
   stat2Value: '98%', stat2LabelEn: 'Would Recommend', stat2LabelAr: 'يوصون بنا', stat2DescEn: 'client satisfaction', stat2DescAr: 'رضا العملاء',
   stat3Value: '8+', stat3LabelEn: 'Years of Practice', stat3LabelAr: 'سنوات من الممارسة', stat3DescEn: 'clinical experience', stat3DescAr: 'خبرة سريرية',
   stat4Value: '15+', stat4LabelEn: 'Specializations', stat4LabelAr: 'تخصصاً', stat4DescEn: 'across all ages', stat4DescAr: 'لجميع الأعمار',

@@ -160,7 +160,7 @@ export default function AboutPage() {
         <div className="container-main">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4 max-w-4xl mx-auto">
             {[
-              { icon: Heart, value: cmsStats?.stat1Value || '500+', labelEn: cmsStats?.stat1LabelEn || 'Families Supported', labelAr: cmsStats?.stat1LabelAr || 'عائلة تم دعمها', descEn: cmsStats?.stat1DescEn || 'since 2018', descAr: cmsStats?.stat1DescAr || 'منذ ٢٠١٨', color: '#7A3B5E' },
+              { icon: Heart, value: cmsStats?.stat1Value || '10000+', labelEn: cmsStats?.stat1LabelEn || 'Families Supported', labelAr: cmsStats?.stat1LabelAr || 'عائلة تم دعمها', descEn: cmsStats?.stat1DescEn || 'since 2018', descAr: cmsStats?.stat1DescAr || 'منذ ٢٠١٨', color: '#7A3B5E' },
               { icon: Sparkles, value: cmsStats?.stat2Value || '98%', labelEn: cmsStats?.stat2LabelEn || 'Would Recommend', labelAr: cmsStats?.stat2LabelAr || 'يوصون بنا', descEn: cmsStats?.stat2DescEn || 'client satisfaction', descAr: cmsStats?.stat2DescAr || 'رضا العملاء', color: '#C4878A' },
               { icon: Calendar, value: cmsStats?.stat3Value || '8+', labelEn: cmsStats?.stat3LabelEn || 'Years of Practice', labelAr: cmsStats?.stat3LabelAr || 'سنوات من الممارسة', descEn: cmsStats?.stat3DescEn || 'clinical experience', descAr: cmsStats?.stat3DescAr || 'خبرة سريرية', color: '#C8A97D' },
               { icon: Brain, value: cmsStats?.stat4Value || '15+', labelEn: cmsStats?.stat4LabelEn || 'Specializations', labelAr: cmsStats?.stat4LabelAr || 'تخصصاً', descEn: cmsStats?.stat4DescEn || 'across all ages', descAr: cmsStats?.stat4DescAr || 'لجميع الأعمار', color: '#7A3B5E' },
@@ -246,7 +246,7 @@ export default function AboutPage() {
                   <div className={`relative mb-10 ${isRTL ? 'pr-6 border-r-[3px]' : 'pl-6 border-l-[3px]'} border-[#C8A97D]/40`}>
                     <p className="text-xl lg:text-2xl text-[#2D2A33] leading-relaxed italic" style={{ fontFamily: 'var(--font-heading)' }}>
                       {isRTL
-                        ? 'بوصفي أمًّا لمراهقَين، وزوجةً وَفيّة، ومستشارةً تنبضُ بالعطاء — كرّستُ حياتي لتعزيزِ عافيةِ الأُسَر.'
+                        ? 'بوصفي أمًّا لشابَّين، وزوجةً وَفيّة، ومستشارةً تنبضُ بالعطاء — كرّستُ حياتي لتعزيزِ عافيةِ الأُسَر.'
                         : "As a mother of two young adults, a devoted wife, and a compassionate counselor — I've committed my life to strengthening the well-being of families."
                       }
                     </p>

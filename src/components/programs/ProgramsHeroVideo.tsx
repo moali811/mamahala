@@ -50,8 +50,8 @@ const SLIDES = [
   },
   {
     image: '/images/hala-working.jpg',
-    en: { eye: 'One clinician. Every word.', hl: 'Dr. Hala wrote every module.\nWhere does your growth begin?', sub: 'Yale Doctorate · UofT M.A. · CBT Specialist · 8+ years · 500+ families', isCTA: true },
-    ar: { eye: 'طبيبة واحدة. كل كلمة.', hl: 'د. هلى كتبت كل وحدة.\nمن أين يبدأ نموّك؟', sub: 'دكتوراه من جامعة يايل · ماجستير UofT · متخصصة CBT · 8+ سنوات · 500+ عائلة', isCTA: true },
+    en: { eye: 'One clinician. Every word.', hl: 'Dr. Hala wrote every module.\nWhere does your growth begin?', sub: 'Yale Doctorate · UofT M.A. · CBT Specialist · 8+ years · 10000+ families', isCTA: true },
+    ar: { eye: 'طبيبة واحدة. كل كلمة.', hl: 'د. هلى كتبت كل وحدة.\nمن أين يبدأ نموّك؟', sub: 'دكتوراه من جامعة يايل · ماجستير UofT · متخصصة CBT · 8+ سنوات · 10000+ عائلة', isCTA: true },
     objectPosition: 'center 15%',
     kenBurns: { scale: 1.07, tx: 0, ty: 0 },
   },
