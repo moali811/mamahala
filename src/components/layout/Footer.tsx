@@ -189,9 +189,39 @@ export default function Footer({ locale, messages }: FooterProps) {
       {/* ═══ BOTTOM BAR ═══ */}
       <div className="bg-[#F5F0EA] border-t border-[#D4ADA8]/20">
         <div className="container-main max-w-7xl py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[11px] text-[#8E8E9F]">
-            &copy; {currentYear} {isRTL ? 'ماما هالة' : 'Mama Hala'}. {footer.rights}
-          </p>
+          <div className="flex items-center gap-3 flex-wrap justify-center sm:justify-start">
+            <p className="text-[11px] text-[#8E8E9F]">
+              &copy; {currentYear} {isRTL ? 'ماما هالة' : 'Mama Hala'}. {footer.rights}
+            </p>
+            <span className="hidden sm:block h-3 w-px bg-[#D4ADA8]/30" />
+            <a
+              href="https://eigenra.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Powered by EiGENRA"
+              className="group inline-flex items-center gap-1.5 text-[10px] text-[#8E8E9F] hover:text-[#C8A97D] transition-colors"
+            >
+              <span className="uppercase tracking-[0.18em]">
+                {isRTL ? 'مدعوم بـ' : 'Powered by'}
+              </span>
+              <span className="relative inline-flex h-3.5 items-center">
+                <Image
+                  src="/eigenra-wordmark.png"
+                  alt="EiGENRA"
+                  width={317}
+                  height={92}
+                  className="h-3.5 w-auto object-contain opacity-75 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:-translate-y-[1px] group-hover:[filter:drop-shadow(0_0_8px_rgba(200,169,125,0.55))]"
+                />
+                {/* Subtle sheen on hover */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 overflow-hidden rounded-sm"
+                >
+                  <span className="absolute inset-y-0 -left-1/2 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 opacity-0 group-hover:opacity-100 group-hover:translate-x-[400%] transition-all duration-1000 ease-out" />
+                </span>
+              </span>
+            </a>
+          </div>
           <div className="flex items-center gap-5">
             {[
               { label: footer.privacy, href: `/${locale}/privacy-policy` },
