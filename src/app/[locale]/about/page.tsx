@@ -162,7 +162,7 @@ export default function AboutPage() {
             {[
               { icon: Heart, value: cmsStats?.stat1Value || '10000+', labelEn: cmsStats?.stat1LabelEn || 'Families Supported', labelAr: cmsStats?.stat1LabelAr || 'عائلة تم دعمها', descEn: cmsStats?.stat1DescEn || 'since 2018', descAr: cmsStats?.stat1DescAr || 'منذ ٢٠١٨', color: '#7A3B5E' },
               { icon: Sparkles, value: cmsStats?.stat2Value || '98%', labelEn: cmsStats?.stat2LabelEn || 'Would Recommend', labelAr: cmsStats?.stat2LabelAr || 'يوصون بنا', descEn: cmsStats?.stat2DescEn || 'client satisfaction', descAr: cmsStats?.stat2DescAr || 'رضا العملاء', color: '#C4878A' },
-              { icon: Calendar, value: cmsStats?.stat3Value || '8+', labelEn: cmsStats?.stat3LabelEn || 'Years of Practice', labelAr: cmsStats?.stat3LabelAr || 'سنوات من الممارسة', descEn: cmsStats?.stat3DescEn || 'clinical experience', descAr: cmsStats?.stat3DescAr || 'خبرة سريرية', color: '#C8A97D' },
+              { icon: Globe, value: cmsStats?.stat3Value || 'Borderless', valueAr: 'بلا حدود', labelEn: cmsStats?.stat3LabelEn || 'Care Without Distance', labelAr: cmsStats?.stat3LabelAr || 'رعايةٌ بلا مسافات', descEn: cmsStats?.stat3DescEn || 'Canada · Dubai · 74+ countries', descAr: cmsStats?.stat3DescAr || 'كندا · دبي · أكثر من 74 دولة', color: '#C8A97D' },
               { icon: Brain, value: cmsStats?.stat4Value || '15+', labelEn: cmsStats?.stat4LabelEn || 'Specializations', labelAr: cmsStats?.stat4LabelAr || 'تخصصاً', descEn: cmsStats?.stat4DescEn || 'across all ages', descAr: cmsStats?.stat4DescAr || 'لجميع الأعمار', color: '#7A3B5E' },
             ].map((stat, i) => {
               const Icon = stat.icon;
@@ -177,7 +177,7 @@ export default function AboutPage() {
                     </div>
                     <div>
                       <div className="text-xl lg:text-2xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>
-                        {stat.value}
+                        {isRTL && 'valueAr' in stat ? (stat as { valueAr: string }).valueAr : stat.value}
                       </div>
                       <div className="text-sm font-medium text-[#4A4A5C]">{isRTL ? stat.labelAr : stat.labelEn}</div>
                       <div className="text-xs text-[#8E8E9F] mt-0.5 hidden lg:block">{isRTL ? stat.descAr : stat.descEn}</div>

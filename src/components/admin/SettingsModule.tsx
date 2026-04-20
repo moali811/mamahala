@@ -53,7 +53,7 @@ const DEFAULT_SETTINGS: Settings = {
   calUsername: BUSINESS.calUsername,
   stat1Value: '10000+', stat1LabelEn: 'Families Supported', stat1LabelAr: 'عائلة تم دعمها', stat1DescEn: 'since 2018', stat1DescAr: 'منذ ٢٠١٨',
   stat2Value: '98%', stat2LabelEn: 'Would Recommend', stat2LabelAr: 'يوصون بنا', stat2DescEn: 'client satisfaction', stat2DescAr: 'رضا العملاء',
-  stat3Value: '8+', stat3LabelEn: 'Years of Practice', stat3LabelAr: 'سنوات من الممارسة', stat3DescEn: 'clinical experience', stat3DescAr: 'خبرة سريرية',
+  stat3Value: 'Borderless', stat3LabelEn: 'Care Without Distance', stat3LabelAr: 'رعايةٌ بلا مسافات', stat3DescEn: 'Canada · Dubai · 74+ countries', stat3DescAr: 'كندا · دبي · أكثر من 74 دولة',
   stat4Value: '15+', stat4LabelEn: 'Specializations', stat4LabelAr: 'تخصصاً', stat4DescEn: 'across all ages', stat4DescAr: 'لجميع الأعمار',
   toolkitFullAccessPrice: BUSINESS.toolkitFullAccessPrice,
   academyFullAccessPrice: BUSINESS.academyFullAccessPrice,
