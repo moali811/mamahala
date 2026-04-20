@@ -160,7 +160,7 @@ export default function AboutPage() {
         <div className="container-main">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-4 max-w-4xl mx-auto">
             {[
-              { icon: Heart, value: cmsStats?.stat1Value || '10000+', labelEn: cmsStats?.stat1LabelEn || 'Families Supported', labelAr: cmsStats?.stat1LabelAr || 'عائلة تم دعمها', descEn: cmsStats?.stat1DescEn || 'since 2018', descAr: cmsStats?.stat1DescAr || 'منذ ٢٠١٨', color: '#7A3B5E' },
+              { icon: Heart, value: cmsStats?.stat1Value || '10000+', labelEn: cmsStats?.stat1LabelEn || 'Families Supported', labelAr: cmsStats?.stat1LabelAr || 'عائلة تم دعمها', descEn: cmsStats?.stat1DescEn || 'across cultures & generations', descAr: cmsStats?.stat1DescAr || 'عبرَ الثّقافات والأجيال', color: '#7A3B5E' },
               { icon: Sparkles, value: cmsStats?.stat2Value || '98%', labelEn: cmsStats?.stat2LabelEn || 'Would Recommend', labelAr: cmsStats?.stat2LabelAr || 'يوصون بنا', descEn: cmsStats?.stat2DescEn || 'client satisfaction', descAr: cmsStats?.stat2DescAr || 'رضا العملاء', color: '#C4878A' },
               { icon: Globe, value: cmsStats?.stat3Value || 'Borderless', valueAr: 'بلا حدود', labelEn: cmsStats?.stat3LabelEn || 'Care Without Distance', labelAr: cmsStats?.stat3LabelAr || 'رعايةٌ بلا مسافات', descEn: cmsStats?.stat3DescEn || 'Canada · Dubai · 74+ countries', descAr: cmsStats?.stat3DescAr || 'كندا · دبي · أكثر من 74 دولة', color: '#C8A97D' },
               { icon: Brain, value: cmsStats?.stat4Value || '15+', labelEn: cmsStats?.stat4LabelEn || 'Specializations', labelAr: cmsStats?.stat4LabelAr || 'تخصصاً', descEn: cmsStats?.stat4DescEn || 'across all ages', descAr: cmsStats?.stat4DescAr || 'لجميع الأعمار', color: '#7A3B5E' },
