@@ -387,7 +387,6 @@ export default function CalendarView({ password, bookings, onRefresh }: Props) {
           const cfg = STATUS_STYLE[s];
           const count = statusCounts.get(s) ?? 0;
           const hidden = hiddenStatuses.has(s);
-          if (count === 0 && hidden) return null; // hide empty toggled-off chips
           return (
             <button
               key={s}
