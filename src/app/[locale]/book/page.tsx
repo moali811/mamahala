@@ -1562,12 +1562,12 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
           </div>
           <div className="flex justify-between">
             <span className="text-[#8E8E9F]"><Mail className="w-3.5 h-3.5 inline mr-1.5" />{isRTL ? 'البريد' : 'Email'}</span>
-            <span className="text-[#4A4A5C] font-medium">{formData.clientEmail}</span>
+            <span className="text-[#4A4A5C] font-medium" dir="ltr">{formData.clientEmail}</span>
           </div>
           {formData.clientPhone && (
             <div className="flex justify-between">
               <span className="text-[#8E8E9F]"><Phone className="w-3.5 h-3.5 inline mr-1.5" />{isRTL ? 'الهاتف' : 'Phone'}</span>
-              <span className="text-[#4A4A5C] font-medium">{formData.clientPhone}</span>
+              <span className="text-[#4A4A5C] font-medium" dir="ltr">{formData.clientPhone}</span>
             </div>
           )}
           <div className="flex justify-between">
