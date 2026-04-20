@@ -490,6 +490,85 @@ export async function deleteCalendarEventById(eventId: string): Promise<boolean>
   }
 }
 
+// ─── Admin: Fetch full events for calendar view ─────────────────
+
+export interface AdminCalendarEvent {
+  id: string;
+  summary?: string;
+  start: string;           // ISO
+  end: string;             // ISO
+  allDay: boolean;
+  location?: string;
+  description?: string;
+  colorId?: string;
+  attendeesCount: number;
+  htmlLink?: string;
+  hangoutLink?: string;
+  transparency?: string;   // "opaque" (busy) | "transparent" (free)
+  visibility?: string;     // "default" | "private" | "public"
+  creatorSelf: boolean;
+}
+
+/**
+ * Fetch full Google Calendar events for a date range. Used by the admin
+ * calendar view to overlay Dr. Hala's personal appointments alongside
+ * client bookings from KV. Returns empty array if GCal is not configured.
+ */
+export async function fetchAdminCalendarEvents(
+  timeMin: string,  // ISO
+  timeMax: string,  // ISO
+): Promise<AdminCalendarEvent[]> {
+  if (!isConfigured()) return [];
+
+  try {
+    const params = new URLSearchParams({
+      timeMin,
+      timeMax,
+      singleEvents: 'true',
+      orderBy: 'startTime',
+      maxResults: '500',
+      showDeleted: 'false',
+    });
+
+    const res = await calendarFetch(
+      `/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?${params.toString()}`,
+    );
+
+    if (!res.ok) {
+      console.error(`[GCal] Events list failed: ${res.status}`);
+      return [];
+    }
+
+    const data = await res.json();
+    const items = Array.isArray(data.items) ? data.items : [];
+
+    return items
+      .filter((e: any) => e.status !== 'cancelled' && (e.start?.dateTime || e.start?.date))
+      .map((e: any): AdminCalendarEvent => {
+        const allDay = !e.start?.dateTime;
+        return {
+          id: e.id,
+          summary: e.summary,
+          start: e.start?.dateTime ?? `${e.start?.date}T00:00:00.000Z`,
+          end: e.end?.dateTime ?? `${e.end?.date}T00:00:00.000Z`,
+          allDay,
+          location: e.location,
+          description: e.description,
+          colorId: e.colorId,
+          attendeesCount: Array.isArray(e.attendees) ? e.attendees.length : 0,
+          htmlLink: e.htmlLink,
+          hangoutLink: e.hangoutLink,
+          transparency: e.transparency,
+          visibility: e.visibility,
+          creatorSelf: e.creator?.self === true || e.organizer?.self === true,
+        };
+      });
+  } catch (err) {
+    console.error('[GCal] Events list error:', err);
+    return [];
+  }
+}
+
 // ─── Retry: Create event for bookings that missed initial creation ──
 
 /**

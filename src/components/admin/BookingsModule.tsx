@@ -13,6 +13,7 @@ import type { InvoiceDraft } from '@/lib/invoicing/types';
 import InvoiceReviewSheet from './InvoiceReviewSheet';
 import AvailabilityEditor from './AvailabilityEditor';
 import NewBookingModal from './NewBookingModal';
+import CalendarView from './CalendarView';
 import { toISO2 } from '@/config/countries';
 
 interface Props {
@@ -33,7 +34,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string; b
   'no-show': { bg: 'bg-gray-50', text: 'text-gray-500', label: 'No-Show', border: 'border-l-gray-400' },
 };
 
-type TopTab = 'bookings' | 'recurring' | 'availability';
+type TopTab = 'bookings' | 'calendar' | 'recurring' | 'availability';
 
 export default function BookingsModule({ password }: Props) {
   const [topTab, setTopTab] = useState<TopTab>('bookings');
@@ -319,6 +320,7 @@ export default function BookingsModule({ password }: Props) {
       <div className="flex gap-1.5 p-1 bg-[#F5F0EB] rounded-xl max-w-lg overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         {([
           { key: 'bookings' as const, label: 'Booking Requests' },
+          { key: 'calendar' as const, label: 'Calendar' },
           { key: 'recurring' as const, label: 'Recurring' },
           { key: 'availability' as const, label: 'Availability' },
         ]).map(tab => {
@@ -341,6 +343,15 @@ export default function BookingsModule({ password }: Props) {
 
       {/* Availability editor */}
       {topTab === 'availability' && <AvailabilityEditor password={password} />}
+
+      {/* Live calendar view — month grid with bookings + GCal overlay */}
+      {topTab === 'calendar' && (
+        <CalendarView
+          password={password}
+          bookings={bookings}
+          onRefresh={() => fetchBookings({ silent: true })}
+        />
+      )}
 
       {/* Recurring series view */}
       {topTab === 'recurring' && (() => {
