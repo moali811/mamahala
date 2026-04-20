@@ -191,7 +191,7 @@ export default function Footer({ locale, messages }: FooterProps) {
         <div className="container-main max-w-7xl py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-3 flex-wrap justify-center sm:justify-start">
             <p className="text-[11px] text-[#8E8E9F]">
-              &copy; {currentYear} {isRTL ? 'ماما هالة' : 'Mama Hala'}. {footer.rights}
+              &copy; {currentYear} {isRTL ? 'مجموعة ماما هالة للاستشارات' : 'Mama Hala Consulting Group'}. {footer.rights}
             </p>
             <span className="hidden sm:block h-3 w-px bg-[#D4ADA8]/30" />
             <a
@@ -201,7 +201,7 @@ export default function Footer({ locale, messages }: FooterProps) {
               aria-label="Powered by EiGENRA"
               className="group inline-flex items-center gap-1.5 text-[10px] text-[#8E8E9F] hover:text-[#C8A97D] transition-colors"
             >
-              <span className="uppercase tracking-[0.18em]">
+              <span className="tracking-wide">
                 {isRTL ? 'مدعوم بـ' : 'Powered by'}
               </span>
               <span className="relative inline-flex h-3.5 items-center">
