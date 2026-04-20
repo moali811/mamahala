@@ -189,7 +189,7 @@ export function generateEventConfirmationEmail(params: EventConfirmationParams):
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#FAF7F2;border-radius:12px;border:1px solid #F3EFE8;">
       <tr><td style="padding:20px;text-align:center;">
         <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#7A3B5E;">💡 ${isAr ? 'هل تريدُ دعمًا أعمق؟' : 'Want Deeper Support?'}</p>
-        <p style="margin:0 0 12px;font-size:13px;color:#4A4A5C;line-height:1.5;">${isAr ? `ما تعلّمتَه في هذه الفعاليّة هو بدايةٌ رائعة. للحصولِ على إرشادٍ شخصيّ، د. هالة تقدّمُ جلساتِ "${serviceName}".` : `What you'll learn in this event is a great start. For personalized guidance, Dr. Hala offers "${serviceName}" sessions.`}</p>
+        <p style="margin:0 0 12px;font-size:13px;color:#4A4A5C;line-height:1.5;">${isAr ? `ما تعلّمتَه في هذه الفعاليّة هو بدايةٌ رائعة. للحصولِ على إرشادٍ شخصيّ، نُقدّمُ جلساتِ "${serviceName}".` : `What you'll learn in this event is a great start. For personalized guidance, we offer "${serviceName}" sessions.`}</p>
         <a href="${serviceUrl}" target="_blank" style="display:inline-block;padding:10px 24px;background:#C8A97D;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600;">
           ${isAr ? 'تعرَّفْ على الخدمة' : 'Learn About This Service'}
         </a>

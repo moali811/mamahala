@@ -388,9 +388,9 @@ export default function ServiceCategoryPage() {
         // Default FAQs (used as fallback before CMS data loads)
         const defaultFaqs: Record<string, { q: string; qAr: string; a: string; aAr: string }[]> = {
           youth: [
-            { q: `My child doesn't want to talk to anyone. Will this still work?`, qAr: 'طفلي لا يريد التحدث مع أحد. هل سينجح هذا؟', a: `Absolutely. Most young clients feel that way at first. Dr. Hala uses creative, non-pressuring approaches — art, stories, and games — that let children open up at their own pace.`, aAr: 'بالتأكيد. معظم العملاء الصغار يشعرون بهذا في البداية. تستخدم الدكتورة هالة أساليب إبداعية غير ضاغطة.' },
+            { q: `My child doesn't want to talk to anyone. Will this still work?`, qAr: 'طفلي لا يريد التحدث مع أحد. هل سينجح هذا؟', a: `Absolutely. Most young clients feel that way at first. We use creative, non-pressuring approaches — art, stories, and games — that let children open up at their own pace.`, aAr: 'بالتأكيد. معظم العملاء الصغار يشعرون بهذا في البداية. نستخدم أساليب إبداعية غير ضاغطة.' },
             { q: `Is something actually wrong with my child, or am I overreacting?`, qAr: 'هل هناك مشكلة حقيقية مع طفلي، أم أنني أبالغ في ردة فعلي؟', a: `The fact that you're asking this question shows how much you care. There's no such thing as overreacting when it comes to your child's wellbeing.`, aAr: 'حقيقة أنك تطرح هذا السؤال تظهر مدى اهتمامك.' },
-            { q: `Will my teen think I'm punishing them by sending them to counseling?`, qAr: 'هل سيعتقد مراهقي أنني أعاقبه بإرساله للاستشارة؟', a: `Dr. Hala frames sessions as a "support space," not a punishment. Many teens actually end up looking forward to their sessions.`, aAr: 'تصيغ الدكتورة هالة الجلسات على أنها "مساحة دعم" وليست عقوبة.' },
+            { q: `Will my teen think I'm punishing them by sending them to counseling?`, qAr: 'هل سيعتقد مراهقي أنني أعاقبه بإرساله للاستشارة؟', a: `We frame sessions as a "support space," not a punishment. Many teens actually end up looking forward to their sessions.`, aAr: 'نُصيغ الجلسات على أنها "مساحة دعم" وليست عقوبة.' },
           ],
           families: [
             { q: `We're not a "broken" family. Do we still need counseling?`, qAr: 'نحن لسنا عائلة "مفككة". هل نحتاج فعلاً للاستشارة؟', a: `Counseling isn't just for crisis — it's for growth. Prevention is always easier than repair.`, aAr: 'الاستشارة ليست فقط للأزمات — إنها للنمو.' },
@@ -399,13 +399,13 @@ export default function ServiceCategoryPage() {
           ],
           adults: [
             { q: `I feel like my problems aren't "serious enough" for therapy.`, qAr: 'أشعر أن مشاكلي ليست "خطيرة بما يكفي" للعلاج.', a: `There's no minimum threshold for seeking support. You don't need to wait until things get worse.`, aAr: 'لا يوجد حد أدنى لطلب الدعم.' },
-            { q: `I've tried therapy before and it didn't help.`, qAr: 'جربت العلاج من قبل ولم يساعد.', a: `Not every counselor is the right fit. Dr. Hala combines evidence-based approaches with cultural sensitivity.`, aAr: 'ليس كل مستشار هو الخيار الصحيح.' },
+            { q: `I've tried therapy before and it didn't help.`, qAr: 'جربت العلاج من قبل ولم يساعد.', a: `Not every counselor is the right fit. We combine evidence-based approaches with cultural sensitivity.`, aAr: 'ليس كل مستشار هو الخيار الصحيح.' },
             { q: `Will anyone find out I'm seeing a counselor?`, qAr: 'هل سيعرف أحد أنني أراجع مستشاراً؟', a: `Never. Confidentiality is non-negotiable.`, aAr: 'أبداً. السرية غير قابلة للتفاوض.' },
           ],
           couples: [
             { q: `Does going to couples counseling mean our relationship is failing?`, qAr: 'هل الذهاب لاستشارة الأزواج يعني أن علاقتنا فاشلة؟', a: `Actually, it means the opposite. Seeking help shows you both care.`, aAr: 'في الواقع، يعني العكس تماماً.' },
-            { q: `What if one of us isn't comfortable opening up?`, qAr: 'ماذا لو كان أحدنا غير مرتاح للانفتاح؟', a: `Completely normal. Dr. Hala creates a safe environment where both partners feel heard.`, aAr: 'طبيعي تماماً.' },
-            { q: `We argue about the same things over and over.`, qAr: 'نتشاجر حول نفس الأشياء مراراً.', a: `Recurring arguments are about unmet needs underneath. Dr. Hala helps you break the cycle.`, aAr: 'الخلافات المتكررة عن احتياجات غير ملباة.' },
+            { q: `What if one of us isn't comfortable opening up?`, qAr: 'ماذا لو كان أحدنا غير مرتاح للانفتاح؟', a: `Completely normal. We create a safe environment where both partners feel heard.`, aAr: 'طبيعي تماماً.' },
+            { q: `We argue about the same things over and over.`, qAr: 'نتشاجر حول نفس الأشياء مراراً.', a: `Recurring arguments are about unmet needs underneath. We help you break the cycle.`, aAr: 'الخلافات المتكررة عن احتياجات غير ملباة.' },
           ],
           experiential: [
             { q: `I'm not artistic at all. Will art therapy still work?`, qAr: 'لست فنياً. هل سينجح العلاج بالفن؟', a: `Art therapy is about expression, not perfection.`, aAr: 'العلاج بالفن عن التعبير، ليس الكمال.' },

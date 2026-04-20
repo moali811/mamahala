@@ -158,8 +158,8 @@ export default function GiftPage() {
     {
       qEn: 'How will they receive it?',
       qAr: 'كيفَ سيتلقّونَها؟',
-      aEn: 'They\'ll receive a beautiful branded email with your message and a direct link to schedule their session with Dr. Hala.',
-      aAr: 'سيتلقّونَ بريدًا إلكترونيًّا أنيقًا يحتوي على رسالتِك ورابطٍ مباشرٍ لحجزِ جلستِهم مع د. هالة.',
+      aEn: 'They\'ll receive a beautiful branded email with your message and a direct link to schedule their counseling session.',
+      aAr: 'سيتلقّونَ بريدًا إلكترونيًّا أنيقًا يحتوي على رسالتِك ورابطٍ مباشرٍ لحجزِ جلستِهم الاستشاريّة.',
     },
     {
       qEn: 'Is there any cost involved?',
@@ -195,8 +195,8 @@ export default function GiftPage() {
           </motion.h1>
           <motion.p className="text-lg text-[#4A4A5C] max-w-xl mx-auto mt-5 leading-relaxed" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
             {isRTL
-              ? 'أحيانًا أقوى ما يمكنُكَ قولُه هو: "وجدتُ مَنْ يمكنُه المساعدة." أرسِلْ دعوةً جميلةً لمَنْ تحبّ لحجزِ جلسةٍ مع د. هالة.'
-              : 'Sometimes the most powerful thing you can say is "I found someone who can help." Send a beautiful invitation for someone you care about to book a session with Dr. Hala.'}
+              ? 'أحيانًا أقوى ما يمكنُكَ قولُه هو: "وجدتُ مَنْ يمكنُه المساعدة." أرسِلْ دعوةً جميلةً لمَنْ تحبّ لحجزِ جلسةٍ استشاريّة.'
+              : 'Sometimes the most powerful thing you can say is "I found someone who can help." Send a beautiful invitation for someone you care about to book a counseling session.'}
           </motion.p>
           <motion.div className="w-24 h-1 bg-[#C8A97D] mx-auto mt-6 rounded-full" initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.4, duration: 0.6 }} />
         </div>
@@ -267,7 +267,7 @@ export default function GiftPage() {
                 <div className="text-center mb-8">
                   <div className="w-12 h-12 rounded-xl bg-[#C4878A]/10 flex items-center justify-center mx-auto mb-3"><Heart className="w-6 h-6 text-[#7A3B5E]" /></div>
                   <h2 className="text-2xl sm:text-3xl font-bold text-[#2D2A33]" style={{ fontFamily: 'var(--font-heading)' }}>{isRTL ? stepTitles[1].ar : stepTitles[1].en}</h2>
-                  <p className="text-sm text-[#6B6580] mt-2">{isRTL ? 'سنرسلُ لهم دعوةً جميلةً لحجزِ جلسةٍ مع د. هالة.' : "We'll send them a beautiful invitation to book a session with Dr. Hala."}</p>
+                  <p className="text-sm text-[#6B6580] mt-2">{isRTL ? 'سنرسلُ لهم دعوةً جميلةً لحجزِ جلسةٍ استشاريّة.' : "We'll send them a beautiful invitation to book a counseling session."}</p>
                 </div>
                 <div className="bg-[#FAF7F2] rounded-2xl p-6 lg:p-8 border border-[#F3EFE8] space-y-4">
                   <input value={recipientName} onChange={(e) => setRecipientName(e.target.value)} placeholder={isRTL ? 'اسمُهم *' : 'Their Name *'} className={INPUT_CLS} />

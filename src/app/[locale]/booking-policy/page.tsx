@@ -339,8 +339,8 @@ export default function BookingPolicyPage() {
               </h2>
               <p className="mt-4 text-[#8E8E9F] leading-relaxed">
                 {t(
-                  'Booking a session with Dr. Hala is simple. Follow these four steps to get started on your journey.',
-                  'حجز جلسة مع د. هالة سهل وبسيط. اتبع هذه الخطوات الأربع للبدء في رحلتك.'
+                  'Booking a counseling session is simple. Follow these four steps to get started on your journey.',
+                  'حجز جلسة استشاريّة سهل وبسيط. اتبع هذه الخطوات الأربع للبدء في رحلتك.'
                 )}
               </p>
             </div>

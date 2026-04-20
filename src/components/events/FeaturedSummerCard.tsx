@@ -95,7 +95,7 @@ const boysTheme: SummerTheme = {
 const MILESTONES = [
   { threshold: 10, en: 'Growing interest', ar: 'اهتمامٌ مُتَزايِد' },
   { threshold: 25, en: 'Community momentum', ar: 'زَخْمٌ مُجْتَمَعِيّ' },
-  { threshold: 50, en: 'Dr. Hala is taking notice', ar: 'د. هالَة تُلاحِظ' },
+  { threshold: 50, en: 'Our team is taking notice', ar: 'فريقنا يُلاحِظ' },
   { threshold: 100, en: 'This is happening', ar: 'هذا سَيَحْدُث' },
 ];
 

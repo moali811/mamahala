@@ -17,7 +17,7 @@ export function generateBookingICS(booking: Booking): string {
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
   const modeLabel = booking.sessionMode === 'online' ? 'Online Session' : 'In-Person Session';
 
-  const summary = `${serviceName} — ${modeLabel} with Dr. Hala Ali`;
+  const summary = `${serviceName} — ${modeLabel} · Mama Hala Consulting`;
   const location = booking.sessionMode === 'online'
     ? 'Online / Video Call'
     : '430 Hazeldean Rd, K2L 1E8, Ontario, Canada';
@@ -47,7 +47,7 @@ export function generateBookingICS(booking: Booking): string {
     'BEGIN:VALARM',
     'TRIGGER:-PT1H',
     'ACTION:DISPLAY',
-    `DESCRIPTION:Your session with Dr. Hala starts in 1 hour`,
+    `DESCRIPTION:Your counseling session starts in 1 hour`,
     'END:VALARM',
   ].join('\r\n');
 
@@ -56,7 +56,7 @@ export function generateBookingICS(booking: Booking): string {
     'BEGIN:VALARM',
     'TRIGGER:-PT24H',
     'ACTION:DISPLAY',
-    `DESCRIPTION:Reminder: Your session with Dr. Hala is tomorrow`,
+    `DESCRIPTION:Reminder: Your counseling session is tomorrow`,
     'END:VALARM',
   ].join('\r\n');
 
@@ -74,7 +74,7 @@ export function generateBookingICS(booking: Booking): string {
     `SUMMARY:${escapeICS(summary)}`,
     `DESCRIPTION:${escapeICS(description)}`,
     `LOCATION:${escapeICS(location)}`,
-    `ORGANIZER;CN=Dr. Hala Ali:mailto:${BUSINESS.email}`,
+    `ORGANIZER;CN=Mama Hala Consulting:mailto:${BUSINESS.email}`,
     booking.clientEmail
       ? `ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;CN=${escapeICS(booking.clientName)}:mailto:${booking.clientEmail}`
       : '',
@@ -110,7 +110,7 @@ export function generateCancelICS(booking: Booking): string {
     `DTSTAMP:${dtStamp}`,
     `DTSTART:${dtStart}`,
     `DTEND:${dtEnd}`,
-    `SUMMARY:CANCELLED: Session with Dr. Hala Ali`,
+    `SUMMARY:CANCELLED: Counseling Session — Mama Hala Consulting`,
     'STATUS:CANCELLED',
     'SEQUENCE:1',
     'END:VEVENT',

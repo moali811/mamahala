@@ -212,7 +212,7 @@ async function processDecline(bookingId: string, reason?: string): Promise<{
       <div style="${emailStyles.goldAccent};margin-top:16px;">
         <p style="margin:0;font-size:13px;color:#4A4A5C;">Need a specific time? Message us on <a href="${BUSINESS.whatsappUrl}" style="color:#7A3B5E;font-weight:600;">WhatsApp</a> and we'll work it out together.</p>
       </div>
-      <p style="${emailStyles.muted};margin-top:16px;">— Dr. Hala</p>
+      <p style="${emailStyles.muted};margin-top:16px;">— The Mama Hala Team</p>
     </div>
   `);
 

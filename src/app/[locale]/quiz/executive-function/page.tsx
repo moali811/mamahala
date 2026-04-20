@@ -475,7 +475,7 @@ export default function ExecutiveFunctionQuizPage() {
                         variant="plum"
                         icon={<Calendar className="w-5 h-5" />}
                       >
-                        {isRTL ? 'تحدّثْ مع د. هالة' : 'Talk to Dr. Hala'}
+                        {isRTL ? 'احجزْ استشارة' : 'Book a consultation'}
                       </Button>
                       <Button
                         as="a"

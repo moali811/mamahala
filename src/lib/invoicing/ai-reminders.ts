@@ -2,7 +2,8 @@
    AI Payment Reminder — Claude wrapper
    ================================================================
    Generates a personalized, polite, professional payment reminder
-   email body for an overdue invoice. Uses Dr. Hala's brand voice.
+   email body for an overdue invoice. Uses the Mama Hala Consulting
+   team voice.
    ================================================================ */
 
 import Anthropic from '@anthropic-ai/sdk';
@@ -64,14 +65,15 @@ export async function generatePaymentReminder(args: {
     tone,
   };
 
-  const systemPrompt = `You are writing on behalf of Dr. Hala Ali, founder of Mama Hala Consulting Group, a warm and professional family counseling practice. Your tone is ALWAYS:
+  const systemPrompt = `You are writing on behalf of the Mama Hala Consulting team, a warm and professional family counseling practice. Your tone is ALWAYS:
 - Compassionate, never demanding or guilt-inducing
 - Professional and clear
 - Brief — 4 to 6 sentences max in the body
-- Respectful of the client's relationship with Dr. Hala
+- Respectful of the client's relationship with Mama Hala Consulting
 - Solution-oriented, gently inviting payment without pressuring
+- Written as a team voice ("we", "our team") — never name the clinician personally as the actor
 
-CRITICAL: Write the body in plain text suitable for email. Do not use markdown. No lists. Use paragraph breaks (double newlines) sparingly. Sign off with "With care, Dr. Hala Ali" on its own line.
+CRITICAL: Write the body in plain text suitable for email. Do not use markdown. No lists. Use paragraph breaks (double newlines) sparingly. Sign off with "Warmly, The Mama Hala Team" on its own line.
 
 Always respond with valid JSON only. Never include markdown code blocks, backticks, or any text outside the JSON object. Start your response with { and end with }.`;
 
@@ -95,7 +97,7 @@ Write a subject line and email body that:
 2. Gently mentions the outstanding invoice with the number and amount
 3. Acknowledges that payment may have been overlooked or that life gets busy
 4. Offers to discuss any concerns or arrangement if needed
-5. Closes warmly with "With care, Dr. Hala Ali"
+5. Closes warmly with "Warmly, The Mama Hala Team"
 
 Respond with this exact JSON structure (no markdown, no code blocks):
 {"subject":"Email subject line","body":"Email body in plain text with paragraph breaks"}`;

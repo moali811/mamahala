@@ -80,7 +80,7 @@ function getManageUrl(manageToken: string): string {
 }
 
 function getCalendarUrl(booking: Booking): string {
-  const title = encodeURIComponent(`Session with Dr. Hala Ali`);
+  const title = encodeURIComponent(`Counseling Session — Mama Hala Consulting`);
   const details = encodeURIComponent(
     `${booking.serviceName || booking.serviceSlug}\nBooking ID: ${booking.bookingId}`,
   );
@@ -168,7 +168,7 @@ export function buildConfirmationEmail(data: ConfirmationEmailData): {
         <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#7A3B5E;">What Happens Next?</p>
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr><td style="padding:8px 0;vertical-align:top;width:28px;"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#C8A97D;color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;">1</span></td>
-              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>Dr. Hala reviews your request</strong> — usually within 4 hours</p></td></tr>
+              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>Our team reviews your request</strong> — usually within 4 hours</p></td></tr>
           <tr><td style="padding:8px 0;vertical-align:top;"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#C8A97D;color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;">2</span></td>
               <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>You receive an invoice</strong> with payment details</p></td></tr>
           <tr><td style="padding:8px 0;vertical-align:top;"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#3B8A6E;color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;">3</span></td>
@@ -182,8 +182,8 @@ export function buildConfirmationEmail(data: ConfirmationEmailData): {
     : 'Your Session is Confirmed';
 
   const statusText = isPendingApproval
-    ? 'Thank you for reaching out. Dr. Hala will review your request and confirm within a few hours.'
-    : 'Your session with Dr. Hala has been confirmed. Here are the details:';
+    ? 'Thank you for reaching out. We will review your request and confirm within a few hours.'
+    : 'Your counseling session has been confirmed. Here are the details:';
 
   const content = `
     <div style="${styles.card}">
@@ -271,7 +271,7 @@ export function buildSessionLockedInEmail(
       </div>
       <h2 style="${styles.heading};text-align:center;">Your Session is Confirmed &amp; Paid</h2>
       <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Thank you! Your payment has been received and your session with Dr. Hala is locked in. Here are the details:</p>
+      <p style="${styles.text}">Thank you! Your payment has been received and your counseling session is locked in. Here are the details:</p>
       ${aiMessageHtml}
     </div>
     ${sessionDetailsCard(booking)}
@@ -327,7 +327,7 @@ export function buildReminder24hEmail(
     <div style="${styles.card}">
       <h2 style="${styles.heading}">Your Session is Tomorrow</h2>
       <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">This is a friendly reminder that your session with Dr. Hala is tomorrow at <strong>${timeStr}</strong>.</p>
+      <p style="${styles.text}">This is a friendly reminder that your counseling session is tomorrow at <strong>${timeStr}</strong>.</p>
       ${aiHtml}
     </div>
     ${sessionDetailsCard(booking)}
@@ -343,7 +343,7 @@ export function buildReminder24hEmail(
     </div>`;
 
   return {
-    subject: `Reminder: Your session with Dr. Hala is tomorrow`,
+    subject: `Reminder: Your counseling session is tomorrow`,
     html: wrapEmail(content),
   };
 }
@@ -373,7 +373,7 @@ export function buildReminder1hEmail(
     <div style="${styles.card}">
       <h2 style="${styles.heading}">Starting Soon — 1 Hour</h2>
       <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Your session with Dr. Hala starts in about 1 hour.</p>
+      <p style="${styles.text}">Your counseling session starts in about 1 hour.</p>
       <p style="${styles.text}">${mode}</p>
       <div style="${styles.goldAccent}">
         <p style="margin:0;font-size:13px;color:#4A4A5C;">Take a few deep breaths. You are doing something wonderful for yourself.</p>
@@ -381,7 +381,7 @@ export function buildReminder1hEmail(
     </div>
     ${meetHtml}
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.muted}">Need to reach Dr. Hala urgently? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp ${BUSINESS.phone}</a></p>
+      <p style="${styles.muted}">Need to reach our team urgently? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp ${BUSINESS.phone}</a></p>
     </div>`;
 
   return {
@@ -747,7 +747,7 @@ export function buildPaymentConfirmationEmail(
       </div>
       <h2 style="${styles.heading};text-align:center;">Payment Received — Session Confirmed!</h2>
       <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Thank you for your payment. Your session is now fully confirmed and Dr. Hala is looking forward to meeting you.</p>
+      <p style="${styles.text}">Thank you for your payment. Your session is now fully confirmed and we're looking forward to meeting you.</p>
     </div>
     ${sessionDetailsCard(booking)}
     ${meetHtml}
@@ -785,7 +785,7 @@ export function buildFollowUpEmail(
       <p style="${styles.text}">Thank you for your session today. Taking time for yourself is one of the most important investments you can make, and we are honored to be part of your journey.</p>
       ${aiHtml}
       <p style="${styles.text}">If anything comes up between sessions, please do not hesitate to reach out. We are here for you.</p>
-      <p style="${styles.text};font-weight:600;color:#7A3B5E;">With warmth,<br/>Dr. Hala Ali</p>
+      <p style="${styles.text};font-weight:600;color:#7A3B5E;">Warmly,<br/>The Mama Hala Team</p>
     </div>
     <div style="${styles.card};background:#FEFCFB;">
       <p style="${styles.subheading}">What's Next?</p>
@@ -849,7 +849,7 @@ export function buildStatusConfirmedEmail(
       </div>
       <h2 style="${styles.heading};text-align:center;">Your Session is Confirmed!</h2>
       <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Great news — your <strong>${serviceName}</strong> session is now confirmed. Dr. Hala is looking forward to meeting you.</p>
+      <p style="${styles.text}">Great news — your <strong>${serviceName}</strong> session is now confirmed. We're looking forward to meeting you.</p>
     </div>
     ${sessionDetailsCard(booking)}
     ${meetHtml}

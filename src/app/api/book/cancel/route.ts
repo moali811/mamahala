@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const hoursUntil = (new Date(booking.startTime).getTime() - Date.now()) / 3_600_000;
     if (hoursUntil < 2) {
       return NextResponse.json(
-        { error: 'Too close to session time. Please contact Dr. Hala directly.' },
+        { error: 'Too close to session time. Please contact us directly.' },
         { status: 403 },
       );
     }

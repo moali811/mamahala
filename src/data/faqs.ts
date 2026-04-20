@@ -145,8 +145,8 @@ export const giftFaqs: FAQ[] = [
   {
     question: 'How will they receive the gift of care?',
     questionAr: 'كيفَ سيتلقّونَ هديّةَ الرّعاية؟',
-    answer: 'They receive a beautiful branded email with your personal message and a direct link to schedule their session with Dr. Hala.',
-    answerAr: 'يتلقّونَ بريدًا إلكترونيًّا أنيقًا يحتوي على رسالتِك الشّخصيّة ورابطٍ مباشرٍ لحجزِ جلستِهم مع د. هالة.',
+    answer: 'They receive a beautiful branded email with your personal message and a direct link to schedule their counseling session.',
+    answerAr: 'يتلقّونَ بريدًا إلكترونيًّا أنيقًا يحتوي على رسالتِك الشّخصيّة ورابطٍ مباشرٍ لحجزِ جلستِهم الاستشاريّة.',
     tag: 'Care Gift', tagAr: 'هديّة رعاية',
   },
   {

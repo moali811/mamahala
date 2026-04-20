@@ -661,8 +661,8 @@ export default function ModuleLessonPage() {
           </h3>
           <p className="text-xs text-[#6B6580] mb-3 max-w-sm mx-auto">
             {isRTL
-              ? 'احجز جلسة مع الدكتورة هالة لمناقشة كيفية تطبيق ما تعلمته على وضعك الخاص.'
-              : 'Book a session with Dr. Hala to discuss how to apply what you\'ve learned to your unique situation.'}
+              ? 'احجز جلسة استشاريّة لمناقشة كيفية تطبيق ما تعلمته على وضعك الخاص.'
+              : 'Book a counseling session to discuss how to apply what you\'ve learned to your unique situation.'}
           </p>
           <a
             href={getBookingUrl(locale as string)}

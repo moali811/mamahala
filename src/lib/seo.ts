@@ -112,8 +112,8 @@ export const PAGE_SEO: Record<string, PageSEO> = {
   gift: {
     title: 'Gift of Care',
     titleAr: 'هديّةُ رعاية',
-    description: 'Give someone you love the gift of care. Send a beautiful invitation to book a session with Dr. Hala through Mama Hala Consulting.',
-    descriptionAr: 'أهدِ مَنْ تحبّ هديّةَ الرّعاية — دعوةٌ جميلةٌ لحجزِ جلسةٍ مع د. هالة عبر ماما هالة للاستشارات.',
+    description: 'Give someone you love the gift of care. Send a beautiful invitation to book a counseling session through Mama Hala Consulting.',
+    descriptionAr: 'أهدِ مَنْ تحبّ هديّةَ الرّعاية — دعوةٌ جميلةٌ لحجزِ جلسةٍ استشاريّةٍ عبر ماما هالة للاستشارات.',
     path: '/gift',
   },
   resources: {

@@ -114,7 +114,7 @@ async function processApproval(bookingId: string): Promise<{
         <div style="display:inline-block;width:48px;height:48px;border-radius:50%;background:#F0FAF5;line-height:48px;font-size:24px;text-align:center;">&#10003;</div>
       </div>
       <h2 style="${emailStyles.heading};text-align:center;">Good News, ${firstName}!</h2>
-      <p style="${emailStyles.text}">Dr. Hala has approved your session request for <strong>${serviceName}</strong> on <strong>${dateTime}</strong>.</p>
+      <p style="${emailStyles.text}">Your session request for <strong>${serviceName}</strong> on <strong>${dateTime}</strong> has been approved.</p>
       <p style="${emailStyles.text}">You will receive an invoice with payment details shortly. Once payment is complete, your session is fully confirmed.</p>
       ${meetLink ? `
       <div style="background:#F0FAF5;border-left:3px solid #3B8A6E;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">

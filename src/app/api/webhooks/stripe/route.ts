@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
               <div style="text-align:center;margin:24px 0 8px;">
                 <a href="https://mamahala.ca/en/resources/toolkits/${meta.toolkitSlug}" style="${emailStyles.button}">Open Your Toolkit</a>
               </div>
-              <p style="${emailStyles.muted};margin-top:16px;">— Dr. Hala &amp; the Mama Hala Team</p>
+              <p style="${emailStyles.muted};margin-top:16px;">— The Mama Hala Team</p>
             </div>
           `),
         });
@@ -214,7 +214,7 @@ export async function POST(req: NextRequest) {
             <div style="text-align:center;margin:24px 0 8px;">
               <a href="https://mamahala.ca/en/programs/${programSlug}" style="${emailStyles.button}">Continue Learning</a>
             </div>
-            <p style="${emailStyles.muted};margin-top:16px;">— Dr. Hala &amp; the Mama Hala Team</p>
+            <p style="${emailStyles.muted};margin-top:16px;">— The Mama Hala Team</p>
           </div>
         `),
       });

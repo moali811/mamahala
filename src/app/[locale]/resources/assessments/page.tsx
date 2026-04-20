@@ -396,10 +396,10 @@ export default function AssessmentsPage() {
         fillColorAbove="#FAF7F2"
         headingEn={<>Understanding Yourself Is the First Step to <span className="text-[#7A3B5E] italic">Growth</span></>}
         headingAr={<>فهمُ ذاتِك هو الخطوةُ الأولى نحو <span className="text-[#7A3B5E] italic">النّموّ</span></>}
-        descEn="Your results deserve context. Let Dr. Hala help you understand what they mean for you."
-        descAr="نتائجك تستحق سياقاً. دعي الدكتورة هالة تساعدك في فهم ما تعنيه لك."
-        primaryTextEn="Talk to Dr. Hala"
-        primaryTextAr="تحدّث مع الدكتورة هالة"
+        descEn="Your results deserve context. Let us help you understand what they mean for you."
+        descAr="نتائجك تستحق سياقاً. دعنا نساعدك في فهم ما تعنيه لك."
+        primaryTextEn="Book a consultation"
+        primaryTextAr="احجز استشارة"
         secondaryTextEn="Explore Services"
         secondaryTextAr="تصفّح الخدمات"
         secondaryHref={`/${locale}/services`}

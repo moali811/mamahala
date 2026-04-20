@@ -122,7 +122,7 @@ function generateFollowUpEmail(
       <div style="border-top:1px solid #F3EFE8;margin:20px 0;"></div>
       <h2 style="${emailStyles.subheading};text-align:left;">What You Can Do Next</h2>
       <p style="${emailStyles.text};text-align:left;">
-        The strategies you learned are a great starting point. To go deeper and get guidance tailored to your specific situation, Dr. Hala offers individual sessions.
+        The strategies you learned are a great starting point. To go deeper and get guidance tailored to your specific situation, we offer individual sessions.
       </p>
       ${relatedService && serviceUrl ? `
       <p style="${emailStyles.text};text-align:left;">

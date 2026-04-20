@@ -94,8 +94,8 @@ export default function ServicesPage() {
               color: '#5A8B6E',
               eyebrowEn: 'Free First Step',
               eyebrowAr: 'خُطْوَةٌ أولى مَجّانِيَّة',
-              titleEn: 'Talk to Dr. Hala first',
-              titleAr: 'تَحَدَّثي مع د. هالَة أَوَّلاً',
+              titleEn: 'Start with a free discovery call',
+              titleAr: 'اِبْدَئي بمُكالَمَةِ تَعارُفٍ مَجّانيّة',
               accent: { type: 'caption', textEn: '30-min discovery call', textAr: 'مُكالَمَةُ تَعارُف ٣٠ دَقيقَة' },
             },
           ]}

@@ -145,7 +145,7 @@ function buildInvoiceEmailHtml(
       <!-- Closing -->
       <p style="margin:20px 0 8px;color:#4A4A5C;font-size:14px;line-height:1.7;">If you have any questions about this invoice, please reply to this email, <a href="${BUSINESS.whatsappUrl}" style="color:#7A3B5E;">WhatsApp us</a>, or email <a href="mailto:${escapeHtml(settings.issuerBlock.email)}" style="color:#7A3B5E;">${escapeHtml(settings.issuerBlock.email)}</a>.</p>
 
-      <p style="margin:16px 0 0;color:#2D2A33;font-size:14px;">With care,<br><strong>Dr. Hala Ali</strong></p>`;
+      <p style="margin:16px 0 0;color:#2D2A33;font-size:14px;">Warmly,<br><strong>The Mama Hala Team</strong></p>`;
 
   return emailWrapper(innerContent);
 }
@@ -328,8 +328,8 @@ function buildReceiptEmailHtml(
         </table>
       </div>
 
-      <p style="margin:16px 0 4px;color:#2D2A33;font-size:14px;">With care,</p>
-      <p style="margin:0;color:#2D2A33;font-size:14px;font-weight:600;">Dr. Hala Ali</p>`;
+      <p style="margin:16px 0 4px;color:#2D2A33;font-size:14px;">Warmly,</p>
+      <p style="margin:0;color:#2D2A33;font-size:14px;font-weight:600;">The Mama Hala Team</p>`;
 
   return emailWrapper(receiptContent);
 }

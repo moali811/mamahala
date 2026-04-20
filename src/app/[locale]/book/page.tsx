@@ -301,7 +301,7 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
       <div className="bg-white rounded-xl p-4 border border-[#F0ECE8] flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-[#4A4A5C]">
-            {isRTL ? 'هل هذه أول جلسة لك مع د. هالة؟' : 'First time with Dr. Hala?'}
+            {isRTL ? 'هل هذه أول جلسة لك معنا؟' : 'First time booking with us?'}
           </p>
           <p className="text-xs text-[#8E8E9F] mt-0.5">
             {isRTL ? 'ابدأ باستشارة مجانية' : 'Start with a free consultation'}
@@ -677,7 +677,7 @@ function DateTimeStep({ wizard, locale, isRTL, onProviderTimezone, onInPersonEna
               <div className="flex items-center justify-center gap-2 text-[10px] text-[#8E8E9F]">
                 <span className="opacity-60">•</span>
                 <span>
-                  {isRTL ? 'د. هالة في' : 'Dr. Hala is in'}{' '}
+                  {isRTL ? 'حاليًّا في' : 'Currently in'}{' '}
                   <span className="font-medium text-[#4A4A5C]">
                     {formatTZName(providerTz)}
                   </span>
@@ -909,7 +909,7 @@ function DateTimeStep({ wizard, locale, isRTL, onProviderTimezone, onInPersonEna
                               <span>{clientTimeLabel}</span>
                               {providerTimeLabel && (
                                 <span className="text-[9px] font-normal text-[#8E8E9F] group-hover:text-white/75 mt-0.5">
-                                  {isRTL ? 'د. هالة: ' : 'Hala: '}{providerTimeLabel}
+                                  {isRTL ? 'محليًّا: ' : 'Local: '}{providerTimeLabel}
                                 </span>
                               )}
                             </motion.button>
@@ -1452,8 +1452,8 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
               <span className="flex-1 min-w-0">
                 <span className="text-xs text-[#4A4A5C] leading-relaxed">
                   {isRTL
-                    ? <>د. هالة تستقبلُ حاليًّا في <strong className="text-[#7A3B5E]">{providerCity}</strong>. ترغبُ بزيارتِها شخصيًّا؟</>
-                    : <>Dr. Hala is currently seeing clients in <strong className="text-[#7A3B5E]">{providerCity}</strong>. Willing to visit?</>}
+                    ? <>نستقبلُ حاليًّا في <strong className="text-[#7A3B5E]">{providerCity}</strong>. ترغبُ بزيارتِنا شخصيًّا؟</>
+                    : <>Currently seeing clients in <strong className="text-[#7A3B5E]">{providerCity}</strong>. Willing to visit?</>}
                 </span>
               </span>
               <span className="text-[10px] font-semibold text-[#C8A97D] group-hover:text-[#7A3B5E] transition-colors whitespace-nowrap flex-shrink-0">
@@ -1607,8 +1607,8 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
         />
         <span className="text-[11px] text-[#6B6580] leading-relaxed">
           {isRTL
-            ? 'أوافقُ على أنّ المعلوماتِ المقدَّمةَ دقيقةٌ وأنّني أفهمُ أنّ هذا الطلبَ يخضعُ لمراجعةِ د. هالة. أوافقُ على سياسة الخصوصيّة وشروط الحجز.'
-            : 'I confirm that the information provided is accurate and understand this request is subject to Dr. Hala\'s review. I agree to the Privacy Policy and Booking Policy.'}
+            ? 'أوافقُ على أنّ المعلوماتِ المقدَّمةَ دقيقةٌ وأنّني أفهمُ أنّ هذا الطلبَ يخضعُ لمراجعةِ فريقنا. أوافقُ على سياسة الخصوصيّة وشروط الحجز.'
+            : 'I confirm that the information provided is accurate and understand this request is subject to our team\'s review. I agree to the Privacy Policy and Booking Policy.'}
         </span>
       </label>
 
@@ -1657,7 +1657,7 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
         </h1>
         <p className="text-sm text-[#8E8E9F]">
           {isPendingApproval
-            ? (isRTL ? 'ستقوم الدكتورة هالة بمراجعة طلبك والتأكيد خلال ساعات قليلة.' : 'Dr. Hala will review your request and confirm within a few hours.')
+            ? (isRTL ? 'سنراجع طلبك ونؤكّده خلال ساعات قليلة.' : 'We will review your request and confirm within a few hours.')
             : (isRTL ? 'تم إرسال تفاصيل الحجز وملف التقويم إلى بريدك الإلكتروني.' : 'Booking details and a calendar file have been sent to your email.')
           }
         </p>
@@ -1674,7 +1674,7 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
           <p className="text-sm font-bold text-[#7A3B5E] mb-4">{isRTL ? 'الخطوات التالية' : 'What Happens Next'}</p>
           <div className="space-y-3">
             {[
-              { num: '1', en: 'Dr. Hala reviews your request (usually within 4 hours)', ar: 'الدكتورة هالة تراجع طلبك (عادةً خلال ٤ ساعات)' },
+              { num: '1', en: 'Our team reviews your request (usually within 4 hours)', ar: 'فريقنا يراجع طلبك (عادةً خلال ٤ ساعات)' },
               { num: '2', en: 'You receive an invoice with payment details via email', ar: 'ستصلك فاتورة بتفاصيل الدفع عبر البريد الإلكتروني' },
               { num: '3', en: 'Complete payment — your session is confirmed!', ar: 'أكمل الدفع — يتم تأكيد جلستك!' },
             ].map(step => (
@@ -1769,7 +1769,7 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
               {isRTL ? 'تقييم ذاتي سريع' : 'Take a Quick Self Check-in'}
             </p>
             <p className="text-xs text-[#8E8E9F] mt-0.5">
-              {isRTL ? 'ساعد د. هالة على فهمك بشكل أفضل' : 'Help Dr. Hala understand you better before your session'}
+              {isRTL ? 'ساعدنا على فهمك بشكل أفضل' : 'Help us understand you better before your session'}
             </p>
           </div>
           <ChevronRight className={`w-4 h-4 text-[#C0B8B0] group-hover:text-[#7A3B5E] shrink-0 ${isRTL ? 'rotate-180' : ''}`} />

@@ -87,8 +87,8 @@ export const events: SmartEvent[] = [
       {
         questionEn: 'Is this therapy?',
         questionAr: 'هَلْ هذا عِلاجٌ نَفْسِيّ؟',
-        answerEn: "No — it\u2019s a growth program, not a therapy group. Dr. Hala is a certified counselor and will privately refer anyone who needs deeper support.",
-        answerAr: 'لا — هُوَ بَرْنامَجُ نُمُوٍّ وَلَيْسَ مَجْموعَةَ عِلاج. د. هالَة مُسْتَشارَةٌ مُعْتَمَدَةٌ وَسَتُحَوِّلُ بِشَكْلٍ خاصٍّ أَيَّ فَتاةٍ تَحْتاجُ دَعْماً أَعْمَق.',
+        answerEn: "No — it\u2019s a growth program, not a therapy group. The program is led by a certified counselor, and anyone who needs deeper support will be privately referred.",
+        answerAr: 'لا — هُوَ بَرْنامَجُ نُمُوٍّ وَلَيْسَ مَجْموعَةَ عِلاج. يَقودُ البَرْنامَجَ مُسْتَشارٌ مُعْتَمَد، وَأَيُّ فَتاةٍ تَحْتاجُ دَعْماً أَعْمَق سَتُحَوَّلُ بِشَكْلٍ خاصّ.',
       },
     ],
     outcomesEn: [
@@ -193,8 +193,8 @@ export const events: SmartEvent[] = [
       {
         questionEn: 'Is this therapy?',
         questionAr: 'هَلْ هذا عِلاجٌ نَفْسِيّ؟',
-        answerEn: "No. This is a growth program, not a therapy group. Dr. Hala is a certified counselor and will privately refer anyone who needs deeper one-on-one support.",
-        answerAr: 'لا. هذا بَرْنامَجُ نُمُوٍّ وَلَيْسَ مَجْموعَةَ عِلاج. د. هالَة مُسْتَشارَةٌ مُعْتَمَدَةٌ وَسَتُحَوِّلُ بِشَكْلٍ خاصٍّ أَيَّ فَتىً يَحْتاجُ دَعْماً فَرْدِيّاً أَعْمَق.',
+        answerEn: "No. This is a growth program, not a therapy group. The program is led by a certified counselor, and anyone who needs deeper one-on-one support will be privately referred.",
+        answerAr: 'لا. هذا بَرْنامَجُ نُمُوٍّ وَلَيْسَ مَجْموعَةَ عِلاج. يَقودُ البَرْنامَجَ مُسْتَشارٌ مُعْتَمَد، وَأَيُّ فَتىً يَحْتاجُ دَعْماً فَرْدِيّاً أَعْمَق سَيُحَوَّلُ بِشَكْلٍ خاصّ.',
       },
     ],
     outcomesEn: [
@@ -762,8 +762,8 @@ export const events: SmartEvent[] = [
       {
         questionEn: 'Is this a replacement for therapy?',
         questionAr: 'هَلْ هذا بَديلٌ عَنِ العِلاج؟',
-        answerEn: 'No. This is psychoeducation — learning how anxiety works and building a starter toolkit. If anxiety is interfering with sleep, school, or relationships, 1:1 therapy is the next step. Dr. Hala can help you find one.',
-        answerAr: 'لا. هذا تَثْقيفٌ نَفْسيّ — تَعَلُّمُ كَيْفَ يَعْمَلُ القَلَق وَبِناءُ صُنْدوقِ أَدَواتٍ اِبْتِدائِيّ. إِذا كانَ القَلَقُ يَتَدَخَّلُ في النَّوْمِ أَوِ المَدْرَسَةِ أَوِ العَلاقات، العِلاجُ الفَرْدِيّ هُوَ الخُطْوَةُ التّالِيَة. الدكتورة هالة تَسْتَطيعُ مُساعَدَتَكَ في إيجادِ مُعالِج.',
+        answerEn: 'No. This is psychoeducation — learning how anxiety works and building a starter toolkit. If anxiety is interfering with sleep, school, or relationships, 1:1 therapy is the next step. We can help you find one.',
+        answerAr: 'لا. هذا تَثْقيفٌ نَفْسيّ — تَعَلُّمُ كَيْفَ يَعْمَلُ القَلَق وَبِناءُ صُنْدوقِ أَدَواتٍ اِبْتِدائِيّ. إِذا كانَ القَلَقُ يَتَدَخَّلُ في النَّوْمِ أَوِ المَدْرَسَةِ أَوِ العَلاقات، العِلاجُ الفَرْدِيّ هُوَ الخُطْوَةُ التّالِيَة. يُمْكِنُنا مُساعَدَتُكَ في إيجادِ مُعالِج.',
       },
     ],
     outcomesEn: [
@@ -1026,8 +1026,8 @@ export const events: SmartEvent[] = [
       {
         questionEn: 'Will this help if I\'m being bullied?',
         questionAr: 'هَلْ سَيُساعِدُني هذا إِذا كُنْتُ أَتَعَرَّضُ لِلتَّنَمُّر؟',
-        answerEn: 'This workshop covers peer conflict and exclusion, but bullying (ongoing, targeted, power-imbalanced harm) needs more direct support. If that\'s your situation, reach out to Dr. Hala\'s bullying support service.',
-        answerAr: 'هذِهِ الوَرْشَةُ تُغَطّي صِراعَ الأَقْرانِ وَالإقْصاء، لَكِنَّ التَّنَمُّرَ (الأَذى المُسْتَمِرَّ، المُسْتَهْدَف، غَيْرَ المُتَوازِنِ في القُوَّة) يَحْتاجُ دَعْماً أَكْثَرَ مُباشَرَة. إِذا كانَ هذا وَضْعَك، تَواصَلْ مَعَ خِدْمَةِ دَعْمِ التَّنَمُّرِ لَدى الدكتورة هالة.',
+        answerEn: 'This workshop covers peer conflict and exclusion, but bullying (ongoing, targeted, power-imbalanced harm) needs more direct support. If that\'s your situation, reach out to our bullying support service.',
+        answerAr: 'هذِهِ الوَرْشَةُ تُغَطّي صِراعَ الأَقْرانِ وَالإقْصاء، لَكِنَّ التَّنَمُّرَ (الأَذى المُسْتَمِرَّ، المُسْتَهْدَف، غَيْرَ المُتَوازِنِ في القُوَّة) يَحْتاجُ دَعْماً أَكْثَرَ مُباشَرَة. إِذا كانَ هذا وَضْعَك، تَواصَلْ مَعَ خِدْمَةِ دَعْمِ التَّنَمُّرِ لَدَيْنا.',
       },
     ],
     outcomesEn: [

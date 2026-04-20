@@ -88,8 +88,8 @@ function computePolicy(startTime: string, policyHours: number): BookingPolicy {
   return {
     canCancel: false,
     canReschedule: false,
-    message: 'Too close to session time. Please contact Dr. Hala directly.',
-    messageAr: 'وقت الجلسة قريب جداً. يرجى التواصل مع د. هالة مباشرة.',
+    message: 'Too close to session time. Please contact us directly.',
+    messageAr: 'وقت الجلسة قريب جداً. يرجى التواصل معنا مباشرة.',
     feePercent: 1,
   };
 }

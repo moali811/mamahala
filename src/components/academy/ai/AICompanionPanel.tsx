@@ -158,8 +158,8 @@ export default function AICompanionPanel({
             <Info className="w-3 h-3 flex-shrink-0 mt-0.5" />
             <p dir={isRTL ? 'rtl' : 'ltr'}>
               {isRTL
-                ? 'هذا مُساعِدٌ آلِيٌّ (AI) — قد يُخْطِئ أَحْياناً ولَيْسَ بَديلاً عن الرِّعايَةِ المِهْنيّة. لِلدَّعْمِ الشَّخْصيّ، اِحْجِزي جَلْسةً مع الدّكتورة هالة.'
-                : 'This is an AI assistant — it can make mistakes and is not a substitute for professional care. For personal support, book a session with Dr. Hala.'}
+                ? 'هذا مُساعِدٌ آلِيٌّ (AI) — قد يُخْطِئ أَحْياناً ولَيْسَ بَديلاً عن الرِّعايَةِ المِهْنيّة. لِلدَّعْمِ الشَّخْصيّ، اِحْجِزي جَلْسةً استشاريّة.'
+                : 'This is an AI assistant — it can make mistakes and is not a substitute for professional care. For personal support, book a counseling session.'}
             </p>
           </div>
 
@@ -230,7 +230,7 @@ export default function AICompanionPanel({
                       style={{ backgroundColor: color }}
                     >
                       <Calendar className="w-3.5 h-3.5" />
-                      {isRTL ? 'اِحْجِزي اسْتِشارَةً مَجّانيّةً مع الدّكتورة هالة' : 'Book a free consultation with Dr. Hala'}
+                      {isRTL ? 'اِحْجِزي اسْتِشارَةً مَجّانيّةً معنا' : 'Book a free consultation with us'}
                     </a>
                   )}
                 </div>
@@ -276,7 +276,7 @@ export default function AICompanionPanel({
               style={{ color }}
             >
               <Calendar className="w-3 h-3" />
-              {isRTL ? 'اِحْجِزي مع الدّكتورة هالة' : 'Book with Dr. Hala'}
+              {isRTL ? 'اِحْجِزي جَلْسة اسْتِشارِيّة' : 'Book a counseling session'}
             </a>
           </div>
         </aside>

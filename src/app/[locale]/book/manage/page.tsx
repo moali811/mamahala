@@ -27,7 +27,7 @@ const STATUS_MAP: Record<string, { bg: string; text: string; en: string; ar: str
 // ─── Google Calendar URL helper ─────────────────────────────────
 
 function getCalendarUrl(booking: any): string {
-  const title = encodeURIComponent('Session with Dr. Hala Ali');
+  const title = encodeURIComponent('Counseling Session — Mama Hala Consulting');
   const details = encodeURIComponent(
     `${booking.serviceName || booking.serviceSlug}\nBooking ID: ${booking.bookingId}`,
   );
@@ -442,7 +442,7 @@ function ManageBookingInner() {
                         {isRTL ? 'تقييم ذاتي سريع' : 'Take a Quick Self Check-in'}
                       </p>
                       <p className="text-xs text-[#8E8E9F] mt-0.5">
-                        {isRTL ? 'ساعد د. هالة على فهمك بشكل أفضل قبل الجلسة' : 'Help Dr. Hala understand you better before your session'}
+                        {isRTL ? 'ساعدنا على فهمك بشكل أفضل قبل الجلسة' : 'Help us understand you better before your session'}
                       </p>
                     </div>
                     <ChevronRight className={`w-4 h-4 text-[#C0B8B0] group-hover:text-[#7A3B5E] transition-colors shrink-0 ${isRTL ? 'rotate-180' : ''}`} />

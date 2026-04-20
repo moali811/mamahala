@@ -181,7 +181,7 @@ function buildContactBlock(
 ): PaymentMethodBlock {
   return {
     kind: 'contact',
-    heading: 'Arrange payment with Dr. Hala',
+    heading: 'Arrange Payment',
     bodyLines: [
       `Please reply to this invoice email to arrange payment.`,
       `Email: ${settings.issuerBlock.email}`,

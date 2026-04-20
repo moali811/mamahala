@@ -366,7 +366,7 @@ export async function generateReceiptPdf(
   const thankYou =
     input.thankYouMessage ||
     'Thank you for your trust and your investment in your wellbeing. We look forward to supporting you on your journey.';
-  y = sectionLabel(doc, 'A note from Dr. Hala', y, GOLD);
+  y = sectionLabel(doc, 'A note from our team', y, GOLD);
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(10);
   doc.setTextColor(...TEXT);
