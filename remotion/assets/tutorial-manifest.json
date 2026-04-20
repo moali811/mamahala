@@ -1,0 +1,176 @@
+[
+  {
+    "id": "01-welcome",
+    "title": "Welcome to MCMS",
+    "durationSeconds": 11.530567,
+    "wav": "tutorial-audio/01-welcome.wav",
+    "captions": [
+      {
+        "text": "Welcome, Dr. Hala.",
+        "emphasis": true
+      },
+      {
+        "text": "This is your new admin dashboard."
+      },
+      {
+        "text": "In the next few minutes, I'll walk you through everything you need to run your practice from here."
+      }
+    ]
+  },
+  {
+    "id": "02-login",
+    "title": "Signing In",
+    "durationSeconds": 10.248209,
+    "wav": "tutorial-audio/02-login.wav",
+    "captions": [
+      {
+        "text": "Go to mamahala.ca/admin to sign in"
+      },
+      {
+        "text": "Enter your password"
+      },
+      {
+        "text": "Check 'Remember me' on your own device"
+      }
+    ]
+  },
+  {
+    "id": "03-bookings",
+    "title": "Bookings — The Heart of Your Day",
+    "durationSeconds": 29.156871,
+    "wav": "tutorial-audio/03-bookings.wav",
+    "captions": [
+      {
+        "text": "Bookings is where your day starts"
+      },
+      {
+        "text": "Three tabs: Booking Requests, Recurring, Availability"
+      },
+      {
+        "text": "New requests appear in Pending"
+      },
+      {
+        "text": "Click Approve to confirm — an email is sent automatically"
+      },
+      {
+        "text": "Click Decline to gently turn down a request"
+      },
+      {
+        "text": "Tap New Booking to add a client manually"
+      }
+    ]
+  },
+  {
+    "id": "04-availability",
+    "title": "Controlling Your Availability",
+    "durationSeconds": 32.596417,
+    "wav": "tutorial-audio/04-availability.wav",
+    "captions": [
+      {
+        "text": "Availability controls when clients can book you"
+      },
+      {
+        "text": "Schedule — set your weekly hours"
+      },
+      {
+        "text": "Blocked Dates — vacations, days off, holidays"
+      },
+      {
+        "text": "Travel — trip locations adjust your timezone"
+      },
+      {
+        "text": "Rules — notice, buffers, max sessions per day"
+      }
+    ]
+  },
+  {
+    "id": "05-invoices",
+    "title": "Invoices — Getting Paid",
+    "durationSeconds": 38.042902,
+    "wav": "tutorial-audio/05-invoices.wav",
+    "captions": [
+      {
+        "text": "Dashboard — revenue and insights at a glance"
+      },
+      {
+        "text": "Compose — create a new invoice"
+      },
+      {
+        "text": "Pick a customer and service — price fills in automatically"
+      },
+      {
+        "text": "Adjust for complexity, packages, or sliding scale"
+      },
+      {
+        "text": "Use the voice recorder — AI writes the description"
+      },
+      {
+        "text": "Preview, then Send — payment link included"
+      },
+      {
+        "text": "History — mark paid, resend, or download PDF"
+      }
+    ]
+  },
+  {
+    "id": "06-dashboard-clients",
+    "title": "Dashboard & Clients",
+    "durationSeconds": 15.619274,
+    "wav": "tutorial-audio/06-dashboard-clients.wav",
+    "captions": [
+      {
+        "text": "Dashboard — real-time view of your practice"
+      },
+      {
+        "text": "Leads, toolkit downloads, newsletter signups"
+      },
+      {
+        "text": "Clients — every lead tagged Hot, Warm, or Cold"
+      },
+      {
+        "text": "Click any row to see their journey on your site"
+      }
+    ]
+  },
+  {
+    "id": "07-content",
+    "title": "Content & Services",
+    "durationSeconds": 20.02263,
+    "wav": "tutorial-audio/07-content.wav",
+    "captions": [
+      {
+        "text": "Blog, Services, Testimonials, FAQs, Resources"
+      },
+      {
+        "text": "Each is its own dedicated section"
+      },
+      {
+        "text": "English and Arabic — Translate button handles the rest"
+      },
+      {
+        "text": "Photos, prices, toolkits — all in a few clicks"
+      }
+    ]
+  },
+  {
+    "id": "08-settings",
+    "title": "Settings & Wrap-up",
+    "durationSeconds": 16.25542,
+    "wav": "tutorial-audio/08-settings.wav",
+    "captions": [
+      {
+        "text": "Settings — your business info, stats, social, pricing"
+      },
+      {
+        "text": "Everything on your website reflects what you save here"
+      },
+      {
+        "text": "You're ready to run Mama Hala Consulting from one place"
+      },
+      {
+        "text": "Welcome to your new command center.",
+        "emphasis": true
+      }
+    ]
+  }
+]
