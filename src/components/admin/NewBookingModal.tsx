@@ -59,17 +59,49 @@ interface Props {
 type SectionKey = 'service' | 'schedule' | 'client' | 'options';
 
 // ─── Constants ─────────────────────────────────────────────────
+// Global fallback timezone list — covers the main UTC offsets so every
+// admin dropdown has a sensible default regardless of client country.
+// Per-country timezones come from COUNTRIES_BY_CODE and are prepended
+// at render time, so enriching this list only adds globally-useful
+// zones that aren't already in the client's country entry.
 const TIMEZONES = [
-  'Asia/Dubai',
-  'America/Toronto',
-  'America/New_York',
-  'America/Vancouver',
+  'UTC',
+  // Americas
   'America/Los_Angeles',
+  'America/Denver',
+  'America/Chicago',
+  'America/New_York',
+  'America/Toronto',
+  'America/Vancouver',
+  'America/Sao_Paulo',
+  'America/Mexico_City',
+  // Europe / Africa
   'Europe/London',
   'Europe/Paris',
+  'Europe/Berlin',
+  'Europe/Athens',
+  'Europe/Moscow',
+  'Africa/Cairo',
+  'Africa/Lagos',
+  'Africa/Johannesburg',
+  // Middle East / Central Asia
+  'Asia/Dubai',
   'Asia/Riyadh',
   'Asia/Beirut',
-  'UTC',
+  'Asia/Tehran',
+  'Asia/Karachi',
+  // South / SE Asia
+  'Asia/Kolkata',
+  'Asia/Dhaka',
+  'Asia/Bangkok',
+  'Asia/Singapore',
+  'Asia/Jakarta',
+  // East Asia / Oceania
+  'Asia/Shanghai',
+  'Asia/Tokyo',
+  'Asia/Seoul',
+  'Australia/Sydney',
+  'Pacific/Auckland',
 ];
 
 const WEEKDAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];

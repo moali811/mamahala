@@ -37,8 +37,8 @@ export interface CountryInfo {
 export const COUNTRIES: CountryInfo[] = [
   // ─── GCC ────────────────────────────────────────────────────────
   { code: 'AE', name: 'UAE', nameAr: 'الإمارات', flag: '\u{1F1E6}\u{1F1EA}', dial: '+971', city: 'Dubai', cityAr: 'دبي', timezones: ['Asia/Dubai', 'Asia/Muscat'] },
-  { code: 'CA', name: 'Canada', nameAr: 'كندا', flag: '\u{1F1E8}\u{1F1E6}', dial: '+1', city: 'Ottawa', cityAr: 'أوتاوا', timezones: ['America/Toronto', 'America/Vancouver', 'America/Edmonton', 'America/Winnipeg', 'America/Halifax', 'America/St_Johns'] },
-  { code: 'US', name: 'United States', nameAr: 'أمريكا', flag: '\u{1F1FA}\u{1F1F8}', dial: '+1', city: '', cityAr: '', timezones: ['America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles', 'America/Phoenix'] },
+  { code: 'CA', name: 'Canada', nameAr: 'كندا', flag: '\u{1F1E8}\u{1F1E6}', dial: '+1', city: 'Ottawa', cityAr: 'أوتاوا', timezones: ['America/Toronto', 'America/Vancouver', 'America/Edmonton', 'America/Winnipeg', 'America/Regina', 'America/Halifax', 'America/St_Johns'] },
+  { code: 'US', name: 'United States', nameAr: 'أمريكا', flag: '\u{1F1FA}\u{1F1F8}', dial: '+1', city: '', cityAr: '', timezones: ['America/New_York', 'America/Chicago', 'America/Denver', 'America/Los_Angeles', 'America/Phoenix', 'America/Indiana/Indianapolis', 'America/Anchorage', 'Pacific/Honolulu', 'America/Adak'] },
   { code: 'SA', name: 'Saudi Arabia', nameAr: 'السعودية', flag: '\u{1F1F8}\u{1F1E6}', dial: '+966', city: 'Riyadh', cityAr: 'الرياض', timezones: ['Asia/Riyadh'] },
   { code: 'KW', name: 'Kuwait', nameAr: 'الكويت', flag: '\u{1F1F0}\u{1F1FC}', dial: '+965', city: 'Kuwait City', cityAr: 'الكويت', timezones: ['Asia/Kuwait'] },
   { code: 'QA', name: 'Qatar', nameAr: 'قطر', flag: '\u{1F1F6}\u{1F1E6}', dial: '+974', city: 'Doha', cityAr: 'الدوحة', timezones: ['Asia/Qatar'] },
@@ -125,7 +125,7 @@ export const COUNTRIES: CountryInfo[] = [
   { code: 'MD', name: 'Moldova', nameAr: 'مولدوفا', flag: '\u{1F1F2}\u{1F1E9}', dial: '+373', timezones: ['Europe/Chisinau'] },
   { code: 'UA', name: 'Ukraine', nameAr: 'أوكرانيا', flag: '\u{1F1FA}\u{1F1E6}', dial: '+380', city: 'Kyiv', cityAr: 'كييف', timezones: ['Europe/Kyiv', 'Europe/Kiev'] },
   { code: 'BY', name: 'Belarus', nameAr: 'بيلاروسيا', flag: '\u{1F1E7}\u{1F1FE}', dial: '+375', timezones: ['Europe/Minsk'] },
-  { code: 'RU', name: 'Russia', nameAr: 'روسيا', flag: '\u{1F1F7}\u{1F1FA}', dial: '+7', city: 'Moscow', cityAr: 'موسكو', timezones: ['Europe/Moscow'] },
+  { code: 'RU', name: 'Russia', nameAr: 'روسيا', flag: '\u{1F1F7}\u{1F1FA}', dial: '+7', city: 'Moscow', cityAr: 'موسكو', timezones: ['Europe/Moscow', 'Europe/Kaliningrad', 'Europe/Samara', 'Asia/Yekaterinburg', 'Asia/Omsk', 'Asia/Krasnoyarsk', 'Asia/Irkutsk', 'Asia/Yakutsk', 'Asia/Vladivostok', 'Asia/Magadan', 'Asia/Kamchatka'] },
 
   // ─── Caucasus ───────────────────────────────────────────────────
   { code: 'GE', name: 'Georgia', nameAr: 'جورجيا', flag: '\u{1F1EC}\u{1F1EA}', dial: '+995', timezones: ['Asia/Tbilisi'] },
@@ -141,12 +141,12 @@ export const COUNTRIES: CountryInfo[] = [
   { code: 'AF', name: 'Afghanistan', nameAr: 'أفغانستان', flag: '\u{1F1E6}\u{1F1EB}', dial: '+93', timezones: ['Asia/Kabul'] },
 
   // ─── North America ──────────────────────────────────────────────
-  { code: 'MX', name: 'Mexico', nameAr: 'المكسيك', flag: '\u{1F1F2}\u{1F1FD}', dial: '+52', city: 'Mexico City', cityAr: 'مكسيكو', timezones: ['America/Mexico_City'] },
+  { code: 'MX', name: 'Mexico', nameAr: 'المكسيك', flag: '\u{1F1F2}\u{1F1FD}', dial: '+52', city: 'Mexico City', cityAr: 'مكسيكو', timezones: ['America/Mexico_City', 'America/Monterrey', 'America/Chihuahua', 'America/Tijuana', 'America/Cancun'] },
 
   // ─── Latin America — South ──────────────────────────────────────
-  { code: 'BR', name: 'Brazil', nameAr: 'البرازيل', flag: '\u{1F1E7}\u{1F1F7}', dial: '+55', city: 'São Paulo', cityAr: 'ساو باولو', timezones: ['America/Sao_Paulo'] },
-  { code: 'AR', name: 'Argentina', nameAr: 'الأرجنتين', flag: '\u{1F1E6}\u{1F1F7}', dial: '+54', city: 'Buenos Aires', cityAr: 'بوينس آيرس', timezones: ['America/Argentina/Buenos_Aires'] },
-  { code: 'CL', name: 'Chile', nameAr: 'تشيلي', flag: '\u{1F1E8}\u{1F1F1}', dial: '+56', city: 'Santiago', cityAr: 'سانتياغو', timezones: ['America/Santiago'] },
+  { code: 'BR', name: 'Brazil', nameAr: 'البرازيل', flag: '\u{1F1E7}\u{1F1F7}', dial: '+55', city: 'São Paulo', cityAr: 'ساو باولو', timezones: ['America/Sao_Paulo', 'America/Fortaleza', 'America/Manaus', 'America/Rio_Branco', 'America/Noronha'] },
+  { code: 'AR', name: 'Argentina', nameAr: 'الأرجنتين', flag: '\u{1F1E6}\u{1F1F7}', dial: '+54', city: 'Buenos Aires', cityAr: 'بوينس آيرس', timezones: ['America/Argentina/Buenos_Aires', 'America/Argentina/Cordoba', 'America/Argentina/Mendoza', 'America/Argentina/Ushuaia'] },
+  { code: 'CL', name: 'Chile', nameAr: 'تشيلي', flag: '\u{1F1E8}\u{1F1F1}', dial: '+56', city: 'Santiago', cityAr: 'سانتياغو', timezones: ['America/Santiago', 'Pacific/Easter'] },
   { code: 'CO', name: 'Colombia', nameAr: 'كولومبيا', flag: '\u{1F1E8}\u{1F1F4}', dial: '+57', city: 'Bogotá', cityAr: 'بوغوتا', timezones: ['America/Bogota'] },
   { code: 'PE', name: 'Peru', nameAr: 'بيرو', flag: '\u{1F1F5}\u{1F1EA}', dial: '+51', timezones: ['America/Lima'] },
   { code: 'UY', name: 'Uruguay', nameAr: 'أوروغواي', flag: '\u{1F1FA}\u{1F1FE}', dial: '+598', timezones: ['America/Montevideo'] },
@@ -173,7 +173,7 @@ export const COUNTRIES: CountryInfo[] = [
   // ─── Southeast Asia ─────────────────────────────────────────────
   { code: 'MY', name: 'Malaysia', nameAr: 'ماليزيا', flag: '\u{1F1F2}\u{1F1FE}', dial: '+60', city: 'Kuala Lumpur', cityAr: 'كوالالمبور', timezones: ['Asia/Kuala_Lumpur'] },
   { code: 'SG', name: 'Singapore', nameAr: 'سنغافورة', flag: '\u{1F1F8}\u{1F1EC}', dial: '+65', city: 'Singapore', cityAr: 'سنغافورة', timezones: ['Asia/Singapore'] },
-  { code: 'ID', name: 'Indonesia', nameAr: 'إندونيسيا', flag: '\u{1F1EE}\u{1F1E9}', dial: '+62', city: 'Jakarta', cityAr: 'جاكرتا', timezones: ['Asia/Jakarta'] },
+  { code: 'ID', name: 'Indonesia', nameAr: 'إندونيسيا', flag: '\u{1F1EE}\u{1F1E9}', dial: '+62', city: 'Jakarta', cityAr: 'جاكرتا', timezones: ['Asia/Jakarta', 'Asia/Makassar', 'Asia/Jayapura'] },
   { code: 'PH', name: 'Philippines', nameAr: 'الفلبين', flag: '\u{1F1F5}\u{1F1ED}', dial: '+63', city: 'Manila', cityAr: 'مانيلا', timezones: ['Asia/Manila'] },
   { code: 'TH', name: 'Thailand', nameAr: 'تايلاند', flag: '\u{1F1F9}\u{1F1ED}', dial: '+66', city: 'Bangkok', cityAr: 'بانكوك', timezones: ['Asia/Bangkok'] },
   { code: 'VN', name: 'Vietnam', nameAr: 'فيتنام', flag: '\u{1F1FB}\u{1F1F3}', dial: '+84', city: 'Hanoi', cityAr: 'هانوي', timezones: ['Asia/Ho_Chi_Minh'] },
@@ -182,14 +182,14 @@ export const COUNTRIES: CountryInfo[] = [
   { code: 'MM', name: 'Myanmar', nameAr: 'ميانمار', flag: '\u{1F1F2}\u{1F1F2}', dial: '+95', timezones: ['Asia/Yangon'] },
 
   // ─── East Asia ──────────────────────────────────────────────────
-  { code: 'CN', name: 'China', nameAr: 'الصين', flag: '\u{1F1E8}\u{1F1F3}', dial: '+86', city: 'Beijing', cityAr: 'بكين', timezones: ['Asia/Shanghai'] },
+  { code: 'CN', name: 'China', nameAr: 'الصين', flag: '\u{1F1E8}\u{1F1F3}', dial: '+86', city: 'Beijing', cityAr: 'بكين', timezones: ['Asia/Shanghai', 'Asia/Urumqi'] },
   { code: 'JP', name: 'Japan', nameAr: 'اليابان', flag: '\u{1F1EF}\u{1F1F5}', dial: '+81', city: 'Tokyo', cityAr: 'طوكيو', timezones: ['Asia/Tokyo'] },
   { code: 'KR', name: 'South Korea', nameAr: 'كوريا الجنوبية', flag: '\u{1F1F0}\u{1F1F7}', dial: '+82', city: 'Seoul', cityAr: 'سيول', timezones: ['Asia/Seoul'] },
   { code: 'TW', name: 'Taiwan', nameAr: 'تايوان', flag: '\u{1F1F9}\u{1F1FC}', dial: '+886', city: 'Taipei', cityAr: 'تايبيه', timezones: ['Asia/Taipei'] },
   { code: 'HK', name: 'Hong Kong', nameAr: 'هونغ كونغ', flag: '\u{1F1ED}\u{1F1F0}', dial: '+852', city: 'Hong Kong', cityAr: 'هونغ كونغ', timezones: ['Asia/Hong_Kong'] },
 
   // ─── Oceania ────────────────────────────────────────────────────
-  { code: 'AU', name: 'Australia', nameAr: 'أستراليا', flag: '\u{1F1E6}\u{1F1FA}', dial: '+61', city: 'Sydney', cityAr: 'سيدني', timezones: ['Australia/Sydney', 'Australia/Melbourne', 'Australia/Brisbane', 'Australia/Perth'] },
+  { code: 'AU', name: 'Australia', nameAr: 'أستراليا', flag: '\u{1F1E6}\u{1F1FA}', dial: '+61', city: 'Sydney', cityAr: 'سيدني', timezones: ['Australia/Sydney', 'Australia/Melbourne', 'Australia/Brisbane', 'Australia/Adelaide', 'Australia/Perth', 'Australia/Darwin', 'Australia/Hobart'] },
   { code: 'NZ', name: 'New Zealand', nameAr: 'نيوزيلندا', flag: '\u{1F1F3}\u{1F1FF}', dial: '+64', city: 'Auckland', cityAr: 'أوكلاند', timezones: ['Pacific/Auckland'] },
 
   // ─── Africa — additional lower-band markets ─────────────────────
