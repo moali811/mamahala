@@ -93,7 +93,7 @@ export default function StoryFormat({ blocks, ctx }: Props) {
             onClick={restart}
             aria-label={ctx.isRTL ? 'أعد' : 'Restart'}
             className="text-[#B0B0C0] hover:text-[#6B6580] transition-colors p-1.5"
-            title={ctx.isRTL ? 'اِبْدَء من جَديد' : 'Start over'}
+            title={ctx.isRTL ? 'اِبْدَأ من جَديد' : 'Start over'}
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
