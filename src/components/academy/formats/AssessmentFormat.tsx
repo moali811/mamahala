@@ -27,7 +27,7 @@ export default function AssessmentFormat({ blocks, ctx }: Props) {
         </h2>
         <p className="text-sm text-[#4A4A5C]">
           {ctx.isRTL
-            ? 'أَجيبي بِصِدْقٍ — هذا لَكِ وَحْدَكِ.'
+            ? 'أَجب بِصِدْق — هذا لَك وَحْدَك.'
             : 'Answer honestly — this is just for you.'}
         </p>
       </div>
