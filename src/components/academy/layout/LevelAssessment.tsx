@@ -148,13 +148,13 @@ export default function LevelAssessment({
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-[#2D2A33]">
-            {isRTL ? 'اِبْدَئي بِتَقْييمٍ ذاتِيٍّ سَريع' : 'Start with a quick self-check'}
+            {isRTL ? 'اِبْدَأ بِتَقْييمٍ ذاتِيٍّ سَريع' : 'Start with a quick self-check'}
           </p>
           <p className="text-[11px] text-[#8E8E9F]">
-            {isRTL ? '60 ثانِيَة · خَطٌّ أَساسٌ لِقِياسِ نُمُوِّكِ' : '60 seconds · baseline to measure your growth'}
+            {isRTL ? '60 ثانِيَة · خَطٌّ أَساسٌ لِقِياسِ نُمُوِّك' : '60 seconds · baseline to measure your growth'}
           </p>
         </div>
-        <span className="text-xs font-semibold" style={{ color }}>{isRTL ? 'اِبْدَئي ←' : 'Start →'}</span>
+        <span className="text-xs font-semibold" style={{ color }}>{isRTL ? 'اِبْدَأ ←' : 'Start →'}</span>
       </button>
     );
   }
@@ -172,7 +172,7 @@ export default function LevelAssessment({
             {isRTL ? `خَطُّ الأَساسِ مُسَجَّل: ${avg.toFixed(1)}/5` : `Baseline saved: ${avg.toFixed(1)}/5`}
           </p>
           <p className="text-[10px] text-[#8E8E9F]">
-            {isRTL ? 'أَكْمِلي وِحْداتِ المُسْتَوى لِتَرَيْ نُمُوَّك.' : 'Finish the level modules to see your growth.'}
+            {isRTL ? 'أَكْمِل وِحْداتِ المُسْتَوى لِتَرَى نُمُوَّك.' : 'Finish the level modules to see your growth.'}
           </p>
         </div>
       </div>
@@ -192,14 +192,14 @@ export default function LevelAssessment({
         </div>
         <div className="flex-1">
           <p className="text-sm font-semibold text-[#2D2A33]">
-            {isRTL ? 'أَكْمَلْتِ المُسْتَوى! شاهِدي نُمُوَّك' : 'Level complete! See your growth'}
+            {isRTL ? 'أَكْمَلْت المُسْتَوى! شاهِد نُمُوَّك' : 'Level complete! See your growth'}
           </p>
           <p className="text-[11px] text-[#8E8E9F]">
-            {isRTL ? 'أَعيدي التَّقْييمَ الآن لِلْمُقارَنَة' : 'Re-take the self-check to compare'}
+            {isRTL ? 'أَعد التَّقْييمَ الآن لِلْمُقارَنَة' : 'Re-take the self-check to compare'}
           </p>
         </div>
         <span className="text-xs font-semibold text-white px-3 py-1.5 rounded-lg" style={{ backgroundColor: color }}>
-          {isRTL ? 'اِبْدَئي' : 'Start'}
+          {isRTL ? 'اِبْدَأ' : 'Start'}
         </span>
       </button>
     );
@@ -218,7 +218,7 @@ export default function LevelAssessment({
         <div className="flex items-center gap-2 mb-3">
           <TrendingUp className="w-4 h-4" style={{ color }} />
           <h3 className="text-sm font-bold text-[#2D2A33]">
-            {isRTL ? 'نُمُوُّكِ في هذا المُسْتَوى' : 'Your growth this level'}
+            {isRTL ? 'نُمُوُّك في هذا المُسْتَوى' : 'Your growth this level'}
           </h3>
           {deltaPct > 0 && (
             <span className="ml-auto text-xs font-semibold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: '#3B8A6E' }}>
