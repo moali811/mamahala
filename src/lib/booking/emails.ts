@@ -11,6 +11,7 @@ import type { Booking } from './types';
 import { BUSINESS } from '@/config/business';
 import { generateBookingICS, generateCancelICS } from './ics-generator';
 import { emailStyles as styles, emailWrapper } from '@/lib/email/shared-email-components';
+import { emailCopy, type EmailLocale } from './email-copy';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
@@ -75,10 +76,6 @@ function formatTime(iso: string, timezone: string): string {
   }
 }
 
-function getManageUrl(manageToken: string): string {
-  return `${SITE_URL}/en/book/manage?token=${manageToken}`;
-}
-
 function getCalendarUrl(booking: Booking): string {
   const title = encodeURIComponent(`Counseling Session — Mama Hala Consulting`);
   const details = encodeURIComponent(
@@ -94,30 +91,38 @@ function getCalendarUrl(booking: Booking): string {
 
 // ─── Email Wrapper (delegates to shared branded wrapper with logo) ──
 
-function wrapEmail(content: string): string {
-  return emailWrapper(content);
+function wrapEmail(content: string, locale?: EmailLocale): string {
+  return emailWrapper(content, { locale });
+}
+
+function getManageUrl(manageToken: string, locale?: EmailLocale): string {
+  return `${SITE_URL}/${locale === 'ar' ? 'ar' : 'en'}/book/manage?token=${manageToken}`;
 }
 
 // ─── Session Details Card (reused) ──────────────────────────────
 
-function sessionDetailsCard(booking: Booking): string {
+function sessionDetailsCard(booking: Booking, locale?: EmailLocale): string {
+  const t = emailCopy(locale);
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
-  const dateTime = formatDateTime(booking.startTime, booking.clientTimezone);
-  const mode = booking.sessionMode === 'online' ? 'Online / Video Call' : 'In-Person — Ottawa';
+  const dateTime = locale === 'ar'
+    ? formatDateTimeAr(booking.startTime, booking.clientTimezone)
+    : formatDateTime(booking.startTime, booking.clientTimezone);
+  const mode = booking.sessionMode === 'online' ? t.labels.modeOnline : t.labels.modeInPerson;
+  const valueAlign = locale === 'ar' ? 'left' : 'right';
 
   return `<div style="${styles.card}">
     <table width="100%" cellpadding="0" cellspacing="0">
-      <tr><td style="padding:6px 0;"><span style="${styles.detailLabel}">Service</span></td>
-          <td style="padding:6px 0;text-align:right;"><span style="${styles.detailValue}">${serviceName}</span></td></tr>
+      <tr><td style="padding:6px 0;"><span style="${styles.detailLabel}">${t.labels.service}</span></td>
+          <td style="padding:6px 0;text-align:${valueAlign};"><span style="${styles.detailValue}">${serviceName}</span></td></tr>
       <tr><td colspan="2" style="border-bottom:1px solid #F0ECE8;"></td></tr>
-      <tr><td style="padding:6px 0;"><span style="${styles.detailLabel}">Date & Time</span></td>
-          <td style="padding:6px 0;text-align:right;"><span style="${styles.detailValue}">${dateTime}</span></td></tr>
+      <tr><td style="padding:6px 0;"><span style="${styles.detailLabel}">${t.labels.dateTime}</span></td>
+          <td style="padding:6px 0;text-align:${valueAlign};"><span style="${styles.detailValue}">${dateTime}</span></td></tr>
       <tr><td colspan="2" style="border-bottom:1px solid #F0ECE8;"></td></tr>
-      <tr><td style="padding:6px 0;"><span style="${styles.detailLabel}">Duration</span></td>
-          <td style="padding:6px 0;text-align:right;"><span style="${styles.detailValue}">${booking.durationMinutes} minutes</span></td></tr>
+      <tr><td style="padding:6px 0;"><span style="${styles.detailLabel}">${t.labels.duration}</span></td>
+          <td style="padding:6px 0;text-align:${valueAlign};"><span style="${styles.detailValue}">${t.labels.minutes(booking.durationMinutes)}</span></td></tr>
       <tr><td colspan="2" style="border-bottom:1px solid #F0ECE8;"></td></tr>
-      <tr><td style="padding:6px 0;"><span style="${styles.detailLabel}">Mode</span></td>
-          <td style="padding:6px 0;text-align:right;"><span style="${styles.detailValue}">${mode}</span></td></tr>
+      <tr><td style="padding:6px 0;"><span style="${styles.detailLabel}">${t.labels.mode}</span></td>
+          <td style="padding:6px 0;text-align:${valueAlign};"><span style="${styles.detailValue}">${mode}</span></td></tr>
     </table>
   </div>`;
 }
@@ -137,15 +142,17 @@ export function buildConfirmationEmail(data: ConfirmationEmailData): {
   html: string;
   icsContent: string;
 } {
-  const { booking, manageToken, prepTips, aiMessage, isFreeSession } = data;
+  const { booking, manageToken, prepTips, aiMessage } = data;
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
   const firstName = booking.clientName.split(' ')[0];
   const isPendingApproval = booking.status === 'pending_approval';
 
   const tipsHtml = prepTips?.length
     ? `<div style="${styles.goldAccent}">
-        <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#7A3B5E;">Prepare for Your Session</p>
-        ${prepTips.map(t => `<p style="margin:0 0 4px;font-size:13px;color:#4A4A5C;">&#8226; ${t}</p>`).join('')}
+        <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#7A3B5E;">${t.confirmation.tipsHeading}</p>
+        ${prepTips.map(tip => `<p style="margin:0 0 4px;font-size:13px;color:#4A4A5C;">&#8226; ${tip}</p>`).join('')}
       </div>`
     : '';
 
@@ -153,65 +160,59 @@ export function buildConfirmationEmail(data: ConfirmationEmailData): {
     ? `<p style="${styles.text};font-style:italic;color:#7A3B5E;">${aiMessage}</p>`
     : '';
 
-  // Meet link section (only for confirmed free sessions)
   const meetHtml = booking.meetLink
     ? `<div style="${styles.card};background:#F0FAF5;border-left:3px solid #3B8A6E;">
-        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">Join Online Session</p>
-        <p style="margin:0 0 10px;font-size:12px;color:#4A4A5C;">Your Google Meet link is ready. Use it when the session starts.</p>
-        <a href="${booking.meetLink}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Google Meet</a>
+        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">${t.confirmation.meetHeading}</p>
+        <p style="margin:0 0 10px;font-size:12px;color:#4A4A5C;">${t.confirmation.meetHint}</p>
+        <a href="${booking.meetLink}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">${t.confirmation.meetCta}</a>
       </div>`
     : '';
 
-  // Pending approval banner
   const pendingBanner = isPendingApproval
     ? `<div style="${styles.card};background:#FFFAF5;border:2px solid #C8A97D;">
-        <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#7A3B5E;">What Happens Next?</p>
+        <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#7A3B5E;">${t.confirmation.pendingBannerHeading}</p>
         <table width="100%" cellpadding="0" cellspacing="0">
           <tr><td style="padding:8px 0;vertical-align:top;width:28px;"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#C8A97D;color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;">1</span></td>
-              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>Our team reviews your request</strong> — usually within 4 hours</p></td></tr>
+              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;">${t.confirmation.step1}</p></td></tr>
           <tr><td style="padding:8px 0;vertical-align:top;"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#C8A97D;color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;">2</span></td>
-              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>You receive an invoice</strong> with payment details</p></td></tr>
+              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;">${t.confirmation.step2}</p></td></tr>
           <tr><td style="padding:8px 0;vertical-align:top;"><span style="display:inline-block;width:22px;height:22px;border-radius:50%;background:#3B8A6E;color:#fff;text-align:center;line-height:22px;font-size:11px;font-weight:700;">3</span></td>
-              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>Complete payment</strong> — your session is confirmed and a calendar invite is sent</p></td></tr>
+              <td style="padding:8px 0 8px 8px;"><p style="margin:0;font-size:13px;color:#4A4A5C;">${t.confirmation.step3}</p></td></tr>
         </table>
       </div>`
     : '';
 
-  const heading = isPendingApproval
-    ? 'Your Request Has Been Received'
-    : 'Your Session is Confirmed';
-
-  const statusText = isPendingApproval
-    ? 'Thank you for reaching out. We will review your request and confirm within a few hours.'
-    : 'Your counseling session has been confirmed. Here are the details:';
+  const heading = isPendingApproval ? t.confirmation.headingPending : t.confirmation.headingApproved;
+  const statusText = isPendingApproval ? t.confirmation.statusTextPending : t.confirmation.statusTextApproved;
+  const manageLabel = isPendingApproval ? t.confirmation.manageViewCancel : t.confirmation.manageReschedule;
 
   const content = `
     <div style="${styles.card}">
       <h2 style="${styles.heading}">${heading}</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
       <p style="${styles.text}">${statusText}</p>
       ${aiMessageHtml}
     </div>
     ${pendingBanner}
-    ${sessionDetailsCard(booking)}
+    ${sessionDetailsCard(booking, locale)}
     ${meetHtml}
     ${!isPendingApproval ? tipsHtml : ''}
     ${!isPendingApproval ? `<div style="text-align:center;padding:8px 0 12px;">
-      <a href="${getCalendarUrl(booking)}" style="${styles.button}">Add to Calendar</a>
+      <a href="${getCalendarUrl(booking)}" style="${styles.button}">${t.confirmation.addToCalendar}</a>
     </div>` : ''}
     <div style="text-align:center;padding:0 0 20px;">
-      <a href="${getManageUrl(manageToken)}" style="${styles.buttonSecondary}">${isPendingApproval ? 'View or Cancel Request' : 'Reschedule or Cancel'}</a>
+      <a href="${getManageUrl(manageToken, locale)}" style="${styles.buttonSecondary}">${manageLabel}</a>
     </div>
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.muted}">Need help? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a> or ${BUSINESS.email}</p>
-      <p style="${styles.muted}">Booking ID: ${booking.bookingId}</p>
+      <p style="${styles.muted}">${t.needHelp} <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">${t.whatsappUs} <span dir="ltr">${BUSINESS.phone}</span></a> · ${BUSINESS.email}</p>
+      <p style="${styles.muted}">${t.bookingIdLabel}: <span dir="ltr">${booking.bookingId}</span></p>
     </div>`;
 
   return {
     subject: isPendingApproval
-      ? `Request received — ${serviceName}`
-      : `Your session is confirmed — ${serviceName}`,
-    html: wrapEmail(content),
+      ? t.confirmation.subjectPending(serviceName)
+      : t.confirmation.subjectApproved(serviceName),
+    html: wrapEmail(content, locale),
     icsContent: generateBookingICS(booking),
   };
 }
@@ -233,30 +234,30 @@ export function buildSessionLockedInEmail(
   data: SessionLockedInEmailData,
 ): { subject: string; html: string; icsContent: string } {
   const { booking, manageToken, prepTips, aiMessage } = data;
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
   const firstName = booking.clientName.split(' ')[0];
 
-  // Prominent "Join Google Meet" card — the single most important element.
-  // For in-person sessions, show the Ottawa address instead.
   const joinHtml = booking.meetLink
     ? `<div style="${styles.card};background:#F0FAF5;border-left:4px solid #3B8A6E;">
-        <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#3B8A6E;">Your Google Meet Link</p>
-        <p style="margin:0 0 14px;font-size:13px;color:#4A4A5C;">Bookmark this link now — you&apos;ll use it to join your session.</p>
-        <a href="${booking.meetLink}" style="display:inline-block;padding:12px 32px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:14px;font-weight:700;">Open Google Meet</a>
+        <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#3B8A6E;">${t.lockedIn.meetHeading}</p>
+        <p style="margin:0 0 14px;font-size:13px;color:#4A4A5C;">${t.lockedIn.meetHint}</p>
+        <a href="${booking.meetLink}" style="display:inline-block;padding:12px 32px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:14px;font-weight:700;">${t.lockedIn.meetCta}</a>
       </div>`
     : booking.sessionMode === 'inPerson'
       ? `<div style="${styles.card};background:#FFFAF5;border-left:4px solid #C8A97D;">
-          <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#7A3B5E;">Office Location</p>
-          <p style="margin:0 0 10px;font-size:13px;color:#4A4A5C;">430 Hazeldean Rd, Ottawa, ON K2L 1E8 — Canada. Please arrive 5 minutes early.</p>
+          <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#7A3B5E;">${t.lockedIn.officeHeading}</p>
+          <p style="margin:0 0 10px;font-size:13px;color:#4A4A5C;">${t.lockedIn.officeBody}</p>
         </div>`
       : `<div style="${styles.card};background:#FFFAF5;border-left:4px solid #C8A97D;">
-          <p style="margin:0;font-size:13px;color:#4A4A5C;">Your video call link will be shared via email and calendar invite before the session.</p>
+          <p style="margin:0;font-size:13px;color:#4A4A5C;">${t.lockedIn.onlineFallback}</p>
         </div>`;
 
   const tipsHtml = prepTips?.length
     ? `<div style="${styles.goldAccent}">
-        <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#7A3B5E;">Prepare for Your Session</p>
-        ${prepTips.map(t => `<p style="margin:0 0 4px;font-size:13px;color:#4A4A5C;">&#8226; ${t}</p>`).join('')}
+        <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:#7A3B5E;">${t.lockedIn.tipsHeading}</p>
+        ${prepTips.map(tip => `<p style="margin:0 0 4px;font-size:13px;color:#4A4A5C;">&#8226; ${tip}</p>`).join('')}
       </div>`
     : '';
 
@@ -269,28 +270,28 @@ export function buildSessionLockedInEmail(
       <div style="text-align:center;margin:0 0 16px;">
         <div style="display:inline-block;width:56px;height:56px;border-radius:50%;background:#F0FAF5;line-height:56px;font-size:28px;text-align:center;color:#3B8A6E;">&#10003;</div>
       </div>
-      <h2 style="${styles.heading};text-align:center;">Your Session is Confirmed &amp; Paid</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Thank you! Your payment has been received and your counseling session is locked in. Here are the details:</p>
+      <h2 style="${styles.heading};text-align:center;">${t.lockedIn.heading}</h2>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
+      <p style="${styles.text}">${t.lockedIn.body}</p>
       ${aiMessageHtml}
     </div>
-    ${sessionDetailsCard(booking)}
+    ${sessionDetailsCard(booking, locale)}
     ${joinHtml}
     ${tipsHtml}
     <div style="text-align:center;padding:8px 0 12px;">
-      <a href="${getCalendarUrl(booking)}" style="${styles.button}">Add to Your Calendar</a>
+      <a href="${getCalendarUrl(booking)}" style="${styles.button}">${t.lockedIn.addToCalendar}</a>
     </div>
     <div style="text-align:center;padding:0 0 20px;">
-      <a href="${getManageUrl(manageToken)}" style="${styles.buttonSecondary}">Reschedule or Cancel</a>
+      <a href="${getManageUrl(manageToken, locale)}" style="${styles.buttonSecondary}">${t.lockedIn.manageReschedule}</a>
     </div>
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.muted}">Need anything before your session? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a> or reply to this email.</p>
-      <p style="${styles.muted}">Booking ID: ${booking.bookingId}</p>
+      <p style="${styles.muted}">${t.lockedIn.needAnything} <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">${t.whatsappUs} <span dir="ltr">${BUSINESS.phone}</span></a></p>
+      <p style="${styles.muted}">${t.bookingIdLabel}: <span dir="ltr">${booking.bookingId}</span></p>
     </div>`;
 
   return {
-    subject: `Your session is locked in — ${serviceName}`,
-    html: wrapEmail(content),
+    subject: t.lockedIn.subject(serviceName),
+    html: wrapEmail(content, locale),
     icsContent: generateBookingICS(booking),
   };
 }

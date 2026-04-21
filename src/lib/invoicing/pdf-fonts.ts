@@ -1,14 +1,19 @@
 /* ================================================================
    PDF Fonts — Arabic Support
    ================================================================
-   Loads Tajawal (regular + bold) TTFs from public/fonts/ once per
-   cold start and registers them with a jsPDF instance. Tajawal
-   covers both Latin and Arabic ranges, so the same font works for
-   mixed-script invoices (English layout, Arabic client names).
+   Loads Amiri (regular + bold) TTFs from public/fonts/ once per
+   cold start and registers them with a jsPDF instance. Amiri is a
+   classical Naskh typeface that includes the full Arabic
+   Presentation Forms-B block (U+FE70-U+FEFF) at their Unicode
+   codepoints — required because jsPDF's Arabic parser rewrites
+   base letters into presentation forms rather than relying on
+   OpenType shaping. Modern sans-serif fonts like Tajawal omit those
+   codepoints (they ship only base letters + OpenType GSUB rules),
+   which caused letters like ا and د to render as missing glyphs.
 
-   jsPDF has a built-in Arabic parser that handles letter shaping
-   and ligatures automatically when the active font supports Arabic.
-   We pair that with setR2L(true) for proper right-to-left order.
+   jsPDF's built-in Arabic parser handles letter shaping and
+   ligatures automatically; we pair it with setR2L(true) for proper
+   right-to-left order.
    ================================================================ */
 
 import fs from 'fs';
@@ -16,11 +21,11 @@ import path from 'path';
 import type { jsPDF } from 'jspdf';
 
 const FONT_FILES = {
-  regular: 'fonts/Tajawal-Regular.ttf',
-  bold: 'fonts/Tajawal-Bold.ttf',
+  regular: 'fonts/Amiri-Regular.ttf',
+  bold: 'fonts/Amiri-Bold.ttf',
 } as const;
 
-export const ARABIC_FONT_NAME = 'Tajawal';
+export const ARABIC_FONT_NAME = 'Amiri';
 
 let regularB64: string | null = null;
 let boldB64: string | null = null;
@@ -63,13 +68,13 @@ export function registerArabicFont(doc: jsPDF): boolean {
   ensureCacheInitialized();
   if (!regularB64 || !boldB64) return false;
   try {
-    doc.addFileToVFS('Tajawal-Regular.ttf', regularB64);
-    doc.addFont('Tajawal-Regular.ttf', ARABIC_FONT_NAME, 'normal');
-    doc.addFileToVFS('Tajawal-Bold.ttf', boldB64);
-    doc.addFont('Tajawal-Bold.ttf', ARABIC_FONT_NAME, 'bold');
+    doc.addFileToVFS('Amiri-Regular.ttf', regularB64);
+    doc.addFont('Amiri-Regular.ttf', ARABIC_FONT_NAME, 'normal');
+    doc.addFileToVFS('Amiri-Bold.ttf', boldB64);
+    doc.addFont('Amiri-Bold.ttf', ARABIC_FONT_NAME, 'bold');
     return true;
   } catch (err) {
-    console.warn('[pdf-fonts] Failed to register Tajawal:', err);
+    console.warn('[pdf-fonts] Failed to register Amiri:', err);
     return false;
   }
 }

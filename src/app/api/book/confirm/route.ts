@@ -202,14 +202,21 @@ export async function POST(request: NextRequest) {
     // GCal event + Meet link created ONLY after Dr. Hala approves (via admin dashboard)
 
     // ─── Generate AI prep tips (non-blocking) ────────────────
+    // Pick the tips variant that matches the client's preferred language
+    // so the confirmation page + email render natively without a second
+    // translation pass.
+    const prepLocale: 'en' | 'ar' = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
     const prepPromise = generateSessionPrepTips(
       booking.serviceSlug,
       booking.clientNotes,
       booking.clientName,
       isNewClient,
+      prepLocale,
     ).then(prep => {
-      booking.aiPrepTips = prep.tips.join('\n---\n');
-      booking.aiConfirmationMessage = prep.personalizedMessage;
+      const tips = prepLocale === 'ar' ? prep.tipsAr : prep.tips;
+      const message = prepLocale === 'ar' ? prep.personalizedMessageAr : prep.personalizedMessage;
+      booking.aiPrepTips = tips.join('\n---\n');
+      booking.aiConfirmationMessage = message;
       return saveBooking(booking);
     }).catch(err => console.error('[Booking Confirm] AI prep failed:', err));
 
