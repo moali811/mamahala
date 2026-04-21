@@ -131,10 +131,10 @@ export const PAGE_SEO: Record<string, PageSEO> = {
     path: '/resources/events',
   },
   programs: {
-    title: 'Programs — Coming Soon',
-    titleAr: 'البرامج — قريباً',
-    description: 'Structured counseling programs for lasting change. Multi-session courses on parenting, couples communication, and youth development — launching soon.',
-    descriptionAr: 'برامج استشاريّة منظّمة للتغيير الدائم. دورات متعدّدة الجلسات حول التربية والتواصل بين الأزواج وتنمية الشباب — قريباً.',
+    title: 'Programs',
+    titleAr: 'البرامج',
+    description: 'Structured counseling programs for lasting change. Multi-session courses on parenting, couples communication, and youth development.',
+    descriptionAr: 'برامج استشاريّة منظّمة للتغيير الدائم. دورات متعدّدة الجلسات حول التربية والتواصل بين الأزواج وتنمية الشباب..',
     path: '/resources/programs',
   },
   blog: {
