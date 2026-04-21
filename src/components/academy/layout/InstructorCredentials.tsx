@@ -21,8 +21,8 @@ export default function InstructorCredentials({ isRTL, color = '#7A3B5E', locale
     : 'Yale Doctorate · UofT M.A. · CBT Specialist';
 
   const stat = isRTL
-    ? '+8 سَنَوات · +10000 عائِلَة'
-    : '8+ years · 10000+ families supported';
+    ? '+10000 عائِلَة تم دعمها'
+    : '10000+ families supported';
 
   return (
     <section
