@@ -125,7 +125,7 @@ export default function ChallengeFormat({ blocks, ctx }: Props) {
                   style={{ '--c': ctx.color } as React.CSSProperties}
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  {checked ? (ctx.isRTL ? 'مُكْتَمِل' : 'Completed') : (ctx.isRTL ? 'سَجِّلي اليَوْم' : 'Check in')}
+                  {checked ? (ctx.isRTL ? 'مُكْتَمِل' : 'Completed') : (ctx.isRTL ? 'سَجِّل اليَوْم' : 'Check in')}
                 </button>
               </div>
             </div>
