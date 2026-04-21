@@ -30,7 +30,7 @@ export default function SafetyNotice({ isRTL, color = '#7A3B5E', compact = false
           </p>
           <p className={`text-[#6B6580] leading-relaxed ${compact ? 'text-[11px]' : 'text-xs'}`}>
             {isRTL
-              ? 'الدَّوْرات لا تَحِلُّ مَحَلَّ التَّقْييمِ أو العِلاجِ المِهْنِيّ. إذا كُنْتِ تَمُرّينَ بِأَزْمَةٍ أو لَدَيْكِ أَفْكارُ إيذاءِ النَّفْس، أو تَتَعامَلينَ مع إساءَةٍ أو اضْطِرابِ أَكْلٍ حادّ أو صَدْمَةٍ شَديدَة — يُرْجى الاِتِّصالُ بِخَطِّ الأَزَماتِ فَوْراً.'
+              ? 'الدَّوْرات لا تَحِلُّ مَحَلَّ التَّقْييمِ أو العِلاجِ المِهْنِيّ. إذا كُنْت تَمُرّ بِأَزْمَةٍ أو لَدَيْك أَفْكارُ إيذاءِ النَّفْس، أو تَتَعامَل مع إساءَةٍ أو اضْطِرابِ أَكْلٍ حادّ أو صَدْمَةٍ شَديدَة — يُرْجى الاِتِّصالُ بِخَطِّ الأَزَماتِ فَوْراً.'
               : "Courses don't replace professional assessment or treatment. If you're in crisis, having thoughts of self-harm, or navigating abuse, active eating disorder, or severe trauma — please call a crisis line immediately."}
           </p>
           {!compact && (
@@ -51,7 +51,7 @@ export default function SafetyNotice({ isRTL, color = '#7A3B5E', compact = false
                 className="inline-flex items-center gap-1 text-[11px] font-semibold hover:underline"
                 style={{ color }}
               >
-                {isRTL ? 'ابحثْ عن خطّ مساعدة بلدك' : 'Find your country\'s helpline'}
+                {isRTL ? 'ابحثْ عن خطّ مساعدة ببلدك' : 'Find your country\'s helpline'}
               </a>
             </div>
           )}
