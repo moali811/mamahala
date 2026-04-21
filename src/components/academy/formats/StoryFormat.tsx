@@ -91,9 +91,9 @@ export default function StoryFormat({ blocks, ctx }: Props) {
         {index > 0 && (
           <button
             onClick={restart}
-            aria-label={ctx.isRTL ? 'أعيدي' : 'Restart'}
+            aria-label={ctx.isRTL ? 'أعد' : 'Restart'}
             className="text-[#B0B0C0] hover:text-[#6B6580] transition-colors p-1.5"
-            title={ctx.isRTL ? 'اِبْدَئي من جَديد' : 'Start over'}
+            title={ctx.isRTL ? 'اِبْدَء من جَديد' : 'Start over'}
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -133,7 +133,7 @@ export default function StoryFormat({ blocks, ctx }: Props) {
                       className="group inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-[0.15em] text-white transition-all hover:shadow-lg hover:scale-[1.02]"
                       style={{ backgroundColor: ctx.color }}
                     >
-                      {ctx.isRTL ? 'تابِعي' : 'Continue'}
+                      {ctx.isRTL ? 'تابِع' : 'Continue'}
                       <ChevronRight
                         className={`w-4 h-4 transition-transform group-hover:translate-x-0.5 ${ctx.isRTL ? 'rotate-180 group-hover:-translate-x-0.5' : ''}`}
                       />
@@ -209,7 +209,7 @@ function StoryChoice({ block, ctx, onChoose }: { block: StoryChoiceBlock; ctx: B
             className="group inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-[0.15em] text-white transition-all hover:shadow-lg hover:scale-[1.02]"
             style={{ backgroundColor: ctx.color }}
           >
-            {ctx.isRTL ? 'تابِعي القِصّة' : 'Continue the story'}
+            {ctx.isRTL ? 'تابِع القِصّة' : 'Continue the story'}
             <ChevronRight
               className={`w-4 h-4 transition-transform group-hover:translate-x-0.5 ${ctx.isRTL ? 'rotate-180 group-hover:-translate-x-0.5' : ''}`}
             />
