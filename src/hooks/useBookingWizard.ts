@@ -40,35 +40,41 @@ export interface BookingFormData {
   confirmationResult: BookingConfirmationResult | null;
 }
 
-const initialFormData: BookingFormData = {
-  intakeText: '',
-  recommendations: [],
-  intakeId: '',
-  serviceSlug: '',
-  serviceName: '',
-  serviceNameAr: '',
-  serviceCategory: '',
-  durationMinutes: 50,
-  selectedDate: '',
-  selectedStartTime: '',
-  selectedEndTime: '',
-  clientName: '',
-  clientEmail: '',
-  clientPhone: '',
-  clientTimezone: typeof window !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'America/Toronto',
-  clientCountry: '',
-  preferredLanguage: 'en',
-  sessionMode: 'online',
-  notes: '',
-  isNewClient: true,
-  confirmationResult: null,
-};
+function buildInitialFormData(locale: 'en' | 'ar' = 'en'): BookingFormData {
+  return {
+    intakeText: '',
+    recommendations: [],
+    intakeId: '',
+    serviceSlug: '',
+    serviceName: '',
+    serviceNameAr: '',
+    serviceCategory: '',
+    durationMinutes: 50,
+    selectedDate: '',
+    selectedStartTime: '',
+    selectedEndTime: '',
+    clientName: '',
+    clientEmail: '',
+    clientPhone: '',
+    clientTimezone: typeof window !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'America/Toronto',
+    clientCountry: '',
+    // Communication language mirrors the site locale the client is browsing
+    // in. No separate user-facing toggle — keeps tips, emails, and the manage
+    // page consistent with whatever language the client chose at the top of
+    // the site.
+    preferredLanguage: locale,
+    sessionMode: 'online',
+    notes: '',
+    isNewClient: true,
+    confirmationResult: null,
+  };
+}
 
 const STEP_ORDER: BookingStep[] = ['intake', 'service', 'datetime', 'info', 'confirm', 'success'];
 
-export function useBookingWizard() {
+export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
   const [step, setStep] = useState<BookingStep>('intake');
-  const [formData, setFormData] = useState<BookingFormData>(initialFormData);
+  const [formData, setFormData] = useState<BookingFormData>(() => buildInitialFormData(locale));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -173,11 +179,11 @@ export function useBookingWizard() {
 
   // ─── Reset ─────────────────────────────────────────────────
   const reset = useCallback(() => {
-    setFormData(initialFormData);
+    setFormData(buildInitialFormData(locale));
     setStep('intake');
     setError(null);
     setIsLoading(false);
-  }, []);
+  }, [locale]);
 
   return {
     step,

@@ -50,7 +50,7 @@ export default function BookPage() {
   const isRTL = locale === 'ar';
   const messages = getMessages(locale as Locale);
 
-  const wizard = useBookingWizard();
+  const wizard = useBookingWizard(isRTL ? 'ar' : 'en');
   const { step, stepIndex, formData, isLoading, error } = wizard;
   const [providerTimezone, setProviderTimezone] = useState('America/Toronto');
   const [inPersonEnabled, setInPersonEnabled] = useState(true);
@@ -1141,9 +1141,6 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
   const [mode, setMode] = useState<SessionMode>(wizard.formData.sessionMode === 'inPerson' && !showInPerson && !showTravelHint ? 'online' : wizard.formData.sessionMode);
   const [notes, setNotes] = useState(wizard.formData.notes || wizard.formData.intakeText);
   const [showNotes, setShowNotes] = useState(!!notes);
-  const [preferredLang, setPreferredLang] = useState<'en' | 'ar'>(
-    wizard.formData.preferredLanguage || (locale === 'ar' ? 'ar' : 'en'),
-  );
   const [locationCountry, setLocationCountry] = useState<CountryInfo>(
     // formData.clientCountry is now an ISO-2 code — match on code first, then
     // fall back to name-match (for any legacy drafts still holding the old
@@ -1181,7 +1178,11 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
       // and invoice create route all expect a 2-letter code. Display
       // name + flag are rendered from this code via COUNTRIES_BY_CODE.
       clientCountry: locationCountry.code,
-      preferredLanguage: preferredLang,
+      // Communication language mirrors the site locale the client is
+      // browsing in — no separate toggle. Re-read it here so the form
+      // always snapshots the current URL locale even if the wizard
+      // was mounted under a different default.
+      preferredLanguage: isRTL ? 'ar' : 'en',
       sessionMode: mode,
       notes: notes.trim(),
     });
@@ -1316,38 +1317,6 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
         <p className="text-[10px] font-semibold text-[#C8A97D] uppercase tracking-[0.15em] mb-4">
           {isRTL ? 'تفضيلاتك' : 'Your Preferences'}
         </p>
-
-        {/* Language — segmented pill control */}
-        <div className="mb-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Globe className="w-3.5 h-3.5 text-[#C0B8B0]" />
-            <span className="text-xs font-medium text-[#8E8E9F]">{isRTL ? 'لغة التواصل' : 'Communication Language'}</span>
-          </div>
-          <div className="relative bg-[#FAF7F2] rounded-xl p-1 flex">
-            <motion.div
-              className="absolute top-1 bottom-1 rounded-lg bg-[#7A3B5E]"
-              layout
-              transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-              style={{ width: 'calc(50% - 4px)', left: preferredLang === 'en' ? '4px' : 'calc(50%)' }}
-            />
-            <button
-              onClick={() => setPreferredLang('en')}
-              className={`relative z-10 flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-200 ${
-                preferredLang === 'en' ? 'text-white' : 'text-[#8E8E9F]'
-              }`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => setPreferredLang('ar')}
-              className={`relative z-10 flex-1 py-2.5 rounded-lg text-sm font-semibold transition-colors duration-200 ${
-                preferredLang === 'ar' ? 'text-white' : 'text-[#8E8E9F]'
-              }`}
-            >
-              العربية
-            </button>
-          </div>
-        </div>
 
         {/* Location — smart auto-detected with dropdown */}
         <div className="relative">
@@ -1570,10 +1539,6 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
               <span className="text-[#4A4A5C] font-medium" dir="ltr">{formData.clientPhone}</span>
             </div>
           )}
-          <div className="flex justify-between">
-            <span className="text-[#8E8E9F]"><MessageCircle className="w-3.5 h-3.5 inline mr-1.5" />{isRTL ? 'لغة التواصل' : 'Language'}</span>
-            <span className="text-[#4A4A5C] font-medium">{formData.preferredLanguage === 'ar' ? 'العربية' : 'English'}</span>
-          </div>
           {formData.clientCountry && (() => {
             // formData.clientCountry is an ISO-2 code; look up the flag + name.
             const countryInfo = COUNTRIES.find(c => c.code === formData.clientCountry);
@@ -1714,14 +1679,16 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
 
       {/* AI Prep Tips */}
       {result?.aiPrepTips && result.aiPrepTips.length > 0 && (
-        <div className="bg-[#FFFAF5] rounded-xl p-5 border border-[#C8A97D]/20 text-left">
+        <div className={`bg-[#FFFAF5] rounded-xl p-5 border border-[#C8A97D]/20 ${isRTL ? 'text-right' : 'text-left'}`}>
           <p className="text-xs font-semibold text-[#7A3B5E] mb-3 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" />
             {isRTL ? 'نصائح للتحضير لجلستك' : 'Prepare for Your Session'}
           </p>
-          {result.aiPrepTips.map((tip, i) => (
-            <p key={i} className="text-xs text-[#4A4A5C] mb-1.5">• {tip}</p>
-          ))}
+          <ul className={`text-xs text-[#4A4A5C] space-y-1.5 list-disc ${isRTL ? 'pr-4' : 'pl-4'}`}>
+            {result.aiPrepTips.map((tip, i) => (
+              <li key={i}>{tip}</li>
+            ))}
+          </ul>
         </div>
       )}
 
