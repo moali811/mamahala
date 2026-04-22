@@ -444,7 +444,7 @@ export default function ProgramOverviewPage() {
                 {program.isFree
                   ? (isRTL ? 'مجاني' : 'Free')
                   : (isRTL
-                      ? `ابْدَئي مَجّاناً · $${dynamicPricing.academyFullAccessPrice} CAD للوُصولِ الكامِل`
+                      ? `ابْدَأ مَجّاناً · $${dynamicPricing.academyFullAccessPrice} CAD للوُصولِ الكامِل`
                       : `Start free · $${dynamicPricing.academyFullAccessPrice} CAD for full access`)}
               </Badge>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {program.totalModules} {isRTL ? 'وحدة' : 'modules'}</span>
@@ -650,7 +650,7 @@ export default function ProgramOverviewPage() {
                             {level.isFree ? (
                               <Badge variant="success" size="sm">{isRTL ? 'مجاني' : 'Free'}</Badge>
                             ) : unlockedLevels.has(level.level) ? (
-                              <Badge variant="success" size="sm">{isRTL ? 'مفتوح' : 'Unlocked'}</Badge>
+                              <Badge variant="success" size="sm">{isRTL ? 'متاح' : 'Unlocked'}</Badge>
                             ) : (
                               <Badge variant="neutral" size="sm">
                                 <Lock className="w-3 h-3 mr-1" /> {isRTL ? 'مُغْلَق' : 'Locked'}
@@ -856,11 +856,11 @@ export default function ProgramOverviewPage() {
                         <div className="mb-6">
                           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C8A97D]/15 text-[#C8A97D] text-xs font-semibold uppercase tracking-wider mb-4">
                             <Award className="w-3.5 h-3.5" />
-                            {isRTL ? 'أَكْمَلْتِ البَرْنامَج' : 'Program Complete'}
+                            {isRTL ? 'أَكْمَلْت البَرْنامَج' : 'Program Complete'}
                           </div>
                           <p className="text-[#4A4A5C] mb-6">
                             {isRTL
-                              ? 'شَهادَتُكِ جاهِزَة — مع رِسالَةٍ شَخْصيَّةٍ من الدّكتورة هالة، وخَريطَةِ نُمُوِّكِ، وكَلِماتِكِ أَنْتِ.'
+                              ? 'شَهادَتُك جاهِزَة — مع رِسالَةٍ شَخْصيَّةٍ من الدّكتورة هالة، وخَريطَةِ نُمُوِّك، وكَلِماتك أَنْت.'
                               : 'Your certificate is ready — with a personal note from Dr. Hala, your growth map, and your own words.'}
                           </p>
                           <a
@@ -869,7 +869,7 @@ export default function ProgramOverviewPage() {
                             style={{ backgroundColor: '#C8A97D' }}
                           >
                             <Award className="w-4 h-4" />
-                            {isRTL ? 'اِعْرِضي شَهادَتي' : 'View My Certificate'}
+                            {isRTL ? 'اِعْرِض شَهادَتي' : 'View My Certificate'}
                           </a>
                         </div>
                       );
