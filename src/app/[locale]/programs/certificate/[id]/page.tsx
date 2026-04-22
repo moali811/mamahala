@@ -446,7 +446,7 @@ export default function CertificatePage() {
                 <div className="flex items-center gap-2 mb-4">
                   <Heart className="w-4 h-4 text-[#C4878A]" fill="#C4878A" />
                   <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8E8E9F]">
-                    {isRTL ? 'مِنْ كَلِماتِكِ أَنْتِ' : 'Your Own Words'}
+                    {isRTL ? 'مِنْ كَلِماتك أَنْت' : 'Your Own Words'}
                   </p>
                 </div>
                 <div className="space-y-3">
@@ -485,21 +485,21 @@ export default function CertificatePage() {
             style={{ backgroundColor: '#7A3B5E' }}
           >
             {downloading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-            {downloading ? (isRTL ? 'جاري التَّحْميل…' : 'Preparing…') : (isRTL ? 'حَمِّلي PDF' : 'Download PDF')}
+            {downloading ? (isRTL ? 'جاري التَّحْميل…' : 'Preparing…') : (isRTL ? 'حَمِّل PDF' : 'Download PDF')}
           </button>
           <button
             onClick={shareCertificate}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#F3EFE8] text-[#2D2A33] text-xs font-semibold hover:bg-[#FAF7F2] transition-all"
           >
             <Share2 className="w-3.5 h-3.5" />
-            {isRTL ? 'شارِكي' : 'Share'}
+            {isRTL ? 'شارِك' : 'Share'}
           </button>
           <button
             onClick={copyLink}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#F3EFE8] text-[#2D2A33] text-xs font-semibold hover:bg-[#FAF7F2] transition-all"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-[#3B8A6E]" /> : <Copy className="w-3.5 h-3.5" />}
-            {copied ? (isRTL ? 'تَمَّ النَّسْخ' : 'Copied!') : (isRTL ? 'اِنْسَخي الرّابِط' : 'Copy link')}
+            {copied ? (isRTL ? 'تَمَّ النَّسْخ' : 'Copied!') : (isRTL ? 'اِنْسَخ الرّابِط' : 'Copy link')}
           </button>
         </motion.div>
 
@@ -548,7 +548,7 @@ export default function CertificatePage() {
               position: 'absolute',
               left: '50%', top: '50%',
               transform: 'translate(-50%, -50%)',
-              width: '340px', height: '340px',
+              width: '400px', height: '400px',
               opacity: 0.035, pointerEvents: 'none', objectFit: 'contain',
             }}
           />
