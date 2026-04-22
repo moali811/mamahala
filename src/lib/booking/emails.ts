@@ -783,10 +783,10 @@ export function buildFollowUpEmail(
   const content = `
     <div style="${styles.card}">
       <h2 style="${styles.heading}">Thank You, ${firstName}</h2>
-      <p style="${styles.text}">Thank you for your session today. Taking time for yourself is one of the most important investments you can make, and we are honored to be part of your journey.</p>
+      <p style="${styles.text}">Thank you for your session today. Taking time for yourself, or for your loved ones, is one of the most important investments you can make, and we are honored to be part of your journey.</p>
       ${aiHtml}
       <p style="${styles.text}">If anything comes up between sessions, please do not hesitate to reach out. We are here for you.</p>
-      <p style="${styles.text};font-weight:600;color:#7A3B5E;">Warmly,<br/>The Mama Hala Team</p>
+      <p style="${styles.text};font-weight:600;color:#7A3B5E;">Warmly,<br/>Mama Hala Consulting</p>
     </div>
     <div style="${styles.card};background:#FEFCFB;">
       <p style="${styles.subheading}">What's Next?</p>
