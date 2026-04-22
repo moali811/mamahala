@@ -12,58 +12,77 @@ async function getKV() {
   return kv;
 }
 
-export async function GET(req: NextRequest) {
-  const email = req.nextUrl.searchParams.get('email');
-  const programSlug = req.nextUrl.searchParams.get('programSlug');
-  const moduleSlug = req.nextUrl.searchParams.get('moduleSlug');
-  const levelNumberParam = req.nextUrl.searchParams.get('levelNumber');
-  const levelNumber = levelNumberParam ? Number(levelNumberParam) : null;
+// Define the expected shape of your student data
+interface StudentData {
+  unlockedModules?: Record<string, string[]>;
+  unlockedLevels?: Record<string, number[]>;
+}
 
-  if (!email || !programSlug) {
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl;
+  const rawEmail = searchParams.get('email');
+  const programSlug = searchParams.get('programSlug');
+  const moduleSlug = searchParams.get('moduleSlug');
+  const levelNumber = searchParams.has('levelNumber') ? Number(searchParams.get('levelNumber')) : null;
+
+  if (!rawEmail || !programSlug) {
     return NextResponse.json({ hasPaidAccess: false, unlockedModules: [], unlockedLevels: [] });
   }
 
-  // Admin emails get full access to all content
+  const email = rawEmail.toLowerCase().trim();
+
+  // Admin bypass
   if (isAdminEmail(email)) {
-    return NextResponse.json({ hasPaidAccess: true, unlockedModules: [], unlockedLevels: [1, 2, 3] });
+    return NextResponse.json({ 
+      hasPaidAccess: true, 
+      unlockedModules: ['*'], // Sentinel value for "all"
+      unlockedLevels: [1, 2, 3, 4, 5], 
+      isAdmin: true 
+    });
   }
 
   try {
     const kvInstance = await getKV();
     if (!kvInstance) {
+      console.error("KV environment variables are missing.");
       return NextResponse.json({ hasPaidAccess: false, unlockedModules: [], unlockedLevels: [] });
     }
 
-    const normalizedEmail = email.toLowerCase().trim();
-    const studentKey = `academy:student:${normalizedEmail}`;
-    const student = await kvInstance.get(studentKey) as Record<string, unknown> | null;
+    const studentKey = `academy:student:${email}`;
+    const student = await kvInstance.get<StudentData>(studentKey);
 
     if (!student) {
       return NextResponse.json({ hasPaidAccess: false, unlockedModules: [], unlockedLevels: [] });
     }
 
-    const unlockedModules = ((student.unlockedModules as Record<string, string[]>) || {})[programSlug] || [];
-    const unlockedLevels = ((student.unlockedLevels as Record<string, number[]>) || {})[programSlug] || [];
+    // Safely extract data for the specific program
+    const unlockedModules = student.unlockedModules?.[programSlug] ?? [];
+    const unlockedLevels = student.unlockedLevels?.[programSlug] ?? [];
 
-    // Level check
-    if (levelNumber != null) {
-      const isUnlocked = unlockedLevels.includes(levelNumber);
-      return NextResponse.json({ hasPaidAccess: isUnlocked, unlockedModules, unlockedLevels });
-    }
+    let hasPaidAccess = false;
 
-    // Module check
-    if (moduleSlug) {
-      const isUnlocked = unlockedModules.includes(moduleSlug);
-      return NextResponse.json({ hasPaidAccess: isUnlocked, unlockedModules, unlockedLevels });
+    if (levelNumber !== null) {
+      hasPaidAccess = unlockedLevels.includes(levelNumber);
+    } else if (moduleSlug) {
+      hasPaidAccess = unlockedModules.includes(moduleSlug);
+    } else {
+      // General check: does the user have anything in this program?
+      hasPaidAccess = unlockedModules.length > 0 || unlockedLevels.length > 0;
     }
 
     return NextResponse.json({
-      hasPaidAccess: unlockedModules.length > 0 || unlockedLevels.length > 0,
+      hasPaidAccess,
       unlockedModules,
       unlockedLevels,
     });
+
   } catch (error) {
     console.error('Access check error:', error);
-    return NextResponse.json({ hasPaidAccess: false, unlockedModules: [], unlockedLevels: [] });
+    return NextResponse.json({ 
+      hasPaidAccess: false, 
+      unlockedModules: [], 
+      unlockedLevels: [],
+      error: 'Internal Server Error' 
+    }, { status: 500 });
   }
 }
