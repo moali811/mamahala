@@ -16,7 +16,7 @@ export const BUSINESS = {
 
   // Official street address — used in email footers + PDF invoice footer.
   // Canonical formatted string (single line). Update here if HQ moves.
-  address: '430 Hazeldean Rd, Ottawa, ON K2L 1E8',
+  address: '430 Hazeldean Rd, Ottawa, ON K2L 1E8, Canada',
 
   // Brand tagline — appears in website footer, email footers, PDF invoice footer.
   tagline: 'For a life full of love, tranquility & peace',
