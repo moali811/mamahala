@@ -76,7 +76,7 @@ function UnlockSuccessInner() {
               className="text-2xl font-bold text-[#2D2A33] mb-2"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {isRTL ? 'جارٍ فتحُ برنامجِك...' : 'Unlocking your program...'}
+              {isRTL ? 'جارٍ اتاحُة برنامجك...' : 'Unlocking your program...'}
             </h1>
             <p className="text-sm text-[#4A4A5C]">
               {isRTL ? 'لحظةً فقط' : 'One moment please'}
@@ -92,11 +92,11 @@ function UnlockSuccessInner() {
               className="text-2xl sm:text-3xl font-bold text-[#2D2A33] mb-3"
               style={{ fontFamily: 'var(--font-heading)' }}
             >
-              {isRTL ? 'تمّ الفتحُ بنجاح!' : 'Unlocked!'}
+              {isRTL ? 'تمّ اتاحُة البرنامج بنجاح!' : 'Unlocked!'}
             </h1>
             <p className="text-base text-[#4A4A5C] leading-relaxed">
               {isRTL
-                ? 'وصولُكِ الدائمُ جاهز. جارٍ التحويلُ إلى برنامجِك...'
+                ? 'وصولُك الدائمُ جاهز. جارٍ التحويلُ إلى برنامجك...'
                 : 'Your lifetime access is ready. Redirecting you now...'}
             </p>
           </>
@@ -111,7 +111,7 @@ function UnlockSuccessInner() {
             </h1>
             <p className="text-sm text-[#4A4A5C] mb-6">
               {isRTL
-                ? 'لم نتمكّنْ من التعرُّفِ على برنامجِكِ. يُرجى التواصلُ مع الدعم.'
+                ? 'لم نتمكّنْ من التعرُّفِ على برنامجك. يُرجى التواصلُ مع الدعم.'
                 : "We couldn't identify your program. Please contact support."}
             </p>
             <button
