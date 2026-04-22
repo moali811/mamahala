@@ -557,7 +557,7 @@ export default function ProgramOverviewPage() {
               <div className="max-w-xl mx-auto mt-6">
                 <div className="flex items-center justify-between text-xs text-[#8E8E9F] mb-2">
                   <span className="font-semibold uppercase tracking-wider">
-                    {isRTL ? 'تَقَدُّمُكِ' : 'Your progress'}
+                    {isRTL ? 'تَقَدُّمُك' : 'Your progress'}
                   </span>
                   <span className="font-bold" style={{ color: program.color }}>
                     {completedModules.size} / {program.totalModules} · {Math.round((completedModules.size / program.totalModules) * 100)}%
