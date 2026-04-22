@@ -501,14 +501,14 @@ export default function ProgramsPage() {
         <div className="container-main">
           <ScrollReveal className="text-center mb-10 max-w-2xl mx-auto">
             <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
-              {isRTL ? 'اُنْظُري بِنَفْسِكِ' : 'See It For Yourself'}
+              {isRTL ? 'اُنْظُر بِنَفْسِك' : 'See It For Yourself'}
             </span>
             <h2 className="text-3xl sm:text-4xl text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
               {isRTL ? 'لَحْظَةٌ مِنْ داخِلِ وَحْدَة' : 'A Moment From Inside a Module'}
             </h2>
             <p className="text-[#6B6580]">
               {isRTL
-                ? 'هذا كَيْفَ تَعْمَلُ نُقْطَةُ التَّوَقُّف. اِقْرَئي المَشْهَد، ثُمَّ اِضْغَطي "كَشْفٌ" لِتَرَي ما يَحْدُثُ فِعْلاً.'
+                ? 'هكذا كَيْفَ تَعْمَلُ نُقْطَةُ التَّوَقُّف. اِقْرَأ المَشْهَد، ثُمَّ اِضْغَط "كَشْف" لِتَرَى ما يَحْدُثُ فِعْلاً.'
                 : "This is how a pause point works. Read the scene, then tap 'Reveal' to see what's actually happening."}
             </p>
           </ScrollReveal>
@@ -635,7 +635,7 @@ export default function ProgramsPage() {
                         </span>
                       </div>
                       <p className="text-[11px] text-[#8E8E9F] italic mt-2">
-                        {isRTL ? 'ماذا تَظُنّينَ أَنَّها تَشْعُر؟' : 'What do you think she\'s feeling?'}
+                        {isRTL ? 'ماذا تَظُنّ أَنَّها تَشْعُر؟' : 'What do you think she\'s feeling?'}
                       </p>
                     </div>
                   )}
@@ -754,8 +754,8 @@ export default function ProgramsPage() {
               <Shield className="w-3.5 h-3.5" style={{ color: '#3B8A6E' }} />
               <span>
                 {isRTL
-                  ? 'ابدأ المستوى الأول مجّاناً — بدون بطاقة، بدون التزام.'
-                  : 'Start Level 1 free — no card, no commitment.'}
+                  ? 'ابدأ المستوى الأول مجّاناً — بدون التزام.'
+                  : 'Start Level 1 free — no commitment.'}
               </span>
             </div>
           </ScrollReveal>
@@ -774,7 +774,7 @@ export default function ProgramsPage() {
             </h2>
             <p className="text-[#6B6580] text-sm">
               {isRTL
-                ? 'المستوى الأول مجاني لكل برنامج. جَرِّبي قبل أن تَدْفَعي.'
+                ? 'المستوى الأول مجاني لكل برنامج. جَرِّب قبل أن تَدْفَع.'
                 : 'Level 1 is free on every program. Try before you pay.'}
             </p>
           </ScrollReveal>
@@ -803,7 +803,7 @@ export default function ProgramsPage() {
                   {/* Outcomes */}
                   <div className="mb-4">
                     <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#8E8E9F] mb-2">
-                      {isRTL ? 'ستَتَمَكَّنينَ مِنْ' : 'You\'ll Be Able To'}
+                      {isRTL ? 'ستَتَمَكَّنَ مِنْ' : 'You\'ll Be Able To'}
                     </p>
                     <ul className="space-y-1.5">
                       {(isRTL ? programOutcomes[prog.slug]?.ar : programOutcomes[prog.slug]?.en)?.map((outcome, i) => (
@@ -837,7 +837,7 @@ export default function ProgramsPage() {
               <Sparkles className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: '#C8A97D' }} />
               <span>
                 {isRTL
-                  ? 'كُلُّ برنامج يَبْدَأُ بمستوى أول مجاني. تُكْمِلينه، ثم تُقَرِّرين.'
+                  ? 'كُلُّ برنامج يَبْدَأُ بمستوى أول مجاني. تُكْمِله، ثم تُقَرِّر.'
                   : 'Every program starts with a free Level 1. Finish it, then decide.'}
               </span>
             </div>
@@ -853,7 +853,7 @@ export default function ProgramsPage() {
                       {isRTL ? 'البرنامج' : 'Program'}
                     </th>
                     <th className="py-4 px-4 text-[#8E8E9F] font-semibold text-[11px] uppercase tracking-[0.1em] text-left min-w-[240px]">
-                      {isRTL ? 'ستَتَمَكَّنينَ مِنْ' : 'You\'ll Be Able To'}
+                      {isRTL ? 'ستَتَمَكَّنَ مِنْ' : 'You\'ll Be Able To'}
                     </th>
                     <th className="py-4 px-4 text-[#8E8E9F] font-semibold text-[11px] uppercase tracking-[0.1em] text-center">
                       {isRTL ? 'الوحدات' : 'Modules'}
@@ -931,7 +931,7 @@ export default function ProgramsPage() {
               <Sparkles className="w-3.5 h-3.5 flex-shrink-0" style={{ color: '#C8A97D' }} />
               <span>
                 {isRTL
-                  ? 'كُلُّ برنامج يَبْدَأُ بمستوى أول مجاني. تُكْمِلينه، ثم تُقَرِّرين إنْ كُنْتِ تُريدين الاستمرار — دَفْعةٌ واحدةٌ لوُصولٍ كامِلٍ دائم.'
+                  ? 'كُلُّ برنامج يَبْدَأُ بمستوى أول مجاني. تُكْمِله، ثم تُقَرِّر إنْ كُنْت تُريد الاستمرار — دَفْعةٌ واحدةٌ لوُصولٍ كامِلٍ دائم.'
                   : 'Every program starts with a free Level 1. Finish it, then decide if you want to continue — one payment for full lifetime access.'}
               </span>
             </div>
@@ -947,11 +947,11 @@ export default function ProgramsPage() {
               {isRTL ? 'لِماذا ماما هالة' : 'Why Mama Hala'}
             </span>
             <h2 className="text-3xl sm:text-4xl text-[#2D2A33] mb-3" style={{ fontFamily: 'var(--font-heading)' }}>
-              {isRTL ? 'ما سَتَجِدينَهُ هُنا' : 'What You\'ll Find Here'}
+              {isRTL ? 'ما سَتَجِدهُ هُنا' : 'What You\'ll Find Here'}
             </h2>
             <p className="text-[#6B6580]">
               {isRTL
-                ? 'بِضْعَةُ أَشْياءَ يَسْتَحِقُّ أَنْ تَعْرِفيها قَبْلَ أَنْ تَبْدَئي.'
+                ? 'بِضْعَةُ أَشْياءَ يَسْتَحِقُّ أَنْ تَعْرِفها قَبْلَ أَنْ تَبْدَأ.'
                 : 'A few things worth knowing before you begin.'}
             </p>
           </ScrollReveal>
@@ -962,7 +962,7 @@ export default function ProgramsPage() {
                 icon: <BookOpen className="w-6 h-6" />,
                 label: isRTL ? 'بِلِسانَيْنِ، بِعِنايَة' : 'Bilingual, With Care',
                 desc: isRTL
-                  ? 'كُلُّ وَحْدَةٍ مَكْتوبَةٌ بِالإنْجِليزِيَّةِ وَالعَرَبِيَّةِ الكامِلَةِ التَّشْكيل — حَتّى تَقْرَئي بِدِقَّة، وَيَتَعَلَّمَ أَبْناؤُكِ من الحَرَكات، وَلا يَضيعَ شَيْءٌ في التَّرْجَمَة.'
+                  ? 'كُلُّ وَحْدَةٍ مَكْتوبَةٌ بِالإنْجِليزِيَّةِ وَالعَرَبِيَّةِ الكامِلَةِ التَّشْكيل — حَتّى تَقْرَأ بِدِقَّة، وَيَتَعَلَّمَ أَبْناؤُك من الحَرَكات، وَلا يَضيعَ شَيْءٌ في التَّرْجَمَة.'
                   : 'Every module is written in English and in fully vowelled Arabic — so you can read precisely, your children can learn from the diacritics, and nothing gets lost in translation.',
                 color: '#C8A97D',
                 tag: isRTL ? 'EN + عَرَبيّ بِتَشْكيل' : 'EN + AR · Tashkeel',
@@ -974,20 +974,20 @@ export default function ProgramsPage() {
                   ? 'الأُطُرُ السَّريريَّةُ (غوتْمان، نَظَرِيَّةُ التَّعَلُّق، التَّرْبيَةُ الحازِمَة) تَجْلِسُ إلى جانِبِ واقِعِ العائِلَةِ المُمْتَدَّة وَالقِيَمِ الثَّقافيَّةِ وَالرّوحيَّة. كِلاهُما يُؤْخَذُ بِجِدِّيَّة.'
                   : 'Clinical frameworks (Gottman, attachment theory, authoritative parenting) sit alongside the realities of extended family, cultural expectations, and the faith values that shape home life. Both are taken seriously.',
                 color: '#7A3B5E',
-                tag: isRTL ? 'صَوْتٌ ثِنائِيُّ الثَّقافَة' : 'Bicultural voice',
+                tag: isRTL ? 'صَوْتٌ ثنائِيُّ الثَّقافَة' : 'Bicultural voice',
               },
               {
                 icon: <UserCheck className="w-6 h-6" />,
                 label: isRTL ? 'طَبيبَةٌ واحِدَة، مَرْئِيَّةٌ وَمُتاحَة' : 'One Clinician, Visible and Reachable',
                 desc: isRTL
-                  ? 'الدكتورة هالة كَتَبَتْ كُلَّ كَلِمَة، وَتَسْتَقْبِلُ مَرْضاها في تورونتو. إذا فَتَحَتِ الوَحْدَةُ شَيْئاً تَحْتاجينَ لِمُعالَجَتِه، يُمْكِنُكِ حَجْزُ جَلْسَةٍ مَعَها.'
-                  : 'Dr. Hala wrote every word, and she sees clients in Toronto. If a module opens something you need to process, you can book a 1:1 session with her directly.',
+                  ? 'الدكتورة هالة كَتَبَتْ كُلَّ كَلِمَة، وَتَسْتَقْبِلُ مراجعينها في تورونتو ودبي. إذا فَتَحَتِ الوَحْدَةُ شَيْئاً تَحْتاج لِمُعالَجَتِه، يُمْكِنُك حَجْزُ جَلْسَةٍ مَعَها.'
+                  : 'Dr. Hala wrote every word, and she sees clients in Toronto and Dubai. If a module opens something you need to process, you can book a 1:1 session with her directly.',
                 color: '#5B8FA8',
                 tag: isRTL ? 'مُرَخَّصَة · تورونتو' : 'Licensed · Toronto',
               },
               {
                 icon: <CheckCircle className="w-6 h-6" />,
-                label: isRTL ? 'اِبْدَئي مَجّاناً، ادْفَعي مَرَّةً واحِدَة' : 'Start Free, Pay Once',
+                label: isRTL ? 'اِبْدَأ مَجّاناً، ادْفَع مَرَّةً واحِدَة' : 'Start Free, Pay Once',
                 desc: isRTL
                   ? `المُسْتَوى الأَوَّلُ مَجّاني. ثُمَّ دَفْعةٌ واحِدَةٌ بِـ $${dynamicPricing.academyFullAccessPrice} CAD تَفْتَحُ البَرْنامَجَ بِالكامِل — وُصولٌ مَدى الحَياة. لا اشْتِراكات.`
                   : `Level 1 is free. Then one payment of $${dynamicPricing.academyFullAccessPrice} CAD unlocks the full program — lifetime access. No subscriptions.`,
@@ -998,17 +998,17 @@ export default function ProgramsPage() {
                 icon: <GraduationCap className="w-6 h-6" />,
                 label: isRTL ? 'رَفيقٌ بِصَوْتِ الدكتورة هالة' : 'A Companion in Dr. Hala\'s Voice',
                 desc: isRTL
-                  ? 'مُحادِثٌ ذَكِيٌّ بِجانِبِ كُلِّ وَحْدَة يَقْرَأُ دَرْسَكِ الحالِيَّ وَيُجيبُ على أَسْئِلَتِكِ الشَّخْصيَّةِ بِنَفْسِ نَبْرَةِ الدَّوْرَة.'
+                  ? 'مُحادِثٌ ذَكِيٌّ بِجانِبِ كُلِّ وَحْدَة يَقْرَأُ دَرْسَك الحالِيَّ وَيُجيبُ على أَسْئِلَتِك الشَّخْصيَّةِ بِنَفْسِ نَبْرَةِ الدَّوْرَة.'
                   : 'A chat alongside every module that reads your current lesson and answers your personal questions in the same voice as the course.',
                 color: '#C4878A',
-                tag: isRTL ? 'مُرشِدتُكِ الشّخصيّة' : 'Your Personal Guide',
+                tag: isRTL ? 'مُرشِدك الشّخصيّ' : 'Your Personal Guide',
               },
               {
                 icon: <Award className="w-6 h-6" />,
-                label: isRTL ? 'شَهادَةٌ تَعْكِسُ نُمُوَّكِ الفِعْليّ' : 'A Certificate That Reflects Your Growth',
+                label: isRTL ? 'شَهادَةٌ تَعْكِسُ نُمُوَّك الفِعْليّ' : 'A Certificate That Reflects Your Growth',
                 desc: isRTL
-                  ? 'تَتَضَمَّنُ شَهادَتُكِ مُلاحَظَةً شَخْصيَّةً بِقَلَمِ الذكاءِ الاصطناعيّ مِنَ الدكتورة هالة، وَخَريطَةَ نُمُوٍّ مِنْ تَقْييمِكِ قَبْلَ وَبَعْد، وَمُقْتَطَفاتٍ مِنْ تَأَمُّلاتِكِ.'
-                  : 'Your completion certificate includes an AI-written personal note from Dr. Hala, a growth radar from your pre/post self-assessment, and quotes from your own reflections.',
+                  ? 'تَتَضَمَّنُ شَهادَتُك مُلاحَظَةً شَخْصيَّةً مِنَ الدكتورة هالة، وَخَريطَةَ نُمُوٍّ مِنْ تَقْييمِك قَبْلَ وَبَعْد، وَمُقْتَطَفاتٍ مِنْ تَأَمُّلاتِك.'
+                  : 'Your completion certificate includes a personal note from Dr. Hala, a growth radar from your pre/post self-assessment, and quotes from your own reflections.',
                 color: '#7A3B5E',
                 tag: isRTL ? 'PDF شَخْصيّ' : 'Personalized PDF',
               },
