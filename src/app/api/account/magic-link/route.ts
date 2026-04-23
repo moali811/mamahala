@@ -9,8 +9,7 @@ import { cookies } from 'next/headers';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
 import { getClientIp, limitMagicLink } from '@/lib/rate-limit';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+import { SITE_URL } from '@/lib/site-url';
 
 export async function POST(request: NextRequest) {
   try {

@@ -4,9 +4,9 @@ import { cookies } from 'next/headers';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
 import { getClientIp, limitMagicLink } from '@/lib/rate-limit';
+import { SITE_URL } from '@/lib/site-url';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
 /**
  * POST /api/academy/magic-link

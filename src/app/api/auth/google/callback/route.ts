@@ -3,10 +3,10 @@
    for copying to env vars. */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { SITE_URL } from '@/lib/site-url';
 
 const CLIENT_ID = process.env.GOOGLE_CALENDAR_CLIENT_ID ?? '';
 const CLIENT_SECRET = process.env.GOOGLE_CALENDAR_CLIENT_SECRET ?? '';
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 const REDIRECT_URI = `${SITE_URL}/api/auth/google/callback`;
 
 export async function GET(request: NextRequest) {

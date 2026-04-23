@@ -5,6 +5,7 @@ import { events as staticEvents } from '@/data/events';
 import { getServiceBySlug } from '@/data/services';
 import type { SmartEvent } from '@/types';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
+import { SITE_URL } from '@/lib/site-url';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
@@ -61,7 +62,7 @@ export async function GET(request: NextRequest) {
       if (!registrations || registrations.length === 0) continue;
 
       const relatedService = event.relatedServiceSlug ? getServiceBySlug(event.relatedServiceSlug) : undefined;
-      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+      const siteUrl = SITE_URL;
 
       try {
         const { Resend } = await import('resend');

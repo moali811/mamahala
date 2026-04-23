@@ -11,8 +11,7 @@ import { deleteDraft } from '@/lib/invoicing/kv-store';
 import { BUSINESS } from '@/config/business';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { getAvailableSlots } from '@/lib/booking/availability';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+import { SITE_URL } from '@/lib/site-url';
 
 // GET — one-click from email
 export async function GET(request: NextRequest) {

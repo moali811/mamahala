@@ -14,6 +14,7 @@ import { fetchBusySlots } from '@/lib/booking/google-calendar';
 import { updateCalendarEvent } from '@/lib/booking/google-calendar';
 import { buildRescheduleEmail, sendBookingEmail, notifyAdmin } from '@/lib/booking/emails';
 import type { Booking } from '@/lib/booking/types';
+import { SITE_URL } from '@/lib/site-url';
 
 export async function POST(request: NextRequest) {
   try {
@@ -122,8 +123,6 @@ export async function POST(request: NextRequest) {
         console.error('[Reschedule] Admin notification failed:', err),
       ),
     ]);
-
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
 
     return NextResponse.json({
       newBookingId,

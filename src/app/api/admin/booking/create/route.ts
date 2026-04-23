@@ -39,8 +39,7 @@ import { authorize } from '@/lib/invoicing/auth';
 import { services } from '@/data/services';
 import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
 import type { Booking, SessionMode } from '@/lib/booking/types';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+import { SITE_URL } from '@/lib/site-url';
 
 interface AdminCreateBookingRequest {
   serviceSlug: string;

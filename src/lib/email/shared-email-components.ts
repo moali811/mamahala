@@ -8,8 +8,7 @@
 
 import { BUSINESS } from '@/config/business';
 import { LOGO_256_DATA_URI } from './logo-data-uri';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+import { SITE_URL } from '@/lib/site-url';
 
 // ─── Shared Styles ──────────────────────────────────────────────
 

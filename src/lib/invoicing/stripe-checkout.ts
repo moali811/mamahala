@@ -16,8 +16,7 @@
 
 import Stripe from 'stripe';
 import type { StoredInvoice, InvoiceSettings } from './types';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+import { SITE_URL } from '@/lib/site-url';
 
 /**
  * Return a configured Stripe client, or null if the secret key is

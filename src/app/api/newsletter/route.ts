@@ -3,6 +3,7 @@ import { trackEvent } from '@/lib/analytics';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { limitNewsletter, getClientIp } from '@/lib/rate-limit';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
+import { SITE_URL } from '@/lib/site-url';
 
 /* ================================================================
    Smart Newsletter/Signup Endpoint
@@ -16,7 +17,7 @@ interface EmailTemplate {
 }
 
 function getTemplate(email: string, source: string): EmailTemplate {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+  const baseUrl = SITE_URL;
 
   // ─── EVENT NOTIFICATIONS ───
   if (source === 'events-reminder') {

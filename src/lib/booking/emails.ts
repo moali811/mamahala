@@ -12,8 +12,7 @@ import { BUSINESS } from '@/config/business';
 import { generateBookingICS, generateCancelICS } from './ics-generator';
 import { emailStyles as styles, emailWrapper } from '@/lib/email/shared-email-components';
 import { emailCopy, type EmailLocale } from './email-copy';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+import { SITE_URL } from '@/lib/site-url';
 
 // ─── Formatting Helpers ─────────────────────────────────────────
 

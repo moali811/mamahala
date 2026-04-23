@@ -29,8 +29,7 @@ import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
 import type { Booking, BookingConfirmationResult, SessionMode } from '@/lib/booking/types';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
 import { getClientIp, limitBooking } from '@/lib/rate-limit';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+import { SITE_URL } from '@/lib/site-url';
 
 interface ConfirmRequest {
   serviceSlug: string;

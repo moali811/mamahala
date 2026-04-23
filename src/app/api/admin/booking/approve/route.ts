@@ -21,8 +21,7 @@ import { createCalendarEvent } from '@/lib/booking/google-calendar';
 import { sendBookingEmail } from '@/lib/booking/emails';
 import { authorize } from '@/lib/invoicing/auth';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca';
+import { SITE_URL } from '@/lib/site-url';
 
 // GET — one-click from email
 export async function GET(request: NextRequest) {
