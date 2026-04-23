@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAdminEmail } from '@/lib/admin';
+import { isVipEmail } from '@/lib/vip-emails';
 
 let kv: typeof import('@vercel/kv').kv | null = null;
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
@@ -33,11 +34,22 @@ export async function GET(req: NextRequest) {
 
   // Admin bypass
   if (isAdminEmail(email)) {
-    return NextResponse.json({ 
-      hasPaidAccess: true, 
-      unlockedModules: ['*'], // Sentinel value for "all"
-      unlockedLevels: [1, 2, 3, 4, 5], 
-      isAdmin: true 
+    return NextResponse.json({
+      hasPaidAccess: true,
+      unlockedModules: ['*'],
+      unlockedLevels: [1, 2, 3, 4, 5],
+      isAdmin: true,
+    });
+  }
+
+  // VIP bypass — authoritative server-side check (replaces the removed
+  // client-side localStorage bypass)
+  if (isVipEmail(email)) {
+    return NextResponse.json({
+      hasPaidAccess: true,
+      unlockedModules: ['*'],
+      unlockedLevels: [1, 2, 3, 4, 5],
+      isVip: true,
     });
   }
 

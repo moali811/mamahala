@@ -3,9 +3,11 @@ import { kv } from '@vercel/kv';
 import { Resend } from 'resend';
 import { trackEvent } from '@/lib/analytics';
 import { isAdminEmail } from '@/lib/admin';
+import { isVipEmail } from '@/lib/vip-emails';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
 import { getClientIp, limitAcademyEnroll } from '@/lib/rate-limit';
+import { SITE_URL } from '@/lib/site-url';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
@@ -56,8 +58,8 @@ export async function POST(request: NextRequest) {
       }
       student.lastActive = new Date().toISOString();
 
-      // Auto-unlock all paid levels for admin emails
-      if (isAdminEmail(normalizedEmail)) {
+      // Auto-unlock all paid levels for admin and VIP emails
+      if (isAdminEmail(normalizedEmail) || isVipEmail(normalizedEmail)) {
         if (!student.unlockedLevels) student.unlockedLevels = {};
         student.unlockedLevels[programSlug] = [1, 2, 3];
         if (!student.unlockedModules) student.unlockedModules = {};
@@ -96,7 +98,7 @@ export async function POST(request: NextRequest) {
               <p style="${emailStyles.text}">You're now enrolled! Your learning journey is ready to begin.</p>
               <p style="${emailStyles.text}">Take your time with each module — real growth happens when we reflect, not just read.</p>
               <div style="text-align:center;margin:24px 0 8px;">
-                <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'https://mamahala.ca'}/en/programs/${programSlug}#curriculum" style="${emailStyles.button}">Start Learning</a>
+                <a href="${SITE_URL}/en/programs/${programSlug}#curriculum" style="${emailStyles.button}">Start Learning</a>
               </div>
             </div>
           `),
@@ -113,7 +115,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json({ success: true, enrolled: true, adminUnlocked: isAdminEmail(normalizedEmail) });
+    return NextResponse.json({
+      success: true,
+      enrolled: true,
+      adminUnlocked: isAdminEmail(normalizedEmail) || isVipEmail(normalizedEmail),
+    });
   } catch (err) {
     console.error('Enrollment error:', err);
     return NextResponse.json({ error: 'Enrollment failed' }, { status: 500 });

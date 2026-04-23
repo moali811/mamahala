@@ -62,6 +62,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ received: true, skipped: true, reason: 'not paid' });
   }
 
+  // Idempotency: Stripe retries on 5xx and may deliver the same event twice.
+  // Dedup by event.id with a 24h window so retries land as no-ops.
+  const kvForDedup = await getKV();
+  if (kvForDedup) {
+    const dedupeKey = `stripe:event:${event.id}`;
+    const firstSeen = await kvForDedup.set(dedupeKey, 1, { ex: 86400, nx: true });
+    if (!firstSeen) {
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+  }
+
   const meta = session.metadata || {};
 
   // ─── Invoice payment handling ──────────────────────────────
