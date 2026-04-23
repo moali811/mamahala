@@ -33,38 +33,33 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Check if customer exists
+    // Look up the customer silently. Respond with the same generic 200
+    // regardless of existence to prevent account enumeration.
     const customer = await getCustomer(normalizedEmail);
-    if (!customer) {
-      return NextResponse.json(
-        {
-          error: 'No account found with this email. Please book a session first.',
-          notFound: true,
-        },
-        { status: 404 },
-      );
+
+    if (customer) {
+      const token = await createMagicToken(normalizedEmail);
+      const magicUrl = `${SITE_URL}/api/account/magic-link?token=${token}`;
+
+      try {
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboarding@resend.dev>',
+          to: normalizedEmail,
+          subject: 'Your Account Login Link',
+          html: generateMagicLinkEmail(magicUrl, customer.name),
+        });
+      } catch (err) {
+        console.error('[Magic Link] Email failed');
+        void err;
+      }
     }
 
-    // Generate token
-    const token = await createMagicToken(normalizedEmail);
-    const magicUrl = `${SITE_URL}/api/account/magic-link?token=${token}`;
-
-    // Send email
-    try {
-      const { Resend } = await import('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboarding@resend.dev>',
-        to: normalizedEmail,
-        subject: 'Your Account Login Link',
-        html: generateMagicLinkEmail(magicUrl, customer.name),
-      });
-    } catch (err) {
-      console.error('[Magic Link] Email failed:', err);
-      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, message: 'Check your email for the login link.' });
+    return NextResponse.json({
+      success: true,
+      message: 'If an account exists for that email, a sign-in link has been sent.',
+    });
   } catch (err) {
     console.error('[Magic Link] Error:', err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

@@ -27,28 +27,28 @@ export async function POST(req: NextRequest) {
   const body = await req.text();
   const stripe = getStripe();
 
-  // Verify webhook signature if secret is configured
+  // Verify webhook signature. Fail-closed: if the signing secret is missing we
+  // refuse to process the event rather than trusting the body, otherwise an
+  // attacker could forge checkout.session.completed events to unlock paid
+  // content and mark invoices paid. The dev-mode "parse and trust" path that
+  // lived here previously was a security hole.
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  let event: Stripe.Event;
+  if (!webhookSecret) {
+    console.error('[Stripe Webhook] STRIPE_WEBHOOK_SECRET is not configured — refusing unsigned event');
+    return NextResponse.json({ error: 'Webhook not configured' }, { status: 500 });
+  }
 
-  if (webhookSecret) {
-    const signature = req.headers.get('stripe-signature');
-    if (!signature) {
-      return NextResponse.json({ error: 'Missing stripe-signature' }, { status: 401 });
-    }
-    try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-    } catch (err) {
-      console.error('Stripe webhook signature verification failed:', err);
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
-    }
-  } else {
-    // No webhook secret configured — parse event directly (dev mode)
-    try {
-      event = JSON.parse(body) as Stripe.Event;
-    } catch {
-      return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 });
-    }
+  const signature = req.headers.get('stripe-signature');
+  if (!signature) {
+    return NextResponse.json({ error: 'Missing stripe-signature' }, { status: 401 });
+  }
+
+  let event: Stripe.Event;
+  try {
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+  } catch (err) {
+    console.error('[Stripe Webhook] Signature verification failed:', err);
+    return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
   // Only process completed checkout sessions

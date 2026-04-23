@@ -22,12 +22,23 @@ import { sendBookingEmail } from '@/lib/booking/emails';
 import { authorize } from '@/lib/invoicing/auth';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { SITE_URL } from '@/lib/site-url';
+import { verifyAdminActionToken } from '@/lib/booking/admin-action-token';
 
-// GET — one-click from email
+// GET — one-click from email. Auth = HMAC token in ?token= bound to
+// the booking id. An attacker who tricks Dr. Hala into clicking a
+// crafted link cannot forge the token without ADMIN_PASSWORD, so CSRF
+// via image/link prefetch or a malicious third-party email is blocked.
 export async function GET(request: NextRequest) {
   const bookingId = request.nextUrl.searchParams.get('id');
+  const token = request.nextUrl.searchParams.get('token');
   if (!bookingId) {
     return new NextResponse(renderPage(false, 'Missing booking ID'), { headers: { 'Content-Type': 'text/html' } });
+  }
+  if (!verifyAdminActionToken(bookingId, 'approve', token)) {
+    return new NextResponse(renderPage(false, 'Invalid or missing approval token'), {
+      status: 401,
+      headers: { 'Content-Type': 'text/html' },
+    });
   }
 
   const result = await processApproval(bookingId);

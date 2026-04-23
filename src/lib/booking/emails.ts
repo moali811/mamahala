@@ -13,6 +13,7 @@ import { generateBookingICS, generateCancelICS } from './ics-generator';
 import { emailStyles as styles, emailWrapper } from '@/lib/email/shared-email-components';
 import { emailCopy, type EmailLocale } from './email-copy';
 import { SITE_URL } from '@/lib/site-url';
+import { computeAdminActionToken } from './admin-action-token';
 
 // ─── Formatting Helpers ─────────────────────────────────────────
 
@@ -538,13 +539,17 @@ export function buildAdminNotificationEmail(
       ${extraHtml}
       ${booking.clientNotes ? `<div style="${styles.goldAccent}"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>Client notes:</strong> ${booking.clientNotes}</p></div>` : ''}
       ${booking.aiIntakeNotes ? `<div style="${styles.goldAccent}"><p style="margin:0;font-size:13px;color:#4A4A5C;"><strong>AI intake summary:</strong> ${booking.aiIntakeNotes}</p></div>` : ''}
-      ${type === 'pending-approval' ? `
+      ${type === 'pending-approval' ? (() => {
+        const approveToken = computeAdminActionToken(booking.bookingId, 'approve');
+        const declineToken = computeAdminActionToken(booking.bookingId, 'decline');
+        return `
         <div style="padding:20px 0 8px;text-align:center;">
           <p style="margin:0 0 12px;font-size:13px;color:#8E8E9F;">Review this request and take action:</p>
-          <a href="${SITE_URL}/api/admin/booking/approve?id=${booking.bookingId}" style="display:inline-block;padding:14px 32px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:14px;font-weight:700;margin:0 6px;">Approve & Send Invoice</a>
-          <a href="${SITE_URL}/api/admin/booking/decline?id=${booking.bookingId}" style="display:inline-block;padding:14px 32px;background:#C45B5B;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:14px;font-weight:700;margin:0 6px;">Decline</a>
+          <a href="${SITE_URL}/api/admin/booking/approve?id=${booking.bookingId}&token=${approveToken}" style="display:inline-block;padding:14px 32px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:14px;font-weight:700;margin:0 6px;">Approve & Send Invoice</a>
+          <a href="${SITE_URL}/api/admin/booking/decline?id=${booking.bookingId}&token=${declineToken}" style="display:inline-block;padding:14px 32px;background:#C45B5B;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:14px;font-weight:700;margin:0 6px;">Decline</a>
         </div>
-      ` : ''}
+      `;
+      })() : ''}
       <div style="padding:12px 0 0;text-align:center;">
         <a href="${SITE_URL}/admin?tab=bookings" style="display:inline-block;padding:10px 24px;background:#F5F0EB;color:#7A3B5E;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Dashboard</a>
       </div>

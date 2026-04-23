@@ -23,6 +23,7 @@
 
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { timingSafeEqual } from 'node:crypto';
 import { isAdminEmail } from '@/lib/admin';
 import { isVipEmail } from '@/lib/vip-emails';
 import { intentionalParentProgram } from '@/data/programs/intentional-parent';
@@ -31,6 +32,8 @@ import { strongerTogetherProgram } from '@/data/programs/stronger-together';
 import { innerCompassProgram } from '@/data/programs/inner-compass';
 
 const BYPASS_COOKIE = 'mh_preview';
+const ADMIN_AUTH_FAIL_LIMIT = 10;
+const ADMIN_AUTH_WINDOW_SECONDS = 900;
 
 // Pre-compute module → level lookup at module load time.
 // { [programSlug]: { [moduleSlug]: { level: number, isFree: boolean } } }
@@ -60,6 +63,83 @@ function buildModuleIndex(): ModuleIndex {
 
 const MODULE_INDEX: ModuleIndex = buildModuleIndex();
 const MODULE_ROUTE_RE = /^\/(en|ar)\/programs\/([^/]+)\/([^/]+)\/?$/;
+
+function getClientIp(request: NextRequest): string {
+  const h = request.headers;
+  return (
+    h.get('x-forwarded-for')?.split(',')[0].trim()
+    || h.get('x-real-ip')
+    || 'anonymous'
+  );
+}
+
+function safeEqual(a: string, b: string): boolean {
+  const aBuf = Buffer.from(a);
+  const bBuf = Buffer.from(b);
+  if (aBuf.length !== bBuf.length) {
+    const maxLen = Math.max(aBuf.length, bBuf.length);
+    const aPad = Buffer.alloc(maxLen);
+    const bPad = Buffer.alloc(maxLen);
+    aBuf.copy(aPad);
+    bBuf.copy(bPad);
+    timingSafeEqual(aPad, bPad);
+    return false;
+  }
+  return timingSafeEqual(aBuf, bBuf);
+}
+
+/**
+ * Pre-handler check for /api/admin/* requests. Enforces brute-force
+ * protection on ADMIN_PASSWORD by tracking per-IP auth failures in KV
+ * and returning 429 after 10 failures within 15 minutes. Returns null
+ * if the request should proceed, or a NextResponse to short-circuit.
+ *
+ * Defense-in-depth: each admin route still calls `authorize()` for its
+ * own check, but this gate prevents an attacker from iterating across
+ * all 50+ admin routes to brute-force the password.
+ */
+async function gateAdminAuth(request: NextRequest): Promise<NextResponse | null> {
+  if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+    return null; // KV unavailable — can't enforce. Route will still authorize().
+  }
+
+  const ip = getClientIp(request);
+  const failKey = `rl:admin-auth-fail:${ip}`;
+
+  try {
+    const { kv } = await import('@vercel/kv');
+    const fails = (await kv.get<number>(failKey)) || 0;
+    if (fails >= ADMIN_AUTH_FAIL_LIMIT) {
+      return NextResponse.json(
+        { error: 'Too many failed attempts. Try again in 15 minutes.' },
+        { status: 429 },
+      );
+    }
+
+    // Quickly peek at the header so we can count failures here (proxy-level)
+    // rather than requiring every admin route to report back.
+    const header = request.headers.get('authorization') || '';
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) return null;
+
+    const valid = safeEqual(header, `Bearer ${adminPassword}`);
+    if (valid) {
+      // Reset counter on successful auth
+      try { await kv.del(failKey); } catch { /* ignore */ }
+      return null;
+    }
+
+    // Count the failure (fire-and-forget for latency)
+    try {
+      const n = await kv.incr(failKey);
+      if (n === 1) await kv.expire(failKey, ADMIN_AUTH_WINDOW_SECONDS);
+    } catch { /* ignore */ }
+
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  } catch {
+    return null; // Fail open on KV errors — the route's authorize() still runs
+  }
+}
 
 async function checkAcademyAccess(
   request: NextRequest,
@@ -97,6 +177,21 @@ async function checkAcademyAccess(
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // ── 0. Admin API brute-force gate ─────────────────────────────
+  // /api/admin/* routes all check a Bearer token locally; this gate
+  // adds centralized per-IP lockout so the password cannot be brute-
+  // forced across 50+ admin endpoints. GET admin/booking/approve and
+  // decline pass through (they're browser-navigated from emails and
+  // now use a per-booking action token for auth — see route file).
+  if (pathname.startsWith('/api/admin/')) {
+    const isGetApprovalFlow = request.method === 'GET'
+      && (pathname === '/api/admin/booking/approve' || pathname === '/api/admin/booking/decline');
+    if (!isGetApprovalFlow) {
+      const adminBlock = await gateAdminAuth(request);
+      if (adminBlock) return adminBlock;
+    }
+  }
 
   // ── 1. COMING_SOON / MAINTENANCE gate ─────────────────────────
   const isComingSoon = process.env.COMING_SOON === 'true';
@@ -140,14 +235,12 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Match all routes EXCEPT:
-  // - api/*              (contact form, newsletter, health checks)
-  // - _next/static, _next/image (Next.js build output)
-  // - preview, preview/off (bypass entry/exit routes)
-  // - coming-soon*       (target of the rewrite)
-  // - admin*             (admin dashboard has its own password auth via mh_admin_key)
-  // - favicon.ico, robots.txt, sitemap.xml, manifest, icon, apple-icon (metadata)
+  // Page-route matcher: all routes EXCEPT api/*, _next/*, preview,
+  // coming-soon, admin dashboard page, static assets. The admin dashboard
+  // PAGE (/admin/*) is client-gated; admin API (/api/admin/*) is matched
+  // separately below for centralized brute-force protection.
   matcher: [
     '/((?!api|_next/static|_next/image|preview|coming-soon|admin|favicon\\.ico|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|icon\\.png|apple-icon\\.png|.*\\.(?:png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|ttf|otf|css|js)$).*)',
+    '/api/admin/:path*',
   ],
 };

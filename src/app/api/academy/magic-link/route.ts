@@ -38,37 +38,38 @@ export async function POST(request: NextRequest) {
 
     const normalizedEmail = email.toLowerCase().trim();
 
-    // Check if student exists
+    // Look up the student silently. We always respond with the same
+    // generic 200 response whether or not the account exists, so an
+    // attacker cannot enumerate which emails are enrolled. Sending only
+    // happens when the account is real.
     const student = await kv.get(`academy:student:${normalizedEmail}`);
-    if (!student) {
-      return NextResponse.json({
-        error: 'No account found with this email. Please enroll in a program first.',
-        notEnrolled: true,
-      }, { status: 404 });
+
+    if (student) {
+      const token = crypto.randomUUID();
+      await kv.set(`academy:magic:${token}`, { email: normalizedEmail }, { ex: 900 });
+
+      const magicUrl = `${SITE_URL}/api/academy/magic-link?token=${token}`;
+
+      try {
+        const { Resend } = await import('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboarding@resend.dev>',
+          to: normalizedEmail,
+          subject: 'Your Dashboard Login Link',
+          html: generateMagicLinkEmail(magicUrl, (student as any).name || ''),
+        });
+      } catch (err) {
+        // Log server-side but don't surface the failure to the caller
+        console.error('Magic link email failed');
+        void err;
+      }
     }
 
-    // Generate token
-    const token = crypto.randomUUID();
-    await kv.set(`academy:magic:${token}`, { email: normalizedEmail }, { ex: 900 }); // 15-min TTL
-
-    const magicUrl = `${SITE_URL}/api/academy/magic-link?token=${token}`;
-
-    // Send email
-    try {
-      const { Resend } = await import('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboarding@resend.dev>',
-        to: normalizedEmail,
-        subject: 'Your Dashboard Login Link',
-        html: generateMagicLinkEmail(magicUrl, (student as any).name || ''),
-      });
-    } catch (err) {
-      console.error('Magic link email failed:', err);
-      return NextResponse.json({ error: 'Failed to send email' }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, message: 'Check your email for the login link.' });
+    return NextResponse.json({
+      success: true,
+      message: 'If an account exists for that email, a sign-in link has been sent.',
+    });
   } catch (err) {
     console.error('Magic link error:', err);
     return NextResponse.json({ error: 'Server error' }, { status: 500 });

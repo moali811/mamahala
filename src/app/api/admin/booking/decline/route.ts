@@ -12,12 +12,21 @@ import { BUSINESS } from '@/config/business';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { getAvailableSlots } from '@/lib/booking/availability';
 import { SITE_URL } from '@/lib/site-url';
+import { verifyAdminActionToken } from '@/lib/booking/admin-action-token';
 
-// GET — one-click from email
+// GET — one-click from email. Auth = HMAC token in ?token= bound to
+// the booking id. See `admin-action-token.ts` for the CSRF rationale.
 export async function GET(request: NextRequest) {
   const bookingId = request.nextUrl.searchParams.get('id');
+  const token = request.nextUrl.searchParams.get('token');
   if (!bookingId) {
     return NextResponse.json({ error: 'Missing booking id' }, { status: 400 });
+  }
+  if (!verifyAdminActionToken(bookingId, 'decline', token)) {
+    return new NextResponse(
+      renderResultPage(false, 'Invalid or missing decline token'),
+      { status: 401, headers: { 'Content-Type': 'text/html' } },
+    );
   }
 
   const result = await processDecline(bookingId);

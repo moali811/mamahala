@@ -100,8 +100,11 @@ export async function POST(request: Request) {
       }
     }
 
-    // Always log for backup
-    console.log(`[${subjectPrefix}]`, { name, email, reason, formType, country, preferredLang });
+    // Log only non-PII metadata. Email/name go to the admin inbox; they
+    // don't need to be duplicated in Vercel log drains where they'd be
+    // visible to anyone with project read access and persist indefinitely.
+    const emailDomain = email.includes('@') ? email.split('@')[1] : 'unknown';
+    console.log(`[${subjectPrefix}]`, { emailDomain, reason, formType, country, preferredLang, emailSent });
 
     return NextResponse.json({ success: true, emailSent });
   } catch (err) {
