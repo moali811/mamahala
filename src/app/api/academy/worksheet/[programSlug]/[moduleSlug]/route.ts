@@ -1,5 +1,65 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jsPDF } from 'jspdf';
+import { cookies } from 'next/headers';
+import { isAdminEmail } from '@/lib/admin';
+import { isVipEmail } from '@/lib/vip-emails';
+
+const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+
+let kvMod: typeof import('@vercel/kv').kv | null = null;
+async function getKV() {
+  if (!kvMod && KV_AVAILABLE) {
+    kvMod = (await import('@vercel/kv')).kv;
+  }
+  return kvMod;
+}
+
+/**
+ * Verify the requester has access to the worksheet for (programSlug, moduleSlug).
+ * Returns { ok: true } if allowed, or { ok: false, status, error } if denied.
+ *
+ * Access rules:
+ *   - Module's level is free → allow anyone (marketing / lead magnet).
+ *   - Session cookie maps to an admin/VIP email → allow.
+ *   - Session cookie maps to a student whose unlockedLevels[programSlug]
+ *     includes the module's level → allow.
+ *   - Otherwise → 403.
+ */
+async function checkWorksheetAccess(
+  programSlug: string,
+  moduleLevel: number,
+  levelIsFree: boolean,
+): Promise<{ ok: true } | { ok: false; status: number; error: string }> {
+  if (levelIsFree) return { ok: true };
+
+  const cookieStore = await cookies();
+  const sessionId = cookieStore.get('academy_session')?.value;
+  if (!sessionId) {
+    return { ok: false, status: 401, error: 'Sign in to download this worksheet' };
+  }
+
+  const kv = await getKV();
+  if (!kv) {
+    // Fail-closed on KV outage for paid content
+    return { ok: false, status: 503, error: 'Service temporarily unavailable' };
+  }
+
+  const session = (await kv.get(`academy:session:${sessionId}`)) as { email: string } | null;
+  if (!session?.email) {
+    return { ok: false, status: 401, error: 'Session expired. Please sign in again.' };
+  }
+
+  const email = session.email;
+  if (isAdminEmail(email) || isVipEmail(email)) return { ok: true };
+
+  const student = (await kv.get(`academy:student:${email}`)) as
+    | { unlockedLevels?: Record<string, number[]> }
+    | null;
+  const unlockedLevels = student?.unlockedLevels?.[programSlug] ?? [];
+  if (unlockedLevels.includes(moduleLevel)) return { ok: true };
+
+  return { ok: false, status: 403, error: 'This worksheet requires paid access to this level' };
+}
 
 // ─── Brand colors as RGB tuples ─────────────────────────────────────────────
 const PLUM: [number, number, number] = [122, 59, 94];
@@ -355,6 +415,13 @@ export async function GET(
   const levelNamesAR: Record<number, string> = { 1: 'الأساس', 2: 'النمو', 3: 'الإتقان' };
   const levelNum = moduleLevel?.level ?? 1;
   const levelName = isRTL ? (levelNamesAR[levelNum] ?? 'الأساس') : (levelNamesEN[levelNum] ?? 'Foundation');
+
+  // Gate: paid levels require a valid session + unlocked access
+  const levelIsFree = !!(moduleLevel?.isFree ?? program.isFree);
+  const access = await checkWorksheetAccess(programSlug, levelNum, levelIsFree);
+  if (!access.ok) {
+    return NextResponse.json({ error: access.error }, { status: access.status });
+  }
 
   const pdfBuffer = generateWorksheetPDF({
     programTitleEn: program.titleEn,

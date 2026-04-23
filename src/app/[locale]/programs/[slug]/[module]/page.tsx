@@ -85,38 +85,83 @@ export default function ModuleLessonPage() {
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
-    loadProgram(programSlug).then(p => {
-      if (p) {
-        setProgram(p);
-        const mods = p.levels.flatMap(l => l.modules);
-        setAllModules(mods);
-        const idx = mods.findIndex(m => m.slug === moduleSlug);
-        if (idx >= 0) {
-          setCurrentModule(mods[idx]);
-          setModuleIndex(idx);
+    const controller = new AbortController();
+    let cancelled = false;
 
-          // Check if user has access to this module's level
-          const isEnrolled = localStorage.getItem(`academy_enrolled_${programSlug}`);
-          const moduleLevel = p.levels.find(l => l.modules.some(m => m.slug === moduleSlug));
-          const levelIsFree = moduleLevel?.isFree || p.isFree;
-          const levelNum = moduleLevel?.level;
-          const levelUnlocked = levelNum != null && localStorage.getItem(`academy:paid:${programSlug}:level-${levelNum}`) === 'true';
-          const legacyModuleUnlocked = localStorage.getItem(`academy:paid:${programSlug}:${moduleSlug}`) === 'true';
+    (async () => {
+      const p = await loadProgram(programSlug);
+      if (cancelled) return;
+      if (!p) {
+        setLoading(false);
+        return;
+      }
+      setProgram(p);
+      const mods = p.levels.flatMap(l => l.modules);
+      setAllModules(mods);
+      const idx = mods.findIndex(m => m.slug === moduleSlug);
+      if (idx < 0) {
+        // Unknown module — send them back to the program overview
+        router.replace(`/${locale}/programs/${programSlug}`);
+        return;
+      }
 
-          if (!isEnrolled) {
-            router.replace(`/${locale}/programs/${programSlug}`);
-            return;
-          }
+      setCurrentModule(mods[idx]);
+      setModuleIndex(idx);
 
-          if (!levelIsFree && !levelUnlocked && !legacyModuleUnlocked) {
-            // Level not unlocked — redirect to program page with level unlock flow
-            router.replace(`/${locale}/programs/${programSlug}?unlock=level-${levelNum}`);
+      const moduleLevel = p.levels.find(l => l.modules.some(m => m.slug === moduleSlug));
+      const levelIsFree = !!(moduleLevel?.isFree ?? p.isFree);
+      const levelNum = moduleLevel?.level ?? null;
+
+      // Free levels — allow. The proxy gate (when enabled) already
+      // blocked paid modules before this page renders; this client
+      // verification is defense-in-depth for when the flag is off or
+      // the matcher was bypassed.
+      if (levelIsFree || levelNum == null) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        // Session-first check
+        const meRes = await fetch('/api/academy/me', { signal: controller.signal });
+        if (meRes.ok) {
+          const me = await meRes.json();
+          const hasAccess = !!me.allAccess
+            || (me.unlockedLevels?.[programSlug] || []).includes(levelNum);
+          if (hasAccess) {
+            setLoading(false);
             return;
           }
         }
+
+        // Fall back to email-based access check
+        const storedEmail = localStorage.getItem('academy_email');
+        if (storedEmail) {
+          const res = await fetch(
+            `/api/academy/access?email=${encodeURIComponent(storedEmail)}&programSlug=${encodeURIComponent(programSlug)}&levelNumber=${levelNum}`,
+            { signal: controller.signal },
+          );
+          if (res.ok) {
+            const data = await res.json();
+            if (data.hasPaidAccess || data.isAdmin || data.isVip) {
+              setLoading(false);
+              return;
+            }
+          }
+        }
+
+        // No access — bounce to the program page with the unlock flow
+        if (!cancelled) {
+          router.replace(`/${locale}/programs/${programSlug}?unlock=level-${levelNum}`);
+        }
+      } catch {
+        // Network/abort — stay on page, the UI will render but content is
+        // server-gated for paid resources (quizzes, worksheets, etc.)
+        if (!cancelled) setLoading(false);
       }
-      setLoading(false);
-    });
+    })();
+
+    return () => { cancelled = true; controller.abort(); };
   }, [programSlug, moduleSlug, locale, router]);
 
   // Check if quiz was previously passed
@@ -619,6 +664,16 @@ export default function ModuleLessonPage() {
               setQuizPassed(true);
               setQuizJustPassed(true);
               localStorage.setItem(`academy:quiz-passed:${programSlug}:${moduleSlug}`, 'true');
+              // Persist completion server-side so progression reflects cross-device.
+              // Idempotent — the progress endpoint de-duplicates.
+              const email = localStorage.getItem('academy_email');
+              if (email) {
+                fetch('/api/academy/progress', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email, programSlug, moduleSlug, action: 'complete' }),
+                }).catch(() => { /* non-critical; localStorage cache retains progress */ });
+              }
             }}
           />
         </div>
