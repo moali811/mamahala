@@ -47,7 +47,6 @@ const LEVEL_DIMENSIONS: Record<string, Record<number, LevelDimension[]>> = {
   },
 };
 import { BUSINESS } from '@/config/business';
-import { isVipEmail } from '@/lib/vip-emails';
 import { t, tArray } from '@/lib/academy-helpers';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import SkillMeter from '@/components/academy/visual/SkillMeter';
@@ -105,6 +104,11 @@ export default function ProgramOverviewPage() {
     academyFullAccessPrice: BUSINESS.academyFullAccessPrice,
   });
 
+  // Cross-device sign-in (magic link)
+  const [signInOpen, setSignInOpen] = useState(false);
+  const [signInEmail, setSignInEmail] = useState('');
+  const [signInState, setSignInState] = useState<'idle' | 'sending' | 'sent' | 'notEnrolled' | 'error'>('idle');
+
   useEffect(() => {
     loadProgram(slug).then(p => { setProgram(p); setLoading(false); });
   }, [slug]);
@@ -124,41 +128,100 @@ export default function ProgramOverviewPage() {
       .catch(() => { /* use BUSINESS defaults */ });
   }, []);
 
-  // Load unlock state from localStorage (both per-level and legacy per-module)
+  // Load enrollment + unlock state — server is the source of truth.
+  // Try session-based /api/academy/me first (works cross-device after magic-link sign-in),
+  // then fall back to email-based /api/academy/access (read-only view from localStorage email).
+  // localStorage becomes a warm cache; the server always overrides.
   useEffect(() => {
-    if (typeof window !== 'undefined' && program) {
-      // VIP bypass: if stored academy or toolkit email is a VIP, unlock ALL levels
-      const academyEmail = localStorage.getItem('academy_email');
-      const toolkitEmail = localStorage.getItem('mh_toolkit_email');
-      const vipBypass = isVipEmail(academyEmail) || isVipEmail(toolkitEmail);
+    if (typeof window === 'undefined' || !program) return;
 
-      const levels = new Set<number>();
-      program.levels.forEach(lvl => {
-        if (vipBypass) {
-          levels.add(lvl.level);
-          localStorage.setItem(`academy:paid:${slug}:level-${lvl.level}`, 'true');
-        } else if (localStorage.getItem(`academy:paid:${slug}:level-${lvl.level}`) === 'true') {
-          levels.add(lvl.level);
-        }
-      });
-      setUnlockedLevels(levels);
+    const controller = new AbortController();
+    let cancelled = false;
 
-      // Legacy per-module unlocks (kept for back-compat)
-      const unlocked = new Set<string>();
-      const allMods = program.levels.flatMap(l => l.modules);
-      allMods.forEach(mod => {
-        if (localStorage.getItem(`academy:paid:${slug}:${mod.slug}`) === 'true') {
-          unlocked.add(mod.slug);
-        }
+    const applyServerState = (data: {
+      enrolledPrograms?: string[];
+      unlockedLevels?: Record<string, number[]>;
+      unlockedModules?: Record<string, string[]>;
+      completedModules?: Record<string, string[]>;
+      allAccess?: boolean;
+      email?: string;
+    }) => {
+      if (cancelled || !program) return;
+
+      const isEnrolledNow = (data.enrolledPrograms || []).includes(slug) || !!data.allAccess;
+      if (isEnrolledNow) {
+        setEnrolled(true);
+        localStorage.setItem(`academy_enrolled_${slug}`, 'true');
+      }
+      if (data.email) localStorage.setItem('academy_email', data.email);
+
+      const levelsUnlocked = new Set<number>();
+      if (data.allAccess) {
+        program.levels.forEach(l => levelsUnlocked.add(l.level));
+      } else {
+        ((data.unlockedLevels || {})[slug] || []).forEach(n => levelsUnlocked.add(n));
+      }
+      setUnlockedLevels(levelsUnlocked);
+
+      const modulesUnlocked = new Set<string>();
+      program.levels.forEach(l => {
+        if (levelsUnlocked.has(l.level)) l.modules.forEach(m => modulesUnlocked.add(m.slug));
       });
-      // Also mark all modules in an unlocked level as unlocked
-      program.levels.forEach(lvl => {
-        if (levels.has(lvl.level)) {
-          lvl.modules.forEach(m => unlocked.add(m.slug));
-        }
+      ((data.unlockedModules || {})[slug] || []).forEach(s => {
+        if (s !== '*') modulesUnlocked.add(s);
       });
-      setUnlockedModules(unlocked);
-    }
+      setUnlockedModules(modulesUnlocked);
+
+      // Warm localStorage cache for fast reloads (server still re-checks on every mount)
+      levelsUnlocked.forEach(n => localStorage.setItem(`academy:paid:${slug}:level-${n}`, 'true'));
+
+      const completed = new Set((data.completedModules || {})[slug] || []);
+      if (completed.size > 0) setCompletedModules(completed);
+    };
+
+    (async () => {
+      // 1) Session-authoritative
+      try {
+        const meRes = await fetch('/api/academy/me', { signal: controller.signal });
+        if (meRes.ok) {
+          const me = await meRes.json();
+          applyServerState(me);
+          return;
+        }
+      } catch {
+        /* network/abort — fall through */
+      }
+
+      // 2) Email fallback — read-only view if localStorage has an email
+      try {
+        const storedEmail = localStorage.getItem('academy_email');
+        if (storedEmail) {
+          const res = await fetch(
+            `/api/academy/access?email=${encodeURIComponent(storedEmail)}&programSlug=${encodeURIComponent(slug)}`,
+            { signal: controller.signal },
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const hasAny = !!(data.isAdmin || data.isVip || (data.unlockedLevels || []).length > 0);
+            applyServerState({
+              enrolledPrograms: hasAny ? [slug] : [],
+              unlockedLevels: data.unlockedLevels ? { [slug]: data.unlockedLevels } : {},
+              unlockedModules: data.unlockedModules ? { [slug]: data.unlockedModules } : {},
+              allAccess: !!data.isAdmin || !!data.isVip,
+              email: storedEmail,
+            });
+          }
+          if (localStorage.getItem(`academy_enrolled_${slug}`) === 'true') setEnrolled(true);
+        } else if (localStorage.getItem(`academy_enrolled_${slug}`) === 'true') {
+          // Enrolled flag without email — honor enrollment but don't unlock paid
+          setEnrolled(true);
+        }
+      } catch {
+        /* ignore */
+      }
+    })();
+
+    return () => { cancelled = true; controller.abort(); };
   }, [slug, program]);
 
   // Handle return from Stripe Payment Link or legacy Checkout Session
@@ -166,17 +229,41 @@ export default function ProgramOverviewPage() {
     if (typeof window === 'undefined' || !program) return;
     const params = new URLSearchParams(window.location.search);
 
+    // Poll server to confirm webhook-persisted unlock matches the expected level(s).
+    // Stripe's webhook is async — the user may land here before KV is updated.
+    const reconcileWithServer = async (expected: number[]) => {
+      const email = localStorage.getItem('academy_email') || '';
+      if (!email) return;
+      for (const delay of [800, 1600, 3200]) {
+        await new Promise(r => setTimeout(r, delay));
+        try {
+          const res = await fetch(
+            `/api/academy/access?email=${encodeURIComponent(email)}&programSlug=${encodeURIComponent(slug)}`,
+          );
+          if (!res.ok) continue;
+          const data = await res.json();
+          const serverLevels: number[] = Array.isArray(data.unlockedLevels) ? data.unlockedLevels : [];
+          if (expected.every(n => serverLevels.includes(n))) {
+            setUnlockedLevels(new Set(serverLevels));
+            return;
+          }
+        } catch { /* retry */ }
+      }
+    };
+
     // Stripe Payment Link return: ?paid=level-N or ?paid=bundle
     const paidParam = params.get('paid');
     if (paidParam) {
       if (paidParam === 'bundle') {
-        // Unlock both Growth (2) and Mastery (3)
         unlockLevelLocally(2);
         unlockLevelLocally(3);
+        void reconcileWithServer([2, 3]);
       } else {
         const levelMatch = paidParam.match(/^level-(\d+)$/);
         if (levelMatch) {
-          unlockLevelLocally(Number(levelMatch[1]));
+          const n = Number(levelMatch[1]);
+          unlockLevelLocally(n);
+          void reconcileWithServer([n]);
         }
       }
       window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
@@ -190,10 +277,17 @@ export default function ProgramOverviewPage() {
       fetch(`/api/academy/checkout?session_id=${sessionId}`)
         .then(r => r.json())
         .then(data => {
-          if (data.paid && data.levelNumber) unlockLevelLocally(data.levelNumber);
+          if (data.paid && data.levelNumber) {
+            unlockLevelLocally(data.levelNumber);
+            void reconcileWithServer([data.levelNumber]);
+          }
         })
         .catch(() => {
-          if (levelParam) unlockLevelLocally(Number(levelParam));
+          if (levelParam) {
+            const n = Number(levelParam);
+            unlockLevelLocally(n);
+            void reconcileWithServer([n]);
+          }
         })
         .finally(() => {
           window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
@@ -274,7 +368,6 @@ export default function ProgramOverviewPage() {
     if (!enrollEmail.trim()) return;
     setEnrolling(true);
     const normalizedEmail = enrollEmail.trim();
-    const isVip = isVipEmail(normalizedEmail);
     try {
       const res = await fetch('/api/academy/enroll', {
         method: 'POST',
@@ -284,50 +377,69 @@ export default function ProgramOverviewPage() {
       const data = await res.json();
       if (res.ok) {
         setEnrolled(true);
-        localStorage.setItem(`academy_email`, normalizedEmail);
+        localStorage.setItem('academy_email', normalizedEmail);
         localStorage.setItem(`academy_enrolled_${slug}`, 'true');
-        // Admin/VIP auto-unlock: set all paid levels in localStorage
-        if (data.adminUnlocked || isVip) {
-          unlockLevelLocally(2);
-          unlockLevelLocally(3);
+        // Server-side auto-unlock (admin / VIP) — pull unlocked levels from /me
+        if (data.adminUnlocked) {
+          try {
+            const meRes = await fetch('/api/academy/me');
+            if (meRes.ok) {
+              const me = await meRes.json();
+              if (me.allAccess && program) {
+                program.levels.forEach(l => unlockLevelLocally(l.level));
+              }
+            }
+          } catch { /* non-critical */ }
         }
-        // Auto-scroll to curriculum after a beat
         setTimeout(() => {
           document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 600);
       }
     } catch {
-      // Network error — still unlock locally if VIP (works offline)
-      if (isVip) {
-        setEnrolled(true);
-        localStorage.setItem(`academy_email`, normalizedEmail);
-        localStorage.setItem(`academy_enrolled_${slug}`, 'true');
-        unlockLevelLocally(2);
-        unlockLevelLocally(3);
-      }
+      /* Network error — server is the source of truth, local-only unlock removed */
     }
     setEnrolling(false);
   };
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const isEnrolled = localStorage.getItem(`academy_enrolled_${slug}`);
-      if (isEnrolled) setEnrolled(true);
+  // Magic-link "Sign in" flow for cross-device access
+  const handleSendMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const email = signInEmail.trim();
+    if (!email.includes('@')) return;
+    setSignInState('sending');
+    try {
+      const res = await fetch('/api/academy/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        setSignInState('sent');
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setSignInState(data.notEnrolled ? 'notEnrolled' : 'error');
+      }
+    } catch {
+      setSignInState('error');
     }
-  }, [slug]);
+  };
 
-  // Track completed modules (for progress rings + checkmarks)
+  // Merge any localStorage-cached completions on top of the server-hydrated set.
+  // Server is the source of truth; localStorage only adds completions not yet
+  // synced (e.g., just-passed quiz whose server POST is still in flight).
   useEffect(() => {
     if (typeof window === 'undefined' || !program) return;
-    const completed = new Set<string>();
-    for (const lvl of program.levels) {
-      for (const mod of lvl.modules) {
-        if (localStorage.getItem(`academy:quiz-passed:${slug}:${mod.slug}`) === 'true') {
-          completed.add(mod.slug);
+    setCompletedModules(prev => {
+      const merged = new Set(prev);
+      for (const lvl of program.levels) {
+        for (const mod of lvl.modules) {
+          if (localStorage.getItem(`academy:quiz-passed:${slug}:${mod.slug}`) === 'true') {
+            merged.add(mod.slug);
+          }
         }
       }
-    }
-    setCompletedModules(completed);
+      return merged;
+    });
   }, [slug, program]);
 
   useEffect(() => {
@@ -731,19 +843,50 @@ export default function ProgramOverviewPage() {
                               {level.modules.map((mod, modIdxInLevel) => {
                                 moduleNumber++;
                                 const modTitle = t(mod.titleEn, mod.titleAr, isRTL);
-                                const canAccess = enrolled && (level.isFree || program.isFree || unlockedModules.has(mod.slug));
+                                const levelUnlocked = level.isFree || program.isFree || unlockedLevels.has(level.level);
+                                const canAccess = enrolled && levelUnlocked;
                                 const hasInteractive = !!(mod.scenarios?.length || mod.dragMatchExercises?.length || mod.likertReflections?.length);
                                 const isCompleted = completedModules.has(mod.slug);
-                                // "Next" = first non-completed accessible module in this level
-                                const isNext = canAccess && !isCompleted && level.modules.slice(0, modIdxInLevel).every(m => completedModules.has(m.slug));
+                                // Progression state:
+                                //   isCurrent = the single next module in order the user should tackle (first uncompleted in this level, and earlier levels complete)
+                                //   isRecommendedLater = accessible but there's an earlier uncompleted module to finish first (soft guidance)
+                                //   isMasteryLocked = Level-3 module while any Level-1 or Level-2 module is still incomplete (hard gate)
+                                const priorInLevelComplete = level.modules.slice(0, modIdxInLevel).every(m => completedModules.has(m.slug));
+                                const priorLevelsComplete = program.levels
+                                  .filter(l => l.level < level.level)
+                                  .every(l => l.modules.every(m => completedModules.has(m.slug)));
+                                const isCurrent = canAccess && !isCompleted && priorInLevelComplete && priorLevelsComplete;
+                                const isRecommendedLater = canAccess && !isCompleted && !isCurrent;
+                                const isMasteryLocked = enrolled
+                                  && level.level === 3
+                                  && !program.levels
+                                    .filter(l => l.level <= 2)
+                                    .every(l => l.modules.every(m => completedModules.has(m.slug)));
 
                                 return (
                                   <div key={mod.slug}>
-                                    {canAccess ? (
+                                    {isMasteryLocked ? (
+                                      <div
+                                        className="flex items-center gap-3 py-3 px-3 rounded-lg opacity-70"
+                                        title={isRTL ? 'أَكمِل المستويَين الأوّل والثّاني لِفَتح مستوى الإتقان' : 'Complete Levels 1 & 2 to unlock Mastery'}
+                                      >
+                                        <div className="w-8 h-8 rounded-lg bg-[#F3EFE8] flex items-center justify-center flex-shrink-0">
+                                          <Lock className="w-3.5 h-3.5 text-[#C8A97D]" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                          <span className="text-sm text-[#8E8E9F] font-medium block truncate">{modTitle}</span>
+                                          <span className="text-[10px] text-[#C8A97D] font-semibold uppercase tracking-wider">
+                                            {isRTL ? 'أَكمِل المُسْتَوَيَيْن الأَوَّل والثّاني أَوَّلاً' : 'Finish Levels 1 & 2 first'}
+                                          </span>
+                                        </div>
+                                        <span className="text-xs text-[#8E8E9F] flex-shrink-0">{mod.durationMinutes} min</span>
+                                      </div>
+                                    ) : canAccess ? (
                                       <a
                                         href={`/${locale}/programs/${slug}/${mod.slug}`}
-                                        className={`flex items-center gap-3 py-3 px-3 rounded-lg transition-colors group ${isNext ? 'bg-[color:var(--c)]/5 border border-[color:var(--c)]/20' : 'hover:bg-[#FAF7F2]'}`}
-                                        style={isNext ? { '--c': program.color } as React.CSSProperties : undefined}
+                                        className={`flex items-center gap-3 py-3 px-3 rounded-lg transition-colors group ${isCurrent ? 'bg-[color:var(--c)]/5 border border-[color:var(--c)]/20' : isRecommendedLater ? 'opacity-70 hover:opacity-100 hover:bg-[#FAF7F2]' : 'hover:bg-[#FAF7F2]'}`}
+                                        style={isCurrent ? { '--c': program.color } as React.CSSProperties : undefined}
+                                        title={isRecommendedLater ? (isRTL ? 'نُوصي بإكمال الوحدة السّابقة أوّلاً — يُمكِنك المُتابَعة على أيّ حال' : 'Recommended: finish the previous module first — you can skip anyway') : undefined}
                                       >
                                         <div
                                           className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0 relative"
@@ -755,12 +898,16 @@ export default function ProgramOverviewPage() {
                                           <span className={`text-sm transition-colors font-medium block truncate ${isCompleted ? 'text-[#8E8E9F] line-through' : 'text-[#2D2A33] group-hover:text-[#7A3B5E]'}`}>
                                             {modTitle}
                                           </span>
-                                          {isNext && (
+                                          {isCurrent && (
                                             <span className="text-[9px] font-semibold uppercase tracking-wider" style={{ color: program.color }}>
                                               {isRTL ? 'التّالي →' : 'Continue →'}
                                             </span>
                                           )}
-                                          {/* Skill tags */}
+                                          {isRecommendedLater && (
+                                            <span className="text-[9px] text-[#8E8E9F] italic">
+                                              {isRTL ? 'أكمِل السّابق أوّلاً · مُتاح للتّخَطّي' : 'Complete previous first · skip ok'}
+                                            </span>
+                                          )}
                                           {mod.skillTags && (
                                             <div className="flex gap-1 mt-0.5">
                                               {mod.skillTags.slice(0, 2).map(tag => (
@@ -965,6 +1112,62 @@ export default function ProgramOverviewPage() {
                         : `Level 1 is free · Full access $${dynamicPricing.academyFullAccessPrice} CAD`}
                     </p>
                   )}
+
+                  {/* Already enrolled? Sign in with email (magic link) */}
+                  <div className="mt-6 pt-5 border-t border-[#F3EFE8] text-center">
+                    <p className="text-xs text-[#8E8E9F]">
+                      {isRTL ? 'سَجَّلتَ من قبل على جهاز آخر؟' : 'Already enrolled on another device?'}
+                      {' '}
+                      <button
+                        type="button"
+                        onClick={() => setSignInOpen(prev => !prev)}
+                        className="text-[#7A3B5E] font-medium hover:underline"
+                      >
+                        {isRTL ? 'سَجِّل الدّخول بالبريد' : 'Sign in with email'}
+                      </button>
+                    </p>
+                    {signInOpen && (
+                      <div className="mt-3 p-4 rounded-xl bg-[#FAF7F2] border border-[#F3EFE8] text-start">
+                        {signInState === 'sent' ? (
+                          <p className="text-sm text-[#3B8A6E] flex items-center gap-2">
+                            <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                            {isRTL ? 'تحقّق من بريدك — أرسلنا لك رابط الدّخول.' : 'Check your inbox — we sent you a login link.'}
+                          </p>
+                        ) : (
+                          <form onSubmit={handleSendMagicLink} className="space-y-2">
+                            <input
+                              type="email"
+                              value={signInEmail}
+                              onChange={e => { setSignInEmail(e.target.value); if (signInState !== 'idle') setSignInState('idle'); }}
+                              placeholder={isRTL ? 'بريدك الإلكتروني' : 'Your email'}
+                              required
+                              className="w-full px-3 py-2.5 rounded-lg border border-[#F3EFE8] text-sm focus:outline-none focus:border-[#C4878A] focus:ring-2 focus:ring-[#C4878A]/20"
+                            />
+                            <button
+                              type="submit"
+                              disabled={signInState === 'sending'}
+                              className="w-full py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-60 transition-colors"
+                              style={{ backgroundColor: '#7A3B5E' }}
+                            >
+                              {signInState === 'sending'
+                                ? (isRTL ? 'جاري الإرسال…' : 'Sending…')
+                                : (isRTL ? 'أرسل رابط الدّخول' : 'Send login link')}
+                            </button>
+                            {signInState === 'notEnrolled' && (
+                              <p className="text-xs text-[#D4836A]">
+                                {isRTL ? 'لم نعثر على حسابك. يُرجى التّسجيل أوّلاً.' : 'No account found. Please enroll first.'}
+                              </p>
+                            )}
+                            {signInState === 'error' && (
+                              <p className="text-xs text-[#D4836A]">
+                                {isRTL ? 'حدث خطأ. حاوِل مرّةً أخرى.' : 'Something went wrong. Please try again.'}
+                              </p>
+                            )}
+                          </form>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
 
