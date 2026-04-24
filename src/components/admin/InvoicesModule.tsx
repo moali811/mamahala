@@ -536,6 +536,52 @@ function ComposeTab({
     }));
   };
 
+  // Track the last auto-generated subject so we only overwrite
+  // a subject that WE wrote — admin-typed subjects are respected.
+  const autoSubjectRef = useRef<string | null>(null);
+
+  const formatSessionSubject = (iso: string, slug: string): string => {
+    const svc = services.find(s => s.slug === slug);
+    const svcName = svc?.name ?? (slug ? slug.replace(/-/g, ' ') : 'session');
+    const dt = new Date(iso);
+    const dateStr = dt.toLocaleString('en-US', {
+      weekday: 'long', month: 'long', day: 'numeric',
+      hour: 'numeric', minute: '2-digit', hour12: true,
+    });
+    return `Session booked for ${dateStr} — ${svcName}`;
+  };
+
+  /**
+   * Set the session start time for this draft. Patches sessionStartTime
+   * (which anchors the due date in send-invoice-pipeline.ts) and
+   * auto-generates a Subject so admin doesn't have to type the same
+   * date twice. The auto-subject is only written when the current
+   * subject is empty or was previously auto-generated — admin-typed
+   * subjects are never overwritten.
+   */
+  const setSessionDate = (iso: string | undefined) => {
+    setDraft(prev => {
+      const next: InvoiceDraft = {
+        ...prev,
+        sessionStartTime: iso,
+        updatedAt: new Date().toISOString(),
+      };
+      if (iso && prev.serviceSlug) {
+        const generated = formatSessionSubject(iso, prev.serviceSlug);
+        const current = prev.subject ?? '';
+        if (!current || current === autoSubjectRef.current) {
+          next.subject = generated;
+          autoSubjectRef.current = generated;
+        }
+      } else if (!iso && prev.subject === autoSubjectRef.current) {
+        // Cleared the session — also clear the auto-generated subject
+        next.subject = '';
+        autoSubjectRef.current = null;
+      }
+      return next;
+    });
+  };
+
   /**
    * Apply a Claude-parsed voice result to the draft. This maps each parsed
    * field into the corresponding draft slot, matching the client against
@@ -816,6 +862,55 @@ function ComposeTab({
               />
             </Field>
           </div>
+        </Section>
+
+        {/* Session date & time (optional) — anchors due date + auto-fills subject */}
+        <Section title="Session date & time (optional)" icon={<Calendar className="w-4 h-4" />}>
+          <Field label="When is the session?">
+            {(() => {
+              // datetime-local expects "YYYY-MM-DDTHH:mm" in local time.
+              // Convert the stored UTC ISO back to a local-time string for display.
+              const inputValue = draft.sessionStartTime
+                ? (() => {
+                    const d = new Date(draft.sessionStartTime);
+                    if (isNaN(d.getTime())) return '';
+                    const pad = (n: number) => String(n).padStart(2, '0');
+                    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+                  })()
+                : '';
+              return (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="datetime-local"
+                    value={inputValue}
+                    onChange={(e) => {
+                      const raw = e.target.value;
+                      if (!raw) {
+                        setSessionDate(undefined);
+                        return;
+                      }
+                      // Local → UTC ISO
+                      const d = new Date(raw);
+                      setSessionDate(isNaN(d.getTime()) ? undefined : d.toISOString());
+                    }}
+                    className="flex-1 px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
+                  />
+                  {draft.sessionStartTime && (
+                    <button
+                      type="button"
+                      onClick={() => setSessionDate(undefined)}
+                      className="px-3 py-2 rounded-lg text-xs font-semibold text-[#8E8E9F] border border-[#E8E4DE] hover:bg-[#F5F0EB] transition-colors"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
+          </Field>
+          <p className="text-[10px] text-[#8E8E9F] mt-1">
+            When set: invoice due date auto-anchors to this session, and the Subject field auto-fills (only if empty or still the auto-generated value).
+          </p>
         </Section>
 
         {/* Subject / Session Notes (optional) */}
