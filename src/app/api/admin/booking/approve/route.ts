@@ -132,17 +132,11 @@ async function processApproval(bookingId: string): Promise<{
       <h2 style="${emailStyles.heading};text-align:center;">${t.approved.heading(firstName)}</h2>
       <p style="${emailStyles.text}">${t.approved.body(serviceName, dateTime)}</p>
       <p style="${emailStyles.text}">${t.approved.invoiceNote}</p>
-      ${meetLink ? `
-      <div style="background:#F0FAF5;border-left:3px solid #3B8A6E;padding:12px 16px;border-radius:0 8px 8px 0;margin:16px 0;">
-        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">${t.approved.meetHeading}</p>
-        <p style="margin:0 0 8px;font-size:12px;color:#4A4A5C;">${t.approved.meetHint}</p>
-        <a href="${meetLink}" style="display:inline-block;padding:8px 20px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">${t.approved.meetCta}</a>
-      </div>
-      ` : (booking.sessionMode === 'online' ? `
+      ${booking.sessionMode === 'online' ? `
       <div style="${emailStyles.goldAccent}">
         <p style="margin:0;font-size:13px;color:#4A4A5C;">${t.approved.onlineFallback}</p>
       </div>
-      ` : '')}
+      ` : ''}
     </div>
   `, { locale });
 
