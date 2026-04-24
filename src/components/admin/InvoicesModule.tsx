@@ -138,8 +138,6 @@ export default function InvoicesModule({ password }: Props) {
   const [recurring, setRecurring] = useState<RecurringSchedule[]>([]);
   const [loading, setLoading] = useState(false);
   const [banner, setBanner] = useState<{ kind: 'success' | 'error' | 'info'; text: string } | null>(null);
-  // Inline PDF overlay (replaces window.open for mobile compatibility)
-  const [pdfOverlayUrl, setPdfOverlayUrl] = useState<string | null>(null);
   // Customer profile modal (accessible from History tab too)
   const [profileEmail, setProfileEmail] = useState<string | null>(null);
   const bearerHeaders = useMemo(
@@ -334,7 +332,6 @@ export default function InvoicesModule({ password }: Props) {
           bearerHeaders={bearerHeaders}
           onRefresh={refreshHistory}
           onBanner={setBanner}
-          onViewPdfOverlay={setPdfOverlayUrl}
           onOpenClientProfile={setProfileEmail}
         />
       )}
@@ -374,24 +371,6 @@ export default function InvoicesModule({ password }: Props) {
           />
         )}
       </AnimatePresence>
-
-      {/* Inline PDF overlay (mobile-friendly) */}
-      {pdfOverlayUrl && (
-        <div className="fixed inset-0 z-[60] bg-black/50 flex items-end md:items-center justify-center" onClick={() => { URL.revokeObjectURL(pdfOverlayUrl); setPdfOverlayUrl(null); }}>
-          <div className="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-3xl h-[90dvh] md:h-[85vh] flex flex-col" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between px-4 py-3 border-b border-[#EDE8DF] shrink-0">
-              <h3 className="text-sm font-semibold text-[#2D2A33]">Invoice PDF</h3>
-              <button
-                onClick={() => { URL.revokeObjectURL(pdfOverlayUrl); setPdfOverlayUrl(null); }}
-                className="p-2 rounded-full hover:bg-[#EDE6DF] transition-colors"
-              >
-                <X className="w-4 h-4 text-[#8E8E9F]" />
-              </button>
-            </div>
-            <iframe src={pdfOverlayUrl} className="flex-1 w-full" title="Invoice PDF" />
-          </div>
-        </div>
-      )}
 
       {/* Customer profile modal (accessible from History tab) */}
       <AnimatePresence>
@@ -1876,7 +1855,6 @@ function HistoryTab({
   bearerHeaders,
   onRefresh,
   onBanner,
-  onViewPdfOverlay,
   onOpenClientProfile,
 }: {
   invoices: StoredInvoice[];
@@ -1884,7 +1862,6 @@ function HistoryTab({
   bearerHeaders: HeadersInit;
   onRefresh: () => void;
   onBanner: (b: { kind: 'success' | 'error' | 'info'; text: string }) => void;
-  onViewPdfOverlay?: (url: string) => void;
   onOpenClientProfile?: (email: string) => void;
 }) {
   const [search, setSearch] = useState('');
@@ -2002,20 +1979,31 @@ function HistoryTab({
   };
 
   const viewPdf = (invoice: StoredInvoice) => {
+    // iOS Safari blocks window.open() called from an async callback and
+    // refuses to render PDF blob URLs inside <iframe>. The workaround:
+    // open a blank tab synchronously inside the click handler, then
+    // navigate it once the PDF finishes loading.
+    const win = window.open('about:blank', '_blank');
     const url = `/api/admin/invoices/pdf/${invoice.invoiceId}`;
     fetch(url, { headers: bearerHeaders })
       .then((r) => r.blob())
       .then((blob) => {
         const objUrl = URL.createObjectURL(blob);
-        // Use inline overlay on mobile, new tab on desktop
-        const isMobile = window.innerWidth < 768;
-        if (isMobile && onViewPdfOverlay) {
-          onViewPdfOverlay(objUrl);
+        if (win && !win.closed) {
+          win.location.href = objUrl;
         } else {
-          window.open(objUrl, '_blank');
+          const a = document.createElement('a');
+          a.href = objUrl;
+          a.download = `${invoice.invoiceNumber || 'invoice'}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
         }
       })
-      .catch(() => onBanner({ kind: 'error', text: 'PDF load failed' }));
+      .catch(() => {
+        if (win && !win.closed) win.close();
+        onBanner({ kind: 'error', text: 'PDF load failed' });
+      });
   };
 
   const generateReminder = async (invoice: StoredInvoice) => {
