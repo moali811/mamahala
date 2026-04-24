@@ -49,6 +49,7 @@ const LEVEL_DIMENSIONS: Record<string, Record<number, LevelDimension[]>> = {
 import { BUSINESS } from '@/config/business';
 import { t, tArray } from '@/lib/academy-helpers';
 import { startAcademyCheckout, markJustPaid } from '@/lib/academy-checkout';
+import ProgramOverviewTour from '@/components/tour/ProgramOverviewTour';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import SkillMeter from '@/components/academy/visual/SkillMeter';
 import MethodologyBadge from '@/components/academy/academic/MethodologyBadge';
@@ -546,6 +547,11 @@ export default function ProgramOverviewPage() {
 
   return (
     <div className="overflow-hidden">
+      <ProgramOverviewTour
+        locale={locale}
+        programTitle={isRTL ? program.titleAr : program.titleEn}
+        isFree={program.isFree}
+      />
       {/* ─── HERO ─── */}
       <section className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 overflow-hidden" style={{ background: `linear-gradient(135deg, ${program.color}08, ${program.color}04, #FAF7F2)` }}>
         <div className="container-main relative z-10">
@@ -603,13 +609,15 @@ export default function ProgramOverviewPage() {
             )}
 
             <div className="flex flex-wrap items-center gap-4 mt-6">
-              <Badge variant={program.isFree ? 'success' : 'sand'} size="md">
-                {program.isFree
-                  ? (isRTL ? 'مجاني' : 'Free')
-                  : (isRTL
-                      ? `ابْدَأ مَجّاناً · $${dynamicPricing.academyFullAccessPrice} CAD للوُصولِ الكامِل`
-                      : `Start free · $${dynamicPricing.academyFullAccessPrice} CAD for full access`)}
-              </Badge>
+              <span data-tour="pricing">
+                <Badge variant={program.isFree ? 'success' : 'sand'} size="md">
+                  {program.isFree
+                    ? (isRTL ? 'مجاني' : 'Free')
+                    : (isRTL
+                        ? `ابْدَأ مَجّاناً · $${dynamicPricing.academyFullAccessPrice} CAD للوُصولِ الكامِل`
+                        : `Start free · $${dynamicPricing.academyFullAccessPrice} CAD for full access`)}
+                </Badge>
+              </span>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Layers className="w-4 h-4" /> {program.totalModules} {isRTL ? 'وحدة' : 'modules'}</span>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Clock className="w-4 h-4" /> {program.totalDurationHours}h</span>
               <span className="text-sm text-[#8E8E9F] inline-flex items-center gap-1.5"><Award className="w-4 h-4" /> {isRTL ? 'شهادة إتمام' : 'Certificate'}</span>
@@ -735,7 +743,7 @@ export default function ProgramOverviewPage() {
       )}
 
       {/* ─── LEVEL ROADMAP ─── */}
-      <section id="curriculum" className="py-20 lg:py-28 bg-[#FAF7F2]">
+      <section id="curriculum" data-tour="levels" className="py-20 lg:py-28 bg-[#FAF7F2]">
         <div className="container-main">
           <ScrollReveal className="text-center mb-12">
             <span className="text-sm font-semibold tracking-[0.15em] uppercase text-[#C8A97D] block mb-2">
@@ -824,7 +832,10 @@ export default function ProgramOverviewPage() {
 
                 return (
                   <ScrollReveal key={level.level}>
-                    <div className="bg-white rounded-2xl border border-[#F3EFE8] overflow-hidden relative">
+                    <div
+                      {...(level.level === 1 ? { 'data-tour': 'level-1' } : {})}
+                      className="bg-white rounded-2xl border border-[#F3EFE8] overflow-hidden relative"
+                    >
                       {/* Timeline dot */}
                       <div className="absolute -left-[5px] top-7 w-3 h-3 rounded-full border-2 border-white hidden sm:block" style={{ backgroundColor: program.color }} />
 
@@ -1052,7 +1063,7 @@ export default function ProgramOverviewPage() {
       </section>
 
       {/* ─── ENROLLMENT ─── */}
-      <section id="enroll" className="py-20 lg:py-28 bg-white">
+      <section id="enroll" data-tour="cta" className="py-20 lg:py-28 bg-white">
         <div className="container-main">
           <ScrollReveal>
             <div className="max-w-lg mx-auto text-center">

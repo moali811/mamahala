@@ -1,66 +1,72 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTourState } from './useTourState';
 import TourSpotlight from './TourSpotlight';
 
-export interface ProgramsTourProps {
+export interface ProgramOverviewTourProps {
   locale: string;
+  /** Used in welcome copy. Falls back to a neutral phrase when empty. */
+  programTitle?: string;
+  /** Skip the "one payment unlocks 2&3" step when the program is free. */
+  isFree?: boolean;
 }
 
 interface StepCopy {
-  /** data-tour attribute on the element to highlight. */
   target: string;
   titleEn: string;
   titleAr: string;
   bodyEn: string;
   bodyAr: string;
+  /** When true, skip for free programs. */
+  paidOnly?: boolean;
 }
 
-const STEPS: StepCopy[] = [
+const ALL_STEPS: StepCopy[] = [
   {
-    target: 'programs-grid',
-    titleEn: 'Four programs',
-    titleAr: 'أربعةُ برامج',
-    bodyEn: 'Four programs — one for each chapter of family life: parents, teens, couples, and self.',
-    bodyAr: 'أربعةُ برامج — واحدٌ لكلِّ فصلٍ من رحلة الأسرة: الآباء، المراهقون، الأزواج، والذّات.',
+    target: 'levels',
+    titleEn: 'Three levels, your pace',
+    titleAr: 'ثلاثةُ مستويات، على إيقاعك',
+    bodyEn: 'Three levels — each deeper than the last. Your path, at your pace.',
+    bodyAr: 'ثلاثةُ مستويات — كلُّ واحدٍ أعمقُ من سابقه. طريقُك، على إيقاعك.',
   },
   {
-    target: 'level-1-free',
-    titleEn: 'Level 1 is free',
-    titleAr: 'المستوى الأوّل مجّاني',
-    bodyEn: 'Every program starts with Level 1 — free, no card, no signup. Begin whenever feels right.',
-    bodyAr: 'كلُّ برنامجٍ يبدأ بالمستوى الأوّل — مجّاناً، دون بطاقة، دون تسجيل. ابدأ حين يُناسبُك الوقت.',
+    target: 'level-1',
+    titleEn: 'Start here — Level 1 is free',
+    titleAr: 'ابدأ من هنا — المستوى الأوّل مجّاني',
+    bodyEn: 'Start here. Level 1 is free — any module, right now, no signup.',
+    bodyAr: 'ابدأ من هنا. المستوى الأوّل مجّاني — أيُّ وحدة، الآن، دون تسجيل.',
   },
   {
-    target: 'price',
+    target: 'pricing',
     titleEn: 'One payment, lifetime',
     titleAr: 'دفعةٌ واحدة، مدى الحياة',
-    bodyEn: 'If it helps, unlock the full program with one payment of $41 CAD. Yours for life. No subscription, no renewals.',
-    bodyAr: 'إن وجدتَ فيه ما يُفيدك، افتح البرنامجَ بالكامل بدفعةٍ واحدة — ٤١ دولاراً كندياً. لك مدى الحياة. لا اشتراكات، ولا تجديدات.',
+    bodyEn: 'If Level 1 helps, unlock Levels 2 & 3 with one $41 CAD payment. Lifetime access.',
+    bodyAr: 'إن أفادك المستوى الأوّل، افتح المستويَين الثاني والثالث بدفعةٍ واحدة — ٤١ دولاراً كندياً. وُصولٌ مدى الحياة.',
+    paidOnly: true,
   },
   {
     target: 'cta',
-    titleEn: 'Pick your chapter',
-    titleAr: 'اختر فصلَك',
-    bodyEn: "Finish any level and you'll receive a signed certificate. Pick a program that fits your chapter.",
-    bodyAr: 'بإتمامِك أيَّ مستوى، ستحصُل على شهادةٍ موقّعة. اختر البرنامجَ الذي يناسبُ فصلَك.',
+    titleEn: 'Earn a signed certificate',
+    titleAr: 'احصل على شهادةٍ موقّعة',
+    bodyEn: 'Finish a level, earn a signed certificate. Pick your first module to begin.',
+    bodyAr: 'بإتمامك أيَّ مستوى، تحصل على شهادةٍ موقّعة. اختر أوّلَ وحدة لتبدأ.',
   },
 ];
 
-const WELCOME = {
-  titleEn: 'Welcome to Mama Hala Academy',
-  titleAr: 'أهلاً بك في أكاديمية ماما هالة',
-  bodyEn: 'A quick look inside Mama Hala Academy — 30 seconds, and the choice is yours.',
-  bodyAr: 'جولةٌ قصيرةٌ داخل أكاديمية ماما هالة — ٣٠ ثانية، والقرارُ لك بعدها.',
+const welcomeTitleEn = 'A quick look inside';
+const welcomeTitleAr = 'جولةٌ قصيرةٌ في الداخل';
+const welcomeBodyEnDefault = "Here's what's inside this program. 30 seconds, and the choice is yours.";
+const welcomeBodyArDefault = 'إليك ما في هذا البرنامج. ٣٠ ثانية، والقرارُ لك بعدها.';
+const welcomeBodyEnWithTitle = (title: string) => `Here's what's inside ${title}. 30 seconds, and the choice is yours.`;
+const welcomeBodyArWithTitle = (title: string) => `إليك ما في داخل ${title}. ٣٠ ثانية، والقرارُ لك بعدها.`;
+
+const UI = {
   showMeEn: 'Show me',
   showMeAr: 'اعرِضْها',
   notNowEn: 'Not now',
   notNowAr: 'ليس الآن',
-};
-
-const UI = {
   nextEn: 'Next',
   nextAr: 'التالي',
   finishEn: 'Got it',
@@ -71,28 +77,27 @@ const UI = {
   dismissAr: 'إغلاق الجولة',
   replayEn: 'Take the tour',
   replayAr: 'خذ الجولة',
-  stepEn: (i: number, n: number) => `${i} / ${n}`,
-  stepAr: (i: number, n: number) => `${i} / ${n}`,
-  completeEn: 'That\'s the tour. Enjoy Mama Hala Academy.',
-  completeAr: 'انتهت الجولة. رحلةً طيّبةً في أكاديمية ماما هالة.',
+  completeEn: "That's the tour. Pick a module when you're ready.",
+  completeAr: 'انتهت الجولة. اختر وحدة حين تجهز.',
 };
 
-export default function ProgramsTour({ locale }: ProgramsTourProps) {
+export default function ProgramOverviewTour({ locale, programTitle, isFree }: ProgramOverviewTourProps) {
   const isRTL = locale === 'ar';
+
+  // Filter steps once per mount based on isFree. Must be memoized — the
+  // scroll/reveal effect depends on `steps` and a fresh-array-every-render
+  // would thrash the effect and race with setReady(true).
+  const steps = useMemo(
+    () => ALL_STEPS.filter(s => !(s.paidOnly && isFree)),
+    [isFree],
+  );
+
   const tour = useTourState({
-    storageKey: 'mh_programs_tour_seen',
-    stepCount: STEPS.length,
-    welcomeDelayMs: 1200,
+    storageKey: 'mh_program_overview_tour_seen',
+    stepCount: steps.length,
+    welcomeDelayMs: 1400,
   });
 
-  // Wait for target elements to render before committing to "running". If the
-  // target isn't in the DOM, the step would render a broken spotlight — so we
-  // skip to next. Also scrolls the target into view before revealing the
-  // tooltip, otherwise targets below the fold render the tooltip clamped to
-  // the middle of the viewport with no visible highlight.
-  // Effect depends only on stable primitive values (phase + stepIndex) and
-  // the stable callback `dismiss` — NOT the whole `tour` object, which is a
-  // fresh reference every render and would thrash this effect.
   const [ready, setReady] = useState(false);
   const tourDismiss = tour.dismiss;
   useEffect(() => {
@@ -100,7 +105,7 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
       setReady(false);
       return;
     }
-    const key = STEPS[tour.stepIndex]?.target;
+    const key = steps[tour.stepIndex]?.target;
     if (!key) return;
     setReady(false);
 
@@ -110,13 +115,11 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
       const rect = el.getBoundingClientRect();
       const offScreen = rect.top < 80 || rect.bottom > window.innerHeight - 60;
       if (offScreen) {
-        // Compute absolute target Y. Using 'auto' (instant) so it works even
-        // when the tab is backgrounded / document is hidden, where 'smooth'
-        // gets throttled to 0. setTimeout (not rAF) because rAF is also
-        // throttled in hidden tabs — this guarantees ready-flag flips.
         const absoluteTop = rect.top + window.scrollY;
         const targetY = Math.max(0, absoluteTop - Math.max(0, (window.innerHeight - rect.height) / 2));
         window.scrollTo({ top: targetY, behavior: 'auto' });
+        // setTimeout fallback: requestAnimationFrame is throttled/skipped when
+        // the tab is hidden, which stalled the tour in preview testing.
         window.setTimeout(() => setReady(true), 80);
       } else {
         setReady(true);
@@ -136,14 +139,17 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
       if (!el) tourDismiss();
     }, 3000);
     return () => { observer.disconnect(); window.clearTimeout(kill); };
-  }, [tour.phase, tour.stepIndex, tourDismiss]);
+    // Depend on primitives only — tour is a new object every render.
+  }, [tour.phase, tour.stepIndex, tourDismiss, steps]);
 
-  const step = STEPS[tour.stepIndex];
-  const isLastStep = tour.stepIndex === STEPS.length - 1;
+  const step = steps[tour.stepIndex];
+  const isLastStep = tour.stepIndex === steps.length - 1;
+
+  const welcomeBodyEn = programTitle ? welcomeBodyEnWithTitle(programTitle) : welcomeBodyEnDefault;
+  const welcomeBodyAr = programTitle ? welcomeBodyArWithTitle(programTitle) : welcomeBodyArDefault;
 
   return (
     <>
-      {/* Replay pill — always visible, unobtrusive. Re-opens the tour. */}
       <button
         type="button"
         onClick={tour.start}
@@ -154,12 +160,9 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
         {isRTL ? UI.replayAr : UI.replayEn}
       </button>
 
-      {/* Welcome modal — plain conditional (no AnimatePresence) to avoid
-          a framer-motion exit-overlap with the spotlight that left the
-          overlay stuck at ~0.7 opacity. */}
       {tour.phase === 'welcome' && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-in fade-in duration-200"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
           style={{ background: 'rgba(20,15,25,0.55)' }}
           onClick={e => { if (e.target === e.currentTarget) tour.dismiss(); }}
         >
@@ -172,10 +175,10 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
           >
             <div className="text-3xl mb-3" aria-hidden>🌿</div>
             <h2 id="tour-welcome-title" className="text-xl font-bold text-[#2D2A33] mb-2">
-              {isRTL ? WELCOME.titleAr : WELCOME.titleEn}
+              {isRTL ? welcomeTitleAr : welcomeTitleEn}
             </h2>
             <p className="text-sm text-[#4A4A5C] leading-relaxed mb-5">
-              {isRTL ? WELCOME.bodyAr : WELCOME.bodyEn}
+              {isRTL ? welcomeBodyAr : welcomeBodyEn}
             </p>
             <div className={`flex items-center justify-center gap-2 ${isRTL ? 'flex-row-reverse' : ''}`}>
               <button
@@ -183,7 +186,7 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
                 onClick={tour.dismiss}
                 className="px-4 py-2 rounded-xl text-sm font-semibold text-[#8E8E9F] hover:bg-[#F5F0EB] transition-colors"
               >
-                {isRTL ? WELCOME.notNowAr : WELCOME.notNowEn}
+                {isRTL ? UI.notNowAr : UI.notNowEn}
               </button>
               <button
                 type="button"
@@ -191,14 +194,13 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
                 onClick={tour.acceptWelcome}
                 className="px-5 py-2 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#6A2E4E] transition-colors"
               >
-                {isRTL ? WELCOME.showMeAr : WELCOME.showMeEn}
+                {isRTL ? UI.showMeAr : UI.showMeEn}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Running step */}
       {tour.phase === 'running' && ready && step && (
         <TourSpotlight
           targetKey={step.target}
@@ -207,7 +209,7 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
           nextLabel={isLastStep ? (isRTL ? UI.finishAr : UI.finishEn) : (isRTL ? UI.nextAr : UI.nextEn)}
           backLabel={isRTL ? UI.backAr : UI.backEn}
           dismissLabel={isRTL ? UI.dismissAr : UI.dismissEn}
-          stepLabel={isRTL ? UI.stepAr(tour.stepIndex + 1, STEPS.length) : UI.stepEn(tour.stepIndex + 1, STEPS.length)}
+          stepLabel={`${tour.stepIndex + 1} / ${steps.length}`}
           isRTL={isRTL}
           showBack={tour.stepIndex > 0}
           onNext={tour.next}
@@ -216,7 +218,6 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
         />
       )}
 
-      {/* Complete toast */}
       <AnimatePresence>
         {tour.phase === 'complete' && (
           <motion.div
