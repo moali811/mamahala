@@ -24,6 +24,7 @@ import InstructorCredentials from '@/components/academy/layout/InstructorCredent
 import AnimatedStatCard from '@/components/academy/visual/AnimatedStatCard';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import { programCatalog } from '@/data/programs/index';
+import ProgramsTour from '@/components/tour/ProgramsTour';
 
 // Icon mapping for dynamic rendering from catalog
 const iconMap: Record<string, React.ReactNode> = {
@@ -208,6 +209,7 @@ export default function ProgramsPage() {
 
   return (
     <div className="overflow-hidden">
+      <ProgramsTour locale={locale} />
       {/* ─── HERO ─── */}
       <section className="relative pt-28 pb-24 lg:pt-36 lg:pb-32 overflow-hidden gradient-sage">
         <div className="absolute inset-0 pointer-events-none">
@@ -431,10 +433,12 @@ export default function ProgramsPage() {
             </h2>
           </ScrollReveal>
 
+          <div data-tour="programs-grid">
           <MobileCarousel desktopGrid="lg:grid-cols-2" gap={24} mobileWidth="85vw" className="max-w-5xl mx-auto">
             {programs.map((prog, i) => (
                 <a key={i}
                   href={`/${locale}/programs/${prog.slug}`}
+                  {...(i === 0 ? { 'data-tour': 'cta' } : {})}
                   className="block bg-white rounded-2xl border border-[#F3EFE8] overflow-hidden hover:shadow-lg transition-all group"
                 >
                   {/* Color bar top */}
@@ -449,6 +453,7 @@ export default function ProgramsPage() {
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <Badge variant="neutral" size="sm">{prog.category}</Badge>
                           <span
+                            {...(i === 0 ? { 'data-tour': 'level-1-free' } : {})}
                             className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-[0.08em] px-2 py-0.5 rounded-full"
                             style={{ backgroundColor: '#3B8A6E15', color: '#3B8A6E' }}
                           >
@@ -480,7 +485,11 @@ export default function ProgramsPage() {
                       <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1"><Layers className="w-3.5 h-3.5" /> {prog.modules} {isRTL ? 'وحدة' : 'modules'}</span>
                       <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {prog.hours}h</span>
                       <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1"><Award className="w-3.5 h-3.5" /> {isRTL ? 'شهادة' : 'Certificate'}</span>
-                      <span className="ml-auto text-sm font-bold" style={{ color: prog.color }}>
+                      <span
+                        {...(i === 0 ? { 'data-tour': 'price' } : {})}
+                        className="ml-auto text-sm font-bold"
+                        style={{ color: prog.color }}
+                      >
                         {prog.free
                           ? (isRTL ? 'مجاني' : 'Free')
                           : (<>
@@ -493,6 +502,7 @@ export default function ProgramsPage() {
                 </a>
             ))}
           </MobileCarousel>
+          </div>
         </div>
       </section>
 
