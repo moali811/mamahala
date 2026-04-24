@@ -175,6 +175,7 @@ export default function BookingsModule({ password }: Props) {
           taxMode: country === 'CA' ? 'manual-hst' : 'none',
           allowETransfer: country === 'CA',
           daysUntilDue: 7,
+          sessionStartTime: booking.startTime,
           subject: `Session: ${booking.serviceName || booking.serviceSlug} on ${new Date(booking.startTime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
           adminNote: adminNoteParts.join('\n'),
           createdAt: now,

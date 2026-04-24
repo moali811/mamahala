@@ -147,9 +147,26 @@ export async function sendInvoiceFromDraft(
   }
 
   const issuedAt = issueDateObj.toISOString();
-  const due = new Date(issueDateObj);
-  due.setUTCDate(due.getUTCDate() + (draft.daysUntilDue || 7));
-  const dueDate = due.toISOString();
+  // Booking-derived drafts carry sessionStartTime — default to "pay by
+  // the session." Fall back to issueDate + daysUntilDue when the draft
+  // has no linked session (standalone admin invoices) or when the
+  // session has already passed (so the invoice still has a sane due
+  // date rather than one stamped in the past).
+  let dueDate: string;
+  if (draft.sessionStartTime) {
+    const sessionAt = new Date(draft.sessionStartTime);
+    if (!isNaN(sessionAt.getTime()) && sessionAt > issueDateObj) {
+      dueDate = sessionAt.toISOString();
+    } else {
+      const due = new Date(issueDateObj);
+      due.setUTCDate(due.getUTCDate() + (draft.daysUntilDue || 7));
+      dueDate = due.toISOString();
+    }
+  } else {
+    const due = new Date(issueDateObj);
+    due.setUTCDate(due.getUTCDate() + (draft.daysUntilDue || 7));
+    dueDate = due.toISOString();
+  }
 
   // ─── Stored invoice record ───────────────────────────────
   const normalizedDraft: InvoiceDraft = {

@@ -148,6 +148,14 @@ export interface InvoiceDraft {
    * locale of the invoice + receipt emails. Defaults to 'en' when absent.
    */
   preferredLanguage?: 'en' | 'ar';
+  /**
+   * ISO timestamp of the linked session's start. When populated, the
+   * send-invoice pipeline uses this as the invoice due date (defaulting
+   * to "pay by the session") instead of `issueDate + daysUntilDue`.
+   * Populated automatically for drafts generated from a Booking; absent
+   * for standalone admin invoices (which keep the daysUntilDue fallback).
+   */
+  sessionStartTime?: string;
   createdAt: string;
   updatedAt: string;
 }

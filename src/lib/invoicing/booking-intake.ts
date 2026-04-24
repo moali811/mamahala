@@ -306,6 +306,10 @@ export async function processBookingIntake(
     adminNote: adminNoteParts.join('\n'),
     ...(lineItems ? { lineItems } : {}),
     ...(input.preferredLanguage ? { preferredLanguage: input.preferredLanguage } : {}),
+    // Anchor the due date to the session itself — the pipeline reads
+    // this in preference to daysUntilDue so every booking-derived
+    // invoice defaults to "pay by the session."
+    sessionStartTime: input.startTime,
     createdAt: now,
     updatedAt: now,
   };

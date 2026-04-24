@@ -1200,13 +1200,16 @@ function ComposeTab({
                         Math.max(0, Math.min(365, Number(e.target.value) || 0)),
                       )
                     }
+                    disabled={!!draft.sessionStartTime}
                     min={0}
                     max={365}
                     step={1}
-                    className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 tabular-nums"
+                    className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 tabular-nums disabled:bg-[#F5F0EB] disabled:text-[#8E8E9F] disabled:cursor-not-allowed"
                   />
                   <p className="mt-1 text-[10px] text-[#8E8E9F]">
-                    Due date = issue date + this many days.
+                    {draft.sessionStartTime
+                      ? `Due date auto-anchored to the session (${new Date(draft.sessionStartTime).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: '2-digit' })}).`
+                      : 'Due date = issue date + this many days.'}
                   </p>
                 </div>
               </div>
