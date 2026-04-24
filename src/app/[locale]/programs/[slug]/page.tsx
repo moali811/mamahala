@@ -48,6 +48,7 @@ const LEVEL_DIMENSIONS: Record<string, Record<number, LevelDimension[]>> = {
 };
 import { BUSINESS } from '@/config/business';
 import { t, tArray } from '@/lib/academy-helpers';
+import { startAcademyCheckout, markJustPaid } from '@/lib/academy-checkout';
 import ProgressRing from '@/components/academy/visual/ProgressRing';
 import SkillMeter from '@/components/academy/visual/SkillMeter';
 import MethodologyBadge from '@/components/academy/academic/MethodologyBadge';
@@ -254,6 +255,7 @@ export default function ProgramOverviewPage() {
     // Stripe Payment Link return: ?paid=level-N or ?paid=bundle
     const paidParam = params.get('paid');
     if (paidParam) {
+      markJustPaid(slug);
       if (paidParam === 'bundle') {
         unlockLevelLocally(2);
         unlockLevelLocally(3);
@@ -263,7 +265,10 @@ export default function ProgramOverviewPage() {
         if (levelMatch) {
           const n = Number(levelMatch[1]);
           unlockLevelLocally(n);
-          void reconcileWithServer([n]);
+          // With fullAccess tier the webhook unlocks every paid level; reconcile
+          // against the program's paid levels so the UI flips all badges at once.
+          const expected = program.levels.filter(l => !l.isFree).map(l => l.level);
+          void reconcileWithServer(expected.length > 0 ? expected : [n]);
         }
       }
       window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
@@ -274,19 +279,21 @@ export default function ProgramOverviewPage() {
     const paymentStatus = params.get('payment');
     const levelParam = params.get('level');
     if (paymentStatus === 'success' && sessionId) {
+      markJustPaid(slug);
+      const paidLevels = program.levels.filter(l => !l.isFree).map(l => l.level);
       fetch(`/api/academy/checkout?session_id=${sessionId}`)
         .then(r => r.json())
         .then(data => {
-          if (data.paid && data.levelNumber) {
-            unlockLevelLocally(data.levelNumber);
-            void reconcileWithServer([data.levelNumber]);
+          if (data.paid) {
+            paidLevels.forEach(n => unlockLevelLocally(n));
+            void reconcileWithServer(paidLevels.length > 0 ? paidLevels : (data.levelNumber ? [data.levelNumber] : []));
           }
         })
         .catch(() => {
           if (levelParam) {
             const n = Number(levelParam);
             unlockLevelLocally(n);
-            void reconcileWithServer([n]);
+            void reconcileWithServer(paidLevels.length > 0 ? paidLevels : [n]);
           }
         })
         .finally(() => {
@@ -296,55 +303,99 @@ export default function ProgramOverviewPage() {
       window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
     }
 
-    // Legacy: ?unlock=level-N redirects to payment
+    // ?unlock=level-N — surface the unlock CTA in the curriculum rather than
+    // re-opening Stripe. Re-opening caused a double-charge trap when the
+    // module page's access check fired before the webhook had written to KV.
     const unlockParam = params.get('unlock');
-    if (unlockParam && enrolled) {
+    if (unlockParam) {
       const levelMatch = unlockParam.match(/^level-(\d+)$/);
       if (levelMatch) {
-        handleUnlockLevel(Number(levelMatch[1]));
+        const n = Number(levelMatch[1]);
+        setExpandedLevel(n);
+        setTimeout(() => {
+          document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 100);
       }
       window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
     }
-  }, [program, enrolled, slug, locale]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // ?signin=1 — proxy gate redirected an unauthorized visitor here.
+    // The session cookie is missing or expired, so treat the device as not
+    // enrolled (they may have enrolled on another device). Clearing the local
+    // flag makes the enrollment section render, which hosts the sign-in
+    // dialog. Open the dialog and scroll the user to it so they don't have
+    // to hunt for the button.
+    if (params.get('signin') === '1') {
+      try {
+        localStorage.removeItem(`academy_enrolled_${slug}`);
+      } catch { /* ignore */ }
+      setEnrolled(false);
+      setSignInOpen(true);
+      setTimeout(() => {
+        document.getElementById('enroll')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+      window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
+    }
+
+    // ?error=1 — proxy gate fell back to fail-closed (KV unavailable).
+    // Surface a quick message rather than silently sending the user in
+    // circles between the module page and here.
+    if (params.get('error') === '1') {
+      window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
+      alert(isRTL
+        ? 'تعذّرَ التحقّقُ من وصولكَ مؤقّتاً. الرجاء المحاولةُ مرّةً أخرى بعد لحظات.'
+        : 'We could not verify your access right now. Please try again in a moment.');
+    }
+  }, [program, enrolled, slug, locale, isRTL]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleUnlockLevel = async (levelNum: number) => {
     if (checkoutLoading) return;
+
+    // Idempotency: if the level is already unlocked client-side, never create a
+    // second Stripe session. Refresh from the server so the UI reflects the
+    // authoritative state and clears any stale "locked" banner.
+    if (unlockedLevels.has(levelNum)) {
+      try {
+        const me = await fetch('/api/academy/me').then(r => r.ok ? r.json() : null);
+        if (me && program) {
+          const serverLevels: number[] = me.allAccess
+            ? program.levels.map(l => l.level)
+            : (me.unlockedLevels?.[slug] || []);
+          if (serverLevels.length > 0) {
+            setUnlockedLevels(new Set(serverLevels));
+            setUnlockedModules(prev => {
+              const next = new Set(prev);
+              program.levels.forEach(l => {
+                if (serverLevels.includes(l.level)) l.modules.forEach(m => next.add(m.slug));
+              });
+              return next;
+            });
+          }
+        }
+      } catch { /* non-critical — UI already reflects unlock */ }
+      return;
+    }
+
     setCheckoutLoading(true);
     setUnlockingLevel(levelNum);
 
     const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : '';
+    const result = await startAcademyCheckout({
+      programSlug: slug,
+      programTitle: program?.titleEn || slug,
+      levelNumber: levelNum,
+      email,
+      locale,
+    });
 
-    // Try dynamic checkout first
-    try {
-      const res = await fetch('/api/academy/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          programSlug: slug,
-          programTitle: program?.titleEn || slug,
-          levelNumber: levelNum,
-          email,
-          locale,
-        }),
-      });
-      const data = await res.json();
-      if (data.url) {
-        window.location.href = data.url;
-        return;
-      }
-    } catch { /* fall through to payment link */ }
-
-    // Fallback: static Stripe payment link
-    const paymentUrl = BUSINESS.academyPaymentLinks.fullAccess;
-    if (paymentUrl) {
-      const url = new URL(paymentUrl);
-      if (email) url.searchParams.set('prefilled_email', email);
-      url.searchParams.set('client_reference_id', `${slug}:bundle:${email}`);
-      window.location.href = url.toString();
-    } else {
+    if (!result.ok) {
       setCheckoutLoading(false);
       setUnlockingLevel(null);
+      alert(isRTL
+        ? 'تعذّر فتح صفحة الدفع — الرجاء المحاولة مرة أخرى.'
+        : 'Could not open checkout. Please try again in a moment.');
     }
+    // On success the browser navigates away; no cleanup needed.
   };
 
   const unlockLevelLocally = (levelNum: number) => {
@@ -568,16 +619,44 @@ export default function ProgramOverviewPage() {
             <div className="mt-8">
               {enrolled ? (
                 <div className="flex flex-wrap items-center gap-3">
-                  {program.levels[0]?.modules[0] && (
-                    <a
-                      href={`/${locale}/programs/${slug}/${program.levels[0].modules[0].slug}`}
-                      className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg"
-                      style={{ backgroundColor: program.color }}
-                    >
-                      <Play className="w-4 h-4" />
-                      {isRTL ? 'واصلِ التعلّم' : 'Continue Learning'}
-                    </a>
-                  )}
+                  {(() => {
+                    // Program complete + cert ready → route to the certificate
+                    if (programComplete && certId) {
+                      return (
+                        <a
+                          href={`/${locale}/programs/certificate/${certId}`}
+                          className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg"
+                          style={{ backgroundColor: '#C8A97D' }}
+                        >
+                          <Award className="w-4 h-4" />
+                          {isRTL ? 'اِعْرِض شَهادَتي' : 'View My Certificate'}
+                        </a>
+                      );
+                    }
+                    const allMods = program.levels.flatMap(l => l.modules);
+                    // Pick first incomplete module whose level is accessible (free or unlocked).
+                    // Prevents the hero from sending users into a paid module they haven't bought yet.
+                    const target = allMods.find(m => {
+                      if (completedModules.has(m.slug)) return false;
+                      const lvl = program.levels.find(l => l.modules.some(mm => mm.slug === m.slug));
+                      if (!lvl) return false;
+                      return lvl.isFree || program.isFree || unlockedLevels.has(lvl.level);
+                    }) ?? allMods[0];
+                    if (!target) return null;
+                    const hasProgress = completedModules.size > 0;
+                    return (
+                      <a
+                        href={`/${locale}/programs/${slug}/${target.slug}`}
+                        className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg"
+                        style={{ backgroundColor: program.color }}
+                      >
+                        <Play className="w-4 h-4" />
+                        {hasProgress
+                          ? (isRTL ? 'واصلِ التعلّم' : 'Continue Your Journey')
+                          : (isRTL ? 'ابدأ الوحدة الأولى' : 'Start Module 1')}
+                      </a>
+                    );
+                  })()}
                   <a href={`/${locale}/dashboard`} className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border border-[#F3EFE8] text-sm font-medium text-[#4A4A5C] hover:bg-white transition-colors">
                     <Layers className="w-4 h-4" />
                     {isRTL ? 'لوحة التحكّم' : 'My Dashboard'}

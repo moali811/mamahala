@@ -1,8 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
+import type { AcademyProgram } from '@/types';
+import { intentionalParentProgram } from '@/data/programs/intentional-parent';
+import { resilientTeensProgram } from '@/data/programs/resilient-teens';
+import { strongerTogetherProgram } from '@/data/programs/stronger-together';
+import { innerCompassProgram } from '@/data/programs/inner-compass';
+import { buildAccessGrantedEmail, sendAcademyEmail } from '@/lib/academy/emails';
 
 export const dynamic = 'force-dynamic';
+
+const PROGRAMS_BY_SLUG: Record<string, AcademyProgram> = {
+  [intentionalParentProgram.slug]: intentionalParentProgram,
+  [resilientTeensProgram.slug]: resilientTeensProgram,
+  [strongerTogetherProgram.slug]: strongerTogetherProgram,
+  [innerCompassProgram.slug]: innerCompassProgram,
+};
+
+function getPaidLevels(slug: string): number[] {
+  const p = PROGRAMS_BY_SLUG[slug];
+  if (!p || p.isFree) return [];
+  return p.levels.filter(l => !l.isFree).map(l => l.level);
+}
 
 let kv: typeof import('@vercel/kv').kv | null = null;
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
@@ -158,24 +177,44 @@ export async function POST(req: NextRequest) {
   const programSlug = meta.programSlug;
   const levelNumber = meta.levelNumber ? Number(meta.levelNumber) : null;
   const studentEmail = (meta.email || session.customer_email || '').toLowerCase().trim();
+  const tier = typeof meta.tier === 'string' ? meta.tier : null;
 
   if (!programSlug || !studentEmail) {
     console.error('Stripe webhook: missing programSlug or email in metadata', meta);
     return NextResponse.json({ error: 'Missing metadata' }, { status: 400 });
   }
 
+  // Full-access tier unlocks every paid (non-free) level of the program.
+  // Legacy single-level payments fall back to just `levelNumber`.
+  const levelsToUnlock = tier === 'fullAccess'
+    ? getPaidLevels(programSlug)
+    : (levelNumber != null ? [levelNumber] : []);
+
+  if (levelsToUnlock.length === 0) {
+    console.warn('[Stripe Webhook] Academy payment with no unlockable levels', { programSlug, tier, levelNumber });
+  }
+
   // Store the unlock in Vercel KV (same format as Cal.com webhook for compatibility)
   try {
     const kvInstance = await getKV();
     if (kvInstance) {
-      if (levelNumber != null) {
-        const unlockKey = `academy:paid:${programSlug}:level-${levelNumber}:${studentEmail}`;
+      // Attribute the full amount to exactly ONE level record (the primary,
+      // lowest-numbered paid level). The rest get amount:null so the admin
+      // Resources dashboard doesn't double-count a single fullAccess payment
+      // as $41 × number-of-levels.
+      const primaryLevel = levelsToUnlock[0];
+      const paidAt = new Date().toISOString();
+      const amount = session.amount_total ? session.amount_total / 100 : null;
+      const currency = session.currency || 'cad';
+      for (const n of levelsToUnlock) {
+        const unlockKey = `academy:paid:${programSlug}:level-${n}:${studentEmail}`;
         await kvInstance.set(unlockKey, {
           paid: true,
-          paidAt: new Date().toISOString(),
-          amount: session.amount_total ? session.amount_total / 100 : null,
-          currency: session.currency || 'cad',
+          paidAt,
+          amount: n === primaryLevel ? amount : null,
+          currency,
           stripeSessionId: session.id,
+          tier,
         });
       }
 
@@ -183,18 +222,20 @@ export async function POST(req: NextRequest) {
       const studentKey = `academy:student:${studentEmail}`;
       const student = (await kvInstance.get(studentKey) as Record<string, unknown>) || {};
 
-      if (levelNumber != null) {
+      if (levelsToUnlock.length > 0) {
         const unlockedLevels = (student.unlockedLevels as Record<string, number[]>) || {};
-        if (!unlockedLevels[programSlug]) unlockedLevels[programSlug] = [];
-        if (!unlockedLevels[programSlug].includes(levelNumber)) {
-          unlockedLevels[programSlug].push(levelNumber);
-        }
+        unlockedLevels[programSlug] = Array.from(new Set([
+          ...(unlockedLevels[programSlug] || []),
+          ...levelsToUnlock,
+        ])).sort((a, b) => a - b);
         student.unlockedLevels = unlockedLevels;
       }
 
       student.lastPayment = {
         programSlug,
         levelNumber,
+        tier,
+        unlockedLevels: levelsToUnlock,
         date: new Date().toISOString(),
         stripeSessionId: session.id,
       };
@@ -205,31 +246,23 @@ export async function POST(req: NextRequest) {
     console.error('Stripe webhook: KV storage error', error);
   }
 
-  // Send confirmation email
-  if (process.env.RESEND_API_KEY) {
+  // Send confirmation email via the shared academy email system —
+  // respects opt-out, dedupes per idempotency key, matches the voice
+  // used by the follow-up cron.
+  const program = PROGRAMS_BY_SLUG[programSlug];
+  if (program && levelsToUnlock.length > 0) {
     try {
-      const { Resend } = await import('resend');
-      const resend = new Resend(process.env.RESEND_API_KEY);
-      const programTitle = meta.programTitle || programSlug;
-      await resend.emails.send({
-        from: 'Mama Hala Academy <academy@mamahala.ca>',
-        to: studentEmail,
-        subject: levelNumber != null
-          ? `Level ${levelNumber} Unlocked — Payment Confirmed!`
-          : 'Payment Confirmed!',
-        html: emailWrapper(`
-          <div style="${emailStyles.card}">
-            <h1 style="${emailStyles.heading}">${levelNumber != null ? `Level ${levelNumber} Unlocked!` : 'Payment Confirmed!'}</h1>
-            <p style="${emailStyles.text}">Your payment for <strong>${programTitle}</strong> has been confirmed. ${levelNumber != null ? `All modules in Level ${levelNumber}` : 'Your content'} are now unlocked and ready for you.</p>
-            <p style="${emailStyles.text}">Log in with your email to continue learning.</p>
-            <div style="text-align:center;margin:24px 0 8px;">
-              <a href="https://mamahala.ca/en/programs/${programSlug}" style="${emailStyles.button}">Continue Learning</a>
-            </div>
-            <p style="${emailStyles.muted};margin-top:16px;">— The Mama Hala Team</p>
-          </div>
-        `),
+      const nextModuleSlug = program.levels[0]?.modules[0]?.slug ?? null;
+      const built = buildAccessGrantedEmail({
+        email: studentEmail,
+        program,
+        unlockedLevels: levelsToUnlock,
+        nextModuleSlug,
       });
-    } catch { /* email send failure is non-critical */ }
+      await sendAcademyEmail(built, studentEmail, { force: true });
+    } catch {
+      /* email send failure is non-critical */
+    }
   }
 
   return NextResponse.json({ received: true, success: true });

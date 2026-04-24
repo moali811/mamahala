@@ -14,6 +14,7 @@ import Button from '@/components/ui/Button';
 import Accordion from '@/components/ui/Accordion';
 import MyLearningButton from '@/components/academy/layout/MyLearningButton';
 import { t, tArray } from '@/lib/academy-helpers';
+import { startAcademyCheckout, readJustPaid, clearJustPaid } from '@/lib/academy-checkout';
 import { fadeUp, staggerContainer, viewportOnce } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import { getBookingUrl } from '@/config/business';
@@ -66,6 +67,9 @@ export default function ModuleLessonPage() {
   const [moduleIndex, setModuleIndex] = useState(0);
   const [allModules, setAllModules] = useState<AcademyModule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [verifyingPurchase, setVerifyingPurchase] = useState(false);
+  const [accessBlocked, setAccessBlocked] = useState<{ levelNumber: number } | null>(null);
+  const [unlockingInline, setUnlockingInline] = useState(false);
 
   // Reflection state
   const [reflection, setReflection] = useState('');
@@ -121,43 +125,67 @@ export default function ModuleLessonPage() {
         return;
       }
 
-      try {
-        // Session-first check
-        const meRes = await fetch('/api/academy/me', { signal: controller.signal });
-        if (meRes.ok) {
-          const me = await meRes.json();
-          const hasAccess = !!me.allAccess
-            || (me.unlockedLevels?.[programSlug] || []).includes(levelNum);
-          if (hasAccess) {
-            setLoading(false);
+      const checkAccess = async (): Promise<boolean> => {
+        try {
+          // Session-first check
+          const meRes = await fetch('/api/academy/me', { signal: controller.signal });
+          if (meRes.ok) {
+            const me = await meRes.json();
+            const hasAccess = !!me.allAccess
+              || (me.unlockedLevels?.[programSlug] || []).includes(levelNum);
+            if (hasAccess) return true;
+          }
+
+          // Email fallback
+          const storedEmail = localStorage.getItem('academy_email');
+          if (storedEmail) {
+            const res = await fetch(
+              `/api/academy/access?email=${encodeURIComponent(storedEmail)}&programSlug=${encodeURIComponent(programSlug)}&levelNumber=${levelNum}`,
+              { signal: controller.signal },
+            );
+            if (res.ok) {
+              const data = await res.json();
+              if (data.hasPaidAccess || data.isAdmin || data.isVip) return true;
+            }
+          }
+        } catch {
+          /* network/abort — treat as no access for this pass */
+        }
+        return false;
+      };
+
+      if (await checkAccess()) {
+        if (!cancelled) setLoading(false);
+        return;
+      }
+
+      // First pass failed. If the student just came back from Stripe, KV may
+      // still be catching up with the webhook — show a "verifying purchase"
+      // state and retry for ~6s before declaring access blocked.
+      if (readJustPaid(programSlug)) {
+        if (!cancelled) setVerifyingPurchase(true);
+        for (const delay of [1000, 2000, 3000]) {
+          if (cancelled) return;
+          await new Promise(r => setTimeout(r, delay));
+          if (cancelled) return;
+          if (await checkAccess()) {
+            clearJustPaid();
+            if (!cancelled) {
+              setVerifyingPurchase(false);
+              setLoading(false);
+            }
             return;
           }
         }
+        clearJustPaid();
+        if (!cancelled) setVerifyingPurchase(false);
+      }
 
-        // Fall back to email-based access check
-        const storedEmail = localStorage.getItem('academy_email');
-        if (storedEmail) {
-          const res = await fetch(
-            `/api/academy/access?email=${encodeURIComponent(storedEmail)}&programSlug=${encodeURIComponent(programSlug)}&levelNumber=${levelNum}`,
-            { signal: controller.signal },
-          );
-          if (res.ok) {
-            const data = await res.json();
-            if (data.hasPaidAccess || data.isAdmin || data.isVip) {
-              setLoading(false);
-              return;
-            }
-          }
-        }
-
-        // No access — bounce to the program page with the unlock flow
-        if (!cancelled) {
-          router.replace(`/${locale}/programs/${programSlug}?unlock=level-${levelNum}`);
-        }
-      } catch {
-        // Network/abort — stay on page, the UI will render but content is
-        // server-gated for paid resources (quizzes, worksheets, etc.)
-        if (!cancelled) setLoading(false);
+      // Still no access — render the inline locked card instead of redirecting
+      // back to the program page (which historically re-opened Stripe).
+      if (!cancelled) {
+        setAccessBlocked({ levelNumber: levelNum });
+        setLoading(false);
       }
     })();
 
@@ -175,6 +203,20 @@ export default function ModuleLessonPage() {
       try { setCompletedSections(JSON.parse(savedSections)); } catch {}
     }
   }, [programSlug, moduleSlug, sectionsStorageKey]);
+
+  // Heartbeat: record this module as the student's "current" position so the
+  // dashboard and the program hero's "Continue Learning" reflect reality even
+  // for students who browse without completing.
+  useEffect(() => {
+    if (!currentModule || accessBlocked) return;
+    const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') : null;
+    if (!email) return;
+    fetch('/api/academy/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, programSlug, moduleSlug, action: 'visit' }),
+    }).catch(() => { /* non-critical */ });
+  }, [currentModule, programSlug, moduleSlug, accessBlocked]);
 
   // Load saved reflection
   useEffect(() => {
@@ -292,20 +334,30 @@ export default function ModuleLessonPage() {
       } catch { /* ignore */ }
     }
 
+    // Server is source of truth for level access — localStorage may be stale
+    // right after a fresh payment, which would incorrectly kick the student
+    // back to the program page on the boundary between levels.
+    let serverLevels: number[] = [];
+    let serverAllAccess = false;
+    try {
+      const me = await fetch('/api/academy/me').then(r => r.ok ? r.json() : null);
+      if (me) {
+        serverAllAccess = !!me.allAccess;
+        serverLevels = me.unlockedLevels?.[programSlug] || [];
+      }
+    } catch { /* non-critical */ }
+
     setShowCelebration(true);
     setTimeout(() => {
       if (moduleIndex < allModules.length - 1) {
         const nextMod = allModules[moduleIndex + 1];
-        // Check if next module is in a paid level and not yet unlocked
         const nextLevel = program?.levels.find(l => l.modules.some(m => m.slug === nextMod.slug));
         const nextIsFree = nextLevel?.isFree || program?.isFree;
-        const nextLevelUnlocked = nextLevel && localStorage.getItem(`academy:paid:${programSlug}:level-${nextLevel.level}`) === 'true';
-        const nextLegacyUnlocked = localStorage.getItem(`academy:paid:${programSlug}:${nextMod.slug}`) === 'true';
+        const nextLevelUnlocked = nextLevel && (serverAllAccess || serverLevels.includes(nextLevel.level));
 
-        if (nextIsFree || nextLevelUnlocked || nextLegacyUnlocked) {
+        if (nextIsFree || nextLevelUnlocked) {
           router.push(`/${locale}/programs/${programSlug}/${nextMod.slug}`);
         } else if (nextLevel) {
-          // Next level is paid and locked — go to program page to pay
           router.push(`/${locale}/programs/${programSlug}?unlock=level-${nextLevel.level}`);
         } else {
           router.push(`/${locale}/programs/${programSlug}`);
@@ -316,8 +368,82 @@ export default function ModuleLessonPage() {
     }, 1200);
   };
 
+  if (verifyingPurchase) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2] px-6">
+        <div className="text-center max-w-sm">
+          <Loader2 className="w-10 h-10 animate-spin text-[#7A3B5E] mx-auto mb-4" />
+          <h1 className="text-lg font-semibold text-[#2D2A33] mb-2">
+            {isRTL ? 'جارٍ التّحقّقُ من الدّفع...' : 'Verifying your purchase…'}
+          </h1>
+          <p className="text-sm text-[#6B6580]">
+            {isRTL
+              ? 'لحظاتٌ فقط — نحن نُفَعِّلُ وُصولَك إلى البرنامج الكامل.'
+              : "Just a moment — we're activating your full program access."}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2]"><Loader2 className="w-8 h-8 animate-spin text-[#7A3B5E]" /></div>;
+  }
+
+  if (accessBlocked) {
+    const handleInlineUnlock = async () => {
+      if (unlockingInline) return;
+      setUnlockingInline(true);
+      const email = typeof window !== 'undefined' ? localStorage.getItem('academy_email') || '' : '';
+      const result = await startAcademyCheckout({
+        programSlug,
+        programTitle: program?.titleEn || programSlug,
+        levelNumber: accessBlocked.levelNumber,
+        email,
+        locale,
+      });
+      if (!result.ok) {
+        setUnlockingInline(false);
+        alert(isRTL
+          ? 'تعذّر فتح صفحة الدفع — الرجاء المحاولة مرة أخرى.'
+          : 'Could not open checkout. Please try again in a moment.');
+      }
+    };
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF7F2] px-6 pt-28 pb-12">
+        <div className="max-w-md w-full bg-white rounded-2xl border border-[#F3EFE8] p-8 text-center shadow-sm">
+          <div className="w-14 h-14 rounded-2xl mx-auto mb-5 flex items-center justify-center" style={{ backgroundColor: `${program?.color || '#7A3B5E'}15`, color: program?.color || '#7A3B5E' }}>
+            <Lock className="w-6 h-6" />
+          </div>
+          <h1 className="text-xl font-bold text-[#2D2A33] mb-2" style={{ fontFamily: 'var(--font-heading)' }}>
+            {isRTL ? 'هذه الوحدةُ جزءٌ من البرنامجِ المدفوع' : 'This module is part of the full program'}
+          </h1>
+          <p className="text-sm text-[#6B6580] mb-6 leading-relaxed">
+            {isRTL
+              ? 'اِفْتَحِ البرنامجَ بالكامل بدفعةٍ واحدة — جميعُ المستوياتِ والوحدات، وُصولٌ مدى الحياة، وشهادةُ إتمام.'
+              : 'Unlock the full program with a single payment — all levels and modules, lifetime access, and a completion certificate.'}
+          </p>
+          <button
+            type="button"
+            onClick={handleInlineUnlock}
+            disabled={unlockingInline}
+            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-semibold transition-all hover:shadow-lg disabled:opacity-50"
+            style={{ backgroundColor: program?.color || '#7A3B5E' }}
+          >
+            {unlockingInline
+              ? <><Loader2 className="w-4 h-4 animate-spin" /> {isRTL ? 'جارٍ...' : 'Opening checkout…'}</>
+              : (isRTL ? 'اِفْتَحْ الوُصولَ الكامِل' : 'Unlock Full Access')}
+          </button>
+          <a
+            href={`/${locale}/programs/${programSlug}`}
+            className="inline-flex items-center justify-center gap-1.5 mt-4 text-xs text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            {isRTL ? 'العودة إلى البرنامج' : 'Back to program'}
+          </a>
+        </div>
+      </div>
+    );
   }
 
   if (!program || !currentModule) {
