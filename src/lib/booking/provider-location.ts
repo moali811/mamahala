@@ -24,6 +24,7 @@
 
 import { kv } from '@vercel/kv';
 import { getAvailabilityRules } from './booking-store';
+import { BUSINESS } from '@/config/business';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
@@ -281,6 +282,22 @@ export async function getEffectiveTimezone(
 ): Promise<string> {
   const loc = await getEffectiveLocation(dateUtc);
   return loc.timezone;
+}
+
+/**
+ * Pick the right in-person address for a given location label.
+ * UAE/Dubai labels → uae address. Everything else → canada address.
+ * Returns the localized string for the requested email locale.
+ */
+export function resolveInPersonAddress(
+  locationLabel: string | undefined,
+  locale: 'en' | 'ar',
+): string {
+  const addrs = BUSINESS.inPersonAddresses;
+  if (locationLabel && /UAE|Dubai|دبي|الإمارات/i.test(locationLabel)) {
+    return addrs.uae[locale];
+  }
+  return addrs.canada[locale];
 }
 
 /**

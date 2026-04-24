@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
             ? updatedBooking.aiPrepTips.split('\n---\n')
             : undefined;
 
-          const { subject, html, icsContent } = buildSessionLockedInEmail({
+          const { subject, html, icsContent } = await buildSessionLockedInEmail({
             booking: updatedBooking,
             manageToken,
             prepTips,

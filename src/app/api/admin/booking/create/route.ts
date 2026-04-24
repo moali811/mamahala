@@ -151,6 +151,7 @@ export async function POST(request: NextRequest) {
           startTime: booking.startTime,
           endTime: booking.endTime,
           customerNotes: booking.clientNotes,
+          preferredLanguage: booking.preferredLanguage,
         });
         draftId = intakeResult.draftId;
         booking.draftId = draftId;

@@ -231,6 +231,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
   const [clientPhone, setClientPhone] = useState('');
   const [clientTimezone, setClientTimezone] = useState('America/Toronto');
   const [clientCountry, setClientCountry] = useState('CA');
+  const [clientLanguage, setClientLanguage] = useState<'en' | 'ar'>('en');
   const [sendClientEmail, setSendClientEmail] = useState(false);
 
   // ─── Calendar state ────────────────────────────────────────
@@ -503,7 +504,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
           clientPhone: clientPhone.trim() || undefined,
           clientTimezone,
           clientCountry,
-          preferredLanguage: 'en',
+          preferredLanguage: clientLanguage,
           serviceSlug,
           serviceName: selectedService?.name,
           sessionMode,
@@ -623,7 +624,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
           clientPhone: filled.client.phone,
           clientTimezone: filled.client.timezone,
           clientCountry: filled.client.country,
-          preferredLanguage: 'en',
+          preferredLanguage: clientLanguage,
           serviceSlug: filled.serviceSlug,
           serviceName: filled.serviceName,
           sessionMode: filled.sessionMode,
@@ -825,6 +826,8 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
                     setClientTimezone={setClientTimezone}
                     clientCountry={clientCountry}
                     setClientCountry={setClientCountry}
+                    clientLanguage={clientLanguage}
+                    setClientLanguage={setClientLanguage}
                     currentMonth={currentMonth}
                     setCurrentMonth={setCurrentMonth}
                     monthAvailability={monthAvailability}
@@ -1037,6 +1040,8 @@ interface Step1Props {
   setClientTimezone: (v: string) => void;
   clientCountry: string;
   setClientCountry: (v: string) => void;
+  clientLanguage: 'en' | 'ar';
+  setClientLanguage: (v: 'en' | 'ar') => void;
   currentMonth: string;
   setCurrentMonth: (v: string) => void;
   monthAvailability: Map<string, DayAvailability>;
@@ -1226,6 +1231,7 @@ function Step1Content(props: Step1Props) {
               value={props.clientName}
               onChange={e => props.setClientName(e.target.value)}
               placeholder="Full name"
+              dir="auto"
               className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] placeholder:text-[#C4C0BC] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/30 transition-colors"
             />
           </div>
@@ -1291,6 +1297,36 @@ function Step1Content(props: Step1Props) {
                   ));
                 })()}
               </select>
+            </div>
+          </div>
+          {/* Email language — drives locale of all client emails (confirmation, reminders, invoice, receipt) */}
+          <div>
+            <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
+              Email language
+            </label>
+            <div className="inline-flex rounded-xl border border-[#E8E4DE] p-1 bg-[#FAF7F2]">
+              <button
+                type="button"
+                onClick={() => props.setClientLanguage('en')}
+                className={`px-4 h-10 rounded-lg text-sm font-medium transition-all ${
+                  props.clientLanguage === 'en'
+                    ? 'bg-white text-[#7A3B5E] shadow-sm'
+                    : 'text-[#8E8E9F] hover:text-[#4A4A5C]'
+                }`}
+              >
+                English
+              </button>
+              <button
+                type="button"
+                onClick={() => props.setClientLanguage('ar')}
+                className={`px-4 h-10 rounded-lg text-sm font-medium transition-all ${
+                  props.clientLanguage === 'ar'
+                    ? 'bg-white text-[#7A3B5E] shadow-sm'
+                    : 'text-[#8E8E9F] hover:text-[#4A4A5C]'
+                }`}
+              >
+                العربية
+              </button>
             </div>
           </div>
         </div>

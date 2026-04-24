@@ -784,6 +784,7 @@ function ComposeTab({
                 onChange={(e) => updateClient({ name: e.target.value })}
                 className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20"
                 placeholder="Full name"
+                dir="auto"
               />
             </Field>
             <Field label="Email">

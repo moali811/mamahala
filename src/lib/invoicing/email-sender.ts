@@ -12,12 +12,13 @@ import { buildPaymentInstructions } from './payment-instructions';
 import { BUSINESS } from '@/config/business';
 import { emailWrapper } from '@/lib/email/shared-email-components';
 import { buildPaymentConciergeUrl } from './stripe-checkout';
+import { emailCopy, type EmailLocale } from '@/lib/booking/email-copy';
 
 /** All admin emails that should receive BCC copies of invoices/receipts. */
 const ADMIN_BCC = BUSINESS.adminEmails;
 
-function formatDate(iso: string): string {
-  return new Date(iso).toLocaleDateString('en-CA', {
+function formatDate(iso: string, locale: EmailLocale = 'en'): string {
+  return new Date(iso).toLocaleDateString(locale === 'ar' ? 'ar' : 'en-CA', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -37,16 +38,14 @@ function buildInvoiceEmailHtml(
   invoice: StoredInvoice,
   settings: InvoiceSettings,
 ): string {
+  const locale: EmailLocale = invoice.draft.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale).invoiceEmail;
   const client = invoice.draft.client;
   const bd = invoice.breakdown;
   const service = services.find((s) => s.slug === invoice.draft.serviceSlug);
   const serviceName = service?.name ?? invoice.draft.serviceSlug;
 
   const paymentResult = buildPaymentInstructions(invoice, settings);
-  // Flatten primary + secondary into a single rendering list. Today
-  // `secondary` is always empty under the region-aware logic, but
-  // rendering it keeps the template ready for future multi-method
-  // scenarios without another edit.
   const allBlocks = [paymentResult.primary, ...paymentResult.secondary];
   const renderBlock = (b: typeof paymentResult.primary, isPrimary: boolean) => {
     const lines = b.bodyLines
@@ -69,11 +68,13 @@ function buildInvoiceEmailHtml(
   };
   const blocksHtml = allBlocks.map((b, i) => renderBlock(b, i === 0)).join('');
 
+  const valueAlign = locale === 'ar' ? 'left' : 'right';
+
   const innerContent = `
       <!-- Greeting -->
       <div style="padding:4px 0 16px;">
-        <p style="margin:0 0 12px;color:#2D2A33;font-size:15px;">Dear ${escapeHtml(client.name)},</p>
-        <p style="margin:0 0 12px;color:#4A4A5C;font-size:14px;line-height:1.7;">Thank you for choosing Mama Hala Consulting. Please find attached your invoice for <strong>${escapeHtml(serviceName)}</strong>.</p>
+        <p style="margin:0 0 12px;color:#2D2A33;font-size:15px;">${t.greeting(escapeHtml(client.name))}</p>
+        <p style="margin:0 0 12px;color:#4A4A5C;font-size:14px;line-height:1.7;">${t.thanks(escapeHtml(serviceName))}</p>
       </div>
 
       ${
@@ -81,7 +82,7 @@ function buildInvoiceEmailHtml(
           ? `
       <!-- Subject / session note -->
       <div style="margin:0 0 16px;padding:14px 16px;background:white;border-left:3px solid #C8A97D;border-radius:8px;">
-        <p style="margin:0 0 4px;color:#C8A97D;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Subject</p>
+        <p style="margin:0 0 4px;color:#C8A97D;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">${t.subjectLabel}</p>
         <p style="margin:0;color:#2D2A33;font-size:14px;font-style:italic;line-height:1.6;">${escapeHtml(invoice.draft.subject.trim())}</p>
       </div>
       `
@@ -92,62 +93,55 @@ function buildInvoiceEmailHtml(
       <div style="background:white;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #EDE8DF;">
         <table style="width:100%;border-collapse:collapse;">
           <tr>
-            <td style="padding:8px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Invoice Number</td>
-            <td style="padding:8px 0;color:#2D2A33;font-size:14px;font-weight:600;text-align:right;">${escapeHtml(invoice.invoiceNumber)}</td>
+            <td style="padding:8px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.invoiceNumberLabel}</td>
+            <td style="padding:8px 0;color:#2D2A33;font-size:14px;font-weight:600;text-align:${valueAlign};">${escapeHtml(invoice.invoiceNumber)}</td>
           </tr>
           <tr>
-            <td style="padding:8px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Issue Date</td>
-            <td style="padding:8px 0;color:#2D2A33;font-size:14px;text-align:right;">${formatDate(invoice.issuedAt)}</td>
+            <td style="padding:8px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.issueDateLabel}</td>
+            <td style="padding:8px 0;color:#2D2A33;font-size:14px;text-align:${valueAlign};">${formatDate(invoice.issuedAt, locale)}</td>
           </tr>
           <tr>
-            <td style="padding:8px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Due Date</td>
-            <td style="padding:8px 0;color:#2D2A33;font-size:14px;text-align:right;">${formatDate(invoice.dueDate)}</td>
+            <td style="padding:8px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.dueDateLabel}</td>
+            <td style="padding:8px 0;color:#2D2A33;font-size:14px;text-align:${valueAlign};">${formatDate(invoice.dueDate, locale)}</td>
           </tr>
           <tr>
-            <td style="padding:12px 0 8px;border-top:1px solid #F3EFE8;color:#7A3B5E;font-size:13px;font-weight:600;">Amount Due</td>
-            <td style="padding:12px 0 8px;border-top:1px solid #F3EFE8;color:#7A3B5E;font-size:18px;font-weight:700;text-align:right;">${formatPrice(bd.totalLocal, bd.displayCurrency)}</td>
+            <td style="padding:12px 0 8px;border-top:1px solid #F3EFE8;color:#7A3B5E;font-size:13px;font-weight:600;">${t.amountDueLabel}</td>
+            <td style="padding:12px 0 8px;border-top:1px solid #F3EFE8;color:#7A3B5E;font-size:18px;font-weight:700;text-align:${valueAlign};">${formatPrice(bd.totalLocal, bd.displayCurrency)}</td>
           </tr>
           ${
             bd.displayCurrency !== 'CAD'
-              ? `<tr><td></td><td style="padding:0;color:#8E8E9F;font-size:11px;font-style:italic;text-align:right;">(${formatPrice(bd.totalCAD, 'CAD')} equivalent)</td></tr>`
+              ? `<tr><td></td><td style="padding:0;color:#8E8E9F;font-size:11px;font-style:italic;text-align:${valueAlign};">${t.equivalentSuffix(formatPrice(bd.totalCAD, 'CAD'))}</td></tr>`
               : ''
           }
         </table>
       </div>
 
-      <!-- Pay Online — primary CTA goes DIRECTLY to Stripe Checkout
-           when a dynamic session exists (Tier 1). Fastest path for the
-           client: one click, exact amount pre-filled, card form ready.
-           Secondary "Other payment options" link goes to the concierge
-           page where clients who prefer e-Transfer or wire can choose.
-           When Tier 1 is not available, the primary button falls back
-           to the concierge page for manual Stripe link + alt methods. -->
+      <!-- Pay Online -->
       <div style="background:#F0FAF5;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;">
-        <p style="margin:0 0 4px;color:#3B8A6E;font-size:14px;font-weight:700;">Pay Securely Online</p>
-        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;">Pay <strong>${escapeHtml(bd.formattedTotal)}</strong> with card${invoice.stripeCheckoutUrl ? ' — via Stripe' : ''}</p>
-        <a href="${invoice.stripeCheckoutUrl || buildPaymentConciergeUrl(invoice)}" style="display:inline-block;padding:16px 48px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:12px;font-size:16px;font-weight:700;letter-spacing:0.3px;">Pay ${escapeHtml(bd.formattedTotal)}</a>
+        <p style="margin:0 0 4px;color:#3B8A6E;font-size:14px;font-weight:700;">${t.payOnlineHeading}</p>
+        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;">${t.payOnlinePrompt(escapeHtml(bd.formattedTotal), !!invoice.stripeCheckoutUrl)}</p>
+        <a href="${invoice.stripeCheckoutUrl || buildPaymentConciergeUrl(invoice)}" style="display:inline-block;padding:16px 48px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:12px;font-size:16px;font-weight:700;letter-spacing:0.3px;">${t.payCta(escapeHtml(bd.formattedTotal))}</a>
         ${invoice.stripeCheckoutUrl ? `
-        <p style="margin:14px 0 0;font-size:11px;color:#8E8E9F;">Prefer Interac, wire, or PayPal? <a href="${buildPaymentConciergeUrl(invoice)}" style="color:#7A3B5E;text-decoration:underline;">See other payment options</a></p>` : ''}
+        <p style="margin:14px 0 0;font-size:11px;color:#8E8E9F;">${t.otherPaymentPrompt} <a href="${buildPaymentConciergeUrl(invoice)}" style="color:#7A3B5E;text-decoration:underline;">${t.otherPaymentLink}</a></p>` : ''}
       </div>
 
-      <!-- Other payment methods (still shown inline as a written summary
-           for clients who don't want to click a second button) -->
+      <!-- Other payment methods -->
       <div style="margin-bottom:20px;">
-        <p style="margin:0 0 12px;color:#8E8E9F;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:1px;">Other Payment Methods</p>
+        <p style="margin:0 0 12px;color:#8E8E9F;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:1px;">${t.otherPaymentMethodsHeading}</p>
         ${blocksHtml}
       </div>
 
       <!-- PDF reminder -->
       <div style="padding:14px;background:#F3EFE8;border-radius:8px;margin-bottom:20px;">
-        <p style="margin:0;color:#4A4A5C;font-size:13px;line-height:1.6;">A detailed PDF invoice is attached to this email. Please keep it for your records.</p>
+        <p style="margin:0;color:#4A4A5C;font-size:13px;line-height:1.6;">${t.pdfReminder}</p>
       </div>
 
       <!-- Closing -->
-      <p style="margin:20px 0 8px;color:#4A4A5C;font-size:14px;line-height:1.7;">If you have any questions about this invoice, please reply to this email, <a href="${BUSINESS.whatsappUrl}" style="color:#7A3B5E;">WhatsApp us</a>, or email <a href="mailto:${escapeHtml(settings.issuerBlock.email)}" style="color:#7A3B5E;">${escapeHtml(settings.issuerBlock.email)}</a>.</p>
+      <p style="margin:20px 0 8px;color:#4A4A5C;font-size:14px;line-height:1.7;">${t.closing(escapeHtml(settings.issuerBlock.email))}</p>
 
-      <p style="margin:16px 0 0;color:#2D2A33;font-size:14px;">Warmly,<br><strong>The Mama Hala Team</strong></p>`;
+      <p style="margin:16px 0 0;color:#2D2A33;font-size:14px;">${t.signoff}<br><strong>${t.team}</strong></p>`;
 
-  return emailWrapper(innerContent);
+  return emailWrapper(innerContent, { locale });
 }
 
 /**
@@ -190,6 +184,8 @@ export async function sendInvoiceEmail(
   const fromAddress = process.env.RESEND_FROM_EMAIL || `${businessName} <onboarding@resend.dev>`;
   // BCC all admin emails so everyone receives a copy (fixes missing invoice emails)
   const bccList = [...new Set([...ADMIN_BCC, settings.issuerBlock.email])];
+  const locale: EmailLocale = invoice.draft.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale).invoiceEmail;
 
   const { data, error } = await resend.emails.send({
     from: fromAddress,
@@ -198,7 +194,7 @@ export async function sendInvoiceEmail(
     replyTo: settings.issuerBlock.email,
     subject:
       options?.customSubject ??
-      `Invoice ${invoice.invoiceNumber} from ${businessName}`,
+      t.subject(invoice.invoiceNumber, businessName),
     html: options?.customHtml ?? buildInvoiceEmailHtml(invoice, settings),
     attachments: [
       {
@@ -247,13 +243,15 @@ export async function sendReceiptEmail(
   const fromAddress = process.env.RESEND_FROM_EMAIL || `${businessName} <onboarding@resend.dev>`;
   // BCC all admin emails so everyone receives a copy
   const bccList = [...new Set([...ADMIN_BCC, settings.issuerBlock.email])];
+  const locale: EmailLocale = invoice.draft.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const rt = emailCopy(locale).receipt;
 
   const { data, error } = await resend.emails.send({
     from: fromAddress,
     to: client.email,
     bcc: bccList,
     replyTo: settings.issuerBlock.email,
-    subject: `Receipt for ${invoice.invoiceNumber} - Thank you from ${businessName}`,
+    subject: rt.subject(invoice.invoiceNumber, businessName),
     html: buildReceiptEmailHtml(invoice, paymentMethod, paidAt, settings),
     attachments: [
       {
@@ -275,61 +273,63 @@ function buildReceiptEmailHtml(
   invoice: StoredInvoice,
   paymentMethod: string,
   paidAt: string,
-  settings: InvoiceSettings,
+  _settings: InvoiceSettings,
 ): string {
+  const locale: EmailLocale = invoice.draft.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale).receipt;
   const client = invoice.draft.client;
   const bd = invoice.breakdown;
-  const businessName = settings.businessName || 'Mama Hala Consulting Group';
   const methodLabel = paymentMethod
     .replace('-', ' ')
     .replace(/\b\w/g, (c) => c.toUpperCase());
-  const paidDate = new Date(paidAt).toLocaleDateString('en-CA', {
+  const paidDate = new Date(paidAt).toLocaleDateString(locale === 'ar' ? 'ar' : 'en-CA', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+  const valueAlign = locale === 'ar' ? 'left' : 'right';
 
   const receiptContent = `
       <div style="padding:4px 0 16px;">
         <div style="background:#DCF0E6;border:1px solid #3B8A6E;border-radius:12px;padding:18px;text-align:center;">
-          <div style="color:#3B8A6E;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Payment Received</div>
-          <div style="color:#3B8A6E;font-size:32px;font-weight:700;line-height:1;">PAID</div>
+          <div style="color:#3B8A6E;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">${t.paidBannerLabel}</div>
+          <div style="color:#3B8A6E;font-size:32px;font-weight:700;line-height:1;">${t.paidBannerAmount}</div>
           <div style="color:#2D2A33;font-size:18px;font-weight:600;margin-top:8px;">${escapeHtml(invoice.breakdown.formattedTotal)}</div>
         </div>
       </div>
 
-      <p style="margin:0 0 12px;color:#2D2A33;font-size:15px;">Dear ${escapeHtml(client.name)},</p>
-      <p style="margin:0 0 12px;color:#4A4A5C;font-size:14px;line-height:1.7;">Thank you so much for your payment. Your invoice <strong>${escapeHtml(invoice.invoiceNumber)}</strong> has been marked as paid, and your official receipt is attached to this email for your records.</p>
-      <p style="margin:0 0 20px;color:#4A4A5C;font-size:14px;line-height:1.7;">We're grateful for your trust and look forward to supporting you on your journey.</p>
+      <p style="margin:0 0 12px;color:#2D2A33;font-size:15px;">${t.greeting(escapeHtml(client.name))}</p>
+      <p style="margin:0 0 12px;color:#4A4A5C;font-size:14px;line-height:1.7;">${t.thanks(escapeHtml(invoice.invoiceNumber))}</p>
+      <p style="margin:0 0 20px;color:#4A4A5C;font-size:14px;line-height:1.7;">${t.grateful}</p>
 
       <div style="background:white;border-radius:12px;padding:20px;margin-bottom:20px;border:1px solid #EDE8DF;">
         <table style="width:100%;border-collapse:collapse;">
           <tr>
-            <td style="padding:6px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Invoice</td>
-            <td style="padding:6px 0;color:#2D2A33;font-size:14px;font-weight:600;text-align:right;">${escapeHtml(invoice.invoiceNumber)}</td>
+            <td style="padding:6px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.invoiceLabel}</td>
+            <td style="padding:6px 0;color:#2D2A33;font-size:14px;font-weight:600;text-align:${valueAlign};">${escapeHtml(invoice.invoiceNumber)}</td>
           </tr>
           <tr>
-            <td style="padding:6px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Payment Date</td>
-            <td style="padding:6px 0;color:#2D2A33;font-size:14px;text-align:right;">${escapeHtml(paidDate)}</td>
+            <td style="padding:6px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.paymentDateLabel}</td>
+            <td style="padding:6px 0;color:#2D2A33;font-size:14px;text-align:${valueAlign};">${escapeHtml(paidDate)}</td>
           </tr>
           <tr>
-            <td style="padding:6px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">Method</td>
-            <td style="padding:6px 0;color:#2D2A33;font-size:14px;text-align:right;">${escapeHtml(methodLabel)}</td>
+            <td style="padding:6px 0;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.methodLabel}</td>
+            <td style="padding:6px 0;color:#2D2A33;font-size:14px;text-align:${valueAlign};">${escapeHtml(methodLabel)}</td>
           </tr>
           <tr>
-            <td style="padding:8px 0 6px;border-top:1px solid #F3EFE8;color:#3B8A6E;font-size:13px;font-weight:600;">Amount Paid</td>
-            <td style="padding:8px 0 6px;border-top:1px solid #F3EFE8;color:#3B8A6E;font-size:18px;font-weight:700;text-align:right;">${escapeHtml(bd.formattedTotal)}</td>
+            <td style="padding:8px 0 6px;border-top:1px solid #F3EFE8;color:#3B8A6E;font-size:13px;font-weight:600;">${t.amountPaidLabel}</td>
+            <td style="padding:8px 0 6px;border-top:1px solid #F3EFE8;color:#3B8A6E;font-size:18px;font-weight:700;text-align:${valueAlign};">${escapeHtml(bd.formattedTotal)}</td>
           </tr>
           ${
             bd.displayCurrency !== 'CAD'
-              ? `<tr><td></td><td style="padding:0;color:#8E8E9F;font-size:11px;font-style:italic;text-align:right;">(${escapeHtml(bd.formattedTotalCAD)} equivalent)</td></tr>`
+              ? `<tr><td></td><td style="padding:0;color:#8E8E9F;font-size:11px;font-style:italic;text-align:${valueAlign};">${t.equivalentSuffix(escapeHtml(bd.formattedTotalCAD))}</td></tr>`
               : ''
           }
         </table>
       </div>
 
-      <p style="margin:16px 0 4px;color:#2D2A33;font-size:14px;">Warmly,</p>
-      <p style="margin:0;color:#2D2A33;font-size:14px;font-weight:600;">The Mama Hala Team</p>`;
+      <p style="margin:16px 0 4px;color:#2D2A33;font-size:14px;">${t.signoff}</p>
+      <p style="margin:0;color:#2D2A33;font-size:14px;font-weight:600;">${t.team}</p>`;
 
-  return emailWrapper(receiptContent);
+  return emailWrapper(receiptContent, { locale });
 }

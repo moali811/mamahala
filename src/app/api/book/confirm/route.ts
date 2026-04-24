@@ -24,6 +24,7 @@ import { buildConfirmationEmail, sendBookingEmail, notifyAdmin } from '@/lib/boo
 import { generateSessionPrepTips } from '@/lib/booking/ai-session-prep';
 import { processBookingIntake } from '@/lib/invoicing/booking-intake';
 import { getCustomer } from '@/lib/invoicing/customer-store';
+import { getEffectiveLocation } from '@/lib/booking/provider-location';
 import { services } from '@/data/services';
 import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
 import type { Booking, BookingConfirmationResult, SessionMode } from '@/lib/booking/types';
@@ -139,6 +140,7 @@ export async function POST(request: NextRequest) {
     // ─── Create Booking record ───────────────────────────────
     const bookingId = generateBookingId();
     const now = new Date().toISOString();
+    const effectiveLoc = await getEffectiveLocation(body.startTime);
 
     const booking: Booking = {
       bookingId,
@@ -159,6 +161,7 @@ export async function POST(request: NextRequest) {
       status: 'pending_approval',
       source: 'native',
       aiIntakeNotes: body.aiIntakeNotes,
+      effectiveLocationLabel: effectiveLoc.locationLabel,
       // Smart Hold: block this slot immediately and set auto-approve timer.
       holdExpiresAt: (() => {
         const rules = availabilityRules;
@@ -187,6 +190,7 @@ export async function POST(request: NextRequest) {
         startTime: booking.startTime,
         endTime: booking.endTime,
         customerNotes: booking.clientNotes,
+        preferredLanguage: booking.preferredLanguage,
       });
       draftId = intakeResult.draftId;
       booking.draftId = draftId;

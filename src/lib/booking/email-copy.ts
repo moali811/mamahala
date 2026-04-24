@@ -75,7 +75,7 @@ export interface BookingEmailCopy {
     meetHint: string;
     meetCta: string;
     officeHeading: string;
-    officeBody: string;
+    officeBody: (address: string) => string;
     onlineFallback: string;
     tipsHeading: string;
     addToCalendar: string;
@@ -112,7 +112,7 @@ export interface BookingEmailCopy {
     heading: string;
     intro: string;
     modeOnline: string;
-    modeInPerson: string;
+    modeInPerson: (address: string) => string;
     encouragement: string;
     readyToJoin: string;
     activeNow: string;
@@ -194,6 +194,46 @@ export interface BookingEmailCopy {
     reschedule: string;
     contact: string;
   };
+
+  // 13. Invoice email (attached PDF)
+  invoiceEmail: {
+    subject: (invoiceNumber: string, businessName: string) => string;
+    greeting: (clientName: string) => string;
+    thanks: (serviceName: string) => string;
+    subjectLabel: string;
+    invoiceNumberLabel: string;
+    issueDateLabel: string;
+    dueDateLabel: string;
+    amountDueLabel: string;
+    equivalentSuffix: (cad: string) => string;
+    payOnlineHeading: string;
+    payOnlinePrompt: (formattedTotal: string, viaStripe: boolean) => string;
+    payCta: (formattedTotal: string) => string;
+    otherPaymentPrompt: string;
+    otherPaymentLink: string;
+    otherPaymentMethodsHeading: string;
+    pdfReminder: string;
+    closing: (email: string) => string;
+    signoff: string;
+    team: string;
+  };
+
+  // 14. Receipt email (sent after payment)
+  receipt: {
+    subject: (invoiceNumber: string, businessName: string) => string;
+    paidBannerLabel: string;
+    paidBannerAmount: string;
+    greeting: (clientName: string) => string;
+    thanks: (invoiceNumber: string) => string;
+    grateful: string;
+    invoiceLabel: string;
+    paymentDateLabel: string;
+    methodLabel: string;
+    amountPaidLabel: string;
+    equivalentSuffix: (cad: string) => string;
+    signoff: string;
+    team: string;
+  };
 }
 
 const en: BookingEmailCopy = {
@@ -256,9 +296,8 @@ const en: BookingEmailCopy = {
     meetHeading: 'Your Google Meet Link',
     meetHint: "Bookmark this link now — you'll use it to join your session.",
     meetCta: 'Open Google Meet',
-    officeHeading: 'Office Location',
-    officeBody:
-      '430 Hazeldean Rd, Ottawa, ON K2L 1E8 — Canada. Please arrive 5 minutes early.',
+    officeHeading: "Where We'll Meet",
+    officeBody: (addr) => `We'll meet at ${addr}. Please arrive 5 minutes early.`,
     onlineFallback:
       'Your video call link will be shared via email and calendar invite before the session.',
     tipsHeading: 'Prepare for Your Session',
@@ -297,8 +336,7 @@ const en: BookingEmailCopy = {
     intro: 'Your counseling session starts in about 1 hour.',
     modeOnline:
       'Please make sure you are in a quiet, private space with a good internet connection.',
-    modeInPerson:
-      'The office is located at 430 Hazeldean Rd, Ottawa. Please arrive 5 minutes early.',
+    modeInPerson: (addr) => `We'll meet at ${addr}. Please arrive 5 minutes early.`,
     encouragement: 'Take a few deep breaths. You are doing something wonderful for yourself.',
     readyToJoin: 'Ready to Join?',
     activeNow: 'The link is active now.',
@@ -383,6 +421,44 @@ const en: BookingEmailCopy = {
     reschedule: 'Reschedule Session',
     contact: 'Need to talk?',
   },
+
+  invoiceEmail: {
+    subject: (invoiceNumber, businessName) => `Invoice ${invoiceNumber} from ${businessName}`,
+    greeting: (name) => `Dear ${name},`,
+    thanks: (s) => `Thank you for choosing Mama Hala Consulting. Please find attached your invoice for <strong>${s}</strong>.`,
+    subjectLabel: 'Subject',
+    invoiceNumberLabel: 'Invoice Number',
+    issueDateLabel: 'Issue Date',
+    dueDateLabel: 'Due Date',
+    amountDueLabel: 'Amount Due',
+    equivalentSuffix: (cad) => `(${cad} equivalent)`,
+    payOnlineHeading: 'Pay Securely Online',
+    payOnlinePrompt: (total, viaStripe) => `Pay <strong>${total}</strong> with card${viaStripe ? ' — via Stripe' : ''}`,
+    payCta: (total) => `Pay ${total}`,
+    otherPaymentPrompt: 'Prefer Interac, wire, or PayPal?',
+    otherPaymentLink: 'See other payment options',
+    otherPaymentMethodsHeading: 'Other Payment Methods',
+    pdfReminder: 'A detailed PDF invoice is attached to this email. Please keep it for your records.',
+    closing: (email) => `If you have any questions about this invoice, please reply to this email, WhatsApp us, or email <a href="mailto:${email}" style="color:#7A3B5E;">${email}</a>.`,
+    signoff: 'Warmly,',
+    team: 'The Mama Hala Team',
+  },
+
+  receipt: {
+    subject: (invoiceNumber, businessName) => `Receipt for ${invoiceNumber} — Thank you from ${businessName}`,
+    paidBannerLabel: 'Payment Received',
+    paidBannerAmount: 'PAID',
+    greeting: (name) => `Dear ${name},`,
+    thanks: (invoiceNumber) => `Thank you so much for your payment. Your invoice <strong>${invoiceNumber}</strong> has been marked as paid, and your official receipt is attached to this email for your records.`,
+    grateful: "We're grateful for your trust and look forward to supporting you on your journey.",
+    invoiceLabel: 'Invoice',
+    paymentDateLabel: 'Payment Date',
+    methodLabel: 'Method',
+    amountPaidLabel: 'Amount Paid',
+    equivalentSuffix: (cad) => `(${cad} equivalent)`,
+    signoff: 'Warmly,',
+    team: 'The Mama Hala Team',
+  },
 };
 
 const ar: BookingEmailCopy = {
@@ -442,9 +518,8 @@ const ar: BookingEmailCopy = {
     meetHeading: 'رابط Google Meet الخاص بك',
     meetHint: 'احفظ هذا الرابط الآن — ستستخدمه للانضمام إلى جلستك.',
     meetCta: 'فتح Google Meet',
-    officeHeading: 'موقع العيادة',
-    officeBody:
-      '430 Hazeldean Rd, Ottawa, ON K2L 1E8 — كندا. يُرجى الحضور قبل 5 دقائق من الموعد.',
+    officeHeading: 'مكان لقائنا',
+    officeBody: (addr) => `نلتقي في ${addr}. يُرجى الحضور قبل 5 دقائق من الموعد.`,
     onlineFallback:
       'سيُرسَل رابط مكالمة الفيديو عبر البريد الإلكتروني ودعوة التقويم قبل الجلسة.',
     tipsHeading: 'نصائح للتحضير لجلستك',
@@ -480,8 +555,7 @@ const ar: BookingEmailCopy = {
     intro: 'جلستك الاستشاريّة تبدأ بعد ساعة تقريبًا.',
     modeOnline:
       'يُرجى التأكّد من وجودك في مكان هادئ خاصّ بك مع اتصال إنترنت جيّد.',
-    modeInPerson:
-      'العيادة في 430 Hazeldean Rd, Ottawa. يُرجى الحضور قبل 5 دقائق من الموعد.',
+    modeInPerson: (addr) => `نلتقي في ${addr}. يُرجى الحضور قبل 5 دقائق من الموعد.`,
     encouragement: 'خذ بضعة أنفاس عميقة. أنت تفعل شيئًا رائعًا لنفسك.',
     readyToJoin: 'هل أنت جاهز للانضمام؟',
     activeNow: 'الرابط فعّال الآن.',
@@ -567,6 +641,46 @@ const ar: BookingEmailCopy = {
       'الحياة تمضي بسرعة أحيانًا، ونتفهّم ذلك تمامًا. متى ما كنت مستعدًّا، يسعدنا إعادة جدولة جلستك.',
     reschedule: 'إعادة جدولة الجلسة',
     contact: 'تحتاج إلى التحدّث؟',
+  },
+
+  // TODO: review — Dr. Hala (auto-drafted AR copy for invoice + receipt emails)
+  invoiceEmail: {
+    subject: (invoiceNumber, businessName) => `فاتورة ${invoiceNumber} من ${businessName}`,
+    greeting: (name) => `عزيزي/عزيزتي ${name}،`,
+    thanks: (s) => `شكرًا لاختيارك ماما هالة للاستشارات. تجد مرفقة فاتورتك الخاصة بخدمة <strong>${s}</strong>.`,
+    subjectLabel: 'الموضوع',
+    invoiceNumberLabel: 'رقم الفاتورة',
+    issueDateLabel: 'تاريخ الإصدار',
+    dueDateLabel: 'تاريخ الاستحقاق',
+    amountDueLabel: 'المبلغ المستحق',
+    equivalentSuffix: (cad) => `(ما يعادل ${cad})`,
+    payOnlineHeading: 'الدفع الآمن عبر الإنترنت',
+    payOnlinePrompt: (total, viaStripe) => `ادفع <strong>${total}</strong> بالبطاقة${viaStripe ? ' — عبر Stripe' : ''}`,
+    payCta: (total) => `ادفع ${total}`,
+    otherPaymentPrompt: 'تفضّل Interac أو التحويل البنكي أو PayPal؟',
+    otherPaymentLink: 'اطّلع على خيارات الدفع الأخرى',
+    otherPaymentMethodsHeading: 'طرق دفع أخرى',
+    pdfReminder: 'فاتورة PDF مفصّلة مرفقة بهذا البريد. يُرجى الاحتفاظ بها في سجلّاتك.',
+    closing: (email) => `إن كان لديك أي استفسار حول هذه الفاتورة، يُرجى الردّ على هذا البريد، أو التواصل معنا عبر واتساب، أو مراسلتنا على <a href="mailto:${email}" style="color:#7A3B5E;">${email}</a>.`,
+    signoff: 'بِوُدّ،',
+    team: 'فريق ماما هالة',
+  },
+
+  // TODO: review — Dr. Hala (auto-drafted AR copy for invoice + receipt emails)
+  receipt: {
+    subject: (invoiceNumber, businessName) => `إيصال الفاتورة ${invoiceNumber} — شكرًا لك من ${businessName}`,
+    paidBannerLabel: 'تم استلام الدفع',
+    paidBannerAmount: 'مدفوع',
+    greeting: (name) => `عزيزي/عزيزتي ${name}،`,
+    thanks: (invoiceNumber) => `شكرًا جزيلًا على دفعتك. فاتورتك رقم <strong>${invoiceNumber}</strong> وُسمت كمدفوعة، والإيصال الرسمي مرفق بهذا البريد لسجلّاتك.`,
+    grateful: 'نُقدّر ثقتك ونتطلّع إلى مرافقتك في رحلتك.',
+    invoiceLabel: 'الفاتورة',
+    paymentDateLabel: 'تاريخ الدفع',
+    methodLabel: 'طريقة الدفع',
+    amountPaidLabel: 'المبلغ المدفوع',
+    equivalentSuffix: (cad) => `(ما يعادل ${cad})`,
+    signoff: 'بِوُدّ،',
+    team: 'فريق ماما هالة',
   },
 };
 

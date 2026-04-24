@@ -260,7 +260,7 @@ export default function ServiceDetailPage() {
                   const localizedForLabel = isRTL
                     ? `مُخصَّصةٌ لمنطقتِك`
                     : `Localized for your region`;
-                  const officeLabel = isRTL ? 'يعكسُ موقعَ المكتب' : 'Reflects office location';
+                  const officeLabel = isRTL ? 'يعكسُ موقعَ اللقاء' : 'Reflects meeting location';
 
                   return (
                     <div className="space-y-5 mb-6">

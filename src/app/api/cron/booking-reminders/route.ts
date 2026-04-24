@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
       // ─── 1h Reminder ───────────────────────────────────────
       if (booking.status === 'confirmed' && hoursUntil >= 0.75 && hoursUntil <= 1.25 && !booking.reminder1hSentAt) {
         try {
-          const { subject, html } = buildReminder1hEmail(booking);
+          const { subject, html } = await buildReminder1hEmail(booking);
           const messageId = await sendBookingEmail({ to: booking.clientEmail, subject, html });
           if (messageId) {
             await updateBooking(booking.bookingId, { reminder1hSentAt: new Date().toISOString() });

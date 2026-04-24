@@ -14,6 +14,15 @@ import { emailStyles as styles, emailWrapper } from '@/lib/email/shared-email-co
 import { emailCopy, type EmailLocale } from './email-copy';
 import { SITE_URL } from '@/lib/site-url';
 import { computeAdminActionToken } from './admin-action-token';
+import { resolveInPersonAddress, getEffectiveLocation } from './provider-location';
+
+async function inPersonAddressFor(booking: Booking, locale: EmailLocale): Promise<string> {
+  if (booking.effectiveLocationLabel) {
+    return resolveInPersonAddress(booking.effectiveLocationLabel, locale);
+  }
+  const eff = await getEffectiveLocation(booking.startTime);
+  return resolveInPersonAddress(eff.locationLabel, locale);
+}
 
 // ─── Formatting Helpers ─────────────────────────────────────────
 
@@ -76,13 +85,28 @@ function formatTime(iso: string, timezone: string): string {
   }
 }
 
+function formatTimeLocalized(iso: string, timezone: string, locale: EmailLocale): string {
+  try {
+    return new Date(iso).toLocaleString(locale === 'ar' ? 'ar' : 'en-US', {
+      timeZone: timezone,
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: locale !== 'ar',
+    });
+  } catch {
+    return iso;
+  }
+}
+
 function getCalendarUrl(booking: Booking): string {
   const title = encodeURIComponent(`Counseling Session — Mama Hala Consulting`);
   const details = encodeURIComponent(
     `${booking.serviceName || booking.serviceSlug}\nBooking ID: ${booking.bookingId}`,
   );
   const location = encodeURIComponent(
-    booking.sessionMode === 'online' ? 'Online' : '430 Hazeldean Rd, Ottawa, ON',
+    booking.sessionMode === 'online'
+      ? 'Online'
+      : resolveInPersonAddress(booking.effectiveLocationLabel, 'en'),
   );
   const start = booking.startTime.replace(/[-:]/g, '').replace(/\.\d{3}/, '');
   const end = booking.endTime.replace(/[-:]/g, '').replace(/\.\d{3}/, '');
@@ -230,14 +254,17 @@ export interface SessionLockedInEmailData {
   aiMessage?: string;
 }
 
-export function buildSessionLockedInEmail(
+export async function buildSessionLockedInEmail(
   data: SessionLockedInEmailData,
-): { subject: string; html: string; icsContent: string } {
+): Promise<{ subject: string; html: string; icsContent: string }> {
   const { booking, manageToken, prepTips, aiMessage } = data;
   const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
   const t = emailCopy(locale);
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
   const firstName = booking.clientName.split(' ')[0];
+  const inPersonAddr = booking.sessionMode === 'inPerson'
+    ? await inPersonAddressFor(booking, locale)
+    : '';
 
   const joinHtml = booking.meetLink
     ? `<div style="${styles.card};background:#F0FAF5;border-left:4px solid #3B8A6E;">
@@ -248,7 +275,7 @@ export function buildSessionLockedInEmail(
     : booking.sessionMode === 'inPerson'
       ? `<div style="${styles.card};background:#FFFAF5;border-left:4px solid #C8A97D;">
           <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#7A3B5E;">${t.lockedIn.officeHeading}</p>
-          <p style="margin:0 0 10px;font-size:13px;color:#4A4A5C;">${t.lockedIn.officeBody}</p>
+          <p style="margin:0 0 10px;font-size:13px;color:#4A4A5C;">${t.lockedIn.officeBody(inPersonAddr)}</p>
         </div>`
       : `<div style="${styles.card};background:#FFFAF5;border-left:4px solid #C8A97D;">
           <p style="margin:0;font-size:13px;color:#4A4A5C;">${t.lockedIn.onlineFallback}</p>
@@ -303,9 +330,10 @@ export function buildReminder24hEmail(
   manageToken: string,
   aiReminderContent?: string,
 ): { subject: string; html: string } {
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const firstName = booking.clientName.split(' ')[0];
-  const timeStr = formatTime(booking.startTime, booking.clientTimezone);
-  const dateStr = formatDateTime(booking.startTime, booking.clientTimezone);
+  const timeStr = formatTimeLocalized(booking.startTime, booking.clientTimezone, locale);
 
   const aiHtml = aiReminderContent
     ? `<div style="${styles.goldAccent}">
@@ -313,81 +341,77 @@ export function buildReminder24hEmail(
       </div>`
     : '';
 
-  // Meet link block — conditionally rendered if the booking has one.
-  // For online sessions this is the single most important thing in the
-  // email, so it sits right below the session details card.
   const meetHtml = booking.meetLink
     ? `<div style="${styles.card};background:#F0FAF5;border-left:3px solid #3B8A6E;">
-        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">Join Online Session</p>
-        <p style="margin:0 0 10px;font-size:12px;color:#4A4A5C;">Your Google Meet link is ready — save it now so you don&apos;t have to hunt for it tomorrow.</p>
-        <a href="${booking.meetLink}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Google Meet</a>
+        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">${t.reminder24h.meetHeading}</p>
+        <p style="margin:0 0 10px;font-size:12px;color:#4A4A5C;">${t.reminder24h.meetHint}</p>
+        <a href="${booking.meetLink}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">${t.reminder24h.meetCta}</a>
       </div>`
     : '';
 
   const content = `
     <div style="${styles.card}">
-      <h2 style="${styles.heading}">Your Session is Tomorrow</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">This is a friendly reminder that your counseling session is tomorrow at <strong>${timeStr}</strong>.</p>
+      <h2 style="${styles.heading}">${t.reminder24h.heading}</h2>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
+      <p style="${styles.text}">${t.reminder24h.body(timeStr)}</p>
       ${aiHtml}
     </div>
-    ${sessionDetailsCard(booking)}
+    ${sessionDetailsCard(booking, locale)}
     ${meetHtml}
     <div style="text-align:center;padding:8px 0 12px;">
-      <a href="${getCalendarUrl(booking)}" style="${styles.button}">Add to Calendar</a>
+      <a href="${getCalendarUrl(booking)}" style="${styles.button}">${t.reminder24h.addToCalendar}</a>
     </div>
     <div style="text-align:center;padding:0 0 20px;">
-      <a href="${getManageUrl(manageToken)}" style="${styles.buttonSecondary}">Need to Reschedule?</a>
+      <a href="${getManageUrl(manageToken, locale)}" style="${styles.buttonSecondary}">${t.reminder24h.needReschedule}</a>
     </div>
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.muted}">Questions? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a></p>
+      <p style="${styles.muted}">${t.reminder24h.questions} <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">${t.whatsappUs} <span dir="ltr">${BUSINESS.phone}</span></a></p>
     </div>`;
 
   return {
-    subject: `Reminder: Your counseling session is tomorrow`,
-    html: wrapEmail(content),
+    subject: t.reminder24h.subject,
+    html: wrapEmail(content, locale),
   };
 }
 
 // ─── 3. 1-Hour Reminder Email ───────────────────────────────────
 
-export function buildReminder1hEmail(
+export async function buildReminder1hEmail(
   booking: Booking,
-): { subject: string; html: string } {
+): Promise<{ subject: string; html: string }> {
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const firstName = booking.clientName.split(' ')[0];
   const mode = booking.sessionMode === 'online'
-    ? 'Please make sure you are in a quiet, private space with a good internet connection.'
-    : 'The office is located at 430 Hazeldean Rd, Ottawa. Please arrive 5 minutes early.';
+    ? t.reminder1h.modeOnline
+    : t.reminder1h.modeInPerson(await inPersonAddressFor(booking, locale));
 
-  // Big "Join Now" button for online sessions — this is THE most
-  // important CTA at T-1h. If the client clicks this and nothing else,
-  // the email did its job.
   const meetHtml = booking.meetLink
     ? `<div style="${styles.card};background:#F0FAF5;border-left:4px solid #3B8A6E;text-align:center;">
-        <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#3B8A6E;">Ready to Join?</p>
-        <p style="margin:0 0 14px;font-size:12px;color:#4A4A5C;">The link is active now.</p>
-        <a href="${booking.meetLink}" style="display:inline-block;padding:14px 36px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:15px;font-weight:700;">Join Google Meet</a>
+        <p style="margin:0 0 6px;font-size:14px;font-weight:700;color:#3B8A6E;">${t.reminder1h.readyToJoin}</p>
+        <p style="margin:0 0 14px;font-size:12px;color:#4A4A5C;">${t.reminder1h.activeNow}</p>
+        <a href="${booking.meetLink}" style="display:inline-block;padding:14px 36px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:15px;font-weight:700;">${t.reminder1h.joinCta}</a>
       </div>`
     : '';
 
   const content = `
     <div style="${styles.card}">
-      <h2 style="${styles.heading}">Starting Soon — 1 Hour</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Your counseling session starts in about 1 hour.</p>
+      <h2 style="${styles.heading}">${t.reminder1h.heading}</h2>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
+      <p style="${styles.text}">${t.reminder1h.intro}</p>
       <p style="${styles.text}">${mode}</p>
       <div style="${styles.goldAccent}">
-        <p style="margin:0;font-size:13px;color:#4A4A5C;">Take a few deep breaths. You are doing something wonderful for yourself.</p>
+        <p style="margin:0;font-size:13px;color:#4A4A5C;">${t.reminder1h.encouragement}</p>
       </div>
     </div>
     ${meetHtml}
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.muted}">Need to reach our team urgently? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp ${BUSINESS.phone}</a></p>
+      <p style="${styles.muted}">${t.reminder1h.urgentContact} <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">${t.whatsappUs} <span dir="ltr">${BUSINESS.phone}</span></a></p>
     </div>`;
 
   return {
-    subject: `Starting soon: Your session in 1 hour`,
-    html: wrapEmail(content),
+    subject: t.reminder1h.subject,
+    html: wrapEmail(content, locale),
   };
 }
 
@@ -398,42 +422,48 @@ export function buildRescheduleEmail(
   newBooking: Booking,
   manageToken: string,
 ): { subject: string; html: string; icsContent: string } {
+  const locale: EmailLocale = newBooking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const firstName = newBooking.clientName.split(' ')[0];
-  const oldDateTime = formatDateTime(oldBooking.startTime, oldBooking.clientTimezone);
-  const newDateTime = formatDateTime(newBooking.startTime, newBooking.clientTimezone);
+  const oldDateTime = locale === 'ar'
+    ? formatDateTimeAr(oldBooking.startTime, oldBooking.clientTimezone)
+    : formatDateTime(oldBooking.startTime, oldBooking.clientTimezone);
+  const newDateTime = locale === 'ar'
+    ? formatDateTimeAr(newBooking.startTime, newBooking.clientTimezone)
+    : formatDateTime(newBooking.startTime, newBooking.clientTimezone);
 
   const content = `
     <div style="${styles.card}">
-      <h2 style="${styles.heading}">Session Rescheduled</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Your session has been successfully rescheduled.</p>
+      <h2 style="${styles.heading}">${t.reschedule.heading}</h2>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
+      <p style="${styles.text}">${t.reschedule.intro}</p>
       <table width="100%" cellpadding="0" cellspacing="0" style="margin:16px 0;">
         <tr>
           <td style="padding:8px 12px;background:#FFF5F5;border-radius:8px;">
-            <p style="margin:0;font-size:12px;color:#8E8E9F;">Previous time</p>
+            <p style="margin:0;font-size:12px;color:#8E8E9F;">${t.reschedule.previousTime}</p>
             <p style="margin:0;font-size:14px;color:#C45B5B;text-decoration:line-through;">${oldDateTime}</p>
           </td>
         </tr>
         <tr><td style="padding:4px;"></td></tr>
         <tr>
           <td style="padding:8px 12px;background:#F0FAF5;border-radius:8px;">
-            <p style="margin:0;font-size:12px;color:#8E8E9F;">New time</p>
+            <p style="margin:0;font-size:12px;color:#8E8E9F;">${t.reschedule.newTime}</p>
             <p style="margin:0;font-size:14px;color:#3B8A6E;font-weight:600;">${newDateTime}</p>
           </td>
         </tr>
       </table>
     </div>
-    ${sessionDetailsCard(newBooking)}
+    ${sessionDetailsCard(newBooking, locale)}
     <div style="text-align:center;padding:8px 0 12px;">
-      <a href="${getCalendarUrl(newBooking)}" style="${styles.button}">Update Calendar</a>
+      <a href="${getCalendarUrl(newBooking)}" style="${styles.button}">${t.reschedule.updateCalendar}</a>
     </div>
     <div style="text-align:center;padding:0 0 20px;">
-      <a href="${getManageUrl(manageToken)}" style="${styles.buttonSecondary}">Manage Booking</a>
+      <a href="${getManageUrl(manageToken, locale)}" style="${styles.buttonSecondary}">${t.reschedule.manageBooking}</a>
     </div>`;
 
   return {
-    subject: `Session rescheduled — new time confirmed`,
-    html: wrapEmail(content),
+    subject: t.reschedule.subject,
+    html: wrapEmail(content, locale),
     icsContent: generateBookingICS(newBooking),
   };
 }
@@ -443,27 +473,31 @@ export function buildRescheduleEmail(
 export function buildCancellationEmail(
   booking: Booking,
 ): { subject: string; html: string; icsContent: string } {
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const firstName = booking.clientName.split(' ')[0];
-  const dateTime = formatDateTime(booking.startTime, booking.clientTimezone);
+  const dateTime = locale === 'ar'
+    ? formatDateTimeAr(booking.startTime, booking.clientTimezone)
+    : formatDateTime(booking.startTime, booking.clientTimezone);
 
   const content = `
     <div style="${styles.card}">
-      <h2 style="${styles.heading}">Session Cancelled</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Your session on <strong>${dateTime}</strong> has been cancelled.</p>
-      ${booking.cancelReason ? `<p style="${styles.text}">Reason: ${booking.cancelReason}</p>` : ''}
-      <p style="${styles.text}">We understand that plans change. Whenever you are ready, we would love to see you.</p>
+      <h2 style="${styles.heading}">${t.cancellation.heading}</h2>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
+      <p style="${styles.text}">${t.cancellation.body(dateTime)}</p>
+      ${booking.cancelReason ? `<p style="${styles.text}">${t.cancellation.reasonPrefix} ${booking.cancelReason}</p>` : ''}
+      <p style="${styles.text}">${t.cancellation.note}</p>
     </div>
     <div style="text-align:center;padding:8px 0 20px;">
-      <a href="${SITE_URL}/en/book" style="${styles.button}">Book a New Session</a>
+      <a href="${SITE_URL}/${locale}/book" style="${styles.button}">${t.cancellation.bookNew}</a>
     </div>
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.muted}">Questions? Reach us at ${BUSINESS.email} or <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp ${BUSINESS.phone}</a></p>
+      <p style="${styles.muted}">${t.cancellation.questions} ${BUSINESS.email} · <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">${t.whatsappUs} <span dir="ltr">${BUSINESS.phone}</span></a></p>
     </div>`;
 
   return {
-    subject: `Your session has been cancelled`,
-    html: wrapEmail(content),
+    subject: t.cancellation.subject,
+    html: wrapEmail(content, locale),
     icsContent: generateCancelICS(booking),
   };
 }
@@ -735,13 +769,17 @@ export function buildPaymentConfirmationEmail(
   booking: Booking,
   manageToken: string,
 ): { subject: string; html: string } {
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const firstName = booking.clientName.split(' ')[0];
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
-  const dateTime = formatDateTime(booking.startTime, booking.clientTimezone);
+  const dateTime = locale === 'ar'
+    ? formatDateTimeAr(booking.startTime, booking.clientTimezone)
+    : formatDateTime(booking.startTime, booking.clientTimezone);
 
   const meetHtml = booking.meetLink
     ? `<div style="text-align:center;padding:12px 0;">
-        <a href="${booking.meetLink}" style="${styles.button};background:#3B8A6E;">Join via Google Meet</a>
+        <a href="${booking.meetLink}" style="${styles.button};background:#3B8A6E;">${t.payment.meetCta}</a>
       </div>`
     : '';
 
@@ -750,22 +788,22 @@ export function buildPaymentConfirmationEmail(
       <div style="text-align:center;margin:0 0 16px;">
         <div style="display:inline-block;width:48px;height:48px;border-radius:50%;background:#F0FAF5;line-height:48px;font-size:24px;text-align:center;">&#10003;</div>
       </div>
-      <h2 style="${styles.heading};text-align:center;">Payment Received — Session Confirmed!</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Thank you for your payment. Your session is now fully confirmed and we're looking forward to meeting you.</p>
+      <h2 style="${styles.heading};text-align:center;">${t.payment.heading}</h2>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
+      <p style="${styles.text}">${t.payment.body}</p>
     </div>
-    ${sessionDetailsCard(booking)}
+    ${sessionDetailsCard(booking, locale)}
     ${meetHtml}
     <div style="text-align:center;padding:8px 0 12px;">
-      <a href="${getCalendarUrl(booking)}" style="${styles.button}">Add to Calendar</a>
+      <a href="${getCalendarUrl(booking)}" style="${styles.button}">${t.payment.addToCalendar}</a>
     </div>
     <div style="text-align:center;padding:0 0 20px;">
-      <a href="${getManageUrl(manageToken)}" style="${styles.buttonSecondary}">Manage Booking</a>
+      <a href="${getManageUrl(manageToken, locale)}" style="${styles.buttonSecondary}">${t.payment.manageBooking}</a>
     </div>`;
 
   return {
-    subject: `Payment confirmed — ${serviceName} on ${dateTime}`,
-    html: wrapEmail(content),
+    subject: t.payment.subject(serviceName, dateTime),
+    html: wrapEmail(content, locale),
   };
 }
 
@@ -775,6 +813,8 @@ export function buildFollowUpEmail(
   booking: Booking,
   aiFollowUpMessage?: string,
 ): { subject: string; html: string } {
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const firstName = booking.clientName.split(' ')[0];
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
 
@@ -786,42 +826,42 @@ export function buildFollowUpEmail(
 
   const content = `
     <div style="${styles.card}">
-      <h2 style="${styles.heading}">Thank You, ${firstName}</h2>
-      <p style="${styles.text}">Thank you for your session today. Taking time for yourself, or for your loved ones, is one of the most important investments you can make, and we are honored to be part of your journey.</p>
+      <h2 style="${styles.heading}">${t.followUp.heading(firstName)}</h2>
+      <p style="${styles.text}">${t.followUp.thanks}</p>
       ${aiHtml}
-      <p style="${styles.text}">If anything comes up between sessions, please do not hesitate to reach out. We are here for you.</p>
-      <p style="${styles.text};font-weight:600;color:#7A3B5E;">Warmly,<br/>Mama Hala Consulting</p>
+      <p style="${styles.text}">${t.followUp.care}</p>
+      <p style="${styles.text};font-weight:600;color:#7A3B5E;">${t.followUp.signoff}</p>
     </div>
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.subheading}">What's Next?</p>
+      <p style="${styles.subheading}">${t.followUp.whatsNext}</p>
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr><td style="padding:8px 0;">
-          <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#4A4A5C;">Book Your Next Session</p>
-          <p style="margin:0;font-size:12px;color:#8E8E9F;">Consistency is key to growth. Schedule your next session at a time that works for you.</p>
+          <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#4A4A5C;">${t.followUp.bookNextTitle}</p>
+          <p style="margin:0;font-size:12px;color:#8E8E9F;">${t.followUp.bookNextBody}</p>
         </td></tr>
         <tr><td style="padding:8px 0;">
-          <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#4A4A5C;">Reflect & Journal</p>
-          <p style="margin:0;font-size:12px;color:#8E8E9F;">Take a few minutes to write down any insights or feelings from today's session.</p>
+          <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#4A4A5C;">${t.followUp.reflectTitle}</p>
+          <p style="margin:0;font-size:12px;color:#8E8E9F;">${t.followUp.reflectBody}</p>
         </td></tr>
         <tr><td style="padding:8px 0;">
-          <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#4A4A5C;">Practice Self-Care</p>
-          <p style="margin:0;font-size:12px;color:#8E8E9F;">Be gentle with yourself today. Drink water, rest, and give yourself space to process.</p>
+          <p style="margin:0 0 4px;font-size:13px;font-weight:600;color:#4A4A5C;">${t.followUp.selfCareTitle}</p>
+          <p style="margin:0;font-size:12px;color:#8E8E9F;">${t.followUp.selfCareBody}</p>
         </td></tr>
       </table>
     </div>
     <div style="text-align:center;padding:16px 0 20px;">
-      <a href="${SITE_URL}/en/book" style="${styles.button}">Book Next Session</a>
+      <a href="${SITE_URL}/${locale}/book" style="${styles.button}">${t.followUp.bookNextCta}</a>
     </div>
     <div style="text-align:center;padding:0 0 12px;">
-      <a href="${SITE_URL}/en/account" style="${styles.buttonSecondary}">View My Account</a>
+      <a href="${SITE_URL}/${locale}/account" style="${styles.buttonSecondary}">${t.followUp.viewAccount}</a>
     </div>
     <div style="text-align:center;padding:12px 0;">
-      <p style="${styles.muted}">Questions or need support? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a> or <a href="mailto:${BUSINESS.email}" style="color:#7A3B5E;">${BUSINESS.email}</a></p>
+      <p style="${styles.muted}">${t.followUp.contact} <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">${t.whatsappUs} <span dir="ltr">${BUSINESS.phone}</span></a> · <a href="mailto:${BUSINESS.email}" style="color:#7A3B5E;">${BUSINESS.email}</a></p>
     </div>`;
 
   return {
-    subject: `Thank you for your session — ${serviceName}`,
-    html: wrapEmail(content),
+    subject: t.followUp.subject(serviceName),
+    html: wrapEmail(content, locale),
   };
 }
 

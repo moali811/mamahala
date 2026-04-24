@@ -51,6 +51,8 @@ export interface BookingIntakeInput {
   endTime?: string;
   /** Any free-text notes the client provided at booking time. */
   customerNotes?: string;
+  /** Client's preferred email language ('en' | 'ar'), from the booking record. */
+  preferredLanguage?: 'en' | 'ar';
   /**
    * When this booking is part of a recurring series, describes how the
    * draft should be created:
@@ -303,6 +305,7 @@ export async function processBookingIntake(
     subject: subjectText,
     adminNote: adminNoteParts.join('\n'),
     ...(lineItems ? { lineItems } : {}),
+    ...(input.preferredLanguage ? { preferredLanguage: input.preferredLanguage } : {}),
     createdAt: now,
     updatedAt: now,
   };

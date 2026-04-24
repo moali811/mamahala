@@ -18,6 +18,21 @@ export const BUSINESS = {
   // Canonical formatted string (single line). Update here if HQ moves.
   address: '430 Hazeldean Rd, Ottawa, ON K2L 1E8, Canada',
 
+  // In-person session addresses by region. The email/ICS/GCal layer picks
+  // the right one based on booking.effectiveLocationLabel (or the current
+  // provider location when that's not set). Update the Dubai address when
+  // the permanent venue is confirmed.
+  inPersonAddresses: {
+    canada: {
+      en: '430 Hazeldean Rd, Ottawa, ON K2L 1E8 — Canada',
+      ar: '430 Hazeldean Rd, Ottawa, ON K2L 1E8 — كندا',
+    },
+    uae: {
+      en: 'HDS Business Centre, Cluster M, JLT, 34th Floor, Dubai, UAE',
+      ar: 'HDS Business Centre, Cluster M, JLT, الطّابق 34، دبي، الإمارات',
+    },
+  },
+
   // Brand tagline — appears in website footer, email footers, PDF invoice footer.
   tagline: 'For a life full of love, tranquility & peace',
   taglineAr: 'لحياةٍ مُفعَمةٍ بالحبِّ والسّكينةِ والسّلام',

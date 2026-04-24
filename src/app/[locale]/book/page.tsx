@@ -1263,7 +1263,7 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
             <input
               type="text" value={name} onChange={e => setName(e.target.value)}
               placeholder={isRTL ? 'اسمك الكامل' : 'Your full name'}
-              className={inputClass} dir={isRTL ? 'rtl' : 'ltr'}
+              className={inputClass} dir="auto"
             />
           </SmartField>
           <SmartField icon={Mail} label={isRTL ? 'البريد الإلكتروني' : 'Email Address'} valid={emailValid}>

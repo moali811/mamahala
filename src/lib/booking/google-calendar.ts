@@ -20,7 +20,7 @@ import {
   setCalendarEventId,
   getCalendarEventId,
 } from './booking-store';
-import { getEffectiveLocation } from './provider-location';
+import { getEffectiveLocation, resolveInPersonAddress } from './provider-location';
 
 // ─── Config ─────────────────────────────────────────────────────
 
@@ -259,10 +259,9 @@ export async function createCalendarEvent(
           },
         },
       } : {
-        // For in-person, prefix the physical office address with the
-        // current city so a Dubai pop-up on Dr. Hala's phone reads as
-        // such and not as a mis-geocoded Ottawa address.
-        location: `${providerLocationLabel} — 430 Hazeldean Rd, K2L 1E8, Ottawa, Ontario, Canada`,
+        // For in-person, resolve the region-specific address so Dubai
+        // bookings don't inherit the Ottawa location on Dr. Hala's phone.
+        location: resolveInPersonAddress(providerLocationLabel, 'en'),
       }),
     };
 

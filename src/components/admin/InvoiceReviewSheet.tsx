@@ -406,6 +406,7 @@ export default function InvoiceReviewSheet({
                           onChange={e => updateClient({ name: e.target.value })}
                           className={inputClass}
                           placeholder="Full name"
+                          dir="auto"
                         />
                       </Field>
                       <Field label="Email">

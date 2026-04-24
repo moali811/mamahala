@@ -8,6 +8,7 @@
 
 import type { Booking } from './types';
 import { BUSINESS } from '@/config/business';
+import { resolveInPersonAddress } from './provider-location';
 
 /**
  * Generate an ICS file content string for a booking.
@@ -20,7 +21,7 @@ export function generateBookingICS(booking: Booking): string {
   const summary = `${serviceName} — ${modeLabel} · Mama Hala Consulting`;
   const location = booking.sessionMode === 'online'
     ? 'Online / Video Call'
-    : '430 Hazeldean Rd, K2L 1E8, Ontario, Canada';
+    : resolveInPersonAddress(booking.effectiveLocationLabel, 'en');
 
   const description = [
     `Session: ${serviceName}`,

@@ -224,6 +224,7 @@ export async function createBookingHold(
         startTime: booking.startTime,
         endTime: booking.endTime,
         customerNotes: booking.clientNotes,
+        preferredLanguage: booking.preferredLanguage,
         seriesContext,
       });
       draftId = intake.draftId;

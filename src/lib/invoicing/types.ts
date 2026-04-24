@@ -142,6 +142,12 @@ export interface InvoiceDraft {
    * to the generic "customer chooses what to pay" link with an amount hint.
    */
   stripePaymentLink?: string;
+  /**
+   * Client's preferred email language, copied from the originating Booking
+   * (or manually selected by admin when composing standalone). Drives the
+   * locale of the invoice + receipt emails. Defaults to 'en' when absent.
+   */
+  preferredLanguage?: 'en' | 'ar';
   createdAt: string;
   updatedAt: string;
 }
