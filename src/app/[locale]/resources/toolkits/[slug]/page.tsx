@@ -85,6 +85,8 @@ export default function ToolkitDetailPage() {
   const [activeSection, setActiveSection] = useState(0);
   const [expandedDay, setExpandedDay] = useState<string | null>(null);
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [dynamicPricing, setDynamicPricing] = useState({
     toolkitFullAccessPrice: BUSINESS.toolkitFullAccessPrice,
     academyFullAccessPrice: BUSINESS.academyFullAccessPrice,
@@ -537,8 +539,10 @@ export default function ToolkitDetailPage() {
                           {isRTL ? 'دفعةٌ واحدة · بدون اشتراك' : 'One-time payment · no subscription'}
                         </p>
                         <button
+                          disabled={checkoutLoading}
                           onClick={async () => {
-                            // Try dynamic checkout first, fall back to payment link
+                            setCheckoutError(null);
+                            setCheckoutLoading(true);
                             try {
                               const res = await fetch('/api/toolkit/checkout', {
                                 method: 'POST',
@@ -550,37 +554,41 @@ export default function ToolkitDetailPage() {
                                   locale,
                                 }),
                               });
-                              const data = await res.json();
-                              if (data.url) {
+                              const data = await res.json().catch(() => ({}));
+                              if (res.ok && data.url) {
                                 window.location.href = data.url;
                                 return;
                               }
-                            } catch { /* fall through to payment link */ }
-                            // Fallback: static Stripe payment link
-                            const stripeLink = BUSINESS.toolkitPaymentLinks.fullAccess;
-                            if (stripeLink) {
-                              const url = `${stripeLink}?client_reference_id=${toolkit.slug}`;
-                              window.location.href = url;
-                            } else {
-                              const confirm = window.confirm(
+                              setCheckoutError(
                                 isRTL
-                                  ? 'الدفع قيد الإعداد — سيتوفّر قريبًا. هل تريدُ المحاكاة للتجربة؟'
-                                  : 'Payment setup coming soon. Simulate unlock for testing?'
+                                  ? 'الدفع غير متاح حالياً. حاول مرة أخرى بعد قليل أو راسلنا على admin@mamahala.ca.'
+                                  : 'Payment is unavailable right now. Please try again in a moment or email admin@mamahala.ca.'
                               );
-                              if (confirm) {
-                                localStorage.setItem(`toolkit:paid:${toolkit.slug}`, 'true');
-                                setIsUnlocked(true);
-                              }
+                            } catch {
+                              setCheckoutError(
+                                isRTL
+                                  ? 'تعذّر الاتصال. تحقّق من الإنترنت وحاول مرة أخرى.'
+                                  : 'Connection failed. Check your network and try again.'
+                              );
+                            } finally {
+                              setCheckoutLoading(false);
                             }
                           }}
-                          className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 text-white text-sm font-semibold rounded-xl shadow-md hover:opacity-90 transition-opacity"
+                          className="w-full max-w-xs inline-flex items-center justify-center gap-2 px-6 py-3 text-white text-sm font-semibold rounded-xl shadow-md hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
                           style={{
                             background: `linear-gradient(135deg, ${toolkit.color}, ${toolkit.color}CC)`,
                           }}
                         >
                           <Sparkles className="w-4 h-4" />
-                          {isRTL ? 'افتحِ الوصولَ الكامل' : 'Unlock Full Access'}
+                          {checkoutLoading
+                            ? (isRTL ? 'جارٍ التحويل…' : 'Redirecting…')
+                            : (isRTL ? 'افتحِ الوصولَ الكامل' : 'Unlock Full Access')}
                         </button>
+                        {checkoutError && (
+                          <p className="mt-3 text-xs text-[#C4878A] max-w-xs mx-auto" role="alert">
+                            {checkoutError}
+                          </p>
+                        )}
                         {/* Redeem access for VIPs */}
                         <button
                           onClick={() => {

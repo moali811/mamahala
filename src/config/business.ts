@@ -54,24 +54,20 @@ export const BUSINESS = {
 
   // ─── ACADEMY — Single Full Program Access tier ────────────────
   // One flat price unlocks everything (Level 2 + Level 3). Level 1 stays free.
-  // Previous tiered pricing (Growth $19 / Mastery $29 / Bundle $41) was
-  // collapsed into one clean decision: free or $41 for full access.
   // Strategy: lead magnet → 1:1 funnel (Dr. Hala's real business).
+  // Pricing comes from KV settings (admin-editable) via getProductPricing();
+  // the value below is only the bootstrap default. Checkout is 100% dynamic
+  // via /api/academy/checkout — no static Stripe Payment Links in play.
   academyFullAccessPrice: 41,
-  academyPaymentLinks: {
-    fullAccess: 'https://buy.stripe.com/4gM3cueRo7c97ohf2Nawo0a',  // $41 CAD — Mama Hala Academy - Full Program Access
-  },
 
   // ─── TOOLKITS — Single Premium Access tier ────────────────────
   // One flat price unlocks any premium toolkit. Free preview (section 1) stays.
-  // Launch price: $7 CAD (previous: $19 flat, before that: $19/$29 tiered).
-  // ⚠️  Stripe payment link still set to $19 — update in Stripe dashboard!
-  // Success URL configured in Stripe dashboard:
-  //   https://mamahala.ca/en/resources/toolkits/unlock-success?slug={CHECKOUT_SESSION_CLIENT_REFERENCE_ID}
+  // Launch price: $7 CAD. Pricing is admin-editable via KV settings and
+  // consumed by /api/toolkit/checkout which creates a fresh Stripe Checkout
+  // Session with the current price each time — no static Payment Links in
+  // play (the previous $19 static link risked over-charging when the
+  // dynamic price changed).
   toolkitFullAccessPrice: 7,
-  toolkitPaymentLinks: {
-    fullAccess: 'https://buy.stripe.com/00w8wOaB88gd23XaMxawo0b',  // $7 CAD launch price — Mama Hala Toolkit - Full Premium Access (update in Stripe!)
-  },
 
   // VIP emails — bypass ALL paywalls (academy levels + premium toolkits)
   // Used for admin access, founder access, and internal testing
