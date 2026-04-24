@@ -389,6 +389,22 @@ export default function InvoiceReviewSheet({
                     </div>
                   )}
                 </div>
+                {/* Due-date readout — shows the anchored session-based
+                    date that the PDF/email will carry, so admin can
+                    verify before sending. */}
+                <div className="mt-3 flex items-center justify-between gap-2 pt-3 border-t border-[#F3EFE8]">
+                  <span className="text-[11px] uppercase tracking-wider text-[#8E8E9F] font-semibold">
+                    Invoice due
+                  </span>
+                  <div className="text-right">
+                    <div className="text-sm font-bold text-[#7A3B5E] tabular-nums">
+                      {new Date(booking.startTime).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: '2-digit' })}
+                    </div>
+                    <div className="text-[10px] text-[#8E8E9F]">
+                      Anchored to the session
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* ─── Client details — editable ─────────────────── */}

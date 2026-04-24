@@ -1208,11 +1208,49 @@ function ComposeTab({
                   />
                   <p className="mt-1 text-[10px] text-[#8E8E9F]">
                     {draft.sessionStartTime
-                      ? `Due date auto-anchored to the session (${new Date(draft.sessionStartTime).toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: '2-digit' })}).`
+                      ? 'Anchored to the session — see Due date below.'
                       : 'Due date = issue date + this many days.'}
                   </p>
                 </div>
               </div>
+
+              {/* Computed due-date readout — matches what the PDF/email will carry */}
+              {(() => {
+                const issueIso = draft.issueDate
+                  ? new Date(draft.issueDate).toISOString()
+                  : new Date().toISOString();
+                const issueDate = new Date(issueIso);
+                let dueDate: Date;
+                let sourceLabel: string;
+                if (draft.sessionStartTime) {
+                  const sessionAt = new Date(draft.sessionStartTime);
+                  if (!isNaN(sessionAt.getTime()) && sessionAt > issueDate) {
+                    dueDate = sessionAt;
+                    sourceLabel = 'Session date';
+                  } else {
+                    dueDate = new Date(issueDate);
+                    dueDate.setUTCDate(dueDate.getUTCDate() + (draft.daysUntilDue || 7));
+                    sourceLabel = 'Session already past — fallback to issue + days';
+                  }
+                } else {
+                  dueDate = new Date(issueDate);
+                  dueDate.setUTCDate(dueDate.getUTCDate() + (draft.daysUntilDue || 7));
+                  sourceLabel = 'Issue date + days until due';
+                }
+                return (
+                  <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg bg-[#FAF7F2] border border-[#F0E8D8]">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest text-[#8E8E9F] font-semibold">
+                        Due date
+                      </div>
+                      <div className="text-[10px] text-[#8E8E9F] mt-0.5">{sourceLabel}</div>
+                    </div>
+                    <div className="text-sm font-bold text-[#7A3B5E] tabular-nums">
+                      {dueDate.toLocaleDateString('en-CA', { year: 'numeric', month: 'short', day: '2-digit' })}
+                    </div>
+                  </div>
+                );
+              })()}
 
               {/* Invoice number override */}
               <div>

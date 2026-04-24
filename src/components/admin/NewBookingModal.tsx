@@ -894,6 +894,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
                     setSendClientEmail={setSendClientEmail}
                     activeSection={activeSection}
                     setActiveSection={setActiveSection}
+                    password={password}
                   />
                 ) : (
                   step2 && (
@@ -1108,10 +1109,86 @@ interface Step1Props {
   setSendClientEmail: (v: boolean) => void;
   activeSection: SectionKey;
   setActiveSection: (v: SectionKey) => void;
+  /** Admin password, forwarded to the customer-list fetch. */
+  password: string;
+}
+
+/**
+ * Minimal customer shape needed for the name-autocomplete in Step 1.
+ * Lifted inline to avoid importing the full Customer type from the
+ * invoicing lib (which drags in server-only helpers).
+ */
+interface AutocompleteCustomer {
+  email: string;
+  name: string;
+  country: string;
+  phone?: string;
+  mobilePhone?: string;
 }
 
 function Step1Content(props: Step1Props) {
   const providerTz = props.providerLoc?.timezone ?? 'America/Toronto';
+
+  // ─── Client-name autocomplete ─────────────────────────────
+  // Fetch once per modal open. Customers are small (~hundreds) so
+  // client-side filtering is cheaper than round-tripping on every
+  // keystroke. We keep a case-insensitive, substring match against
+  // name OR email so the admin can type either.
+  const [allCustomers, setAllCustomers] = useState<AutocompleteCustomer[]>([]);
+  const [customerMenuOpen, setCustomerMenuOpen] = useState(false);
+  const [justPickedCustomer, setJustPickedCustomer] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/admin/invoices/customers?limit=500', {
+          headers: { Authorization: `Bearer ${props.password}` },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        const list: AutocompleteCustomer[] = Array.isArray(data?.customers)
+          ? data.customers.map((c: any) => ({
+              email: String(c?.email ?? ''),
+              name: String(c?.name ?? ''),
+              country: String(c?.country ?? ''),
+              phone: c?.phone ? String(c.phone) : undefined,
+              mobilePhone: c?.mobilePhone ? String(c.mobilePhone) : undefined,
+            }))
+          : [];
+        setAllCustomers(list);
+      } catch {
+        // Silent — autocomplete is a nice-to-have, admin can still type manually
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [props.password]);
+
+  const customerMatches = useMemo(() => {
+    const q = props.clientName.trim().toLowerCase();
+    if (q.length < 2) return [];
+    return allCustomers
+      .filter(c =>
+        c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q),
+      )
+      .slice(0, 6);
+  }, [props.clientName, allCustomers]);
+
+  const pickCustomer = (c: AutocompleteCustomer) => {
+    props.setClientName(c.name);
+    if (c.email) props.setClientEmail(c.email);
+    const iso = (c.country || '').toUpperCase();
+    if (iso && COUNTRIES_BY_CODE[iso]) {
+      props.setClientCountry(iso);
+      const tzs = COUNTRIES_BY_CODE[iso].timezones;
+      if (tzs.length > 0) props.setClientTimezone(tzs[0]);
+    }
+    const phone = c.phone || c.mobilePhone;
+    if (phone) props.setClientPhone(phone);
+    setCustomerMenuOpen(false);
+    setJustPickedCustomer(true);
+  };
 
   // Section completion
   const sectionComplete = {
@@ -1257,7 +1334,7 @@ function Step1Content(props: Step1Props) {
         onToggle={() => props.setActiveSection('client')}
       >
         <div className="space-y-3">
-          <div>
+          <div className="relative">
             <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">
               <User className="inline w-3 h-3 mr-1" />
               Client name
@@ -1265,11 +1342,53 @@ function Step1Content(props: Step1Props) {
             <input
               type="text"
               value={props.clientName}
-              onChange={e => props.setClientName(e.target.value)}
+              onChange={e => {
+                props.setClientName(e.target.value);
+                setCustomerMenuOpen(true);
+                setJustPickedCustomer(false);
+              }}
+              onFocus={() => {
+                if (!justPickedCustomer) setCustomerMenuOpen(true);
+              }}
+              onBlur={() => {
+                // Delay so a click on a menu item registers first.
+                window.setTimeout(() => setCustomerMenuOpen(false), 150);
+              }}
               placeholder="Full name"
               dir="auto"
+              autoComplete="off"
               className="w-full h-12 px-4 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] placeholder:text-[#C4C0BC] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/30 transition-colors"
             />
+            {customerMenuOpen && customerMatches.length > 0 && (
+              <ul
+                role="listbox"
+                className="absolute z-20 left-0 right-0 mt-1 max-h-64 overflow-y-auto rounded-xl border border-[#E8E4DE] bg-white shadow-lg"
+              >
+                {customerMatches.map(c => (
+                  <li key={c.email}>
+                    <button
+                      type="button"
+                      onClick={() => pickCustomer(c)}
+                      className="w-full px-3 py-2 text-left hover:bg-[#FAF7F2] border-b last:border-b-0 border-[#F3EFE8] transition-colors"
+                    >
+                      <div className="text-sm font-semibold text-[#2D2A33] truncate" dir="auto">
+                        {c.name}
+                      </div>
+                      <div className="text-[11px] text-[#8E8E9F] truncate">
+                        {c.email}
+                        {c.country ? ` · ${c.country.toUpperCase()}` : ''}
+                      </div>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {justPickedCustomer && (
+              <p className="mt-1 text-[10px] text-[#3B8A6E]">
+                <Check className="inline w-3 h-3 mr-0.5" />
+                Existing client — details auto-filled
+              </p>
+            )}
           </div>
           <div>
             <label className="block text-xs font-semibold text-[#4A4A5C] mb-1.5">Client email</label>
