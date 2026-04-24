@@ -20,7 +20,7 @@ import {
   getWatermarkLogoDataUrl,
 } from './pdf-assets';
 import {
-  PLUM, GOLD, DARK, TEXT, MUTED,
+  PLUM, GOLD, DARK, TEXT, MUTED, LIGHT,
   WHITE, GREEN, PALE_GREEN,
   PAGE_WIDTH, PAGE_HEIGHT, MARGIN, CONTENT_WIDTH,
   formatDate, hr, wrap, drawText,
@@ -342,21 +342,48 @@ export async function generateReceiptPdf(
     } catch { /* skip */ }
   }
 
-  // ─── Footer — minimal, matches invoice tone ────────────────
-  const footerY = PAGE_HEIGHT - 12;
+  // ─── FOOTER — identical structure to invoice footer ───────
+  // Reserve ~26mm at the page bottom for divider + tagline + 3
+  // address lines + receipt attestation line.
+  const footTop = PAGE_HEIGHT - 26;
+
+  doc.setDrawColor(...LIGHT);
+  doc.setLineWidth(0.2);
+  doc.line(MARGIN, footTop, PAGE_WIDTH - MARGIN, footTop);
+
+  // Tagline
   doc.setFont('helvetica', 'italic');
   doc.setFontSize(8);
   doc.setTextColor(...PLUM);
-  doc.text(BUSINESS.tagline, PAGE_WIDTH / 2, footerY, { align: 'center' });
+  doc.text(BUSINESS.tagline, PAGE_WIDTH / 2, footTop + 5, { align: 'center' });
+
+  // Address + Company ID + contact line (muted gray, 7pt)
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(6.5);
+  doc.setFontSize(7);
   doc.setTextColor(...MUTED);
+  doc.text(BUSINESS.address, PAGE_WIDTH / 2, footTop + 10, { align: 'center' });
+  if (settings.companyId) {
+    doc.text(`Company ID: ${settings.companyId}`, PAGE_WIDTH / 2, footTop + 14, { align: 'center' });
+  }
+  doc.text(
+    `${issuer.email}  |  ${issuer.phone}  |  mamahala.ca`,
+    PAGE_WIDTH / 2,
+    footTop + 18,
+    { align: 'center' },
+  );
+
+  // Receipt-specific attestation line
+  doc.setFontSize(6.5);
   doc.text(
     'This document confirms payment of the above invoice and serves as your official receipt.',
     PAGE_WIDTH / 2,
-    footerY + 4,
+    footTop + 22,
     { align: 'center' },
   );
+
+  // Plum bottom accent line
+  doc.setFillColor(...PLUM);
+  doc.rect(0, PAGE_HEIGHT - 1.5, PAGE_WIDTH, 1.5, 'F');
 
   return Buffer.from(doc.output('arraybuffer'));
 }
