@@ -1,13 +1,14 @@
 /* ================================================================
    Receipt PDF Generator
    ================================================================
-   Mirrors the invoice PDF layout but:
-   - Header label says "RECEIPT" instead of "INVOICE"
-   - A prominent green "PAID" box at the top with payment details
-   - No payment instructions section (already paid)
-   - "Thank you" message featured prominently
-   - Otherwise reuses the same brand styling, billing block, and line
-     items from the source invoice.
+   Mirrors invoice-pdf.ts layout tick-for-tick so a client opening a
+   paid receipt feels the same document they already know — same
+   header proportions, same Billed-To/dates two-column, same line-
+   items table, same totals block. Receipt-specific swaps:
+     - INVOICE label → RECEIPT
+     - Balance Due box → PAID box (green accent tint)
+     - Due Date column → Payment Date column
+     - Pay Online CTA + payment instructions → thank-you note
    ================================================================ */
 
 import { jsPDF, GState } from 'jspdf';
@@ -19,10 +20,10 @@ import {
   getWatermarkLogoDataUrl,
 } from './pdf-assets';
 import {
-  PLUM, PLUM_DEEP, GOLD, GOLD_LIGHT, CREAM, DARK, TEXT, MUTED,
-  LIGHT, WHITE, GREEN, PALE_GREEN, ROW_TINT,
+  PLUM, GOLD, DARK, TEXT, MUTED,
+  WHITE, GREEN, PALE_GREEN,
   PAGE_WIDTH, PAGE_HEIGHT, MARGIN, CONTENT_WIDTH,
-  formatDate, hr, sectionLabel, wrap, drawText,
+  formatDate, hr, wrap, drawText,
 } from './pdf-shared';
 import { registerArabicFont } from './pdf-fonts';
 import { BUSINESS } from '@/config/business';
@@ -44,385 +45,318 @@ export async function generateReceiptPdf(
   const service = services.find((s) => s.slug === invoice.draft.serviceSlug);
   const serviceName = service?.name ?? invoice.draft.serviceSlug;
   const bd = invoice.breakdown;
+  const rightEdge = PAGE_WIDTH - MARGIN;
 
-  // ─── WATERMARK ─────────────────────────────────────────────
-  // Subtle corner-anchored brand mark (same pattern as invoice).
   const watermarkDataUrl = getWatermarkLogoDataUrl();
-  if (watermarkDataUrl) {
-    try {
-      doc.setGState(new GState({ opacity: 0.035 }));
-      const wmSize = 75;
-      const wmX = PAGE_WIDTH - wmSize - 5;
-      const wmY = PAGE_HEIGHT - wmSize - 25;
-      doc.addImage(
-        watermarkDataUrl,
-        'PNG',
-        wmX,
-        wmY,
-        wmSize,
-        wmSize,
-        undefined,
-        'FAST',
-      );
-      doc.setGState(new GState({ opacity: 1 }));
-    } catch (err) {
-      console.warn('[receipt-pdf] Watermark render failed:', err);
-    }
-  }
 
-  // ─── DECORATIVE TOP STRIP ──────────────────────────────────
+  // ─── Thin top accent line (1.5mm plum) — matches invoice ───
   doc.setFillColor(...PLUM);
-  doc.rect(0, 0, PAGE_WIDTH, 3, 'F');
-  doc.setFillColor(...GOLD);
-  doc.rect(0, 3, PAGE_WIDTH, 1, 'F');
+  doc.rect(0, 0, PAGE_WIDTH, 1.5, 'F');
 
-  // ─── HEADER ──────────────────────────────────────────────
-  let y = MARGIN + 8;
-  const companyName = settings.businessName || 'Mama Hala Consulting Group';
+  // ─── HEADER — same proportions as invoice ──────────────────
+  let y = MARGIN + 5;
 
-  // Logo
+  const logoSize = 14;
   const logoDataUrl = getMainLogoDataUrl();
-  const logoSize = 22;
-  const logoX = MARGIN;
-  const logoY = y;
   if (logoDataUrl) {
     try {
-      doc.addImage(
-        logoDataUrl,
-        'PNG',
-        logoX,
-        logoY,
-        logoSize,
-        logoSize,
-        undefined,
-        'FAST',
-      );
-    } catch (err) {
-      console.warn('[receipt-pdf] Logo render failed:', err);
-    }
+      doc.addImage(logoDataUrl, 'PNG', MARGIN, y - 0.5, logoSize, logoSize, undefined, 'FAST');
+    } catch { /* skip */ }
   }
 
-  const brandX = logoX + logoSize + 6;
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(17);
-  doc.setTextColor(...PLUM_DEEP);
-  doc.text(companyName, brandX, y + 2);
-
-  doc.setDrawColor(...GOLD);
-  doc.setLineWidth(0.6);
-  const underlineWidth = doc.getTextWidth(companyName) * 0.35;
-  doc.line(brandX, y + 4, brandX + underlineWidth, y + 4);
-
-  // "RECEIPT" label on the right
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(22);
-  doc.setTextColor(...GREEN);
-  doc.text('RECEIPT', PAGE_WIDTH - MARGIN, y + 5, { align: 'right' });
-
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(10);
-  doc.setTextColor(...TEXT);
-  doc.text('Dr. Hala Ali, Certified Family Counselor', brandX, y + 9);
-
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(7);
-  doc.setTextColor(...GOLD);
-  doc.text(
-    'For a life full of love, tranquility & peace',
-    brandX,
-    y + 13,
-  );
-
-  // Receipt references the source invoice number
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(8);
-  doc.setTextColor(...MUTED);
-  doc.text('FOR INVOICE', PAGE_WIDTH - MARGIN, y + 10, { align: 'right' });
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...PLUM_DEEP);
-  doc.text(invoice.invoiceNumber, PAGE_WIDTH - MARGIN, y + 14, {
-    align: 'right',
-  });
-
-  y = Math.max(logoY + logoSize, y + 15) + 2;
-
-  // Issuer block
-  const issuer = settings.issuerBlock;
-  const websiteUrl = (settings.websiteUrl || 'https://www.mamahala.ca').replace(/^https?:\/\//, '');
-  const addrLines = [
-    issuer.line1,
-    `${issuer.city}${issuer.postalCode ? ' ' + issuer.postalCode : ''}, ${issuer.country}`,
-    `${issuer.email} | ${issuer.phone}`,
-    websiteUrl,
-  ];
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(...MUTED);
-  for (const line of addrLines) {
-    doc.text(line, MARGIN, y);
-    y += 4;
-  }
-  if (settings.companyId) {
-    doc.text(`Company ID: ${settings.companyId}`, MARGIN, y);
-    y += 4;
-  }
-
-  y += 3;
-  hr(doc, y);
-  y += 6;
-
-  // ─── PAID BOX (THE STAR) ──────────────────────────────────
-  doc.setFillColor(...PALE_GREEN);
-  doc.setDrawColor(...GREEN);
-  doc.setLineWidth(0.6);
-  doc.roundedRect(MARGIN, y, CONTENT_WIDTH, 22, 2, 2, 'FD');
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(20);
-  doc.setTextColor(...GREEN);
-  doc.text('PAID', MARGIN + 6, y + 11);
-
-  // Payment details right side
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(...DARK);
-  doc.text('Payment received', PAGE_WIDTH - MARGIN - 6, y + 7, { align: 'right' });
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text(formatDate(input.paidAt), PAGE_WIDTH - MARGIN - 6, y + 13, { align: 'right' });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.setTextColor(...TEXT);
-  const methodLabel = input.paymentMethod
-    .replace('-', ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
-  doc.text(`via ${methodLabel}`, PAGE_WIDTH - MARGIN - 6, y + 18, { align: 'right' });
-
-  // Center: amount paid
+  const brandX = MARGIN + logoSize + 4;
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(14);
   doc.setTextColor(...DARK);
-  doc.text(bd.formattedTotal, MARGIN + 70, y + 13);
+  doc.text(settings.businessName || 'Mama Hala Consulting Group', brandX, y + 3);
 
-  y += 28;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...MUTED);
+  doc.text('Dr. Hala Ali, Certified Family Counselor', brandX, y + 7.5);
 
-  // ─── BILLED TO ──────────────────────────────────────────
-  // All client fields anchor at MARGIN (see pdf-generator.ts comment
-  // for why right-anchored Arabic names are worse).
-  y = sectionLabel(doc, 'Billed To', y);
+  const issuer = settings.issuerBlock;
+  doc.text(`${issuer.email}  |  ${issuer.phone}`, brandX, y + 11);
+
+  // RECEIPT label — right-aligned, same size as INVOICE
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...MUTED);
+  doc.text('RECEIPT', rightEdge, y + 1, { align: 'right' });
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(...DARK);
+  doc.text(invoice.invoiceNumber, rightEdge, y + 6, { align: 'right' });
+
+  y += 18;
+
+  // ─── PAID BOX — mirrors the Balance Due box, green accent ──
+  const paidBoxY = y;
+  const paidBoxH = 20;
+
+  // Pale green background (green tint, equivalent to PLUM@8% on invoice)
+  doc.setFillColor(...GREEN);
+  doc.setGState(new GState({ opacity: 0.09 }));
+  doc.roundedRect(MARGIN, paidBoxY, CONTENT_WIDTH, paidBoxH, 2, 2, 'F');
+  doc.setGState(new GState({ opacity: 1 }));
+
+  // Label
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(...MUTED);
+  doc.text('PAID', MARGIN + 6, paidBoxY + 8);
+
+  // Amount — large, bold, dark (identical to invoice)
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(22);
+  doc.setTextColor(...DARK);
+  doc.text(bd.formattedTotal, rightEdge - 6, paidBoxY + 13, { align: 'right' });
+
+  // "Paid {date}" inline under label
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(...MUTED);
+  doc.text(`Paid ${formatDate(input.paidAt)}`, MARGIN + 6, paidBoxY + 14);
+
+  // Green P checkmark (same pattern as invoice's paid-state tick)
+  doc.setFillColor(...GREEN);
+  doc.circle(MARGIN + 30, paidBoxY + 10, 3, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.setTextColor(...WHITE);
+  doc.text('P', MARGIN + 29.2, paidBoxY + 11.5);
+
+  y = paidBoxY + paidBoxH + 8;
+
+  hr(doc, y);
+  y += 7;
+
+  // ─── BILLED TO + DATES (two-column) — identical to invoice ─
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.text('BILLED TO', MARGIN, y);
+  y += 4;
+
   const drawBilled = (value: string, opts?: { weight?: 'normal' | 'bold' }) => {
     drawText(doc, value, MARGIN, y, { weight: opts?.weight });
   };
+
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setTextColor(...DARK);
   drawBilled(invoice.draft.client.name, { weight: 'bold' });
-  y += 5;
+  y += 4.5;
+
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
+  doc.setFontSize(8.5);
   doc.setTextColor(...TEXT);
   drawBilled(invoice.draft.client.email);
+  y += 3.5;
+  drawBilled(invoice.draft.client.country || '');
+  y += 3.5;
+
+  // Right column: ISSUE DATE + PAYMENT DATE (paid variant of invoice dates)
+  let dy = y - 15.5;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.text('ISSUE DATE', rightEdge, dy, { align: 'right' });
+  dy += 4;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(...DARK);
+  doc.text(formatDate(invoice.issuedAt), rightEdge, dy, { align: 'right' });
+  dy += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7);
+  doc.setTextColor(...MUTED);
+  doc.text('PAYMENT DATE', rightEdge, dy, { align: 'right' });
+  dy += 4;
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10);
+  doc.setTextColor(...DARK);
+  doc.text(formatDate(input.paidAt), rightEdge, dy, { align: 'right' });
+
   y += 4;
-  drawBilled(invoice.draft.client.country);
-  y += 6;
-
   hr(doc, y);
-  y += 6;
+  y += 7;
 
-  // ─── SUBJECT / SESSION NOTES (optional) ──────────────────
-  if (invoice.draft.subject && invoice.draft.subject.trim()) {
-    y = sectionLabel(doc, 'Subject', y, GOLD);
+  // ─── SUBJECT (optional) — identical to invoice ─────────────
+  if (invoice.draft.subject?.trim()) {
     doc.setFont('helvetica', 'italic');
-    doc.setFontSize(10);
-    doc.setTextColor(...DARK);
-    const subjectLines = wrap(doc, invoice.draft.subject.trim(), CONTENT_WIDTH);
-    const toDraw = subjectLines.slice(0, 3);
-    for (const line of toDraw) {
+    doc.setFontSize(9);
+    doc.setTextColor(...TEXT);
+    const subLines = wrap(doc, invoice.draft.subject.trim(), CONTENT_WIDTH);
+    for (const line of subLines.slice(0, 2)) {
       drawText(doc, line, MARGIN, y);
-      y += 4.5;
+      y += 4;
     }
     y += 3;
-    hr(doc, y);
-    y += 6;
   }
 
-  // ─── ITEMS TABLE ─────────────────────────────────────────
-  y = sectionLabel(doc, 'Items', y);
-
+  // ─── LINE ITEMS TABLE — identical to invoice ───────────────
   const colDesc = MARGIN;
   const colQty = MARGIN + 100;
   const colRate = MARGIN + 125;
-  const colAmt = PAGE_WIDTH - MARGIN;
+  const colAmt = rightEdge;
 
-  doc.setFillColor(...CREAM);
-  doc.rect(MARGIN, y - 4, CONTENT_WIDTH, 8, 'F');
-
+  doc.setFillColor(245, 243, 240);
+  doc.rect(MARGIN, y - 3.5, CONTENT_WIDTH, 7, 'F');
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(8);
-  doc.setTextColor(...PLUM);
-  doc.text('DESCRIPTION', colDesc + 2, y + 1);
-  doc.text('QTY', colQty, y + 1, { align: 'center' });
-  doc.text('RATE', colRate, y + 1, { align: 'right' });
-  doc.text('AMOUNT', colAmt - 2, y + 1, { align: 'right' });
-
-  y += 8;
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(10);
-  doc.setTextColor(...DARK);
-  doc.text(serviceName, colDesc + 2, y);
-  doc.setFont('helvetica', 'normal');
-  doc.text(String(bd.sessions), colQty, y, { align: 'center' });
-  doc.text(formatPrice(bd.perSessionLocal, bd.displayCurrency), colRate, y, {
-    align: 'right',
-  });
-  doc.setFont('helvetica', 'bold');
-  doc.text(formatPrice(bd.subtotalLocal, bd.displayCurrency), colAmt - 2, y, {
-    align: 'right',
-  });
-  y += 5;
-
-  // Sub-line description
-  const subParts: string[] = [];
-  if (service) subParts.push(`${service.duration} session`);
-  if (bd.complexityPercent > 0)
-    subParts.push(`+${Math.round(bd.complexityPercent * 100)}% complexity`);
-  if (bd.packageDiscountPercent > 0)
-    subParts.push(`${bd.sessions}-pack (-${Math.round(bd.packageDiscountPercent * 100)}%)`);
-  if (bd.slidingScalePercent > 0)
-    subParts.push(`Sliding scale -${Math.round(bd.slidingScalePercent * 100)}%`);
-  doc.setFont('helvetica', 'italic');
-  doc.setFontSize(8);
+  doc.setFontSize(7);
   doc.setTextColor(...MUTED);
-  if (subParts.length > 0) {
-    const sub = subParts.join(' · ');
-    const wrapped = wrap(doc, sub, CONTENT_WIDTH - 5);
-    for (const w of wrapped) {
-      doc.text(w, colDesc + 2, y);
+  doc.text('DESCRIPTION', colDesc + 2, y);
+  doc.text('QTY', colQty, y, { align: 'center' });
+  doc.text('RATE', colRate, y, { align: 'right' });
+  doc.text('AMOUNT', colAmt - 2, y, { align: 'right' });
+  y += 7;
+
+  if (invoice.draft.lineItems && invoice.draft.lineItems.length > 0) {
+    for (const item of invoice.draft.lineItems) {
+      const amount = item.quantity * item.unitPriceLocal;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(...DARK);
+      drawText(doc, (item.description || '(untitled)').slice(0, 60), colDesc + 2, y);
+      doc.text(String(item.quantity), colQty, y, { align: 'center' });
+      doc.text(formatPrice(item.unitPriceLocal, bd.displayCurrency), colRate, y, { align: 'right' });
+      doc.setFont('helvetica', 'bold');
+      doc.text(formatPrice(amount, bd.displayCurrency), colAmt - 2, y, { align: 'right' });
+      y += 5.5;
+    }
+  } else {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.5);
+    doc.setTextColor(...DARK);
+    doc.text(serviceName, colDesc + 2, y);
+    doc.text(String(bd.sessions), colQty, y, { align: 'center' });
+    doc.text(formatPrice(bd.perSessionLocal, bd.displayCurrency), colRate, y, { align: 'right' });
+    doc.setFont('helvetica', 'bold');
+    doc.text(formatPrice(bd.subtotalLocal, bd.displayCurrency), colAmt - 2, y, { align: 'right' });
+    y += 4;
+
+    if (service) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(7.5);
+      doc.setTextColor(...MUTED);
+      doc.text(`${service.duration} session`, colDesc + 2, y);
       y += 3.5;
     }
   }
-  y += 3;
 
-  if (bd.taxAmountLocal > 0) {
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(...DARK);
-    doc.text('HST 13% (Ontario)', colDesc + 2, y);
-    doc.setFont('helvetica', 'bold');
-    doc.text(formatPrice(bd.taxAmountLocal, bd.displayCurrency), colAmt - 2, y, {
-      align: 'right',
-    });
-    y += 5;
-  }
-
-  y += 3;
+  y += 4;
   hr(doc, y);
-  y += 6;
-
-  // ─── TOTALS ──────────────────────────────────────────────
-  const labelX = PAGE_WIDTH - MARGIN - 70;
-  const valueX = PAGE_WIDTH - MARGIN - 2;
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.setTextColor(...TEXT);
-  doc.text('Subtotal', labelX, y);
-  doc.setFont('helvetica', 'bold');
-  doc.setTextColor(...DARK);
-  doc.text(formatPrice(bd.subtotalLocal, bd.displayCurrency), valueX, y, { align: 'right' });
   y += 5;
 
+  // ─── TOTALS — mirrors invoice, green tint on the final ─────
+  const totX = rightEdge - 65;
+
   if (bd.taxAmountLocal > 0) {
     doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
     doc.setTextColor(...TEXT);
-    doc.text('HST 13%', labelX, y);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...DARK);
-    doc.text(formatPrice(bd.taxAmountLocal, bd.displayCurrency), valueX, y, { align: 'right' });
+    doc.text('Subtotal', totX, y);
+    doc.text(formatPrice(bd.subtotalLocal, bd.displayCurrency), rightEdge - 2, y, { align: 'right' });
+    y += 5;
+    doc.text('HST 13%', totX, y);
+    doc.text(formatPrice(bd.taxAmountLocal, bd.displayCurrency), rightEdge - 2, y, { align: 'right' });
     y += 5;
   }
 
-  // PAID total — green box + gold accent strip
-  doc.setFillColor(...GOLD);
-  doc.rect(labelX - 5, y - 4, 1, 9, 'F');
+  // PAID total — green tint bg (mirrors invoice's burgundy TOTAL)
   doc.setFillColor(...GREEN);
-  doc.rect(labelX - 4, y - 4, 74, 9, 'F');
+  doc.setGState(new GState({ opacity: 0.12 }));
+  doc.roundedRect(totX - 4, y - 4, rightEdge - totX + 6, 10, 1.5, 1.5, 'F');
+  doc.setGState(new GState({ opacity: 1 }));
+
   doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.setTextColor(...WHITE);
-  doc.text('PAID', labelX, y + 1);
-  doc.text(formatPrice(bd.totalLocal, bd.displayCurrency), valueX, y + 1, { align: 'right' });
-  y += 9;
+  doc.setFontSize(10);
+  doc.setTextColor(...GREEN);
+  doc.text('PAID', totX, y + 2);
+  doc.setFontSize(12);
+  doc.setTextColor(...DARK);
+  doc.text(formatPrice(bd.totalLocal, bd.displayCurrency), rightEdge - 2, y + 2, { align: 'right' });
+  y += 12;
 
   if (bd.displayCurrency !== 'CAD') {
     doc.setFont('helvetica', 'italic');
-    doc.setFontSize(8);
+    doc.setFontSize(7.5);
     doc.setTextColor(...MUTED);
-    doc.text(`(${formatPrice(bd.totalCAD, 'CAD')} equivalent)`, valueX, y, { align: 'right' });
+    doc.text(`(${formatPrice(bd.totalCAD, 'CAD')} equivalent)`, rightEdge - 2, y, { align: 'right' });
     y += 5;
   }
 
+  // Payment method inline, small & muted
+  const methodLabel = input.paymentMethod
+    .replace('-', ' ')
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...MUTED);
+  doc.text(`Paid via ${methodLabel}`, rightEdge - 2, y, { align: 'right' });
   y += 6;
-  hr(doc, y);
-  y += 8;
 
-  // ─── THANK YOU MESSAGE ───────────────────────────────────
+  y += 4;
+
+  // ─── THANK YOU NOTE (replaces invoice's Pay Online CTA) ────
+  // A small cream band with italic thank-you, styled like the
+  // invoice's Pay Online strip but softer — this is the emotional
+  // close of the paid document.
   const thankYou =
     input.thankYouMessage ||
     'Thank you for your trust and your investment in your wellbeing. We look forward to supporting you on your journey.';
-  y = sectionLabel(doc, 'A note from our team', y, GOLD);
+
+  const bandY = y;
+  doc.setFillColor(...GREEN);
+  doc.setGState(new GState({ opacity: 0.08 }));
+  doc.roundedRect(MARGIN, bandY, CONTENT_WIDTH, 18, 2, 2, 'F');
+  doc.setGState(new GState({ opacity: 1 }));
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(...GREEN);
+  doc.text('A NOTE FROM OUR TEAM', MARGIN + 6, bandY + 6);
+
   doc.setFont('helvetica', 'italic');
-  doc.setFontSize(10);
+  doc.setFontSize(8.5);
   doc.setTextColor(...TEXT);
-  const thankLines = wrap(doc, `"${thankYou}"`, CONTENT_WIDTH);
-  for (const l of thankLines) {
-    doc.text(l, MARGIN, y);
-    y += 4.5;
+  const thankLines = wrap(doc, thankYou, CONTENT_WIDTH - 12);
+  let ty = bandY + 10.5;
+  for (const l of thankLines.slice(0, 2)) {
+    doc.text(l, MARGIN + 6, ty);
+    ty += 3.5;
   }
-  // Decorative gold line under the note
-  y += 2;
-  doc.setDrawColor(...GOLD);
-  doc.setLineWidth(0.4);
-  doc.line(MARGIN, y, MARGIN + 40, y);
-  y += 4;
+  y = bandY + 18 + 6;
 
-  // ─── FOOTER ──────────────────────────────────────────────
-  const footerBandY = PAGE_HEIGHT - MARGIN - 14;
-  const footerBandH = 10;
+  // ─── Subtle watermark ──────────────────────────────────────
+  if (watermarkDataUrl) {
+    try {
+      const wmSize = 75;
+      const wmX = (PAGE_WIDTH - wmSize) / 2;
+      const footTop = PAGE_HEIGHT - 22;
+      const wmY = y + (footTop - y - wmSize) / 2;
+      doc.setGState(new GState({ opacity: 0.025 }));
+      doc.addImage(watermarkDataUrl, 'PNG', wmX, wmY, wmSize, wmSize, undefined, 'FAST');
+      doc.setGState(new GState({ opacity: 1 }));
+    } catch { /* skip */ }
+  }
 
-  doc.setFillColor(...CREAM);
-  doc.rect(MARGIN, footerBandY, CONTENT_WIDTH, footerBandH, 'F');
-
-  doc.setFillColor(...GOLD_LIGHT);
-  doc.rect(MARGIN, footerBandY, CONTENT_WIDTH, 0.6, 'F');
-
+  // ─── Footer — minimal, matches invoice tone ────────────────
+  const footerY = PAGE_HEIGHT - 12;
   doc.setFont('helvetica', 'italic');
-  doc.setFontSize(9.5);
+  doc.setFontSize(8);
   doc.setTextColor(...PLUM);
-  doc.text(
-    BUSINESS.tagline,
-    PAGE_WIDTH / 2,
-    footerBandY + 4.5,
-    { align: 'center' },
-  );
+  doc.text(BUSINESS.tagline, PAGE_WIDTH / 2, footerY, { align: 'center' });
   doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7);
+  doc.setFontSize(6.5);
   doc.setTextColor(...MUTED);
   doc.text(
     'This document confirms payment of the above invoice and serves as your official receipt.',
     PAGE_WIDTH / 2,
-    footerBandY + 8,
+    footerY + 4,
     { align: 'center' },
   );
-
-  // Mirrored bottom strip
-  doc.setFillColor(...GOLD);
-  doc.rect(0, PAGE_HEIGHT - 4, PAGE_WIDTH, 1, 'F');
-  doc.setFillColor(...PLUM);
-  doc.rect(0, PAGE_HEIGHT - 3, PAGE_WIDTH, 3, 'F');
 
   return Buffer.from(doc.output('arraybuffer'));
 }
