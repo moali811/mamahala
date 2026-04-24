@@ -871,19 +871,23 @@ export function buildStatusConfirmedEmail(
   booking: Booking,
   manageToken?: string,
 ): { subject: string; html: string } {
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const firstName = booking.clientName.split(' ')[0];
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
-  const dateTime = formatDateTime(booking.startTime, booking.clientTimezone);
+  const dateTime = locale === 'ar'
+    ? formatDateTimeAr(booking.startTime, booking.clientTimezone)
+    : formatDateTime(booking.startTime, booking.clientTimezone);
 
   const meetHtml = booking.meetLink
     ? `<div style="${styles.card};background:#F0FAF5;border-left:3px solid #3B8A6E;">
-        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">Join Online Session</p>
-        <p style="margin:0 0 10px;font-size:12px;color:#4A4A5C;">Your Google Meet link is ready.</p>
-        <a href="${booking.meetLink}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">Open Google Meet</a>
+        <p style="margin:0 0 6px;font-size:13px;font-weight:600;color:#3B8A6E;">${t.statusConfirmed.meetHeading}</p>
+        <p style="margin:0 0 10px;font-size:12px;color:#4A4A5C;">${t.statusConfirmed.meetHint}</p>
+        <a href="${booking.meetLink}" style="display:inline-block;padding:10px 24px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">${t.statusConfirmed.meetCta}</a>
       </div>`
     : booking.sessionMode === 'online'
     ? `<div style="${styles.goldAccent}">
-        <p style="margin:0;font-size:13px;color:#4A4A5C;">Your video call link will be shared before the session via email and calendar invite.</p>
+        <p style="margin:0;font-size:13px;color:#4A4A5C;">${t.statusConfirmed.onlineFallback}</p>
       </div>`
     : '';
 
@@ -892,25 +896,25 @@ export function buildStatusConfirmedEmail(
       <div style="text-align:center;margin:0 0 16px;">
         <div style="display:inline-block;width:48px;height:48px;border-radius:50%;background:#F0FAF5;line-height:48px;font-size:24px;text-align:center;">&#10003;</div>
       </div>
-      <h2 style="${styles.heading};text-align:center;">Your Session is Confirmed!</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Great news — your <strong>${serviceName}</strong> session is now confirmed. We're looking forward to meeting you.</p>
+      <h2 style="${styles.heading};text-align:center;">${t.statusConfirmed.heading}</h2>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
+      <p style="${styles.text}">${t.statusConfirmed.body(serviceName)}</p>
     </div>
-    ${sessionDetailsCard(booking)}
+    ${sessionDetailsCard(booking, locale)}
     ${meetHtml}
     <div style="text-align:center;padding:8px 0 12px;">
-      <a href="${getCalendarUrl(booking)}" style="${styles.button}">Add to Calendar</a>
+      <a href="${getCalendarUrl(booking)}" style="${styles.button}">${t.statusConfirmed.addToCalendar}</a>
     </div>
     ${manageToken ? `<div style="text-align:center;padding:0 0 20px;">
-      <a href="${getManageUrl(manageToken)}" style="${styles.buttonSecondary}">Manage Booking</a>
+      <a href="${getManageUrl(manageToken, locale)}" style="${styles.buttonSecondary}">${t.statusConfirmed.manageBooking}</a>
     </div>` : ''}
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.muted}">Questions? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a></p>
+      <p style="${styles.muted}">${t.statusConfirmed.questions} <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">${t.whatsappUs} <span dir="ltr">${BUSINESS.phone}</span></a></p>
     </div>`;
 
   return {
-    subject: `Your session is confirmed — ${serviceName} on ${dateTime}`,
-    html: wrapEmail(content),
+    subject: t.statusConfirmed.subject(serviceName, dateTime),
+    html: wrapEmail(content, locale),
   };
 }
 
@@ -919,28 +923,30 @@ export function buildStatusConfirmedEmail(
 export function buildStatusCompletedEmail(
   booking: Booking,
 ): { subject: string; html: string } {
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const firstName = booking.clientName.split(' ')[0];
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
 
   const content = `
     <div style="${styles.card}">
-      <h2 style="${styles.heading}">Session Complete</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">Your <strong>${serviceName}</strong> session has been marked as complete. Thank you for investing in yourself — we are honored to be part of your journey.</p>
+      <h2 style="${styles.heading}">${t.statusCompleted.heading}</h2>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
+      <p style="${styles.text}">${t.statusCompleted.body(serviceName)}</p>
       <div style="${styles.goldAccent}">
-        <p style="margin:0;font-size:13px;color:#4A4A5C;">Take a moment to reflect. Growth happens one step at a time.</p>
+        <p style="margin:0;font-size:13px;color:#4A4A5C;">${t.statusCompleted.note}</p>
       </div>
     </div>
     <div style="text-align:center;padding:16px 0 20px;">
-      <a href="${SITE_URL}/en/book" style="${styles.button}">Book Next Session</a>
+      <a href="${SITE_URL}/${locale}/book" style="${styles.button}">${t.statusCompleted.bookNext}</a>
     </div>
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.muted}">Questions or need support? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a> or <a href="mailto:${BUSINESS.email}" style="color:#7A3B5E;">${BUSINESS.email}</a></p>
+      <p style="${styles.muted}">${t.statusCompleted.questions} <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">${t.whatsappUs} <span dir="ltr">${BUSINESS.phone}</span></a> · <a href="mailto:${BUSINESS.email}" style="color:#7A3B5E;">${BUSINESS.email}</a></p>
     </div>`;
 
   return {
-    subject: `Session complete — thank you, ${firstName}`,
-    html: wrapEmail(content),
+    subject: t.statusCompleted.subject(firstName),
+    html: wrapEmail(content, locale),
   };
 }
 
@@ -949,26 +955,30 @@ export function buildStatusCompletedEmail(
 export function buildStatusNoShowEmail(
   booking: Booking,
 ): { subject: string; html: string } {
+  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+  const t = emailCopy(locale);
   const firstName = booking.clientName.split(' ')[0];
   const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
-  const dateTime = formatDateTime(booking.startTime, booking.clientTimezone);
+  const dateTime = locale === 'ar'
+    ? formatDateTimeAr(booking.startTime, booking.clientTimezone)
+    : formatDateTime(booking.startTime, booking.clientTimezone);
 
   const content = `
     <div style="${styles.card}">
-      <h2 style="${styles.heading}">We Missed You</h2>
-      <p style="${styles.text}">Hi ${firstName},</p>
-      <p style="${styles.text}">We noticed you were unable to attend your <strong>${serviceName}</strong> session on <strong>${dateTime}</strong>. We hope everything is okay.</p>
-      <p style="${styles.text}">Life gets busy, and we completely understand. Whenever you are ready, we would love to reschedule your session.</p>
+      <h2 style="${styles.heading}">${t.statusNoShow.heading}</h2>
+      <p style="${styles.text}">${t.greetingPrefix(firstName)}</p>
+      <p style="${styles.text}">${t.statusNoShow.body(serviceName, dateTime)}</p>
+      <p style="${styles.text}">${t.statusNoShow.note}</p>
     </div>
     <div style="text-align:center;padding:16px 0 20px;">
-      <a href="${SITE_URL}/en/book" style="${styles.button}">Reschedule Session</a>
+      <a href="${SITE_URL}/${locale}/book" style="${styles.button}">${t.statusNoShow.reschedule}</a>
     </div>
     <div style="${styles.card};background:#FEFCFB;">
-      <p style="${styles.muted}">Need to talk? <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">WhatsApp us at ${BUSINESS.phone}</a> or <a href="mailto:${BUSINESS.email}" style="color:#7A3B5E;">${BUSINESS.email}</a></p>
+      <p style="${styles.muted}">${t.statusNoShow.contact} <a href="${BUSINESS.whatsappUrl}" style="color:#8E8E9F;">${t.whatsappUs} <span dir="ltr">${BUSINESS.phone}</span></a> · <a href="mailto:${BUSINESS.email}" style="color:#7A3B5E;">${BUSINESS.email}</a></p>
     </div>`;
 
   return {
-    subject: `We missed you — ${serviceName}`,
-    html: wrapEmail(content),
+    subject: t.statusNoShow.subject(serviceName),
+    html: wrapEmail(content, locale),
   };
 }
