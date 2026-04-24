@@ -78,7 +78,7 @@ export function emailFooter(options?: { locale?: string }): string {
     <p style="margin:0 0 8px;font-size:12px;color:#7A3B5E;font-style:italic;">${tagline}</p>
     <p style="margin:0 0 4px;font-size:11px;color:#B0B0B0;">${BUSINESS.name} | <a href="${BUSINESS.whatsappUrl}" style="color:#B0B0B0;text-decoration:none;">WhatsApp: ${BUSINESS.phone}</a></p>
     <p style="margin:0 0 4px;font-size:11px;color:#B0B0B0;"><a href="mailto:${BUSINESS.email}" style="color:#B0B0B0;text-decoration:none;">${BUSINESS.email}</a> · <a href="${SITE_URL}" style="color:#B0B0B0;text-decoration:none;">mamahala.ca</a></p>
-    <p style="margin:4px 0 0;font-size:10px;color:#C0C0C0;">${BUSINESS.address}</p>
+    <p style="margin:4px 0 0;font-size:10px;color:#C0C0C0;"><span dir="ltr" style="unicode-bidi:isolate;">${BUSINESS.address}</span></p>
   </td></tr>`;
 }
 

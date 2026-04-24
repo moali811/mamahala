@@ -75,15 +75,15 @@ export function wrap(doc: jsPDF, text: string, maxWidth: number): string[] {
 
 /**
  * Draw text that may contain Arabic (or other RTL scripts). When
- * Arabic is detected, temporarily switches to the registered
- * Tajawal font with R2L direction; otherwise leaves the current
- * font untouched. Preserves the caller's font/weight/size/color
- * state on exit. Falls back to plain rendering if Tajawal failed
- * to register (dev without TTFs).
+ * Arabic is present we pre-shape + pre-reverse ourselves and tell
+ * jsPDF's bidi engine to leave the result alone (both isInputVisual
+ * and isOutputVisual true — no branch of doBidiReorder executes in
+ * that configuration). setR2L stays off — enabling it produces a
+ * character-by-character reversal that double-inverts the bidi
+ * engine's reordering and wrecks connected shaping.
  *
- * `weight` controls which Tajawal face is used for Arabic runs
- * ("normal" or "bold"). Pass the same weight you'd use with
- * helvetica; the helper matches it.
+ * `weight` controls which Amiri face is used for Arabic runs
+ * ("normal" or "bold"). Italic falls back to normal.
  */
 export function drawText(
   doc: jsPDF,
@@ -118,9 +118,25 @@ export function drawText(
     return;
   }
 
-  doc.setR2L(true);
-  doc.text(text, x, y, opts.maxWidth ? { align, maxWidth: opts.maxWidth } : { align });
-  doc.setR2L(false);
+  // Shape (base → presentation forms based on joining context) and reverse
+  // to visual order. Presentation forms pass through jsPDF's preProcessText
+  // parseArabic unchanged (the substitution table is keyed by base letters
+  // U+0600-06FF, not the FE70-FEFF range).
+  const api = doc as unknown as { processArabic?: (text: string) => string };
+  const shaped = typeof api.processArabic === 'function' ? api.processArabic(text) : text;
+  const visualText = Array.from(shaped).reverse().join('');
+
+  const textOpts: Record<string, unknown> = {
+    align,
+    // Both flags true → doBidiReorder falls through every branch without
+    // touching the string. Without this, the engine re-inverts our RTL run
+    // back to logical order for an LTR base paragraph.
+    isInputVisual: true,
+    isOutputVisual: true,
+  };
+  if (opts.maxWidth) textOpts.maxWidth = opts.maxWidth;
+
+  doc.text(visualText, x, y, textOpts as Parameters<typeof doc.text>[3]);
 
   // Restore previous font.
   try {

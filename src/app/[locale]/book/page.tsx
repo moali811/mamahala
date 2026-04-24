@@ -1636,7 +1636,7 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
           transition={{ delay: 0.3 }}
           className="bg-white rounded-2xl p-6 border-2 border-[#C8A97D]/30"
         >
-          <p className="text-sm font-bold text-[#7A3B5E] mb-4">{isRTL ? 'الخطوات التالية' : 'What Happens Next'}</p>
+          <p className={`text-sm font-bold text-[#7A3B5E] mb-4 ${isRTL ? 'text-right' : 'text-left'}`}>{isRTL ? 'الخطوات التالية' : 'What Happens Next'}</p>
           <div className="space-y-3">
             {[
               { num: '1', en: 'Our team reviews your request (usually within 4 hours)', ar: 'فريقنا يراجع طلبك (عادةً خلال ٤ ساعات)' },
@@ -1645,7 +1645,7 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
             ].map(step => (
               <div key={step.num} className="flex items-start gap-3">
                 <span className="w-6 h-6 rounded-full bg-[#C8A97D] text-white text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">{step.num}</span>
-                <p className="text-sm text-[#4A4A5C]">{isRTL ? step.ar : step.en}</p>
+                <p className={`text-sm text-[#4A4A5C] flex-1 ${isRTL ? 'text-right' : 'text-left'}`}>{isRTL ? step.ar : step.en}</p>
               </div>
             ))}
           </div>
@@ -1653,7 +1653,7 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
       )}
 
       {/* Summary Card */}
-      <div className="bg-white rounded-2xl p-5 border border-[#F0ECE8] text-left space-y-3">
+      <div className={`bg-white rounded-2xl p-5 border border-[#F0ECE8] space-y-3 ${isRTL ? 'text-right' : 'text-left'}`}>
         <p className="text-sm font-semibold text-[#4A4A5C]">{isRTL ? formData.serviceNameAr || formData.serviceName : formData.serviceName}</p>
         <p className="text-sm text-[#8E8E9F]">
           {new Date(formData.selectedStartTime).toLocaleDateString(isRTL ? 'ar' : 'en-US', {
@@ -1684,9 +1684,9 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
             <Sparkles className="w-3.5 h-3.5" />
             {isRTL ? 'نصائح للتحضير لجلستك' : 'Prepare for Your Session'}
           </p>
-          <ul className={`text-xs text-[#4A4A5C] space-y-1.5 list-disc ${isRTL ? 'pr-4' : 'pl-4'}`}>
+          <ul className="text-xs text-[#4A4A5C] space-y-1.5">
             {result.aiPrepTips.map((tip, i) => (
-              <li key={i}>{tip}</li>
+              <li key={i} className={`relative ${isRTL ? 'pr-4 before:right-0' : 'pl-4 before:left-0'} before:content-['•'] before:absolute before:top-0`}>{tip}</li>
             ))}
           </ul>
         </div>
@@ -1718,7 +1718,7 @@ function SuccessStep({ wizard, locale, isRTL }: StepProps) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.5 }}
-        className="space-y-3 text-left"
+        className={`space-y-3 ${isRTL ? 'text-right' : 'text-left'}`}
       >
         <p className="text-[10px] font-semibold text-[#C8A97D] uppercase tracking-[0.15em] text-center">
           {isRTL ? 'أثناء الانتظار' : 'While You Wait'}

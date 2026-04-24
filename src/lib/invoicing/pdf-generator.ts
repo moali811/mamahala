@@ -22,7 +22,7 @@ import {
   PAGE_WIDTH, PAGE_HEIGHT, MARGIN, CONTENT_WIDTH,
   formatDate, hr, wrap, drawText,
 } from './pdf-shared';
-import { registerArabicFont } from './pdf-fonts';
+import { registerArabicFont, containsArabic } from './pdf-fonts';
 import { BUSINESS } from '@/config/business';
 import { buildPaymentConciergeUrl } from './stripe-checkout';
 
@@ -135,25 +135,36 @@ export async function generateInvoicePdf(
   y += 7;
 
   // ─── BILLED TO + DATES (two-column) ───────────────────────
-  // Left: client
+  // Left: client. Arabic names get right-anchored within the left
+  // column so they visually start at the column's right edge (where
+  // an Arabic reader naturally begins).
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
   doc.setTextColor(...MUTED);
   doc.text('BILLED TO', MARGIN, y);
   y += 4;
 
+  const billedToRightX = MARGIN + 90;
+  const drawBilled = (value: string, opts?: { weight?: 'normal' | 'bold' }) => {
+    if (containsArabic(value)) {
+      drawText(doc, value, billedToRightX, y, { weight: opts?.weight, align: 'right' });
+    } else {
+      drawText(doc, value, MARGIN, y, { weight: opts?.weight });
+    }
+  };
+
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(10);
   doc.setTextColor(...DARK);
-  drawText(doc, invoice.draft.client.name, MARGIN, y, { weight: 'bold' });
+  drawBilled(invoice.draft.client.name, { weight: 'bold' });
   y += 4.5;
 
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(8.5);
   doc.setTextColor(...TEXT);
-  drawText(doc, invoice.draft.client.email, MARGIN, y);
+  drawBilled(invoice.draft.client.email);
   y += 3.5;
-  drawText(doc, invoice.draft.client.country || '', MARGIN, y);
+  drawBilled(invoice.draft.client.country || '');
   y += 3.5;
 
   // Right: dates — right-aligned to match invoice number and amounts

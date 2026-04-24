@@ -11,7 +11,7 @@
    before clicking Send.
    ================================================================ */
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Send, Loader2, Calendar, Clock, Video, Building2,
@@ -127,18 +127,30 @@ export default function InvoiceReviewSheet({
       .catch(() => {});
   }, [open, headers]);
 
-  // Reset local draft when initial draft changes (normalize country on
-  // reset too, and re-force CA e-Transfer lock).
+  // When initialDraft changes, decide whether to fully reset (different draft
+  // id — admin navigated to a new invoice) or merge-in client fields only
+  // (same draft, Step-1 client sync from NewBookingModal — must preserve any
+  // pricing/line-item/payment-link edits already made in this sheet).
+  const lastDraftIdRef = useRef<string>(initialDraft.draftId);
   useEffect(() => {
     const countryIso = toISO2(initialDraft.client.country);
-    setLocalDraft({
-      ...initialDraft,
+    if (lastDraftIdRef.current !== initialDraft.draftId) {
+      lastDraftIdRef.current = initialDraft.draftId;
+      setLocalDraft({
+        ...initialDraft,
+        client: { ...initialDraft.client, country: countryIso },
+        allowETransfer: countryIso === 'CA' ? true : initialDraft.allowETransfer,
+      });
+      setError(null);
+      setConfirmSend(false);
+      setPreviewUrl(null);
+      return;
+    }
+    setLocalDraft(prev => ({
+      ...prev,
       client: { ...initialDraft.client, country: countryIso },
-      allowETransfer: countryIso === 'CA' ? true : initialDraft.allowETransfer,
-    });
-    setError(null);
-    setConfirmSend(false);
-    setPreviewUrl(null);
+      allowETransfer: countryIso === 'CA' ? true : prev.allowETransfer,
+    }));
   }, [initialDraft]);
 
   // When the admin flips the country to CA mid-review, force-enable

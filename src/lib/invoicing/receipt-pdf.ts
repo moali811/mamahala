@@ -24,7 +24,7 @@ import {
   PAGE_WIDTH, PAGE_HEIGHT, MARGIN, CONTENT_WIDTH,
   formatDate, hr, sectionLabel, wrap, drawText,
 } from './pdf-shared';
-import { registerArabicFont } from './pdf-fonts';
+import { registerArabicFont, containsArabic } from './pdf-fonts';
 import { BUSINESS } from '@/config/business';
 
 export interface ReceiptInput {
@@ -210,17 +210,25 @@ export async function generateReceiptPdf(
 
   // ─── BILLED TO ──────────────────────────────────────────
   y = sectionLabel(doc, 'Billed To', y);
+  const billedToRightX = MARGIN + 90;
+  const drawBilled = (value: string, opts?: { weight?: 'normal' | 'bold' }) => {
+    if (containsArabic(value)) {
+      drawText(doc, value, billedToRightX, y, { weight: opts?.weight, align: 'right' });
+    } else {
+      drawText(doc, value, MARGIN, y, { weight: opts?.weight });
+    }
+  };
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);
   doc.setTextColor(...DARK);
-  drawText(doc, invoice.draft.client.name, MARGIN, y, { weight: 'bold' });
+  drawBilled(invoice.draft.client.name, { weight: 'bold' });
   y += 5;
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(...TEXT);
-  drawText(doc, invoice.draft.client.email, MARGIN, y);
+  drawBilled(invoice.draft.client.email);
   y += 4;
-  drawText(doc, invoice.draft.client.country, MARGIN, y);
+  drawBilled(invoice.draft.client.country);
   y += 6;
 
   hr(doc, y);

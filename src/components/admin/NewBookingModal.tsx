@@ -368,6 +368,42 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
       .catch(() => {});
   }, [open, headers]);
 
+  // ─── Effect: sync Step 1 client edits into the Step 2 draft ──
+  // Without this, editing the name in Step 1 after advancing once leaves
+  // the cached step2.draft.client stale — the InvoiceReviewSheet keeps
+  // showing the old name on re-entry.
+  useEffect(() => {
+    if (!step2) return;
+    const nextName = clientName.trim();
+    const nextEmail = clientEmail.trim();
+    const nextPhone = clientPhone.trim() || undefined;
+    const nextCountry = clientCountry || step2.draft.client.country;
+    const c = step2.draft.client;
+    if (
+      c.name === nextName &&
+      c.email === nextEmail &&
+      c.phone === nextPhone &&
+      c.country === nextCountry &&
+      step2.booking.preferredLanguage === clientLanguage &&
+      step2.booking.clientTimezone === clientTimezone
+    ) return;
+    setStep2(prev => prev && ({
+      booking: {
+        ...prev.booking,
+        clientName: nextName,
+        clientEmail: nextEmail,
+        clientPhone: nextPhone,
+        clientCountry: nextCountry,
+        clientTimezone,
+        preferredLanguage: clientLanguage,
+      },
+      draft: {
+        ...prev.draft,
+        client: { ...prev.draft.client, name: nextName, email: nextEmail, phone: nextPhone, country: nextCountry },
+      },
+    }));
+  }, [clientName, clientEmail, clientPhone, clientCountry, clientLanguage, clientTimezone, step2]);
+
   // ─── Handler: check recurring series availability ──────────
   const handleCheckSeries = useCallback(async () => {
     if (!selectedSlot || !serviceSlug) return;
