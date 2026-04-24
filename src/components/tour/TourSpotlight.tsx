@@ -37,11 +37,19 @@ interface Rect {
 const TOOLTIP_WIDTH = 320;
 const TOOLTIP_GAP = 12;
 const VIEWPORT_MARGIN = 12;
+// Below this viewport width we switch to a bottom-sheet tooltip so the
+// spotlight has room to breathe above. On a 390px iPhone the old
+// "float next to target" placement crammed a 320px tooltip into the
+// middle of the screen, disconnected from its target, and produced
+// the "4 / 3" bidi artifact in RTL (fixed by wrapping the step
+// counter in dir="ltr" regardless of viewport).
+const MOBILE_BREAKPOINT = 560;
 
 /**
  * Overlay + spotlight hole + tooltip anchored next to the highlighted element.
  * Recomputes position on resize, scroll, and target mutation. RTL-aware:
  * in RTL the tooltip prefers the LEFT side of the target (reading flow).
+ * On mobile (viewport < MOBILE_BREAKPOINT) renders as a bottom-sheet.
  */
 export default function TourSpotlight({
   targetKey, title, body, nextLabel, backLabel, dismissLabel, stepLabel,
@@ -52,9 +60,19 @@ export default function TourSpotlight({
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
   const measure = useCallback(() => {
-    const el = document.querySelector<HTMLElement>(`[data-tour="${targetKey}"]`);
-    if (!el) { setRect(null); return; }
-    const r = el.getBoundingClientRect();
+    // Multiple elements can share a data-tour key — the program grid
+    // renders 4 cards on the same page, each with identical data-tour
+    // attributes, and on mobile the carousel zero-sizes the inactive
+    // cards. Pick the first non-zero-sized match so the spotlight
+    // highlights the visible instance.
+    const all = document.querySelectorAll<HTMLElement>(`[data-tour="${targetKey}"]`);
+    let chosen: HTMLElement | null = null;
+    for (const el of Array.from(all)) {
+      const r = el.getBoundingClientRect();
+      if (r.width > 0 && r.height > 0) { chosen = el; break; }
+    }
+    if (!chosen) { setRect(null); return; }
+    const r = chosen.getBoundingClientRect();
     setRect({ top: r.top, left: r.left, width: r.width, height: r.height });
     setViewport({ w: window.innerWidth, h: window.innerHeight });
   }, [targetKey]);
@@ -89,32 +107,47 @@ export default function TourSpotlight({
 
   if (!rect) return null;
 
-  // Choose tooltip side. In RTL, prefer LEFT of the target (reading flow).
-  // In LTR, prefer RIGHT. If not enough horizontal room, fall back to below.
-  const rightSpace = viewport.w - (rect.left + rect.width);
-  const leftSpace = rect.left;
-  const canPlaceRight = rightSpace >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN;
-  const canPlaceLeft = leftSpace >= TOOLTIP_WIDTH + TOOLTIP_GAP + VIEWPORT_MARGIN;
+  const isMobile = viewport.w < MOBILE_BREAKPOINT;
 
-  let placement: 'right' | 'left' | 'bottom' = 'bottom';
-  if (isRTL) placement = canPlaceLeft ? 'left' : canPlaceRight ? 'right' : 'bottom';
-  else placement = canPlaceRight ? 'right' : canPlaceLeft ? 'left' : 'bottom';
+  // On mobile, sidestep the float-near-target dance entirely — pin the
+  // tooltip to the bottom of the viewport as a sheet. The spotlight
+  // stays above, so the target → tooltip visual connection works via
+  // the glow ring rather than physical proximity.
+  let tipTop: number;
+  let tipLeft: number;
+  let tipWidth: number;
 
-  // Compute tooltip position in viewport coords.
-  let tipTop = rect.top;
-  let tipLeft = 0;
-  if (placement === 'right') tipLeft = rect.left + rect.width + TOOLTIP_GAP;
-  else if (placement === 'left') tipLeft = rect.left - TOOLTIP_WIDTH - TOOLTIP_GAP;
-  else {
-    // bottom
-    tipTop = rect.top + rect.height + TOOLTIP_GAP;
-    tipLeft = Math.max(VIEWPORT_MARGIN, Math.min(
-      rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2,
-      viewport.w - TOOLTIP_WIDTH - VIEWPORT_MARGIN,
-    ));
+  if (isMobile) {
+    tipWidth = viewport.w - VIEWPORT_MARGIN * 2;
+    tipLeft = VIEWPORT_MARGIN;
+    tipTop = viewport.h - 220 - VIEWPORT_MARGIN;
+  } else {
+    tipWidth = TOOLTIP_WIDTH;
+
+    // Choose tooltip side. In RTL, prefer LEFT of the target (reading flow).
+    // In LTR, prefer RIGHT. If not enough horizontal room, fall back to below.
+    const rightSpace = viewport.w - (rect.left + rect.width);
+    const leftSpace = rect.left;
+    const canPlaceRight = rightSpace >= tipWidth + TOOLTIP_GAP + VIEWPORT_MARGIN;
+    const canPlaceLeft = leftSpace >= tipWidth + TOOLTIP_GAP + VIEWPORT_MARGIN;
+
+    let placement: 'right' | 'left' | 'bottom' = 'bottom';
+    if (isRTL) placement = canPlaceLeft ? 'left' : canPlaceRight ? 'right' : 'bottom';
+    else placement = canPlaceRight ? 'right' : canPlaceLeft ? 'left' : 'bottom';
+
+    tipTop = rect.top;
+    tipLeft = 0;
+    if (placement === 'right') tipLeft = rect.left + rect.width + TOOLTIP_GAP;
+    else if (placement === 'left') tipLeft = rect.left - tipWidth - TOOLTIP_GAP;
+    else {
+      tipTop = rect.top + rect.height + TOOLTIP_GAP;
+      tipLeft = Math.max(VIEWPORT_MARGIN, Math.min(
+        rect.left + rect.width / 2 - tipWidth / 2,
+        viewport.w - tipWidth - VIEWPORT_MARGIN,
+      ));
+    }
+    tipTop = Math.max(VIEWPORT_MARGIN, Math.min(tipTop, viewport.h - 220));
   }
-  // Clamp vertically to viewport.
-  tipTop = Math.max(VIEWPORT_MARGIN, Math.min(tipTop, viewport.h - 220));
 
   // Spotlight geometry (add a little padding around the target).
   const PAD = 6;
@@ -186,12 +219,16 @@ export default function TourSpotlight({
             position: 'fixed',
             top: tipTop,
             left: tipLeft,
-            width: TOOLTIP_WIDTH,
+            width: tipWidth,
             padding: '18px 20px',
           }}
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-[#C8A97D]">
+            {/* dir="ltr" wrap: in RTL, "3 / 4" would otherwise render as
+                "4 / 3" because the slash is a neutral bidi character and
+                flips with surrounding text. LTR wrap forces the digits
+                and slash to read as a single LTR number expression. */}
+            <span dir="ltr" className="text-[10px] font-semibold tracking-[0.15em] uppercase text-[#C8A97D]">
               {stepLabel}
             </span>
             <button

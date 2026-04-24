@@ -23,6 +23,11 @@ interface StepCopy {
   paidOnly?: boolean;
 }
 
+// Order matters. The reveal effect auto-skips a step whose data-tour target
+// isn't in the DOM at the moment the step is about to run — this lets
+// "progress" / "my-learning" silently disappear for visitors who haven't
+// enrolled yet (those targets only mount for enrolled users) without
+// breaking the tour for everyone else.
 const ALL_STEPS: StepCopy[] = [
   {
     target: 'levels',
@@ -47,11 +52,25 @@ const ALL_STEPS: StepCopy[] = [
     paidOnly: true,
   },
   {
+    target: 'progress',
+    titleEn: 'Your progress lives here',
+    titleAr: 'تقدُّمك يُحفَظ هنا',
+    bodyEn: 'Every module you finish is tracked automatically. Pick up right where you left off.',
+    bodyAr: 'كلُّ وحدةٍ تُتمُّها تُحفَظ تلقائياً. تابع من حيث توقّفت.',
+  },
+  {
+    target: 'my-learning',
+    titleEn: 'My Learning — your shortcut back',
+    titleAr: 'لوحتي — طريقُك السريعُ للعودة',
+    bodyEn: 'One tap takes you to your dashboard — your progress across every program, in one place.',
+    bodyAr: 'لمسةٌ واحدة تأخذك إلى لوحتك — كلُّ تقدُّمك في كلِّ البرامج، في مكانٍ واحد.',
+  },
+  {
     target: 'cta',
     titleEn: 'Earn a signed certificate',
     titleAr: 'احصل على شهادةٍ موقّعة',
-    bodyEn: 'Finish a level, earn a signed certificate. Pick your first module to begin.',
-    bodyAr: 'بإتمامك أيَّ مستوى، تحصل على شهادةٍ موقّعة. اختر أوّلَ وحدة لتبدأ.',
+    bodyEn: 'Complete the program and earn a signed certificate. Pick your first module to begin.',
+    bodyAr: 'بإتمامك البرنامجَ كاملاً، تحصل على شهادةٍ موقّعة. اختر أوّلَ وحدة لتبدأ.',
   },
 ];
 
@@ -92,14 +111,17 @@ export default function ProgramOverviewTour({ locale, programTitle, isFree }: Pr
     [isFree],
   );
 
+  // v2 storage key — incremented after adding progress + my-learning steps and
+  // fixing the certificate copy, so existing visitors get the refreshed tour.
   const tour = useTourState({
-    storageKey: 'mh_program_overview_tour_seen',
+    storageKey: 'mh_program_overview_tour_seen_v2',
     stepCount: steps.length,
     welcomeDelayMs: 1400,
   });
 
   const [ready, setReady] = useState(false);
   const tourDismiss = tour.dismiss;
+  const tourNext = tour.next;
   useEffect(() => {
     if (tour.phase !== 'running') {
       setReady(false);
@@ -109,38 +131,43 @@ export default function ProgramOverviewTour({ locale, programTitle, isFree }: Pr
     if (!key) return;
     setReady(false);
 
-    const revealIfReady = () => {
-      const el = document.querySelector<HTMLElement>(`[data-tour="${key}"]`);
-      if (!el) return false;
-      const rect = el.getBoundingClientRect();
-      const offScreen = rect.top < 80 || rect.bottom > window.innerHeight - 60;
-      if (offScreen) {
-        const absoluteTop = rect.top + window.scrollY;
-        const targetY = Math.max(0, absoluteTop - Math.max(0, (window.innerHeight - rect.height) / 2));
-        window.scrollTo({ top: targetY, behavior: 'auto' });
-        // setTimeout fallback: requestAnimationFrame is throttled/skipped when
-        // the tab is hidden, which stalled the tour in preview testing.
-        window.setTimeout(() => setReady(true), 80);
-      } else {
-        setReady(true);
+    // If the target isn't VISIBLE in the DOM RIGHT NOW, this step doesn't
+    // apply to this visitor (e.g., "my-learning" only mounts for enrolled
+    // users). Must pick the first non-zero-sized element — multiple cards
+    // share the same data-tour key on /programs (listing page) and hidden
+    // carousel siblings otherwise shadow the visible one.
+    const findVisibleTarget = (k: string): HTMLElement | null => {
+      const all = document.querySelectorAll<HTMLElement>(`[data-tour="${k}"]`);
+      for (const el of Array.from(all)) {
+        const r = el.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) return el;
       }
-      return true;
+      return null;
     };
+    const el = findVisibleTarget(key);
+    if (!el) {
+      tourNext();
+      return;
+    }
 
-    if (revealIfReady()) return;
-
-    const observer = new MutationObserver(() => {
-      if (revealIfReady()) observer.disconnect();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    const kill = window.setTimeout(() => {
-      observer.disconnect();
-      const el = document.querySelector(`[data-tour="${key}"]`);
-      if (!el) tourDismiss();
-    }, 3000);
-    return () => { observer.disconnect(); window.clearTimeout(kill); };
+    const rect = el.getBoundingClientRect();
+    // Bottom-sheet on mobile (~232px tall) — reserve space so the target
+    // doesn't scroll under the sheet. Mirrors ProgramsTour.
+    const isMobile = window.innerWidth < 560;
+    const bottomReserve = isMobile ? 240 : 60;
+    const offScreen = rect.top < 80 || rect.bottom > window.innerHeight - bottomReserve;
+    if (offScreen) {
+      const absoluteTop = rect.top + window.scrollY;
+      const usableHeight = window.innerHeight - bottomReserve;
+      const targetY = Math.max(0, absoluteTop - Math.max(0, (usableHeight - rect.height) / 2));
+      window.scrollTo({ top: targetY, behavior: 'auto' });
+      // setTimeout (not rAF) — rAF is throttled in hidden tabs.
+      window.setTimeout(() => setReady(true), 80);
+    } else {
+      setReady(true);
+    }
     // Depend on primitives only — tour is a new object every render.
-  }, [tour.phase, tour.stepIndex, tourDismiss, steps]);
+  }, [tour.phase, tour.stepIndex, tourDismiss, tourNext, steps]);
 
   const step = steps[tour.stepIndex];
   const isLastStep = tour.stepIndex === steps.length - 1;

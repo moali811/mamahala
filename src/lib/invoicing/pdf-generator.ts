@@ -22,7 +22,7 @@ import {
   PAGE_WIDTH, PAGE_HEIGHT, MARGIN, CONTENT_WIDTH,
   formatDate, hr, wrap, drawText,
 } from './pdf-shared';
-import { registerArabicFont, containsArabic } from './pdf-fonts';
+import { registerArabicFont } from './pdf-fonts';
 import { BUSINESS } from '@/config/business';
 import { buildPaymentConciergeUrl } from './stripe-checkout';
 
@@ -135,22 +135,21 @@ export async function generateInvoicePdf(
   y += 7;
 
   // ─── BILLED TO + DATES (two-column) ───────────────────────
-  // Left: client. Arabic names get right-anchored within the left
-  // column so they visually start at the column's right edge (where
-  // an Arabic reader naturally begins).
+  // Left column: client info, all anchored at MARGIN. drawText handles
+  // Arabic pre-shaping + pre-reversal so RTL names render correctly
+  // within a left-anchored text box. Previously Arabic names were
+  // right-aligned to MARGIN+90 (column midpoint), which floated the
+  // name in the middle of the page — visually disconnected from the
+  // email/country below. Single left-anchored column looks cohesive
+  // for both EN and AR names.
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(7);
   doc.setTextColor(...MUTED);
   doc.text('BILLED TO', MARGIN, y);
   y += 4;
 
-  const billedToRightX = MARGIN + 90;
   const drawBilled = (value: string, opts?: { weight?: 'normal' | 'bold' }) => {
-    if (containsArabic(value)) {
-      drawText(doc, value, billedToRightX, y, { weight: opts?.weight, align: 'right' });
-    } else {
-      drawText(doc, value, MARGIN, y, { weight: opts?.weight });
-    }
+    drawText(doc, value, MARGIN, y, { weight: opts?.weight });
   };
 
   doc.setFont('helvetica', 'bold');

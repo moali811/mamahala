@@ -753,7 +753,7 @@ export default function ProgramOverviewPage() {
               {isRTL ? 'من الأساس إلى الإتقان' : 'From Foundation to Mastery'}
             </h2>
             {enrolled && completedModules.size > 0 && (
-              <div className="max-w-xl mx-auto mt-6">
+              <div data-tour="progress" className="max-w-xl mx-auto mt-6">
                 <div className="flex items-center justify-between text-xs text-[#8E8E9F] mb-2">
                   <span className="font-semibold uppercase tracking-wider">
                     {isRTL ? 'تَقَدُّمُك' : 'Your progress'}

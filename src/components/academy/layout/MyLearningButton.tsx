@@ -35,6 +35,7 @@ export default function MyLearningButton({ locale, color = '#7A3B5E' }: MyLearni
         className="fixed bottom-6 left-6 rtl:left-auto rtl:right-6 z-30"
       >
         <Link
+          data-tour="my-learning"
           href={`/${locale}/dashboard`}
           className="group flex items-center gap-2 px-4 py-3 rounded-full text-white shadow-lg hover:shadow-xl transition-all"
           style={{ backgroundColor: color }}

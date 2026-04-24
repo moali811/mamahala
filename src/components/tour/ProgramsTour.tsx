@@ -104,18 +104,39 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
     if (!key) return;
     setReady(false);
 
+    // Same multi-element / hidden-on-mobile handling as TourSpotlight:
+    // pick the first non-zero-sized instance so we scroll the VISIBLE
+    // element into view (not a display:none sibling at y=0).
+    const findVisibleTarget = (k: string): HTMLElement | null => {
+      const all = document.querySelectorAll<HTMLElement>(`[data-tour="${k}"]`);
+      for (const el of Array.from(all)) {
+        const r = el.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) return el;
+      }
+      return null;
+    };
+
     const revealIfReady = () => {
-      const el = document.querySelector<HTMLElement>(`[data-tour="${key}"]`);
+      const el = findVisibleTarget(key);
       if (!el) return false;
       const rect = el.getBoundingClientRect();
-      const offScreen = rect.top < 80 || rect.bottom > window.innerHeight - 60;
+      // On mobile the tooltip renders as a bottom-sheet (~232px tall),
+      // so the target needs to sit in the upper portion of the viewport
+      // or it'll hide behind the sheet. Keep the bottom threshold ahead
+      // of the sheet's top edge so offScreen triggers a re-scroll.
+      const isMobile = window.innerWidth < 560;
+      const bottomReserve = isMobile ? 240 : 60;
+      const offScreen = rect.top < 80 || rect.bottom > window.innerHeight - bottomReserve;
       if (offScreen) {
         // Compute absolute target Y. Using 'auto' (instant) so it works even
         // when the tab is backgrounded / document is hidden, where 'smooth'
         // gets throttled to 0. setTimeout (not rAF) because rAF is also
         // throttled in hidden tabs — this guarantees ready-flag flips.
         const absoluteTop = rect.top + window.scrollY;
-        const targetY = Math.max(0, absoluteTop - Math.max(0, (window.innerHeight - rect.height) / 2));
+        // Center within the *usable* vertical area. On mobile that excludes
+        // the bottom-sheet zone so the target isn't occluded.
+        const usableHeight = window.innerHeight - bottomReserve;
+        const targetY = Math.max(0, absoluteTop - Math.max(0, (usableHeight - rect.height) / 2));
         window.scrollTo({ top: targetY, behavior: 'auto' });
         window.setTimeout(() => setReady(true), 80);
       } else {
@@ -132,8 +153,7 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
     observer.observe(document.body, { childList: true, subtree: true });
     const kill = window.setTimeout(() => {
       observer.disconnect();
-      const el = document.querySelector(`[data-tour="${key}"]`);
-      if (!el) tourDismiss();
+      if (!findVisibleTarget(key)) tourDismiss();
     }, 3000);
     return () => { observer.disconnect(); window.clearTimeout(kill); };
   }, [tour.phase, tour.stepIndex, tourDismiss]);

@@ -24,7 +24,7 @@ import {
   PAGE_WIDTH, PAGE_HEIGHT, MARGIN, CONTENT_WIDTH,
   formatDate, hr, sectionLabel, wrap, drawText,
 } from './pdf-shared';
-import { registerArabicFont, containsArabic } from './pdf-fonts';
+import { registerArabicFont } from './pdf-fonts';
 import { BUSINESS } from '@/config/business';
 
 export interface ReceiptInput {
@@ -209,14 +209,11 @@ export async function generateReceiptPdf(
   y += 28;
 
   // ─── BILLED TO ──────────────────────────────────────────
+  // All client fields anchor at MARGIN (see pdf-generator.ts comment
+  // for why right-anchored Arabic names are worse).
   y = sectionLabel(doc, 'Billed To', y);
-  const billedToRightX = MARGIN + 90;
   const drawBilled = (value: string, opts?: { weight?: 'normal' | 'bold' }) => {
-    if (containsArabic(value)) {
-      drawText(doc, value, billedToRightX, y, { weight: opts?.weight, align: 'right' });
-    } else {
-      drawText(doc, value, MARGIN, y, { weight: opts?.weight });
-    }
+    drawText(doc, value, MARGIN, y, { weight: opts?.weight });
   };
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(11);

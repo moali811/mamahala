@@ -60,7 +60,7 @@ export default function MicroQuizBlockView({ block, ctx }: { block: MicroQuizBlo
               key={i}
               onClick={() => handleSelect(i)}
               disabled={locked}
-              className={`w-full text-left px-3.5 py-2.5 rounded-xl border text-sm transition-all ${
+              className={`w-full ${ctx.isRTL ? 'text-right' : 'text-left'} px-3.5 py-2.5 rounded-xl border text-sm transition-all ${
                 showCorrect ? 'border-[#3B8A6E] bg-[#F0F7F4] text-[#2D2A33]' :
                 showWrong ? 'border-[#C4636A] bg-[#FBF2F0] text-[#2D2A33]' :
                 isSelected ? 'border-[color:var(--c)] bg-white text-[#2D2A33]' :

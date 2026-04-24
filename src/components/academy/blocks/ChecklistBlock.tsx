@@ -34,7 +34,7 @@ export default function ChecklistBlockView({ block, ctx }: { block: ChecklistBlo
           <li key={i}>
             <button
               onClick={() => toggle(i)}
-              className="flex items-start gap-3 w-full text-left group"
+              className={`flex items-start gap-3 w-full group ${ctx.isRTL ? 'text-right' : 'text-left'}`}
             >
               <span
                 className={`w-5 h-5 rounded-md border-2 flex-shrink-0 mt-0.5 flex items-center justify-center transition-all ${

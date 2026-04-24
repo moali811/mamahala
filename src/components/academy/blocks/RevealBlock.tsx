@@ -13,7 +13,7 @@ export default function RevealBlockView({ block, ctx }: { block: RevealBlock; ct
     <div className="bg-white rounded-2xl border border-[#F3EFE8] overflow-hidden">
       <button
         onClick={() => { setOpen(v => !v); if (!open) ctx.onBlockComplete?.(block.id); }}
-        className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-[#FAF7F2] transition-colors"
+        className={`w-full flex items-center justify-between gap-3 px-5 py-4 hover:bg-[#FAF7F2] transition-colors ${ctx.isRTL ? 'text-right' : 'text-left'}`}
       >
         <span className="text-sm font-semibold text-[#2D2A33]">{trigger}</span>
         <ChevronDown className={`w-4 h-4 text-[#8E8E9F] transition-transform ${open ? 'rotate-180' : ''}`} />

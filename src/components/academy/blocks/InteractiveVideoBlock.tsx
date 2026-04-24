@@ -250,7 +250,7 @@ export default function InteractiveVideoBlockView({ block, ctx }: Props) {
               <li key={i}>
                 <button
                   onClick={() => jumpTo(cp, i)}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#FAF7F2] transition-colors text-left"
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-[#FAF7F2] transition-colors ${ctx.isRTL ? 'text-right' : 'text-left'}`}
                 >
                   <span
                     className="text-[10px] font-mono text-[#8E8E9F] flex-shrink-0 w-10"
@@ -304,7 +304,7 @@ function InlineQuiz({ question, isRTL, color, savedAnswer, onAnswered }: {
             key={i}
             onClick={() => handle(i)}
             disabled={locked}
-            className={`w-full text-left px-3 py-2 rounded-lg border text-xs transition-all ${
+            className={`w-full ${isRTL ? 'text-right' : 'text-left'} px-3 py-2 rounded-lg border text-xs transition-all ${
               showCorrect ? 'border-[#3B8A6E] bg-[#F0F7F4] text-[#2D2A33]' :
               showWrong ? 'border-[#C4636A] bg-[#FBF2F0] text-[#2D2A33]' :
               isSelected ? 'border-[color:var(--c)] text-[#2D2A33]' :

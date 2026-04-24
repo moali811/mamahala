@@ -265,10 +265,13 @@ export async function createCalendarEvent(
       }),
     };
 
-    // conferenceDataVersion=1 is required when creating Meet links
+    // conferenceDataVersion=1 is required when creating Meet links.
+    // sendUpdates=none — we send our own branded confirmation+Meet-link
+    // emails; letting GCal also email the client caused duplicate
+    // notifications and an off-brand Meet-invite from Dr. Hala's GCal.
     const queryParam = isOnline ? '&conferenceDataVersion=1' : '';
     const res = await calendarFetch(
-      `/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?sendUpdates=all${queryParam}`,
+      `/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events?sendUpdates=none${queryParam}`,
       {
         method: 'POST',
         body: JSON.stringify(event),
@@ -333,8 +336,9 @@ export async function updateCalendarEvent(
       return false;
     }
 
+    // sendUpdates=none — we send our own branded reschedule email.
     const res = await calendarFetch(
-      `/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events/${encodeURIComponent(eventId)}?sendUpdates=all`,
+      `/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events/${encodeURIComponent(eventId)}?sendUpdates=none`,
       {
         method: 'PATCH',
         body: JSON.stringify({
@@ -372,8 +376,9 @@ export async function deleteCalendarEvent(bookingId: string): Promise<boolean> {
       return false;
     }
 
+    // sendUpdates=none — we send our own branded cancellation email.
     const res = await calendarFetch(
-      `/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events/${encodeURIComponent(eventId)}?sendUpdates=all`,
+      `/calendars/${encodeURIComponent(GOOGLE_CALENDAR_ID)}/events/${encodeURIComponent(eventId)}?sendUpdates=none`,
       { method: 'DELETE' },
     );
 
