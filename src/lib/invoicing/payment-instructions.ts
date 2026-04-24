@@ -128,7 +128,7 @@ function buildETransferBlock(
   // email HTML can use em-dashes freely but the PDF stays clean.
   return {
     kind: 'etransfer',
-    heading: 'Canadian clients - Interac e-Transfer',
+    heading: 'Interac e-Transfer (within Canada)',
     bodyLines: [
       `Send to: ${settings.eTransferEmail}`,
       'Auto-deposit is enabled - no security question needed.',

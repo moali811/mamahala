@@ -320,7 +320,7 @@ export default function PayConciergePage({
                       {isRTL ? 'تحويل Interac (كندا)' : 'Interac e-Transfer (Canada)'}
                     </p>
                     <p className="text-xs text-[#8E8E9F]">
-                      {isRTL ? 'الطريقة الأسرع للعملاء الكنديين' : 'Fastest method for Canadian clients'}
+                      {isRTL ? 'الطريقة الأسرع للحسابات المصرفيّة في كندا' : 'Fastest for Canadian bank accounts'}
                     </p>
                   </div>
                 </div>
