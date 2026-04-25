@@ -10,7 +10,9 @@
  *   - /admin HTML shell: network-first → cache fallback
  *   - /_next/static: cache-first (immutable hashed)
  *   - /admin-pwa-icons/*: cache-first
- *   - GET /api/admin/{booking,invoices,stats}/*: stale-while-revalidate
+ *   - GET /api/admin/{booking,invoices,stats}/*: network-first (cache fallback
+ *     only when offline). SWR was hiding fresh post-mutation data behind the
+ *     cached response — admin data must reflect the result of the last action.
  *   - All POST/PATCH/DELETE: network-only; offline → synthetic 503
  *   - GET /api/admin/invoices/pdf/[id]: network-only with last-5 LRU cache
  *
@@ -20,7 +22,7 @@
  *   - On `pushsubscriptionchange`: re-subscribe + tell client to re-register
  */
 
-const CACHE_VERSION = "admin-v1";
+const CACHE_VERSION = "admin-v2";
 const SHELL_CACHE = `admin-shell-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `admin-runtime-${CACHE_VERSION}`;
 const PDF_CACHE = `admin-pdf-${CACHE_VERSION}`;
@@ -89,12 +91,13 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Admin list endpoints — stale-while-revalidate
+  // Admin list endpoints — network-first so post-mutation refetches always
+  // see the latest server state. Cache is only used as offline fallback.
   if (url.pathname === "/api/admin/booking/list" ||
       url.pathname === "/api/admin/invoices/list" ||
       url.pathname === "/api/admin/stats" ||
       url.pathname === "/api/admin/invoices/dashboard") {
-    event.respondWith(staleWhileRevalidate(req));
+    event.respondWith(networkFirstApi(req));
     return;
   }
 
@@ -151,14 +154,19 @@ async function cacheFirst(req) {
   }
 }
 
-async function staleWhileRevalidate(req) {
+async function networkFirstApi(req) {
   const cache = await caches.open(RUNTIME_CACHE);
-  const cached = await cache.match(req);
-  const network = fetch(req).then((res) => {
+  try {
+    const res = await fetch(req);
     if (res.ok) cache.put(req, res.clone()).catch(() => null);
     return res;
-  }).catch(() => null);
-  return cached ?? (await network) ?? new Response("Offline", { status: 503 });
+  } catch {
+    const cached = await cache.match(req);
+    return cached ?? new Response(
+      JSON.stringify({ error: "offline" }),
+      { status: 503, headers: { "Content-Type": "application/json" } },
+    );
+  }
 }
 
 async function networkThenCachePdf(req) {
