@@ -105,3 +105,16 @@ export async function getCurrentPushSubscription(): Promise<PushSubscription | n
   const reg = await navigator.serviceWorker.ready;
   return reg.pushManager.getSubscription();
 }
+
+/* Make sure a locally-known PushManager subscription is also registered on
+ * the server. This heals the orphan case where the browser kept a sub from
+ * an earlier session but the server never recorded it (e.g. an interrupted
+ * subscribe, or a sub created before VAPID env was wired). The register
+ * endpoint is idempotent — keyed by endpoint URL — so re-posting an existing
+ * sub is a safe no-op for healthy installs. */
+export async function ensureServerRegistered(bearer: string): Promise<PushSubscription | null> {
+  const sub = await getCurrentPushSubscription();
+  if (!sub) return null;
+  await registerOnServer(sub.toJSON(), bearer).catch(() => false);
+  return sub;
+}

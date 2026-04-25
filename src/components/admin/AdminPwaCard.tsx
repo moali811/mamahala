@@ -16,7 +16,7 @@
 import { useEffect, useState } from 'react';
 import { Bell, Fingerprint, Share, Smartphone, CheckCircle2, AlertCircle, Loader2, LogOut } from 'lucide-react';
 import { isStandalone, isIOS, supportsPush, supportsWebAuthn } from '@/lib/admin-pwa/pwa';
-import { subscribeToPush, unsubscribeFromPush, getCurrentPushSubscription } from '@/lib/admin-pwa/push-subscribe';
+import { subscribeToPush, unsubscribeFromPush, getCurrentPushSubscription, ensureServerRegistered } from '@/lib/admin-pwa/push-subscribe';
 import { enrollPasskey } from '@/lib/admin-pwa/webauthn';
 import { storeEncrypted, storeBiometricGated, readVault, clearVault, type VaultRecord } from '@/lib/admin-pwa/token-vault';
 
@@ -38,12 +38,17 @@ export default function AdminPwaCard({ password }: Props) {
     setInstalled(isStandalone());
     setIOSDevice(isIOS());
     if (supportsPush()) {
-      getCurrentPushSubscription().then((s) => setPushOn(!!s)).catch(() => null);
+      // Heal orphans: if the browser still has a local subscription from an
+      // earlier session but the server doesn't know about it (e.g. created
+      // before VAPID env was wired), this re-posts it to /devices/register.
+      ensureServerRegistered(password).then((s) => setPushOn(!!s)).catch(() => {
+        getCurrentPushSubscription().then((s) => setPushOn(!!s)).catch(() => null);
+      });
     }
     if (supportsWebAuthn()) {
       readVault().then(setVault).catch(() => null);
     }
-  }, []);
+  }, [password]);
 
   // Don't render during SSR (mismatch risk) and don't render on plain desktop —
   // there's nothing useful here for a non-mobile, non-iOS user.
