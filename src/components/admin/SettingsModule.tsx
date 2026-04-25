@@ -212,7 +212,7 @@ export default function SettingsModule({ password }: Props) {
         {saved && <span className="text-sm text-[#3B8A6E] flex items-center gap-1"><CheckCircle className="w-4 h-4" /> Settings saved</span>}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-flow-row-dense gap-6">
         {/* Business Info */}
         <div className="bg-white rounded-xl border border-[#F3EFE8] p-6">
           <h3 className="text-sm font-semibold text-[#2D2A33] mb-4" style={{ fontFamily: 'Georgia, serif' }}>

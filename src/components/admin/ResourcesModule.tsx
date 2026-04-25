@@ -261,7 +261,7 @@ export default function ResourcesModule({ password }: Props) {
         onReload={loadStats}
       />
 
-      <div className="grid lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Toolkit Engagement */}
         <div className="bg-white rounded-2xl border border-[#F3EFE8] p-5">
           <div className="flex items-center justify-between mb-4">

@@ -139,7 +139,7 @@ export default function DashboardModule({ stats, leads }: DashboardModuleProps) 
           icon={<MessageSquare className="w-5 h-5" />} color="#D4836A" />
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Conversion Funnel */}
         <div className="bg-white rounded-xl border border-[#F3EFE8] p-6">
           <h3 className="text-sm font-semibold text-[#2D2A33] mb-4" style={{ fontFamily: 'Georgia, serif' }}>

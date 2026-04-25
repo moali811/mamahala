@@ -143,7 +143,7 @@ export default function QuizResultsModule({ quizResults }: QuizResultsModuleProp
           <h3 className="text-sm font-semibold text-[#2D2A33] mb-4" style={{ fontFamily: 'Georgia, serif' }}>
             Latest Result Breakdown — {latestResult.name}
           </h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.entries(latestResult.dimensions).map(([key, val]: [string, any]) => {
               const label = latestResult.dimensionLabels?.[key] || key;
               const maxDim = latestResult.maxScore / Object.keys(latestResult.dimensions).length;
