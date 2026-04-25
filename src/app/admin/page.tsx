@@ -452,7 +452,7 @@ export default function AdminCommandCenter() {
           />
           <aside
             className="absolute left-0 top-0 bottom-0 w-[260px] bg-white shadow-xl overflow-y-auto animate-[slideInLeft_0.25s_ease-out]"
-            style={{ animationFillMode: 'both' }}
+            style={{ animationFillMode: 'both', paddingTop: 'env(safe-area-inset-top)' }}
           >
             <div className="p-4 border-b border-[#F3EFE8] flex items-center justify-between">
               <div className="flex items-center gap-2">
