@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# backup tooling — local-only filter (contains real client emails, do not commit)
+scripts/.backup-filter.json
+
 # vercel
 .vercel
 
