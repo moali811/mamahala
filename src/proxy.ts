@@ -185,6 +185,20 @@ async function checkAcademyAccess(
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // ── -1. Canonicalize bare Vercel URL → branded domain ─────────
+  // Only the exact production host is redirected; preview deploys
+  // (mama-hala-website-<hash>-<scope>.vercel.app) and any /api/* path
+  // pass through untouched so webhooks (Stripe/Cal/Resend) and admin
+  // API calls keep working even if something out there still points at
+  // the .vercel.app URL.
+  const host = request.headers.get('host')?.toLowerCase();
+  if (host === 'mama-hala-website.vercel.app' && !pathname.startsWith('/api/')) {
+    const target = new URL(request.url);
+    target.host = 'mamahala.ca';
+    target.protocol = 'https:';
+    return NextResponse.redirect(target, 301);
+  }
+
   // ── 0. Admin API brute-force gate ─────────────────────────────
   // /api/admin/* routes all check a Bearer token locally; this gate
   // adds centralized per-IP lockout so the password cannot be brute-
