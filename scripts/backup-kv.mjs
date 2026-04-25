@@ -20,7 +20,7 @@
 
    Encryption: openssl AES-256-CBC + PBKDF2. Passphrase stored in macOS keychain
    under service "MamaHala-Backup-Encryption" (set by setup-backup-schedule.sh).
-   Decrypt: openssl enc -d -aes-256-cbc -pbkdf2 -in <file>.enc -out <file>.json
+   Decrypt: openssl enc -d -aes-256-cbc -pbkdf2 -iter 100000 -in <file>.enc -out <file>.json
 
    Sidecar: kv-YYYY-MM-DDTHH-MM-SS.meta.json (PII-free metadata, used for anomaly detection).
    ================================================================ */
