@@ -597,19 +597,19 @@ export default function AdminCommandCenter() {
         className="fixed bottom-0 inset-x-0 z-40 lg:hidden pointer-events-none safe-area-pb"
         aria-label="Primary"
       >
-        {/* px-2 + pb-0.5 hugs the screen edges and sits lower against the
-            home indicator. The pill itself uses tighter rounded-3xl + less
-            interior padding so tabs feel more compact and dock-like. */}
-        <div className="px-2 pb-0.5 pt-1 pointer-events-auto">
+        {/* px-3 + pb-2 lifts the pill clearly off the screen edges so the
+            glass effect reads as a floating dock rather than a flat bar.
+            rounded-full + lower opacity background makes it feel lighter. */}
+        <div className="px-3 pb-2 pt-1 pointer-events-auto">
           <ul
-            className="flex items-stretch rounded-3xl overflow-hidden"
+            className="flex items-stretch rounded-full overflow-hidden"
             style={{
-              background: 'rgba(255, 255, 255, 0.72)',
-              backdropFilter: 'blur(28px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(28px) saturate(180%)',
-              border: '0.5px solid rgba(122, 59, 94, 0.10)',
+              background: 'rgba(255, 255, 255, 0.55)',
+              backdropFilter: 'blur(32px) saturate(200%)',
+              WebkitBackdropFilter: 'blur(32px) saturate(200%)',
+              border: '0.5px solid rgba(122, 59, 94, 0.12)',
               boxShadow:
-                '0 8px 28px rgba(45, 42, 51, 0.13), 0 2px 6px rgba(45, 42, 51, 0.05), inset 0 0.5px 0 rgba(255, 255, 255, 0.7)',
+                '0 10px 32px rgba(45, 42, 51, 0.16), 0 2px 6px rgba(45, 42, 51, 0.06), inset 0 0.5px 0 rgba(255, 255, 255, 0.8)',
             }}
           >
             {MOBILE_TABS.map((item) => {
@@ -626,7 +626,7 @@ export default function AdminCommandCenter() {
                       if (isMore) { setSidebarOpen(true); return; }
                       handleModuleChange(item.key);
                     }}
-                    className="w-full h-full flex flex-col items-center justify-center py-2 px-0.5 active:scale-90 transition-transform relative"
+                    className="w-full h-full flex flex-col items-center justify-center py-1.5 px-0.5 active:scale-90 transition-transform relative"
                     aria-current={isActive ? 'page' : undefined}
                     aria-label={item.label}
                   >
@@ -635,7 +635,7 @@ export default function AdminCommandCenter() {
                       style={{ color: isActive ? '#7A3B5E' : '#9A8E84' }}
                     >
                       <Icon
-                        className="w-[22px] h-[22px]"
+                        className="w-[20px] h-[20px]"
                         strokeWidth={isActive ? 2.6 : 1.9}
                       />
                       {showBadge && (
