@@ -55,33 +55,31 @@ export async function authorizeWithLimit(
   const ip = getClientIp(req);
   const failKey = `rl:admin-auth-fail:${ip}`;
 
-  // Check lockout before doing the compare
-  if (KV_AVAILABLE) {
-    try {
-      const fails = (await kv.get<number>(failKey)) || 0;
-      if (fails >= 10) {
-        return { ok: false, status: 429, error: 'Too many failed attempts. Try again later.' };
-      }
-    } catch {
-      /* KV down — fall through; fail-open on the lockout check is acceptable */
-    }
-  }
-
+  // SECURITY: check the password FIRST so a legitimate holder of the password
+  // can always recover from a brute-force lockout (otherwise an attacker who
+  // bot-spammed wrong passwords from the office IP would also lock out the
+  // real admin for 15 minutes — DoS by association). Constant-time compare
+  // means the wrong-then-lockout path is just as costly as the right-then-pass
+  // path, so timing attacks remain infeasible.
   if (authorize(req)) {
-    // Successful auth clears the fail counter
     if (KV_AVAILABLE) {
       try { await kv.del(failKey); } catch { /* ignore */ }
     }
     return { ok: true };
   }
 
-  // Record the failure with a 15-min sliding window
+  // Wrong password — check the lockout counter and (if not locked out) record
+  // the failure with a 15-min sliding window.
   if (KV_AVAILABLE) {
     try {
+      const fails = (await kv.get<number>(failKey)) || 0;
+      if (fails >= 10) {
+        return { ok: false, status: 429, error: 'Too many failed attempts. Try again later.' };
+      }
       const n = await kv.incr(failKey);
       if (n === 1) await kv.expire(failKey, 900);
     } catch {
-      /* ignore */
+      /* KV down — fail-open on the rate-limit check is acceptable */
     }
   }
   return { ok: false, status: 401, error: 'Unauthorized' };

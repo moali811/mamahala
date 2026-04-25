@@ -16,7 +16,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { toolkitCatalog } from '@/data/toolkits';
 import { programCatalog } from '@/data/programs';
 import { BUSINESS } from '@/config/business';
@@ -141,8 +141,9 @@ export interface ResourceStatsResponse {
 }
 
 export async function GET(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   // ─── Free-download hash (analytics) ───

@@ -43,6 +43,7 @@ import {
   type BookingIntakeInput,
 } from '@/lib/invoicing/booking-intake';
 import { listDrafts, deleteDraft } from '@/lib/invoicing/kv-store';
+import { dispatchToAllAdmins } from '@/lib/push/dispatch';
 
 export const maxDuration = 30;
 
@@ -90,8 +91,15 @@ interface CalWebhookBody {
  */
 function verifySignature(rawBody: string, signature: string | null): boolean {
   if (!CAL_WEBHOOK_SECRET) {
+    // SECURITY: in production we refuse to skip signature verification so an
+    // attacker can't forge bookings. In dev we still permit it (unsigned) so
+    // local testing without a secret works.
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[cal-booking webhook] CAL_WEBHOOK_SECRET not configured in production — refusing');
+      return false;
+    }
     console.warn(
-      '[cal-booking webhook] CAL_WEBHOOK_SECRET is not set — signature check skipped.',
+      '[cal-booking webhook] CAL_WEBHOOK_SECRET is not set — signature check skipped (dev only).',
     );
     return true;
   }
@@ -186,6 +194,17 @@ export async function POST(req: NextRequest) {
       };
 
       const result = await processBookingIntake(input);
+
+      // Fire-and-forget push notification to all subscribed admin devices.
+      // Never blocks the webhook — Cal.com retries on 5xx so we must not
+      // 500 just because push delivery hiccupped.
+      dispatchToAllAdmins({
+        title: 'New booking request',
+        body: `${attendee.name || 'A client'} — ${payload.type ?? 'session'}`,
+        url: `/bookings/${input.bookingId}`,
+        tag: `booking-${input.bookingId}`,
+        data: { kind: 'booking-created', bookingId: input.bookingId },
+      }).catch((err: unknown) => console.error('[Cal Webhook] push dispatch failed:', err));
 
       return NextResponse.json({
         ok: true,

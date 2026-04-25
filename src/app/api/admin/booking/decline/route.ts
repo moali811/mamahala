@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getBooking, updateBooking } from '@/lib/booking/booking-store';
 import { sendBookingEmail } from '@/lib/booking/emails';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { deleteDraft } from '@/lib/invoicing/kv-store';
 import { BUSINESS } from '@/config/business';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
@@ -39,8 +39,9 @@ export async function GET(request: NextRequest) {
 
 // POST — from admin dashboard
 export async function POST(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   const { bookingId, reason } = await request.json();

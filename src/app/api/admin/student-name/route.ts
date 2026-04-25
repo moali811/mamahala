@@ -1,10 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
+import { timingSafeEqual } from 'node:crypto';
 
 export const dynamic = 'force-dynamic';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+/** Constant-time compare that pads to a fixed length so timing isn't a function
+ *  of the input length. Returns false on any mismatch (length or bytes). */
+function safePasswordEqual(provided: string, expected: string): boolean {
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  const max = Math.max(a.length, b.length);
+  const aPad = Buffer.alloc(max);
+  const bPad = Buffer.alloc(max);
+  a.copy(aPad);
+  b.copy(bPad);
+  // Always run the compare to keep timing constant.
+  const equal = timingSafeEqual(aPad, bPad);
+  return equal && a.length === b.length;
+}
 
 /**
  * POST /api/admin/student-name
@@ -17,7 +33,7 @@ export async function POST(req: NextRequest) {
   try {
     const { email, name, password, programSlug } = await req.json();
 
-    if (!ADMIN_PASSWORD || password !== ADMIN_PASSWORD) {
+    if (!ADMIN_PASSWORD || typeof password !== 'string' || !safePasswordEqual(password, ADMIN_PASSWORD)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 

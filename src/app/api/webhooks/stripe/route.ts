@@ -120,6 +120,24 @@ export async function POST(req: NextRequest) {
           console.error('Stripe webhook: receipt email failed:', emailErr);
         }
 
+        // Push to admin devices — closes the revenue loop on Mo's iPhone.
+        // Fire-and-forget; never block the webhook on push delivery.
+        try {
+          const { dispatchToAllAdmins } = await import('@/lib/push/dispatch');
+          const totalLocal = invoice.breakdown?.totalLocal ?? 0;
+          const ccy = invoice.breakdown?.displayCurrency ?? 'CAD';
+          const amount = new Intl.NumberFormat('en-CA', { style: 'currency', currency: ccy }).format(totalLocal);
+          dispatchToAllAdmins({
+            title: 'Payment received 💸',
+            body: `${invoice.draft?.client?.name ?? 'A client'} paid ${amount} (${invoice.invoiceNumber})`,
+            url: `/admin?tab=invoices&invoice=${invoice.invoiceId}`,
+            tag: `invoice-paid-${invoice.invoiceId}`,
+            data: { kind: 'invoice-paid', invoiceId: invoice.invoiceId },
+          }).catch((err) => console.error('[Stripe Webhook] push dispatch failed:', err));
+        } catch (pushErr) {
+          console.error('[Stripe Webhook] push dispatch import failed:', pushErr);
+        }
+
         console.log(`[Stripe Webhook] Invoice ${meta.invoiceNumber} marked as paid`);
       }
     } catch (invoiceErr) {

@@ -5,7 +5,7 @@
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import {
   listSchedules,
   createSchedule,
@@ -14,8 +14,9 @@ import {
 } from '@/lib/invoicing/recurring';
 
 export async function GET(req: NextRequest) {
-  if (!authorize(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
   try {
     const schedules = await listSchedules();
@@ -27,8 +28,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!authorize(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
   try {
     const body = await req.json();
@@ -79,8 +81,9 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  if (!authorize(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
   try {
     const url = new URL(req.url);

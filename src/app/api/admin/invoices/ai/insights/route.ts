@@ -6,7 +6,7 @@
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { generateClientInsights } from '@/lib/invoicing/ai-insights';
 import {
   getCustomer,
@@ -17,8 +17,9 @@ import { listInvoiceRecords } from '@/lib/invoicing/kv-store';
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
-  if (!authorize(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   try {

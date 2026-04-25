@@ -1,15 +1,16 @@
 /* GET /api/admin/booking/list — List all bookings for admin */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { kv } from '@vercel/kv';
 import type { Booking } from '@/lib/booking/types';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
 export async function GET(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   if (!KV_AVAILABLE) {

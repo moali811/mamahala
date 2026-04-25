@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllLeads } from '@/lib/analytics';
-
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 
 export async function GET(request: NextRequest) {
-  const auth = request.headers.get('authorization');
-  const token = auth?.replace('Bearer ', '');
-
-  if (token !== ADMIN_PASSWORD) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const auth = await authorizeWithLimit(request);
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.error }, { status: auth.status });
   }
 
   const format = request.nextUrl.searchParams.get('format');

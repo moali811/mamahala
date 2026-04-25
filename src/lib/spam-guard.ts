@@ -3,8 +3,13 @@
    gibberish detection, disposable email blocking.
    ================================================================ */
 
-/** Proper email regex — same pattern used across all endpoints. */
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+/** Reasonable RFC-5322-ish email regex. Stricter than `/^.+@.+\..+$/` —
+ *  rejects double dots, leading/trailing dots in local part, double-@,
+ *  whitespace, and non-ASCII control chars. Not a full RFC parser (those are
+ *  enormous and reject very few real addresses), but catches the worst inputs.
+ *  Hard length cap of 254 chars matches the SMTP RFC limit. */
+const EMAIL_RE = /^(?!\.)(?!.*\.\.)[A-Za-z0-9._%+\-]{1,64}(?<!\.)@(?:[A-Za-z0-9](?:[A-Za-z0-9\-]{0,61}[A-Za-z0-9])?\.)+[A-Za-z]{2,}$/;
+const EMAIL_MAX_LEN = 254;
 
 const VOWELS = new Set('aeiouAEIOU');
 
@@ -24,8 +29,16 @@ const DISPOSABLE_DOMAINS = new Set([
  * Real names/words have a natural vowel-consonant rhythm.
  * Random strings like "abjkljvbn" have almost no vowels
  * and long runs of consonants.
+ *
+ * SECURITY: callers must pre-cap the input length (we do here too, defensively)
+ * — without it the per-character analysis below could be made expensive by an
+ * adversarial 100KB local part.
  */
 function isGibberishLocal(local: string): boolean {
+  // Defensive length cap. RFC 5321 caps local at 64 chars; anything longer is
+  // already rejected by EMAIL_RE, but belt-and-braces in case this is ever
+  // called from a different validation path.
+  if (local.length > 64) return false;
   // Split on dots/dashes/underscores/numbers — analyze each word segment.
   // This handles "dr.smith" → "dr" (too short) + "smith" (clean) → PASS.
   const segments = local.split(/[.\-_+0-9]+/).filter(s => /[a-zA-Z]/.test(s));
@@ -70,7 +83,9 @@ function isGibberishLocal(local: string): boolean {
  * Zero friction — runs entirely server-side.
  */
 export function isValidEmail(email: string): boolean {
+  if (typeof email !== 'string') return false;
   const trimmed = email.trim();
+  if (trimmed.length === 0 || trimmed.length > EMAIL_MAX_LEN) return false;
   if (!EMAIL_RE.test(trimmed)) return false;
 
   const [local, domain] = trimmed.toLowerCase().split('@');

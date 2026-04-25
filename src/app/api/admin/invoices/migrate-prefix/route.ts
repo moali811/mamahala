@@ -32,7 +32,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { saveInvoiceRecord } from '@/lib/invoicing/kv-store';
 import type { StoredInvoice } from '@/lib/invoicing/types';
 
@@ -51,8 +51,9 @@ function rewriteNumber(value: string | undefined): string | undefined {
 }
 
 export async function POST(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   // Belt-and-suspenders check: KV must be configured

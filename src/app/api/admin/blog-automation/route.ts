@@ -1,16 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import Anthropic from '@anthropic-ai/sdk';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 
 export const maxDuration = 60;
 
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
-
-function authorize(req: NextRequest): boolean {
-  return req.headers.get('authorization') === `Bearer ${ADMIN_PASSWORD}`;
-}
 
 // ─── Types ───
 interface TopicItem {
@@ -69,7 +66,8 @@ async function saveConfig(config: AutopilotConfig): Promise<void> {
 
 // ─── GET: Fetch automation config ───
 export async function GET(req: NextRequest) {
-  if (!authorize(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) return NextResponse.json({ error: _auth.error }, { status: _auth.status });
 
   const config = await getConfig();
   return NextResponse.json({ config, pillars: CONTENT_PILLARS });
@@ -77,7 +75,8 @@ export async function GET(req: NextRequest) {
 
 // ─── POST: Handle actions ───
 export async function POST(req: NextRequest) {
-  if (!authorize(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) return NextResponse.json({ error: _auth.error }, { status: _auth.status });
 
   if (!KV_AVAILABLE) return NextResponse.json({ error: 'KV not configured' }, { status: 500 });
 

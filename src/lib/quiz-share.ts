@@ -43,12 +43,22 @@ const QUIZ_NAMES: Record<string, { en: string; ar: string }> = {
   'digital-awareness': { en: 'The Digital Self-Awareness Profile', ar: 'مِلَفُّ الوعيِ الرَّقمِيِّ الذَّاتِيّ' },
 };
 
-/** Generate a unique session ID */
+/** Generate a unique session ID. Server validates this against
+ *  /^[a-z0-9-]{12,64}$/i — keep this generator in sync with that regex.
+ *  The previous implementation truncated to 12 chars (~48 bits) and fell back
+ *  to Math.random() (predictable). Now uses a full UUID for ~122 bits of
+ *  entropy and a deterministic crypto fallback. */
 export function generateSessionId(): string {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) {
-    return crypto.randomUUID().slice(0, 12);
+    return crypto.randomUUID();
   }
-  return Math.random().toString(36).slice(2, 14);
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
+  }
+  // Last-resort fallback (non-crypto). Should not be reached on modern browsers.
+  return `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 14)}`;
 }
 
 /** Encode results to a URL-safe base64 string */

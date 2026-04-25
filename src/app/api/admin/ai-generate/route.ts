@@ -1,15 +1,62 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
 import { DR_HALA_VOICE } from '@/lib/ai-companion/dr-hala-voice';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 
 // Allow up to 60 seconds for AI generation (blog posts need time)
 export const maxDuration = 60;
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-function authorize(req: NextRequest): boolean {
-  return req.headers.get('authorization') === `Bearer ${ADMIN_PASSWORD}`;
+/** Recursively strip CRLF and other control chars from every string in an
+ *  object/array. Defends against header injection if AI-generated content is
+ *  ever inserted into an email subject or other header downstream. Body uses
+ *  are unaffected (this only removes characters that have no legitimate place
+ *  in titles, names, or single-line fields). */
+function sanitizeAiStrings<T>(value: T): T {
+  if (typeof value === 'string') {
+    return value.replace(/[\r\n\u0000-\u001F\u007F]+/g, ' ').replace(/\s+/g, ' ').trim() as unknown as T;
+  }
+  if (Array.isArray(value)) {
+    return value.map((v) => sanitizeAiStrings(v)) as unknown as T;
+  }
+  if (value && typeof value === 'object') {
+    const out: Record<string, unknown> = {};
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      // Long-form body fields (content/description/scenario/longDescription) keep
+      // their newlines — markdown formatting matters there. Header/title fields
+      // get aggressively sanitized.
+      if (/^(content|description|longDescription|scenario|answer|approach|translation)/i.test(k)) {
+        out[k] = typeof v === 'string'
+          ? v.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]+/g, '').trim()
+          : sanitizeAiStrings(v);
+      } else {
+        out[k] = sanitizeAiStrings(v);
+      }
+    }
+    return out as T;
+  }
+  return value;
+}
+
+const ALLOWED_OPTION_KEYS = new Set([
+  'tone', 'audience', 'category', 'contentType', 'fields',
+]);
+
+/** Reject any unexpected fields in the options object so a caller can't smuggle
+ *  arbitrary keys into the AI prompt template. */
+function sanitizeOptions(opts: unknown): Record<string, unknown> | undefined {
+  if (!opts || typeof opts !== 'object') return undefined;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(opts as Record<string, unknown>)) {
+    if (!ALLOWED_OPTION_KEYS.has(k)) continue;
+    if (k === 'fields') {
+      if (Array.isArray(v)) out[k] = v.filter((f) => typeof f === 'string' && /^[a-zA-Z0-9_]{1,40}$/.test(f));
+    } else if (typeof v === 'string' && v.length <= 200) {
+      out[k] = v.replace(/[\r\n\u0000-\u001F\u007F]+/g, ' ').trim();
+    }
+  }
+  return out;
 }
 
 // ─── SYSTEM PROMPT: Mama Hala Brand Voice + Arabic Tashkeel ───
@@ -169,8 +216,9 @@ ${options?.fields ? `{${options.fields.map((f: string) => `"${f}":"Arabic transl
 
 // ─── API HANDLER ───
 export async function POST(req: NextRequest) {
-  if (!authorize(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   if (!ANTHROPIC_API_KEY) {
@@ -179,7 +227,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { type, prompt, options } = body;
+    const { type, prompt } = body;
+    const options = sanitizeOptions(body.options);
 
     if (!type || !prompt) {
       return NextResponse.json({ error: 'Missing type or prompt' }, { status: 400 });
@@ -265,24 +314,24 @@ ${enData.content || ''}`;
 
         return NextResponse.json({
           success: true,
-          generated: {
+          generated: sanitizeAiStrings({
             ...enData,
             titleAr: titleMatch?.[1]?.trim() || '',
             excerptAr: excerptMatch?.[1]?.trim() || '',
             contentAr: contentMatch?.[1]?.trim() || '',
-          },
+          }),
         });
       } catch (arErr: any) {
         // If Arabic translation fails, still return the English content
         console.error('[AI-GENERATE] Arabic translation failed, returning English only:', arErr?.message);
         return NextResponse.json({
           success: true,
-          generated: {
+          generated: sanitizeAiStrings({
             ...enData,
             titleAr: '',
             excerptAr: '',
             contentAr: '',
-          },
+          }),
         });
       }
     }
@@ -329,7 +378,7 @@ ${prompt}
           return NextResponse.json({ error: 'Translation returned empty. Try again.' }, { status: 500 });
         }
 
-        return NextResponse.json({ success: true, generated: { translation } });
+        return NextResponse.json({ success: true, generated: sanitizeAiStrings({ translation }) });
       } catch (translateErr: any) {
         console.error('[AI-GENERATE] Blog translation API error:', translateErr?.message || translateErr);
         return NextResponse.json({ error: translateErr?.message || 'Translation API call failed' }, { status: 500 });
@@ -397,7 +446,7 @@ ${prompt}
       return NextResponse.json({ error: 'AI response was incomplete. Try a shorter topic or try again.', raw: responseText.substring(0, 300) }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, generated });
+    return NextResponse.json({ success: true, generated: sanitizeAiStrings(generated) });
   } catch (err: any) {
     console.error('AI generation error:', err?.message || err);
     return NextResponse.json({ error: err?.message || 'AI generation failed' }, { status: 500 });

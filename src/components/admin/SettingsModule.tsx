@@ -7,6 +7,7 @@ import {
   Edit3, Save, X, Loader2, DollarSign,
 } from 'lucide-react';
 import { BUSINESS } from '@/config/business';
+import AdminPwaCard from './AdminPwaCard';
 
 interface Props { password: string }
 
@@ -188,6 +189,10 @@ export default function SettingsModule({ password }: Props) {
 
   return (
     <div className="space-y-6">
+      {/* iPhone PWA controls — install hint, push, Face ID. Auto-hides on
+          desktop browsers where it adds no value. */}
+      <AdminPwaCard password={password} />
+
       {/* Edit / Save Controls */}
       <div className="flex items-center gap-3">
         {!editing ? (
@@ -207,7 +212,7 @@ export default function SettingsModule({ password }: Props) {
         {saved && <span className="text-sm text-[#3B8A6E] flex items-center gap-1"><CheckCircle className="w-4 h-4" /> Settings saved</span>}
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Business Info */}
         <div className="bg-white rounded-xl border border-[#F3EFE8] p-6">
           <h3 className="text-sm font-semibold text-[#2D2A33] mb-4" style={{ fontFamily: 'Georgia, serif' }}>

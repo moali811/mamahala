@@ -10,14 +10,15 @@
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { getEffectiveLocation } from '@/lib/booking/provider-location';
 
 export const maxDuration = 10;
 
 export async function GET(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   try {

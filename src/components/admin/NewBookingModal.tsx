@@ -1741,6 +1741,19 @@ function AvailabilityCalendar({
   }
   while (cells.length % 7 !== 0) cells.push(null);
 
+  // Auto-scroll the modal so the available-times section is visible after a
+  // date is picked. Without this, on small viewports the calendar takes up
+  // the whole modal height and the times appear "below the fold" — admin has
+  // to manually scroll. Fires whenever a new date is selected.
+  const timesRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!selectedDate) return;
+    const t = setTimeout(() => {
+      timesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 250);
+    return () => clearTimeout(t);
+  }, [selectedDate]);
+
   const available = daySlots.filter(s => s.available);
   const busy = daySlots.filter(s => !s.available && (s.reason === 'busy' || s.reason === 'buffer'));
 
@@ -1833,7 +1846,7 @@ function AvailabilityCalendar({
 
       {/* Time slots (shown when date selected) */}
       {selectedDate && (
-        <div className="space-y-3">
+        <div ref={timesRef} className="space-y-3 scroll-mt-4">
           <div className="flex items-center justify-between">
             <p className="text-xs font-semibold text-[#4A4A5C]">
               <Clock className="inline w-3.5 h-3.5 mr-1 text-[#C8A97D]" />

@@ -3,6 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   validateManageToken,
+  consumeManageToken,
   getBooking,
   saveBooking,
   updateBooking,
@@ -13,6 +14,7 @@ import { isSlotAvailable } from '@/lib/booking/availability';
 import { fetchBusySlots } from '@/lib/booking/google-calendar';
 import { updateCalendarEvent } from '@/lib/booking/google-calendar';
 import { buildRescheduleEmail, sendBookingEmail, notifyAdmin } from '@/lib/booking/emails';
+import { dispatchToAllAdmins } from '@/lib/push/dispatch';
 import type { Booking } from '@/lib/booking/types';
 import { SITE_URL } from '@/lib/site-url';
 
@@ -122,7 +124,24 @@ export async function POST(request: NextRequest) {
       notifyAdmin('reschedule', newBooking, { oldBooking }).catch(err =>
         console.error('[Reschedule] Admin notification failed:', err),
       ),
+      // Push to admin devices — reschedules update Mo's mental model of the
+      // day. Fire-and-forget; never blocks the reschedule flow.
+      dispatchToAllAdmins({
+        title: 'Booking rescheduled',
+        body: `${newBooking.clientName} — moved to ${new Date(newBooking.startTime).toLocaleString('en-CA', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`,
+        url: `/admin?tab=bookings&booking=${newBookingId}`,
+        tag: `booking-rescheduled-${newBookingId}`,
+        data: { kind: 'booking-rescheduled', bookingId: newBookingId, oldBookingId: oldBooking.bookingId },
+      }).catch(err => console.error('[Reschedule] push dispatch failed:', err)),
     ]);
+
+    // SECURITY: consume the OLD manage token now that the reschedule succeeded.
+    // The client receives `newManageToken` above for future actions on the new
+    // booking. Single-use prevents replay of the rescheduled link to manipulate
+    // the (now-rescheduled) old booking.
+    await consumeManageToken(token).catch(err =>
+      console.error('[Reschedule] Token consume failed:', err),
+    );
 
     return NextResponse.json({
       newBookingId,

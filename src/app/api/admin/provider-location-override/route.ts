@@ -12,7 +12,7 @@
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import {
   getLocationOverride,
   saveLocationOverride,
@@ -26,8 +26,9 @@ export const maxDuration = 10;
 // ─── GET ────────────────────────────────────────────────────────
 
 export async function GET(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   try {
@@ -48,8 +49,9 @@ interface PostBody {
 }
 
 export async function POST(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   try {
@@ -105,8 +107,9 @@ export async function POST(request: NextRequest) {
 // ─── DELETE ─────────────────────────────────────────────────────
 
 export async function DELETE(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   try {

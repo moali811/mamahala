@@ -1,9 +1,10 @@
 /* POST /api/book/cancel — Cancel a booking */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { validateManageToken, getBooking, updateBooking } from '@/lib/booking/booking-store';
+import { validateManageToken, consumeManageToken, getBooking, updateBooking } from '@/lib/booking/booking-store';
 import { deleteCalendarEvent } from '@/lib/booking/google-calendar';
 import { buildCancellationEmail, sendBookingEmail, notifyAdmin } from '@/lib/booking/emails';
+import { dispatchToAllAdmins } from '@/lib/push/dispatch';
 import { deleteDraft } from '@/lib/invoicing/kv-store';
 
 export async function POST(request: NextRequest) {
@@ -75,7 +76,27 @@ export async function POST(request: NextRequest) {
       notifyAdmin('cancellation', cancelledBooking).catch(err =>
         console.error('[Cancel] Admin notification failed:', err),
       ),
+      // Push to admin devices — cancellations are time-sensitive (refund/
+      // slot-fill decisions). Fire-and-forget so push hiccups never break
+      // the cancel flow.
+      dispatchToAllAdmins({
+        title: 'Booking cancelled',
+        body: `${cancelledBooking.clientName} — ${cancelledBooking.serviceName ?? cancelledBooking.serviceSlug}`,
+        url: `/admin?tab=bookings&booking=${cancelledBooking.bookingId}`,
+        tag: `booking-cancelled-${cancelledBooking.bookingId}`,
+        data: { kind: 'booking-cancelled', bookingId: cancelledBooking.bookingId, reason: cancelledBooking.cancelReason },
+      }).catch(err => console.error('[Cancel] push dispatch failed:', err)),
     ]);
+
+    // SECURITY: consume the manage token now that the cancellation succeeded.
+    // The cancel link should be single-use; previously the same token could be
+    // reused indefinitely (until the 72h TTL expired) to keep cancelling/de-
+    // duplicating the same booking. Consumed only on success so a user who
+    // hits a policy block (e.g. "too close to session") can still get help via
+    // the same link.
+    await consumeManageToken(token).catch(err =>
+      console.error('[Cancel] Token consume failed:', err),
+    );
 
     return NextResponse.json({ cancelled: true, message: 'Booking has been cancelled.' });
   } catch (err) {

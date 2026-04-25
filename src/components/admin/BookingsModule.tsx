@@ -38,6 +38,21 @@ type TopTab = 'bookings' | 'calendar' | 'recurring' | 'availability';
 
 export default function BookingsModule({ password }: Props) {
   const [topTab, setTopTab] = useState<TopTab>('bookings');
+
+  // Listen for an external request to switch sub-tab — fired by the
+  // Apple-style mobile bottom nav when the user taps Calendar (which is a
+  // pseudo-tab that maps to Bookings module + Calendar sub-tab) or Bookings
+  // (resets to inbox view). Cleaner than prop-drilling controlled state.
+  useEffect(() => {
+    function handler(e: Event) {
+      const detail = (e as CustomEvent<TopTab>).detail;
+      if (detail === 'bookings' || detail === 'calendar' || detail === 'recurring' || detail === 'availability') {
+        setTopTab(detail);
+      }
+    }
+    window.addEventListener('mh-admin-bookings-subtab', handler);
+    return () => window.removeEventListener('mh-admin-bookings-subtab', handler);
+  }, []);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterStatus>('pending_approval');
@@ -329,7 +344,12 @@ export default function BookingsModule({ password }: Props) {
           return (
             <button
               key={tab.key}
-              onClick={() => setTopTab(tab.key)}
+              onClick={() => {
+                setTopTab(tab.key);
+                // Echo to the parent so the bottom-nav highlight stays in sync
+                // when the user uses the in-module tab strip.
+                window.dispatchEvent(new CustomEvent('mh-admin-bookings-subtab-changed', { detail: tab.key }));
+              }}
               className={`flex-1 px-4 py-2 rounded-lg text-xs font-semibold transition-all ${
                 isActive
                   ? 'bg-white text-[#7A3B5E] shadow-sm'
@@ -481,9 +501,19 @@ export default function BookingsModule({ password }: Props) {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setNewBookingOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#7A3B5E] text-sm font-semibold text-white hover:bg-[#6A2E4E] transition-colors"
+            className="group flex items-center gap-2 pl-3 pr-4 py-2.5 rounded-full text-sm font-semibold text-white transition-all active:scale-95 hover:shadow-md"
+            style={{
+              background: 'linear-gradient(135deg, #7A3B5E 0%, #9B4E79 100%)',
+              boxShadow: '0 4px 12px rgba(122, 59, 94, 0.25), 0 1px 2px rgba(122, 59, 94, 0.18)',
+            }}
+            aria-label="Create new booking"
           >
-            <Plus className="w-4 h-4" />
+            <span
+              className="flex items-center justify-center w-5 h-5 rounded-full bg-white/22 group-hover:bg-white/30 transition-colors"
+              aria-hidden
+            >
+              <Plus className="w-3.5 h-3.5" strokeWidth={2.75} />
+            </span>
             New Booking
           </button>
           <button

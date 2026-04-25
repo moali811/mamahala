@@ -20,7 +20,7 @@ import { getBooking, updateBooking, createManageToken } from '@/lib/booking/book
 import { createCalendarEvent } from '@/lib/booking/google-calendar';
 import { sendBookingEmail } from '@/lib/booking/emails';
 import { emailCopy, type EmailLocale } from '@/lib/booking/email-copy';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { SITE_URL } from '@/lib/site-url';
 import { verifyAdminActionToken } from '@/lib/booking/admin-action-token';
@@ -57,8 +57,9 @@ export async function GET(request: NextRequest) {
 
 // POST — from admin dashboard
 export async function POST(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   const { bookingId } = await request.json();

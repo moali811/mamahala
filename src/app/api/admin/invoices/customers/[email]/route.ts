@@ -5,7 +5,7 @@
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { getCustomer, recomputeCustomerStats } from '@/lib/invoicing/customer-store';
 import { listInvoiceRecords } from '@/lib/invoicing/kv-store';
 
@@ -13,8 +13,9 @@ export async function GET(
   req: NextRequest,
   ctx: { params: Promise<{ email: string }> },
 ) {
-  if (!authorize(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   try {

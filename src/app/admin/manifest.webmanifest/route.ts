@@ -23,22 +23,16 @@ export function GET() {
     background_color: '#FAF7F2',
     theme_color: '#7A3B5E',
     icons: [
-      {
-        src: '/images/logo-256.png',
-        sizes: '256x256',
-        type: 'image/png',
-      },
-      {
-        src: '/images/logo-512.png',
-        sizes: '512x512',
-        type: 'image/png',
-      },
-      {
-        src: '/images/logo-512.png',
-        sizes: '512x512',
-        type: 'image/png',
-        purpose: 'any',
-      },
+      // Opaque, properly-padded icons generated from logo-512 with linen
+      // background. Maskable + any purposes for both Android adaptive icons
+      // and standard PWA install.
+      { src: '/admin-pwa-icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/admin-pwa-icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/admin-pwa-icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+    ],
+    shortcuts: [
+      { name: 'Bookings', url: '/admin?tab=bookings', icons: [{ src: '/admin-pwa-icons/icon-192.png', sizes: '192x192' }] },
+      { name: 'Invoices', url: '/admin?tab=invoices', icons: [{ src: '/admin-pwa-icons/icon-192.png', sizes: '192x192' }] },
     ],
   };
 

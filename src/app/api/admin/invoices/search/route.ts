@@ -11,20 +11,23 @@
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { listInvoiceRecords } from '@/lib/invoicing/kv-store';
 import type { StoredInvoice } from '@/lib/invoicing/types';
 
 export async function GET(req: NextRequest) {
-  if (!authorize(req)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   try {
     const url = new URL(req.url);
-    const q = (url.searchParams.get('q') ?? '').trim().toLowerCase();
-    const status = url.searchParams.get('status') ?? 'all';
-    const country = (url.searchParams.get('country') ?? '').toUpperCase();
+    // Cap each filter at a sane length so an oversized query string can't be
+    // used to slow the per-record substring matching loop below.
+    const q = (url.searchParams.get('q') ?? '').trim().toLowerCase().slice(0, 200);
+    const status = (url.searchParams.get('status') ?? 'all').slice(0, 32);
+    const country = (url.searchParams.get('country') ?? '').toUpperCase().slice(0, 8);
     const limit = Math.min(
       200,
       parseInt(url.searchParams.get('limit') ?? '100', 10) || 100,

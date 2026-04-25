@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Image from 'next/image';
+import { registerServiceWorker } from '@/lib/admin-pwa/sw-register';
 import {
   BarChart3, Calendar, Users, FileText, Briefcase, MessageSquare,
   HelpCircle, BookOpen, ClipboardCheck, Settings, RefreshCw,
   Lock, Eye, EyeOff, Menu, X, ChevronRight, Sparkles, Star, Receipt, Plus, LayoutGrid,
+  Inbox, MoreHorizontal,
 } from 'lucide-react';
 
 // Module imports
@@ -82,25 +84,38 @@ const NAV_ITEMS: { key: Module; label: string; icon: React.ReactNode; group: str
   { key: 'settings', label: 'Settings', icon: <Settings className="w-4.5 h-4.5" />, group: 'System' },
 ];
 
-// Mobile bottom bar — 5 real destinations, Bookings first
-const MOBILE_TABS: { key: Module; label: string; icon: React.ReactNode }[] = [
-  { key: 'bookings', label: 'Bookings', icon: <Calendar className="w-[22px] h-[22px]" /> },
-  { key: 'invoices', label: 'Invoices', icon: <Receipt className="w-[22px] h-[22px]" /> },
-  { key: 'dashboard', label: 'Home', icon: <BarChart3 className="w-[22px] h-[22px]" /> },
-  { key: 'clients', label: 'Clients', icon: <Users className="w-[22px] h-[22px]" /> },
-  { key: 'settings', label: 'More', icon: <Menu className="w-[22px] h-[22px]" /> },
+// Mobile bottom bar — 5 destinations chosen for daily ops on iPhone.
+// Booking sits in the CENTER (3rd of 5) — most-frequent action gets the
+// thumb-comfortable middle slot. Calendar is reachable via Booking → in-
+// module Calendar tab (one extra tap, but Calendar isn't a per-glance
+// destination — Bookings + Today's pending count carries that signal).
+// Icon strokeWidth flips between 2.6 (active) and 1.9 (inactive) below to
+// give a filled-vs-outline feel without needing a separate icon set.
+const MOBILE_TABS: { key: Module; label: string; icon: typeof Inbox }[] = [
+  { key: 'dashboard', label: 'Home',     icon: BarChart3 },
+  { key: 'clients',   label: 'Clients',  icon: Users },
+  { key: 'bookings',  label: 'Booking',  icon: Inbox },
+  { key: 'invoices',  label: 'Invoices', icon: Receipt },
+  { key: 'settings',  label: 'More',     icon: MoreHorizontal },
 ];
 
 export default function AdminCommandCenter() {
   const [password, setPassword] = useState('');
   const [authenticated, setAuthenticated] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  // Default OFF for security — opt-in to persist across browser sessions.
+  // When checked: password lives in localStorage (survives browser restart).
+  // When unchecked: password lives in sessionStorage (clears on tab close).
+  const [rememberMe, setRememberMe] = useState(false);
   const [autoLogging, setAutoLogging] = useState(true);
 
-  // Auto-login from saved session
+  // Auto-login from saved session. Prefer the persistent slot if the user
+  // previously checked "Trust this device"; otherwise fall back to the
+  // tab-scoped slot.
   useEffect(() => {
-    const saved = localStorage.getItem('mh_admin_key');
+    const saved = localStorage.getItem('mh_admin_key') || sessionStorage.getItem('mh_admin_key');
+    // If the persistent slot has a value, honour the user's prior choice.
+    if (localStorage.getItem('mh_admin_key')) setRememberMe(true);
     if (saved) {
       setPassword(saved);
       // Trigger fetch with saved password
@@ -115,6 +130,10 @@ export default function AdminCommandCenter() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [quizResults, setQuizResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  // Default to 'bookings' so the app always opens to the Pending booking
+  // requests view — that's what Mo wants to see first whenever the PWA
+  // launches (most actionable surface). The deep-link block below honours
+  // ?tab= overrides for explicit links.
   const [activeModule, setActiveModule] = useState<Module>('bookings');
   const [error, setError] = useState('');
 
@@ -123,6 +142,33 @@ export default function AdminCommandCenter() {
     const params = new URLSearchParams(window.location.search);
     const tab = params.get('tab') as Module | null;
     if (tab && NAV_ITEMS.some(n => n.key === tab)) setActiveModule(tab);
+  }, []);
+
+  // Register the admin PWA Service Worker once on mount. Scoped to /admin so
+  // marketing pages aren't intercepted. Also listens for push-driven nav
+  // (notification tap → switch active module without a full reload).
+  useEffect(() => {
+    registerServiceWorker();
+    function onSwMessage(event: MessageEvent) {
+      const data = event.data as { kind?: string; url?: string } | undefined;
+      if (data?.kind === 'navigate' && data.url) {
+        try {
+          const u = new URL(data.url, window.location.origin);
+          const tab = u.searchParams.get('tab') as Module | null;
+          if (tab && NAV_ITEMS.some(n => n.key === tab)) {
+            setActiveModule(tab);
+            return;
+          }
+          window.location.href = data.url;
+        } catch {
+          window.location.href = data.url;
+        }
+      }
+    }
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', onSwMessage);
+      return () => navigator.serviceWorker.removeEventListener('message', onSwMessage);
+    }
   }, []);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -165,7 +211,9 @@ export default function AdminCommandCenter() {
       if (!statsRes.ok || !leadsRes.ok) {
         setError('Invalid password or connection error');
         setAuthenticated(false);
+        // Clear both slots — bad creds shouldn't survive in either.
         localStorage.removeItem('mh_admin_key');
+        sessionStorage.removeItem('mh_admin_key');
         return;
       }
 
@@ -176,9 +224,16 @@ export default function AdminCommandCenter() {
       setLeads(leadsData.leads || []);
       setQuizResults(quizData.results || []);
       setAuthenticated(true);
-      // Save session if remember me is on
+      // Persistence policy:
+      //   - "Trust this device" ON → localStorage (survives browser restart)
+      //   - "Trust this device" OFF → sessionStorage (clears on tab close)
+      // Always clear the other slot so we never have stale creds in two places.
       if (rememberMe) {
         localStorage.setItem('mh_admin_key', password);
+        sessionStorage.removeItem('mh_admin_key');
+      } else {
+        sessionStorage.setItem('mh_admin_key', password);
+        localStorage.removeItem('mh_admin_key');
       }
     } catch {
       setError('Connection error');
@@ -192,10 +247,10 @@ export default function AdminCommandCenter() {
     fetchData();
   };
 
-  // Auto-login when password is loaded from localStorage
+  // Auto-login when password is loaded from storage
   useEffect(() => {
     if (!autoLogging && password && !authenticated) {
-      const saved = localStorage.getItem('mh_admin_key');
+      const saved = localStorage.getItem('mh_admin_key') || sessionStorage.getItem('mh_admin_key');
       if (saved && saved === password) {
         fetchData().then(() => {
           // If auth failed, clear saved key
@@ -220,7 +275,7 @@ export default function AdminCommandCenter() {
   // ─── LOGIN SCREEN ───
   if (!authenticated) {
     // Show loading while auto-login is in progress
-    if (autoLogging || (password && loading && localStorage.getItem('mh_admin_key'))) {
+    if (autoLogging || (password && loading && (localStorage.getItem('mh_admin_key') || sessionStorage.getItem('mh_admin_key')))) {
       return (
         <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
           <div className="text-center">
@@ -263,15 +318,20 @@ export default function AdminCommandCenter() {
 
             {error && <p className="text-sm text-red-500 mb-3">{error}</p>}
 
-            <label className="flex items-center gap-2 mb-4 cursor-pointer justify-center">
+            <label className="flex items-center gap-2 mb-1.5 cursor-pointer justify-center">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={e => setRememberMe(e.target.checked)}
                 className="w-4 h-4 rounded border-[#E8E0D8] text-[#7A3B5E] focus:ring-[#7A3B5E]/20"
               />
-              <span className="text-xs text-[#8E8E9F]">Remember me on this device</span>
+              <span className="text-xs text-[#8E8E9F]">Trust this device — stay signed in</span>
             </label>
+            <p className="text-[10px] text-[#C0B8B0] text-center mb-4 leading-relaxed">
+              {rememberMe
+                ? 'Password saved in this browser until you sign out. Only check on private devices.'
+                : 'Password clears when you close this tab.'}
+            </p>
 
             <button type="submit" disabled={loading} className="w-full py-3 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#5E2D48] transition-colors disabled:opacity-60">
               {loading ? 'Connecting...' : 'Open MCMS'}
@@ -371,6 +431,7 @@ export default function AdminCommandCenter() {
           <button
             onClick={() => {
               localStorage.removeItem('mh_admin_key');
+              sessionStorage.removeItem('mh_admin_key');
               setAuthenticated(false);
               setPassword('');
             }}
@@ -456,8 +517,14 @@ export default function AdminCommandCenter() {
 
       {/* ─── MAIN CONTENT ─── */}
       <div className="flex-1 min-w-0">
-        {/* Top bar */}
-        <header className="bg-white border-b border-[#F3EFE8] sticky top-0 z-20">
+        {/* Top bar — pads for iPhone status bar (PWA standalone uses
+            viewportFit:cover + black-translucent, which overlays the bar
+            on top of content). env(safe-area-inset-top) is 0 in browsers,
+            ~47px on iPhone PWA. */}
+        <header
+          className="bg-white border-b border-[#F3EFE8] sticky top-0 z-20"
+          style={{ paddingTop: 'env(safe-area-inset-top)' }}
+        >
           <div className="px-4 sm:px-6 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-[#4A4A5C]">
@@ -516,48 +583,90 @@ export default function AdminCommandCenter() {
           {activeModule === 'settings' && <SettingsModule password={password} />}
         </main>
 
-        {/* Add bottom padding on mobile for the fixed bottom bar */}
-        <div className="h-20 lg:hidden" />
+        {/* Reserve space for the floating bottom nav so content doesn't
+            disappear behind it. ~72px = pill height (~56) + outer margin
+            (~6) + breathing room. safe-area-pb adds env(safe-area-inset-bottom). */}
+        <div className="h-[72px] lg:hidden safe-area-pb" />
       </div>
 
-      {/* No orphan FABs — all actions live inside their modules */}
-
-      {/* ─── MOBILE BOTTOM BAR — 5 real destinations ─── */}
-      <nav className="fixed bottom-0 left-0 right-0 z-30 lg:hidden bg-white border-t border-[#F3EFE8] safe-area-pb">
-        <div className="flex items-stretch">
-          {MOBILE_TABS.map(item => {
-            const isMore = item.key === 'settings';
-            const isActive = isMore
-              ? !['dashboard', 'bookings', 'invoices', 'clients'].includes(activeModule)
-              : activeModule === item.key;
-            return (
-              <button
-                key={item.key}
-                onClick={() => {
-                  if (isMore) { setSidebarOpen(true); }
-                  else { handleModuleChange(item.key); }
-                }}
-                className="flex-1 flex flex-col items-center py-2 transition-all relative"
-              >
-                {/* Active pill background */}
-                {isActive && (
-                  <div className="absolute inset-x-2 top-1 bottom-1 rounded-xl bg-[#7A3B5E]/8" />
-                )}
-                <span className={`relative z-10 transition-colors ${isActive ? 'text-[#7A3B5E]' : 'text-[#C0B8B0]'}`}>
-                  {item.icon}
-                  {/* Notification badge */}
-                  {item.key === 'bookings' && pendingBookings > 0 && (
-                    <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#C45B5B] text-[8px] font-bold text-white flex items-center justify-center">
-                      {pendingBookings > 9 ? '9+' : pendingBookings}
+      {/* ─── MOBILE BOTTOM NAV — Apple-style glass, floating pill, pinned ─── */}
+      {/* Outer wrapper is fixed + pointer-events-none so the safe area below
+          the pill stays interactive (e.g., system gestures). Inner pill is
+          pointer-events-auto and gets the blur + shadow + border treatment. */}
+      <nav
+        className="fixed bottom-0 inset-x-0 z-40 lg:hidden pointer-events-none safe-area-pb"
+        aria-label="Primary"
+      >
+        {/* px-2 + pb-0.5 hugs the screen edges and sits lower against the
+            home indicator. The pill itself uses tighter rounded-3xl + less
+            interior padding so tabs feel more compact and dock-like. */}
+        <div className="px-2 pb-0.5 pt-1 pointer-events-auto">
+          <ul
+            className="flex items-stretch rounded-3xl overflow-hidden"
+            style={{
+              background: 'rgba(255, 255, 255, 0.72)',
+              backdropFilter: 'blur(28px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(28px) saturate(180%)',
+              border: '0.5px solid rgba(122, 59, 94, 0.10)',
+              boxShadow:
+                '0 8px 28px rgba(45, 42, 51, 0.13), 0 2px 6px rgba(45, 42, 51, 0.05), inset 0 0.5px 0 rgba(255, 255, 255, 0.7)',
+            }}
+          >
+            {MOBILE_TABS.map((item) => {
+              const Icon = item.icon;
+              const isMore = item.key === 'settings';
+              const isActive = isMore
+                ? !['dashboard', 'bookings', 'invoices', 'clients'].includes(activeModule)
+                : activeModule === item.key;
+              const showBadge = item.key === 'bookings' && pendingBookings > 0;
+              return (
+                <li key={item.key} className="flex-1">
+                  <button
+                    onClick={() => {
+                      if (isMore) { setSidebarOpen(true); return; }
+                      handleModuleChange(item.key);
+                    }}
+                    className="w-full h-full flex flex-col items-center justify-center py-2 px-0.5 active:scale-90 transition-transform relative"
+                    aria-current={isActive ? 'page' : undefined}
+                    aria-label={item.label}
+                  >
+                    <span
+                      className="relative inline-flex"
+                      style={{ color: isActive ? '#7A3B5E' : '#9A8E84' }}
+                    >
+                      <Icon
+                        className="w-[22px] h-[22px]"
+                        strokeWidth={isActive ? 2.6 : 1.9}
+                      />
+                      {showBadge && (
+                        <span
+                          className="absolute -top-1.5 -right-2 min-w-[16px] h-[16px] px-1 rounded-full text-[9px] font-bold text-white flex items-center justify-center"
+                          style={{
+                            background: '#C45B5B',
+                            boxShadow: '0 2px 4px rgba(196, 91, 91, 0.35), 0 0 0 2px rgba(255,255,255,0.9)',
+                          }}
+                        >
+                          {pendingBookings > 9 ? '9+' : pendingBookings}
+                        </span>
+                      )}
                     </span>
-                  )}
-                </span>
-                <span className={`relative z-10 text-[10px] mt-0.5 font-semibold transition-colors ${isActive ? 'text-[#7A3B5E]' : 'text-[#8E8E9F]'}`}>
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
+                    <span
+                      className="text-[10px] mt-0.5 font-semibold tracking-tight leading-none"
+                      style={{ color: isActive ? '#7A3B5E' : '#9A8E84' }}
+                    >
+                      {item.label}
+                    </span>
+                    {isActive && (
+                      <span
+                        className="absolute bottom-0.5 w-1 h-1 rounded-full"
+                        style={{ background: '#7A3B5E' }}
+                      />
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </nav>
     </div>

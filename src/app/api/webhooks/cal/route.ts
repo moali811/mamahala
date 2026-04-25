@@ -49,9 +49,18 @@ const KNOWN_PROGRAMS = [
 export async function POST(req: NextRequest) {
   const body = await req.text();
 
-  // Verify webhook signature if secret is configured
+  // Verify webhook signature.
+  // SECURITY: in production we REFUSE the request if CAL_WEBHOOK_SECRET is not
+  // set — otherwise an attacker could forge academy unlock events. In dev we
+  // permit unsigned requests so local testing without a secret works.
   const secret = process.env.CAL_WEBHOOK_SECRET;
-  if (secret) {
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[cal webhook] CAL_WEBHOOK_SECRET not configured in production — refusing');
+      return NextResponse.json({ error: 'Webhook misconfigured' }, { status: 500 });
+    }
+    console.warn('[cal webhook] CAL_WEBHOOK_SECRET not set — accepting unsigned request (dev only)');
+  } else {
     const signature = req.headers.get('x-cal-signature-256');
     if (!verifySignature(body, signature, secret)) {
       console.error('Cal.com webhook signature verification failed');

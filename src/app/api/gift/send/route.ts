@@ -5,6 +5,12 @@ import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { limitGift, getClientIp } from '@/lib/rate-limit';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
 
+/** Strip CRLF and other control chars before inserting into an email header
+ *  (Subject, From-name). Prevents header injection. */
+function headerSafe(str: string): string {
+  return String(str).replace(/[\r\n\u0000-\u001F\u007F]+/g, ' ').trim().slice(0, 200);
+}
+
 interface GiftRequest {
   gifterName: string;
   gifterEmail: string;
@@ -128,7 +134,7 @@ export async function POST(request: Request) {
           from: process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboarding@resend.dev>',
           to: process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca',
           replyTo: gifterEmail,
-          subject: `New Gift of Care: ${gifterName} → ${recipientName}`,
+          subject: headerSafe(`New Gift of Care: ${gifterName} → ${recipientName}`),
           html: emailWrapper(`
             <div style="${emailStyles.card}">
               <h2 style="${emailStyles.heading}">New Gift of Care</h2>

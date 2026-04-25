@@ -13,6 +13,13 @@ function esc(str: string): string {
     .replace(/'/g, '&#39;');
 }
 
+/** Strip CRLF and other control chars before inserting into an email header
+ *  (Subject, From-name). Prevents header injection where an attacker uses
+ *  `\r\nBcc: …` to add hidden recipients. Truncates to 200 chars defensively. */
+function headerSafe(str: string): string {
+  return String(str).replace(/[\r\n\u0000-\u001F\u007F]+/g, ' ').trim().slice(0, 200);
+}
+
 export async function POST(request: Request) {
   try {
     const ip = getClientIp(request);
@@ -67,7 +74,7 @@ export async function POST(request: Request) {
           from: process.env.RESEND_FROM_EMAIL || 'Mama Hala Consulting <onboarding@resend.dev>',
           to: process.env.RESEND_ADMIN_EMAIL || 'admin@mamahala.ca',
           replyTo: email,
-          subject: `${subjectPrefix}: ${esc(name)} — Mama Hala Consulting`,
+          subject: headerSafe(`${subjectPrefix}: ${name} — Mama Hala Consulting`),
           html: emailWrapper(`
             <div style="${emailStyles.card}">
               <h2 style="${emailStyles.heading}">${subjectPrefix}</h2>

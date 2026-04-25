@@ -21,6 +21,7 @@ import { isSlotAvailable } from '@/lib/booking/availability';
 import { fetchBusySlots } from '@/lib/booking/google-calendar';
 import { createCalendarEvent } from '@/lib/booking/google-calendar';
 import { buildConfirmationEmail, sendBookingEmail, notifyAdmin } from '@/lib/booking/emails';
+import { dispatchToAllAdmins } from '@/lib/push/dispatch';
 import { generateSessionPrepTips } from '@/lib/booking/ai-session-prep';
 import { processBookingIntake } from '@/lib/invoicing/booking-intake';
 import { getCustomer } from '@/lib/invoicing/customer-store';
@@ -266,6 +267,14 @@ export async function POST(request: NextRequest) {
         'pending-approval',
         finalBooking,
       ).catch(err => console.error('[Booking Confirm] Admin notification failed:', err)),
+      // Push notification to all subscribed admin devices (iPhone PWA).
+      dispatchToAllAdmins({
+        title: 'New booking request',
+        body: `${finalBooking.clientName} — ${finalBooking.serviceName ?? finalBooking.serviceSlug}`,
+        url: `/bookings/${bookingId}`,
+        tag: `booking-${bookingId}`,
+        data: { kind: 'booking-created', bookingId },
+      }).catch(err => console.error('[Booking Confirm] Push dispatch failed:', err)),
     ]);
 
     // ─── Build response ──────────────────────────────────────

@@ -34,8 +34,9 @@ import {
   sendBookingEmail,
   notifyAdmin,
 } from '@/lib/booking/emails';
+import { dispatchToAllAdmins } from '@/lib/push/dispatch';
 import { processBookingIntake } from '@/lib/invoicing/booking-intake';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { services } from '@/data/services';
 import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
 import type { Booking, SessionMode } from '@/lib/booking/types';
@@ -58,8 +59,9 @@ interface AdminCreateBookingRequest {
 }
 
 export async function POST(request: NextRequest) {
-  if (!authorize(request)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const _auth = await authorizeWithLimit(request);
+  if (!_auth.ok) {
+    return NextResponse.json({ error: _auth.error }, { status: _auth.status });
   }
 
   try {
@@ -203,6 +205,16 @@ export async function POST(request: NextRequest) {
       // sees the new booking in their inbox + the dashboard polls.
       notifyAdmin('new-booking', booking).catch(err =>
         console.error('[Admin Booking Create] Admin notification failed:', err),
+      ),
+      // Push notification to all subscribed admin devices (iPhone PWA).
+      dispatchToAllAdmins({
+        title: 'Booking created',
+        body: `${booking.clientName} — ${booking.serviceName ?? booking.serviceSlug}`,
+        url: `/bookings/${bookingId}`,
+        tag: `booking-${bookingId}`,
+        data: { kind: 'booking-created', bookingId },
+      }).catch(err =>
+        console.error('[Admin Booking Create] Push dispatch failed:', err),
       ),
     ]);
 

@@ -104,6 +104,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
+    // SECURITY: validate sessionId format. Originally the endpoint accepted any
+    // string the client supplied as the KV key, which let an attacker:
+    //   (a) overwrite another user's shared results by guessing a short id
+    //   (b) read another user's results via /api/quiz-results/[sessionId]
+    // The legit client (`generateSessionId` in lib/quiz-share.ts) generates a
+    // hex/uuid id; reject anything that isn't in that shape.
+    if (!/^[a-z0-9-]{12,64}$/i.test(sessionId)) {
+      return NextResponse.json({ error: 'Invalid session ID' }, { status: 400 });
+    }
+    // Collision check — never overwrite an existing share. With ~48+ bits of
+    // entropy in the client-side id, accidental collision is astronomically
+    // unlikely; this guards against a malicious caller who tries to overwrite
+    // a known short id.
+    if (kv) {
+      const existing = await kv.get(`quiz-shared:${sessionId}`);
+      if (existing) {
+        return NextResponse.json({ error: 'Session ID already used' }, { status: 409 });
+      }
+    }
+
     // Spam & rate-limit checks
     const spam = spamCheck(body);
     if (spam.blocked) {

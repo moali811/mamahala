@@ -16,7 +16,7 @@
    ================================================================ */
 
 import { NextRequest } from 'next/server';
-import { authorize } from '@/lib/invoicing/auth';
+import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { getEffectiveLocation } from '@/lib/booking/provider-location';
 import {
   runComposeOrchestrator,
@@ -33,8 +33,9 @@ interface ComposeRequest {
 }
 
 export async function POST(req: NextRequest) {
-  if (!authorize(req)) {
-    return errJson('Unauthorized', 401);
+  const _auth = await authorizeWithLimit(req);
+  if (!_auth.ok) {
+    return errJson(_auth.error, _auth.status);
   }
 
   let body: ComposeRequest;

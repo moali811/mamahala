@@ -108,6 +108,27 @@ async function gateAdminAuth(request: NextRequest): Promise<NextResponse | null>
 
   try {
     const { kv } = await import('@vercel/kv');
+
+    // SECURITY: check the password FIRST (constant-time) so a legitimate holder
+    // can always recover from a brute-force lockout. If we checked the lockout
+    // first, an attacker who burned through 10 wrong attempts from a shared IP
+    // (office WiFi, mobile carrier NAT, residential CG-NAT) would lock the
+    // real admin out for 15 minutes — DoS by association.
+    const header = request.headers.get('authorization') || '';
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) return null;
+
+    const valid = safeEqual(header, `Bearer ${adminPassword}`);
+    if (valid) {
+      // Reset counter on successful auth.
+      try { await kv.del(failKey); } catch { /* ignore */ }
+      return null;
+    }
+
+    // Wrong password — now check the lockout counter and (if not locked out)
+    // increment it. timingSafeEqual above runs on every path so the wrong-then-
+    // lockout path costs the same as the right-then-pass path; timing leakage
+    // about which branch you took is ~zero.
     const fails = (await kv.get<number>(failKey)) || 0;
     if (fails >= ADMIN_AUTH_FAIL_LIMIT) {
       return NextResponse.json(
@@ -116,20 +137,6 @@ async function gateAdminAuth(request: NextRequest): Promise<NextResponse | null>
       );
     }
 
-    // Quickly peek at the header so we can count failures here (proxy-level)
-    // rather than requiring every admin route to report back.
-    const header = request.headers.get('authorization') || '';
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    if (!adminPassword) return null;
-
-    const valid = safeEqual(header, `Bearer ${adminPassword}`);
-    if (valid) {
-      // Reset counter on successful auth
-      try { await kv.del(failKey); } catch { /* ignore */ }
-      return null;
-    }
-
-    // Count the failure (fire-and-forget for latency)
     try {
       const n = await kv.incr(failKey);
       if (n === 1) await kv.expire(failKey, ADMIN_AUTH_WINDOW_SECONDS);
