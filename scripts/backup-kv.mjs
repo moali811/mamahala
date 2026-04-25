@@ -388,7 +388,7 @@ function namespaceOf(key) {
   }
 
   const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const outDir = customOut || join(homedir(), 'Documents', 'MamaHala-Backups', 'kv');
+  const outDir = customOut || join(homedir(), 'Backups', 'MamaHala', 'kv');
   await mkdir(outDir, { recursive: true });
   const suffix = filter ? '' : '-raw';
   const baseName = `kv-${stamp}${suffix}`;

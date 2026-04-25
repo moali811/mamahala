@@ -23,7 +23,7 @@ PLIST_TARGET="$HOME/Library/LaunchAgents/$LABEL.plist"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SCRIPT_PATH="$PROJECT_ROOT/scripts/backup-kv.mjs"
 TEMPLATE_PATH="$PROJECT_ROOT/scripts/com.mamahala.backup-kv.plist.template"
-LOG_DIR="$HOME/Documents/MamaHala-Backups/kv"
+LOG_DIR="$HOME/Backups/MamaHala/kv"
 LOG_PATH="$LOG_DIR/.launchd.log"
 NODE_PATH="$(command -v node)"
 
