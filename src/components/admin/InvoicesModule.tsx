@@ -158,16 +158,18 @@ export default function InvoicesModule({ password }: Props) {
       .catch(() => {});
   }, [bearerHeaders]);
 
-  // Load history when switching to that tab
-  const refreshHistory = useCallback(() => {
-    setLoading(true);
+  // Load history when switching to that tab. `silent: true` skips the
+  // loading spinner so post-mutation refetches don't blow away the user's
+  // scroll position by collapsing the list to a centered loader.
+  const refreshHistory = useCallback((opts?: { silent?: boolean }) => {
+    if (!opts?.silent) setLoading(true);
     fetch('/api/admin/invoices/list?limit=100', { headers: bearerHeaders })
       .then((r) => r.json())
       .then((data) => {
         setInvoices(data?.invoices ?? []);
       })
       .catch(() => setBanner({ kind: 'error', text: 'Failed to load invoices' }))
-      .finally(() => setLoading(false));
+      .finally(() => { if (!opts?.silent) setLoading(false); });
   }, [bearerHeaders]);
 
   const refreshReports = useCallback(() => {
@@ -330,7 +332,7 @@ export default function InvoicesModule({ password }: Props) {
           invoices={invoices}
           loading={loading}
           bearerHeaders={bearerHeaders}
-          onRefresh={refreshHistory}
+          onRefresh={() => refreshHistory({ silent: true })}
           onBanner={setBanner}
           onOpenClientProfile={setProfileEmail}
         />
@@ -2501,9 +2503,13 @@ function HistoryTab({
         )}
       </AnimatePresence>
 
-      {/* Selection action bar */}
+      {/* Selection action bar — sits above the floating glass nav on mobile.
+          80px clears nav (~57px) + a small gap; env(safe-area-inset-bottom)
+          accounts for the iPhone home-indicator zone the nav also pads. */}
       {selectedInvIds.size > 0 && (
-        <div className="sticky bottom-16 sm:bottom-0 z-30">
+        <div
+          className="sticky sm:bottom-0 z-30 bottom-[calc(80px+env(safe-area-inset-bottom))]"
+        >
           <div className="bg-[#2D2A33] text-white rounded-xl mx-0 px-4 py-3 flex items-center justify-between shadow-lg">
             <span className="text-sm font-semibold">{selectedInvIds.size} selected</span>
             <div className="flex items-center gap-2">

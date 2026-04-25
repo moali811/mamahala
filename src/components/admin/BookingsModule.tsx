@@ -129,7 +129,7 @@ export default function BookingsModule({ password }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setSuccess('Approved! Client notified. Go to Invoices tab to review and send the invoice.');
-      fetchBookings();
+      fetchBookings({ silent: true });
     } catch (err: any) {
       setError(err.message || 'Failed to approve');
     } finally {
@@ -203,7 +203,7 @@ export default function BookingsModule({ password }: Props) {
       setSuccess(booking.status === 'pending-review'
         ? 'Review the invoice below, then confirm to activate.'
         : 'Booking approved! Review the invoice below.');
-      fetchBookings();
+      fetchBookings({ silent: true });
     } catch (err: any) {
       setError(err.message || 'Failed');
     } finally {
@@ -223,7 +223,7 @@ export default function BookingsModule({ password }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setSuccess('Declined. Client has been notified.');
-      fetchBookings();
+      fetchBookings({ silent: true });
     } catch (err: any) {
       setError(err.message || 'Failed to decline');
     } finally {
@@ -260,7 +260,7 @@ export default function BookingsModule({ password }: Props) {
       if (!res.ok) throw new Error(data.error);
       const notifyNote = data.emailSent ? ' — client notified' : '';
       setSuccess(`Status updated to ${newStatus}${notifyNote}`);
-      fetchBookings();
+      fetchBookings({ silent: true });
     } catch (err: any) {
       setError(err.message || 'Failed to update status');
     } finally { setActionLoading(null); }
@@ -277,7 +277,7 @@ export default function BookingsModule({ password }: Props) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setSuccess('Booking deleted');
-      fetchBookings();
+      fetchBookings({ silent: true });
     } catch (err: any) {
       setError(err.message || 'Failed to delete');
     } finally { setActionLoading(null); }
@@ -910,9 +910,9 @@ export default function BookingsModule({ password }: Props) {
           </AnimatePresence>
         </div>
       )}
-      {/* Selection action bar */}
+      {/* Selection action bar — clears the floating glass nav on mobile. */}
       {selectedIds.size > 0 && (
-        <div className="sticky bottom-16 sm:bottom-0 z-30 mx--4 sm:mx-0">
+        <div className="sticky sm:bottom-0 z-30 bottom-[calc(80px+env(safe-area-inset-bottom))] mx--4 sm:mx-0">
           <div className="bg-[#2D2A33] text-white rounded-xl mx-4 sm:mx-0 px-4 py-3 flex items-center justify-between shadow-lg">
             <span className="text-sm font-semibold">{selectedIds.size} selected</span>
             <div className="flex items-center gap-2">
@@ -992,7 +992,7 @@ export default function BookingsModule({ password }: Props) {
             }
             setInvoiceSheet(null);
             setSuccess(`Invoice ${invoiceNumber} sent to ${invoiceSheet.booking.clientEmail}! Booking activated.`);
-            fetchBookings();
+            fetchBookings({ silent: true });
           }}
         />
       )}
