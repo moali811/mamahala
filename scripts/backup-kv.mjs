@@ -223,12 +223,19 @@ async function pruneBackups(outDir) {
 }
 
 // ---------- notification (Resend HTTP API) ----------
+// Recipients (in priority order):
+//   1. BACKUP_NOTIFY_EMAILS  — comma-separated list, dedicated to this backup script
+//   2. RESEND_ADMIN_EMAIL    — fallback (also used by the website's admin alerts)
 async function sendNotification(subject, body) {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM_EMAIL;
-  const to = process.env.RESEND_ADMIN_EMAIL;
-  if (!apiKey || !from || !to) {
-    console.warn('⚠️  Notification skipped: missing RESEND_API_KEY / RESEND_FROM_EMAIL / RESEND_ADMIN_EMAIL');
+  const explicit = (process.env.BACKUP_NOTIFY_EMAILS || '')
+    .split(',').map((s) => s.trim()).filter(Boolean);
+  const recipients = explicit.length > 0
+    ? explicit
+    : (process.env.RESEND_ADMIN_EMAIL ? [process.env.RESEND_ADMIN_EMAIL] : []);
+  if (!apiKey || !from || recipients.length === 0) {
+    console.warn('⚠️  Notification skipped: missing RESEND_API_KEY / RESEND_FROM_EMAIL / recipients');
     return;
   }
   const res = await fetch('https://api.resend.com/emails', {
@@ -236,7 +243,7 @@ async function sendNotification(subject, body) {
     headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       from,
-      to: [to],
+      to: recipients,
       subject,
       text: body,
     }),
