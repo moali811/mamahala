@@ -40,7 +40,13 @@ export function useTourState(options: UseTourStateOptions): TourState {
   const [phase, setPhase] = useState<TourPhase>('idle');
   const [stepIndex, setStepIndex] = useState(0);
 
-  // On mount, check the seen-flag and schedule the welcome if unseen.
+  // On mount, check the seen-flag and arm a scroll-trigger for the welcome.
+  // We wait until the user scrolls DOWN past a small threshold from their
+  // starting position before showing the tour prompt — this keeps the page
+  // calm on first paint and only invites the tour once the user has chosen
+  // to engage with the content. `welcomeDelayMs` becomes a small settle delay
+  // applied after the scroll threshold is crossed, so the modal doesn't
+  // appear in the middle of an active scroll gesture.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     let seen = false;
@@ -50,8 +56,22 @@ export function useTourState(options: UseTourStateOptions): TourState {
       /* private-mode or storage disabled — treat as unseen, don't persist later */
     }
     if (seen) return;
-    const timer = window.setTimeout(() => setPhase('welcome'), welcomeDelayMs);
-    return () => window.clearTimeout(timer);
+
+    const SCROLL_DOWN_THRESHOLD = 80; // px from initial scroll position
+    const initialY = window.scrollY;
+    let settleTimer: number | null = null;
+
+    const onScroll = () => {
+      if (window.scrollY - initialY < SCROLL_DOWN_THRESHOLD) return;
+      window.removeEventListener('scroll', onScroll);
+      settleTimer = window.setTimeout(() => setPhase('welcome'), welcomeDelayMs);
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (settleTimer != null) window.clearTimeout(settleTimer);
+    };
   }, [storageKey, welcomeDelayMs]);
 
   const markSeen = useCallback(() => {

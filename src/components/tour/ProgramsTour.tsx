@@ -42,10 +42,10 @@ const STEPS: StepCopy[] = [
   },
   {
     target: 'cta',
-    titleEn: 'Pick your chapter',
-    titleAr: 'اختر فصلَك',
-    bodyEn: "Finish any level and you'll receive a signed certificate. Pick a program that fits your chapter.",
-    bodyAr: 'بإتمامِك أيَّ مستوى، ستحصُل على شهادةٍ موقّعة. اختر البرنامجَ الذي يناسبُ فصلَك.',
+    titleEn: 'Where you are',
+    titleAr: 'حيث أنتَ الآن',
+    bodyEn: "Complete every module of a program and you'll receive a signed certificate. Pick the one that meets you where you are.",
+    bodyAr: 'بإتمامِك جميعَ وحداتِ البرنامج، ستحصُل على شهادةٍ موقّعة. اختر البرنامجَ الذي يلتقيكَ حيثُ أنت.',
   },
 ];
 
