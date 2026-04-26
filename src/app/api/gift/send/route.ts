@@ -4,6 +4,7 @@ import { generateGiftEmail } from '@/lib/email/gift-template';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { limitGift, getClientIp } from '@/lib/rate-limit';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
+import { getBookingUrl } from '@/config/business';
 
 /** Strip CRLF and other control chars before inserting into an email header
  *  (Subject, From-name). Prevents header injection. */
@@ -74,7 +75,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const schedulingUrl = `https://cal.com/mamahala/${serviceSlug || 'initial-consultation'}`;
+    const schedulingUrl = `https://mamahala.ca${getBookingUrl(locale, serviceSlug || 'initial-consultation')}`;
     const cleanMessage = message?.replace(/<[^>]*>/g, '').trim() || undefined;
 
     const emailHtml = generateGiftEmail({
