@@ -101,7 +101,44 @@ export interface Booking {
   paidAt?: string;
   paidAmountCents?: number;
   paidCurrency?: string;
-  paymentMethod?: string;     // 'e-transfer' | 'paypal' | 'wire' | 'manual'
+  paymentMethod?: string;     // 'e-transfer' | 'paypal' | 'wire' | 'manual' | 'stripe'
+
+  // Stripe payment refs (populated by webhook on checkout.session.completed)
+  // Required for issuing partial refunds on late cancellations / reschedules.
+  // Older bookings predate this field — treat absence as "no Stripe payment".
+  stripePaymentIntentId?: string;
+  stripeChargeId?: string;
+  stripeCheckoutSessionId?: string;
+
+  // Refund tracking (set by cancel/reschedule routes when fees apply)
+  refundedAmountCents?: number;
+  refundedAt?: string;
+  refundId?: string;
+  refundReason?: 'late-cancel' | 'admin-override' | 'goodwill' | 'no-show' | 'late-reschedule' | 'other';
+
+  // Cancellation fee tracking
+  cancellationFeeAppliedCents?: number;
+  /**
+   * Override applied by Dr. Hala before the refund call (e.g., waiving the
+   * late-cancel fee for a compassionate reason). Mirrors the `manualPrice`
+   * idiom from invoicing — reason is required for audit.
+   */
+  cancellationFeeOverride?: {
+    reason: string;
+    overriddenBy: string;       // admin email or 'admin'
+    overriddenAt: string;       // ISO
+    originalFeeCents: number;   // what would have been charged without override
+  };
+
+  // Reschedule tracking
+  rescheduleCount?: number;
+  rescheduleFeeAppliedCents?: number;
+  rescheduleFeeOverride?: {
+    reason: string;
+    overriddenBy: string;
+    overriddenAt: string;
+    originalFeeCents: number;
+  };
 
   // Google Meet
   meetLink?: string;          // Auto-generated Google Meet URL
@@ -194,6 +231,27 @@ export interface AvailabilityRules {
   minimumNoticeHours: number;
   /** Free cancellation window in hours before session (default 24). */
   cancellationPolicyHours: number;
+  /**
+   * Late-cancel fee as a fraction of paid amount (default 0.5 = 50%).
+   * Applied when a client cancels INSIDE the cancellationPolicyHours window
+   * but at least `cancellationHardCutoffHours` before the session.
+   */
+  cancellationLateFeePercent?: number;
+  /**
+   * Hours before session at which clients can no longer self-cancel.
+   * Below this they must contact us directly. Default 2.
+   */
+  cancellationHardCutoffHours?: number;
+
+  // ─── Reschedule Settings ───────────────────────────────────────
+  /** Free reschedules per booking before fees apply (default 2). */
+  rescheduleFreeCount?: number;
+  /** Notice window in hours for free reschedules (default 24). */
+  rescheduleWindowHours?: number;
+  /** Late-reschedule fee as fraction of paid amount (default 0.25 = 25%). */
+  rescheduleLateFeePercent?: number;
+  /** Hard cap on reschedules per booking — past this, must cancel + rebook (default 4). */
+  rescheduleMaxPerBooking?: number;
 
   // ─── Session Mode Settings ─────────────────────────────────────
   /** When false, in-person option is hidden from the booking form. Default true. */

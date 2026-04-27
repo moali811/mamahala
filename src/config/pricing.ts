@@ -319,3 +319,27 @@ export function getCurrencyForCountry(country: string): string {
 export function isGccCountry(country: string): boolean {
   return GCC_COUNTRIES.includes(country.toUpperCase());
 }
+
+/**
+ * Modes a tier offers in a specific region.
+ * Returned set excludes any mode whose anchor is `null` for that region.
+ */
+export function getAvailableModes(tierKey: PricingTierKey, region: Region): SessionMode[] {
+  const anchors = PRICING_TIERS[tierKey].anchors[region];
+  const modes: SessionMode[] = [];
+  if (anchors.online !== null) modes.push('online');
+  if (anchors.inPerson !== null) modes.push('inPerson');
+  return modes;
+}
+
+/**
+ * True if the tier offers `mode` in ANY region. Used by the booking confirm
+ * route to validate `sessionMode` independent of the client's region —
+ * online sessions are global (PPP band pricing fills the gap for clients
+ * outside CAD/AED regions), and in-person is valid as long as the client
+ * is willing to travel to whichever region offers it.
+ */
+export function tierOffersMode(tierKey: PricingTierKey, mode: SessionMode): boolean {
+  const anchors = PRICING_TIERS[tierKey].anchors;
+  return anchors.CAD[mode] !== null || anchors.AED[mode] !== null;
+}

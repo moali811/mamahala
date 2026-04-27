@@ -111,6 +111,31 @@ export async function POST(req: NextRequest) {
         invoice.updatedAt = now;
         await saveInvoiceRecord(invoice);
 
+        // Persist Stripe payment refs onto the originating Booking so the
+        // cancel/reschedule routes can issue partial refunds. Falls through
+        // silently for legacy bookings or non-booking invoices — no
+        // bookingId in metadata means nothing to wire up.
+        const bookingId = meta.bookingId || invoice.draft?.sourceBookingId;
+        if (bookingId) {
+          try {
+            const { updateBooking } = await import('@/lib/booking/booking-store');
+            const paymentIntentId = typeof session.payment_intent === 'string'
+              ? session.payment_intent
+              : session.payment_intent?.id;
+            const amountTotal = session.amount_total ?? null;
+            await updateBooking(bookingId, {
+              stripeCheckoutSessionId: session.id,
+              ...(paymentIntentId ? { stripePaymentIntentId: paymentIntentId } : {}),
+              paidAt: now,
+              ...(amountTotal != null ? { paidAmountCents: amountTotal } : {}),
+              paidCurrency: (session.currency || 'cad').toUpperCase(),
+              paymentMethod: 'stripe',
+            });
+          } catch (bookingLinkErr) {
+            console.error('[Stripe Webhook] Failed to persist payment refs on booking:', bookingLinkErr);
+          }
+        }
+
         // Send receipt email
         try {
           const settings = await getSettings();

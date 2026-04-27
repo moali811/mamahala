@@ -224,6 +224,7 @@ export async function sendInvoiceFromDraft(
         totalCAD: breakdown.totalCAD,
         displayTotal: breakdown.formattedTotal,
         displayCurrency: breakdown.displayCurrency,
+        bookingId: stored.draft.sourceBookingId,
       });
       if (checkoutUrl) {
         stored.stripeCheckoutUrl = checkoutUrl;

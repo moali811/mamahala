@@ -267,7 +267,122 @@ function AccountInner() {
             </motion.div>
           </AnimatePresence>
         )}
+
+        {/* ─── Privacy & Data Controls (PIPEDA right-to-portability + erasure) ─── */}
+        <PrivacyControls isRTL={isRTL} locale={locale} userEmail={user?.email} />
       </div>
+    </div>
+  );
+}
+
+function PrivacyControls({ isRTL, locale, userEmail }: { isRTL: boolean; locale: string; userEmail?: string | null }) {
+  const [confirming, setConfirming] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/account/forget-me', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ confirm: true }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Failed to delete');
+        return;
+      }
+      setDone(true);
+      setTimeout(() => { window.location.href = `/${locale}`; }, 2500);
+    } catch {
+      setError('Failed to delete account');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  if (done) {
+    return (
+      <div className="bg-[#F0FAF5] rounded-xl p-4 border border-[#3B8A6E]/20 text-center">
+        <p className="text-sm text-[#2D6E54]">
+          {isRTL ? 'تم حذف حسابك. سيتم إعادة توجيهك...' : 'Your account has been deleted. Redirecting…'}
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-xl p-5 border border-[#F0ECE8] space-y-4">
+      <div>
+        <h3 className="text-sm font-semibold text-[#4A4A5C]">
+          {isRTL ? 'الخصوصية والبيانات' : 'Privacy & Data'}
+        </h3>
+        <p className="text-xs text-[#8E8E9F] mt-1">
+          {isRTL
+            ? 'بياناتك تخصك. حمّل نسخة منها أو احذفها بالكامل في أي وقت.'
+            : 'Your data is yours. Export a copy or permanently delete it anytime.'}
+        </p>
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-2.5">
+        <a
+          href="/api/account/export"
+          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-[#F5F0EB] text-xs font-semibold text-[#4A4A5C] hover:bg-[#EDE8DF] transition-colors"
+        >
+          {isRTL ? 'تنزيل بياناتي (JSON)' : 'Download My Data (JSON)'}
+        </a>
+        <button
+          type="button"
+          onClick={() => setConfirming(true)}
+          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border border-[#C45B5B]/30 text-xs font-semibold text-[#C45B5B] hover:bg-[#C45B5B]/5 transition-colors"
+        >
+          {isRTL ? 'حذف حسابي' : 'Delete My Account'}
+        </button>
+      </div>
+
+      {confirming && (
+        <div className="bg-[#FFFAF0] rounded-lg p-3 border border-[#D49A4E]/30 space-y-3">
+          <div>
+            <p className="text-xs font-semibold text-[#8B6322] mb-1">
+              {isRTL ? 'هل أنت متأكد؟' : 'Are you sure?'}
+            </p>
+            <p className="text-[11px] text-[#8B6322]/90 leading-relaxed">
+              {isRTL ? (
+                <>سنحذف بيانات الاتصال الخاصة بك ({userEmail}) ونلغي جميع الجلسات المعلقة. سجلات الفواتير المدفوعة تُحفظ لمدة 7 سنوات وفقًا لمتطلبات الضرائب — هذا فقط ما لا يمكن حذفه.</>
+              ) : (
+                <>We will delete your contact details ({userEmail}) and cancel any pending sessions. Paid invoice records are retained for 7 years per tax law — that is the only thing we can&apos;t delete.</>
+              )}
+            </p>
+          </div>
+          {error && <p className="text-xs text-[#C45B5B]">{error}</p>}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setConfirming(false)}
+              className="flex-1 py-2 rounded-lg bg-white border border-[#E8E0D8] text-xs font-semibold text-[#4A4A5C]"
+            >
+              {isRTL ? 'تراجع' : 'Cancel'}
+            </button>
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className="flex-1 py-2 rounded-lg bg-[#C45B5B] text-white text-xs font-semibold disabled:opacity-50"
+            >
+              {deleting ? (isRTL ? 'جارٍ الحذف...' : 'Deleting…') : (isRTL ? 'تأكيد الحذف' : 'Yes, Delete')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <p className="text-[10px] text-[#8E8E9F] leading-relaxed">
+        {isRTL ? 'انظر ' : 'See our '}
+        <a href={`/${locale}/privacy-policy`} className="text-[#7A3B5E] hover:underline">
+          {isRTL ? 'سياسة الخصوصية' : 'privacy policy'}
+        </a>
+        {isRTL ? ' لمزيد من التفاصيل حول كيفية حماية بياناتك.' : ' for full details on how we protect your data.'}
+      </p>
     </div>
   );
 }

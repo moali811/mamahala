@@ -27,7 +27,7 @@ import { processBookingIntake } from '@/lib/invoicing/booking-intake';
 import { getCustomer } from '@/lib/invoicing/customer-store';
 import { getEffectiveLocation } from '@/lib/booking/provider-location';
 import { services } from '@/data/services';
-import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
+import { PRICING_TIERS, tierOffersMode, type PricingTierKey } from '@/config/pricing';
 import type { Booking, BookingConfirmationResult, SessionMode } from '@/lib/booking/types';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
 import { getClientIp, limitBooking } from '@/lib/rate-limit';
@@ -46,6 +46,8 @@ interface ConfirmRequest {
   sessionMode: SessionMode;
   notes?: string;
   aiIntakeNotes?: string;
+  /** PIPEDA-opt-in flag — when true, persist customer recognition prefs. */
+  consentRememberMe?: boolean;
 }
 
 export async function POST(request: NextRequest) {
@@ -81,6 +83,20 @@ export async function POST(request: NextRequest) {
     const service = services.find(s => s.slug === body.serviceSlug);
     if (!service) {
       return NextResponse.json({ error: `Unknown service: ${body.serviceSlug}` }, { status: 400 });
+    }
+
+    // ─── Validate sessionMode against pricing tier ───────────
+    // Some services (experiential) are in-person only by design — pricing
+    // tier encodes mode availability via null anchors. Reject mismatches
+    // even if a stale form somehow submits.
+    const submittedMode: SessionMode = body.sessionMode || 'online';
+    if (!tierOffersMode(service.pricingTierKey as PricingTierKey, submittedMode)) {
+      return NextResponse.json(
+        {
+          error: `${service.name} is not available ${submittedMode === 'online' ? 'online' : 'in person'}.`,
+        },
+        { status: 400 },
+      );
     }
 
     // ─── Validate slot is still available (with distributed lock) ─
@@ -198,6 +214,42 @@ export async function POST(request: NextRequest) {
       await saveBooking(booking);
     } catch (err) {
       console.error('[Booking Confirm] processBookingIntake failed:', err);
+    }
+
+    // ─── Persist remember-me preferences on the customer record ───
+    // Only when the client explicitly opted in. Stores last-service +
+    // preferred-mode for one-click rebook from the account portal,
+    // and an audit-trail consent record. Best-effort — never block
+    // the booking on customer-pref persistence.
+    try {
+      const { upsertCustomer } = await import('@/lib/invoicing/customer-store');
+      const { appendAudit, hashIp } = await import('@/lib/audit/log');
+      const consent = body.consentRememberMe === true;
+      const updates: Record<string, unknown> = {
+        email: booking.clientEmail,
+        lastBookedServiceSlug: booking.serviceSlug,
+        preferredSessionMode: booking.sessionMode,
+      };
+      if (consent) {
+        updates.consentRememberMe = {
+          acceptedAt: new Date().toISOString(),
+          ipHash: hashIp(ip),
+          policyVersion: '2026-04',
+        };
+      }
+      await upsertCustomer(updates as never, 'auto-from-invoice');
+      if (consent) {
+        await appendAudit({
+          actor: 'client',
+          actorId: booking.clientEmail,
+          ip,
+          action: 'customer.consent-given',
+          entityId: booking.clientEmail,
+          details: { feature: 'remember-me' },
+        });
+      }
+    } catch (consentErr) {
+      console.error('[Booking Confirm] consent persistence failed:', consentErr);
     }
 
     // ─── Generate manage token ───────────────────────────────

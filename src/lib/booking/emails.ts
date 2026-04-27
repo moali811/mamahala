@@ -480,6 +480,43 @@ export function buildCancellationEmail(
     ? formatDateTimeAr(booking.startTime, booking.clientTimezone)
     : formatDateTime(booking.startTime, booking.clientTimezone);
 
+  // Fee notice — shown when a late-cancel fee was applied. Honest disclosure
+  // so the client isn't surprised by a partial refund on their statement.
+  let feeNoticeHtml = '';
+  const feeCents = booking.cancellationFeeAppliedCents ?? 0;
+  const refundCents = booking.refundedAmountCents ?? 0;
+  const currency = (booking.paidCurrency || 'CAD').toUpperCase();
+  if (feeCents > 0) {
+    const feeAmt = (feeCents / 100).toFixed(2);
+    const refundAmt = (refundCents / 100).toFixed(2);
+    if (locale === 'ar') {
+      feeNoticeHtml = `
+        <div style="${styles.card};background:#FFFAF0;border-color:#D49A4E33;">
+          <p style="${styles.text};margin:0 0 6px;"><strong>تم تطبيق رسوم إلغاء متأخر</strong></p>
+          <p style="${styles.text};margin:0;">تم خصم ${feeAmt} ${currency} كرسوم إلغاء متأخر، وسيتم استرداد ${refundAmt} ${currency} إلى بطاقتك خلال 5–10 أيام عمل.</p>
+        </div>`;
+    } else {
+      feeNoticeHtml = `
+        <div style="${styles.card};background:#FFFAF0;border-color:#D49A4E33;">
+          <p style="${styles.text};margin:0 0 6px;"><strong>Late-cancel fee applied</strong></p>
+          <p style="${styles.text};margin:0;">A ${feeAmt} ${currency} late-cancel fee has been retained; ${refundAmt} ${currency} will be refunded to your card within 5–10 business days.</p>
+        </div>`;
+    }
+  } else if (refundCents > 0) {
+    const refundAmt = (refundCents / 100).toFixed(2);
+    if (locale === 'ar') {
+      feeNoticeHtml = `
+        <div style="${styles.card};background:#F0FAF5;border-color:#3B8A6E33;">
+          <p style="${styles.text};margin:0;">سيتم استرداد ${refundAmt} ${currency} كاملًا إلى بطاقتك خلال 5–10 أيام عمل.</p>
+        </div>`;
+    } else {
+      feeNoticeHtml = `
+        <div style="${styles.card};background:#F0FAF5;border-color:#3B8A6E33;">
+          <p style="${styles.text};margin:0;">A full refund of ${refundAmt} ${currency} will be returned to your card within 5–10 business days.</p>
+        </div>`;
+    }
+  }
+
   const content = `
     <div style="${styles.card}">
       <h2 style="${styles.heading}">${t.cancellation.heading}</h2>
@@ -488,6 +525,7 @@ export function buildCancellationEmail(
       ${booking.cancelReason ? `<p style="${styles.text}">${t.cancellation.reasonPrefix} ${booking.cancelReason}</p>` : ''}
       <p style="${styles.text}">${t.cancellation.note}</p>
     </div>
+    ${feeNoticeHtml}
     <div style="text-align:center;padding:8px 0 20px;">
       <a href="${SITE_URL}/${locale}/book" style="${styles.button}">${t.cancellation.bookNew}</a>
     </div>

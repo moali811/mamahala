@@ -4,6 +4,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import type { ServiceRecommendation, BookingConfirmationResult, SessionMode } from '@/lib/booking/types';
+import type { PricingTierKey } from '@/config/pricing';
 
 export type BookingStep = 'intake' | 'service' | 'datetime' | 'info' | 'confirm' | 'success';
 
@@ -18,6 +19,7 @@ export interface BookingFormData {
   serviceName: string;
   serviceNameAr: string;
   serviceCategory: string;
+  pricingTierKey: PricingTierKey;
   durationMinutes: number;
 
   // Step 3: Date/Time
@@ -36,6 +38,12 @@ export interface BookingFormData {
   notes: string;
   isNewClient: boolean;
 
+  // Returning-client memory (PIPEDA opt-in)
+  /** Whether the client has authenticated via magic link this session. */
+  isAuthenticatedReturning: boolean;
+  /** Whether they consented to "remember me" for next time. Defaults true once authenticated. */
+  consentRememberMe: boolean;
+
   // Step 5: Result
   confirmationResult: BookingConfirmationResult | null;
 }
@@ -49,6 +57,7 @@ function buildInitialFormData(locale: 'en' | 'ar' = 'en'): BookingFormData {
     serviceName: '',
     serviceNameAr: '',
     serviceCategory: '',
+    pricingTierKey: 'standard50min',
     durationMinutes: 50,
     selectedDate: '',
     selectedStartTime: '',
@@ -66,6 +75,8 @@ function buildInitialFormData(locale: 'en' | 'ar' = 'en'): BookingFormData {
     sessionMode: 'online',
     notes: '',
     isNewClient: true,
+    isAuthenticatedReturning: false,
+    consentRememberMe: false,
     confirmationResult: null,
   };
 }
@@ -80,6 +91,36 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
 
   // Honeypot: record mount time for timing-based bot detection
   const mountTime = useRef(Date.now());
+
+  // ─── Hydrate from existing session ───────────────────────────
+  // PIPEDA-friendly: only auto-fills personal fields when the client is
+  // already authenticated via the booking_session cookie (magic-link verified).
+  // Anonymous returning visitors still see empty fields — typing their email
+  // triggers the soft recognition hint but never auto-prefills PII.
+  const hydratedRef = useRef(false);
+  useEffect(() => {
+    if (hydratedRef.current) return;
+    hydratedRef.current = true;
+    fetch('/api/account/session')
+      .then(r => r.json())
+      .then(data => {
+        if (!data?.authenticated) return;
+        setFormData(prev => ({
+          ...prev,
+          // Only fill empty fields — never overwrite something the user
+          // already typed in.
+          clientEmail: prev.clientEmail || data.email || prev.clientEmail,
+          clientName: prev.clientName || data.name || prev.clientName,
+          clientPhone: prev.clientPhone || data.phone || prev.clientPhone,
+          clientCountry: prev.clientCountry || data.country || prev.clientCountry,
+          isAuthenticatedReturning: true,
+          // Auth implies prior consent (they used a magic link to come back).
+          consentRememberMe: true,
+          isNewClient: false,
+        }));
+      })
+      .catch(() => { /* silent — anonymous booking still works */ });
+  }, []);
 
   const stepIndex = STEP_ORDER.indexOf(step);
 
@@ -157,6 +198,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
           sessionMode: formData.sessionMode,
           notes: formData.notes || undefined,
           aiIntakeNotes: formData.intakeText || undefined,
+          consentRememberMe: formData.consentRememberMe,
           _hp: '',
           _t: mountTime.current,
         }),

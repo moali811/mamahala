@@ -119,7 +119,7 @@ export default function BookingPolicyPage() {
       'نتفهم أن الظروف غير المتوقعة قد تنشأ'
     ),
     t(
-      'One free reschedule per booking is allowed with 24 hours\u2019 notice.',
+      'Up to 2 free reschedules per booking with 24 hours\u2019 notice. Late reschedules (under 24h) carry a 25% fee starting from the 3rd reschedule. Hard cap of 4 reschedules per booking \u2014 past that, please cancel and rebook.',
       'تعاونكم يساعدنا في الحفاظ على جودة الخدمة لجميع عملائنا'
     ),
   ];

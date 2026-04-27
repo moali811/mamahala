@@ -156,6 +156,30 @@ export interface InvoiceDraft {
    * for standalone admin invoices (which keep the daysUntilDue fallback).
    */
   sessionStartTime?: string;
+  /**
+   * Optional back-link to the originating Booking. Populated by
+   * processBookingIntake() when a draft is created from a booking, so the
+   * Stripe webhook can persist payment_intent / charge IDs onto the
+   * Booking — the source-of-truth for refunds on late cancel / reschedule.
+   * Absent on standalone admin invoices.
+   */
+  sourceBookingId?: string;
+  /**
+   * Scheduled send time. When set (ISO timestamp in the future), the
+   * /api/admin/invoices/create endpoint persists the draft and skips the
+   * immediate send. The /api/cron/scheduled-invoices cron (every 5 min)
+   * picks up due drafts and runs sendInvoiceFromDraft() at that time.
+   * Cleared when the draft is sent or the schedule is cancelled.
+   */
+  scheduledSendAt?: string;
+  /**
+   * Last cron attempt timestamp + outcome — used to surface "stuck"
+   * scheduled sends in the admin UI. Cleared on successful send (draft
+   * deleted at that point).
+   */
+  scheduledSendLastAttemptAt?: string;
+  scheduledSendAttempts?: number;
+  scheduledSendLastError?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -398,6 +422,30 @@ export interface Customer {
   updatedAt: string;
   /** Where this record came from. */
   source: 'manual' | 'csv-import' | 'auto-from-invoice';
+  /**
+   * Returning-client recognition consent. Set when the client opts in to
+   * "remember me on this device" during booking. Stored alongside an
+   * IP hash for audit so we can prove consent was given. Absence means
+   * we can still recognize them (email is a primary key) but we don't
+   * auto-prefill personal fields without explicit opt-in.
+   */
+  consentRememberMe?: {
+    acceptedAt: string;
+    ipHash: string;
+    /** Privacy policy version at time of consent (semver-like). */
+    policyVersion?: string;
+  };
+  /** Last service slug booked — used for one-click rebook. */
+  lastBookedServiceSlug?: string;
+  /** Last booking session mode — used for one-click rebook with sensible default. */
+  preferredSessionMode?: 'online' | 'inPerson';
+  /**
+   * Goodwill credit balance (cents, in `preferredCurrency`). Set by admin
+   * cancel override when "issue credit instead of refund" is chosen, and
+   * deducted on the next paid booking. Optional — most customers won't
+   * have one.
+   */
+  creditCents?: number;
 }
 
 /* ════════════════════════════════════════════════════════════

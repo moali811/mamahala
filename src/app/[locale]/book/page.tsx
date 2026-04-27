@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { getMessages, type Locale } from '@/lib/i18n';
 import { BUSINESS } from '@/config/business';
 import { services, serviceCategories, getServicesByCategory, getFreeConsultation } from '@/data/services';
-import { PRICING_TIERS, getAnchor, type Region } from '@/config/pricing';
+import { PRICING_TIERS, getAnchor, getAvailableModes, COUNTRY_TO_REGION, type Region } from '@/config/pricing';
 import {
   COUNTRIES,
   type CountryInfo,
@@ -83,6 +83,7 @@ export default function BookPage() {
         serviceName: preSelectedService.name,
         serviceNameAr: preSelectedService.nameAr,
         serviceCategory: preSelectedService.category,
+        pricingTierKey: preSelectedService.pricingTierKey,
         durationMinutes: duration,
       });
       wizard.goToStep('datetime');
@@ -313,6 +314,8 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
               serviceSlug: 'initial-consultation',
               serviceName: 'Free Consultation',
               serviceNameAr: 'استشارة مجانية',
+              serviceCategory: 'adults',
+              pricingTierKey: 'discoveryCall30min',
               durationMinutes: 30,
               isNewClient: true,
             });
@@ -351,6 +354,7 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
       serviceName: service.name,
       serviceNameAr: service.nameAr,
       serviceCategory: service.category,
+      pricingTierKey: tier,
       durationMinutes: duration,
     });
     wizard.goNext();
@@ -1127,18 +1131,83 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
   });
   const [phoneCountry, setPhoneCountry] = useState<CountryInfo>(detectedCountry);
   const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
+  // ─── Returning-client recognition (PIPEDA-friendly) ──────────────
+  // Soft hint only — typing a known email triggers a "we recognize you,
+  // get a magic link" prompt. We never auto-fill PII without a
+  // magic-link round-trip (handled at hydration time via /api/account/session).
+  const [recognized, setRecognized] = useState(false);
+  const [magicSent, setMagicSent] = useState(false);
+  const [magicSending, setMagicSending] = useState(false);
+  const isAuthed = wizard.formData.isAuthenticatedReturning;
+  const [consentRememberMe, setConsentRememberMe] = useState(
+    wizard.formData.consentRememberMe || isAuthed,
+  );
+  // Debounced recognition probe — runs once email looks valid.
+  useEffect(() => {
+    if (isAuthed) return; // already known, no need to probe
+    const trimmed = email.trim().toLowerCase();
+    if (!trimmed.includes('@') || !trimmed.includes('.') || trimmed.length < 6) {
+      setRecognized(false);
+      return;
+    }
+    const handle = setTimeout(() => {
+      fetch('/api/booking/recognize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: trimmed }),
+      })
+        .then(r => r.json())
+        .then(data => setRecognized(!!data?.recognized))
+        .catch(() => setRecognized(false));
+    }, 500);
+    return () => clearTimeout(handle);
+  }, [email, isAuthed]);
+
+  const sendMagicLink = async () => {
+    if (!email.includes('@')) return;
+    setMagicSending(true);
+    try {
+      await fetch('/api/account/magic-link', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim().toLowerCase() }),
+      });
+      setMagicSent(true);
+    } finally {
+      setMagicSending(false);
+    }
+  };
   // Location-aware session mode: show In-Person only when Dr. Hala is in the client's region
   const isInOttawa = providerTimezone?.includes('Toronto') || providerTimezone?.includes('Eastern');
   const isInDubai = providerTimezone?.includes('Dubai') || providerTimezone?.includes('Gulf');
   const clientCountry = wizard.formData.clientCountry;
-  // Admin toggle overrides everything; location logic is secondary
+  // ─── Tier-aware mode availability ──────────────────────────────
+  // Some services (experiential) are in-person only because they depend on a physical
+  // setting. Pricing tier is the source of truth — null anchor = mode not offered.
+  const tierKey = wizard.formData.pricingTierKey;
+  const clientRegion: Region | undefined = clientCountry ? COUNTRY_TO_REGION[clientCountry.toUpperCase()] : undefined;
+  const providerRegion: Region | undefined = isInOttawa ? 'CAD' : isInDubai ? 'AED' : undefined;
+  // Online is global if any region offers it (PPP band pricing covers non-region clients).
+  const tierOffersOnline = getAvailableModes(tierKey, 'CAD').includes('online') || getAvailableModes(tierKey, 'AED').includes('online');
+  const tierOffersInPersonLocal = clientRegion ? getAvailableModes(tierKey, clientRegion).includes('inPerson') : false;
+  const tierOffersInPersonViaTravel = providerRegion ? getAvailableModes(tierKey, providerRegion).includes('inPerson') : false;
+  // Admin toggle + region match still gate in-person; tier null can also disable it.
   const sameRegion = (isInOttawa && ['CA', 'US'].includes(clientCountry)) || (isInDubai && ['AE', 'SA', 'KW', 'BH', 'QA', 'OM'].includes(clientCountry));
-  const showInPerson = inPersonEnabled && sameRegion;
-  // Different region but admin allows in-person → show travel hint
-  const isLocationMismatch = inPersonEnabled && !sameRegion && (isInOttawa || isInDubai);
+  const showInPerson = inPersonEnabled && sameRegion && tierOffersInPersonLocal;
+  // Different region but admin allows in-person AND the tier offers it → show travel hint
+  const isLocationMismatch = inPersonEnabled && !sameRegion && (isInOttawa || isInDubai) && tierOffersInPersonViaTravel;
   const [showTravelHint, setShowTravelHint] = useState(false);
   const providerCity = isInDubai ? (isRTL ? 'دبي' : 'Dubai') : (isRTL ? 'أوتاوا' : 'Ottawa');
-  const [mode, setMode] = useState<SessionMode>(wizard.formData.sessionMode === 'inPerson' && !showInPerson && !showTravelHint ? 'online' : wizard.formData.sessionMode);
+  // Auto-correct mode when current selection isn't valid for the chosen service.
+  const [mode, setMode] = useState<SessionMode>(() => {
+    const current = wizard.formData.sessionMode;
+    if (current === 'online' && !tierOffersOnline) return 'inPerson';
+    if (current === 'inPerson' && !tierOffersInPersonLocal && !tierOffersInPersonViaTravel) return tierOffersOnline ? 'online' : 'inPerson';
+    if (current === 'inPerson' && !showInPerson && !showTravelHint && tierOffersOnline) return 'online';
+    return current;
+  });
+  // Service is in-person only AND client is in same region → friendly hint
+  const isInPersonOnlyService = !tierOffersOnline && tierOffersInPersonLocal;
   const [notes, setNotes] = useState(wizard.formData.notes || wizard.formData.intakeText);
   const [showNotes, setShowNotes] = useState(!!notes);
   const [locationCountry, setLocationCountry] = useState<CountryInfo>(
@@ -1185,6 +1254,7 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
       preferredLanguage: isRTL ? 'ar' : 'en',
       sessionMode: mode,
       notes: notes.trim(),
+      consentRememberMe,
     });
     wizard.goNext();
   };
@@ -1273,6 +1343,52 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
               className={inputClass} dir="ltr"
             />
           </SmartField>
+
+          {/* Returning-client recognition — soft hint only, no PII shown */}
+          {recognized && !isAuthed && !magicSent && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-start gap-2 px-3 py-2.5 rounded-xl bg-[#3B8A6E]/8 border border-[#3B8A6E]/20"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-[#3B8A6E] mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-[#2D6E54] leading-relaxed">
+                  {isRTL ? 'يبدو أنّكَ زرتَنا من قبل.' : 'Looks like we have you on file.'}
+                </p>
+                <button
+                  type="button"
+                  onClick={sendMagicLink}
+                  disabled={magicSending}
+                  className="text-[11px] font-semibold text-[#3B8A6E] hover:text-[#2D6E54] mt-0.5 disabled:opacity-50"
+                >
+                  {magicSending
+                    ? (isRTL ? 'جارٍ الإرسال...' : 'Sending…')
+                    : (isRTL ? 'أرسل رابط دخول سريع لملء بياناتي ←' : 'Send me a quick login link to prefill my details →')}
+                </button>
+              </div>
+            </motion.div>
+          )}
+          {magicSent && (
+            <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[#FAF7F2] border border-[#E8E0D8]">
+              <Check className="w-3.5 h-3.5 text-[#3B8A6E] shrink-0" />
+              <p className="text-xs text-[#4A4A5C]">
+                {isRTL
+                  ? 'تحقق من بريدك الإلكتروني للحصول على الرابط (15 دقيقة).'
+                  : 'Check your email for a sign-in link (valid 15 min).'}
+              </p>
+            </div>
+          )}
+          {isAuthed && (
+            <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[#7A3B5E]/5 border border-[#7A3B5E]/15">
+              <Check className="w-3.5 h-3.5 text-[#7A3B5E] shrink-0" />
+              <p className="text-xs text-[#4A4A5C]">
+                {isRTL
+                  ? <>أهلًا بعودتك{name ? <>, <strong>{name.split(' ')[0]}</strong></> : ''} — تم ملء بياناتك تلقائيًّا.</>
+                  : <>Welcome back{name ? <>, <strong>{name.split(' ')[0]}</strong></> : ''} — your details are pre-filled.</>}
+              </p>
+            </div>
+          )}
 
           {/* Smart Phone — country code + number */}
           <SmartField icon={Phone} label={isRTL ? 'رقم الهاتف' : 'Phone Number'} valid={phoneValid}>
@@ -1365,17 +1481,43 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
           {isRTL ? 'إعداد الجلسة' : 'Session Setup'}
         </p>
 
-        {/* Session Mode — visual cards (location-aware) */}
-        <div className={`grid ${(showInPerson || showTravelHint) ? 'grid-cols-2' : 'grid-cols-1 max-w-xs mx-auto'} gap-3 mb-4`}>
-          {([
-            { key: 'online' as SessionMode, icon: Video, label: isRTL ? 'عبر الإنترنت' : 'Online', desc: isRTL ? 'مكالمة فيديو من أي مكان' : 'Video call from anywhere' },
-            ...((showInPerson || showTravelHint) ? [{
-              key: 'inPerson' as SessionMode,
+        {/* In-person-only explainer — shown for experiential services */}
+        {isInPersonOnlyService && (
+          <div className="mb-3 p-3 rounded-xl bg-[#7A3B5E]/5 border border-[#7A3B5E]/15">
+            <p className="text-xs text-[#7A3B5E] flex items-start gap-2 leading-relaxed">
+              <Leaf className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+              <span>
+                {isRTL
+                  ? <>هذه التجربة تُقام شخصيًّا في <strong>{providerCity}</strong> — تتطلب حضور المُعالِج وبيئة محددة.</>
+                  : <>This experience is held in person in <strong>{providerCity}</strong> — it depends on the setting.</>}
+              </span>
+            </p>
+          </div>
+        )}
+
+        {/* Session Mode — visual cards (service- and location-aware) */}
+        {(() => {
+          type ModeOption = { key: SessionMode; icon: typeof Video; label: string; desc: string };
+          const modeOptions: ModeOption[] = [];
+          if (tierOffersOnline) {
+            modeOptions.push({
+              key: 'online',
+              icon: Video,
+              label: isRTL ? 'عبر الإنترنت' : 'Online',
+              desc: isRTL ? 'مكالمة فيديو من أي مكان' : 'Video call from anywhere',
+            });
+          }
+          if (showInPerson || showTravelHint) {
+            modeOptions.push({
+              key: 'inPerson',
               icon: Building2,
               label: isInDubai ? (isRTL ? 'شخصياً — دبي' : 'In-Person — Dubai') : (isRTL ? 'شخصياً — أوتاوا' : 'In-Person — Ottawa'),
               desc: isInDubai ? (isRTL ? 'جلسة حضوريّة في دبي' : 'Face-to-face session in Dubai') : (isRTL ? 'مكتب أوتاوا، 430 هازلدين' : 'Ottawa, 430 Hazeldean Rd'),
-            }] : []),
-          ]).map(opt => (
+            });
+          }
+          return (
+        <div className={`grid ${modeOptions.length === 2 ? 'grid-cols-2' : 'grid-cols-1 max-w-xs mx-auto'} gap-3 mb-4`}>
+          {modeOptions.map(opt => (
             <motion.button
               key={opt.key}
               onClick={() => setMode(opt.key)}
@@ -1405,6 +1547,8 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
             </motion.button>
           ))}
         </div>
+          );
+        })()}
 
         {/* Travel hint — shown when client is in a different region than Dr. Hala */}
         <AnimatePresence>
@@ -1457,6 +1601,33 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
           </motion.div>
         )}
       </motion.div>
+
+      {/* ─── Remember-me consent ─── */}
+      <label className="flex items-start gap-2.5 px-1 py-1 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={consentRememberMe}
+          onChange={e => setConsentRememberMe(e.target.checked)}
+          className="mt-0.5 w-4 h-4 rounded border-[#C0B8B0] text-[#7A3B5E] focus:ring-2 focus:ring-[#7A3B5E]/20"
+        />
+        <span className="text-xs text-[#8E8E9F] leading-relaxed">
+          {isRTL ? (
+            <>
+              تذكّرني في المرة القادمة لأخطّي إعادة الإدخال.{' '}
+              <Link href={`/${locale}/privacy-policy#returning-clients`} className="text-[#7A3B5E] hover:underline">
+                كيف نحمي بياناتك
+              </Link>
+            </>
+          ) : (
+            <>
+              Remember me next time so I can skip re-entry.{' '}
+              <Link href={`/${locale}/privacy-policy#returning-clients`} className="text-[#7A3B5E] hover:underline">
+                How we protect your data
+              </Link>
+            </>
+          )}
+        </span>
+      </label>
 
       {/* ─── Submit CTA with shimmer ─── */}
       <motion.button

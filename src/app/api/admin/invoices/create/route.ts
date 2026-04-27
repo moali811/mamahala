@@ -15,7 +15,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { authorizeWithLimit } from '@/lib/invoicing/auth';
-import { getSettings } from '@/lib/invoicing/kv-store';
+import { getSettings, saveDraft } from '@/lib/invoicing/kv-store';
 import {
   sendInvoiceFromDraft,
   InvoicePipelineValidationError,
@@ -24,6 +24,9 @@ import type { InvoiceDraft } from '@/lib/invoicing/types';
 
 export const maxDuration = 30;
 
+/** Minimum lead time for a scheduled send, in minutes. */
+const MIN_SCHEDULE_LEAD_MINUTES = 5;
+
 export async function POST(req: NextRequest) {
   const _auth = await authorizeWithLimit(req);
   if (!_auth.ok) {
@@ -31,7 +34,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const body = (await req.json()) as { draft?: InvoiceDraft };
+    const body = (await req.json()) as {
+      draft?: InvoiceDraft;
+      /** Optional ISO timestamp — when present, persist the draft and let
+       *  the scheduled-invoices cron send it at that time instead of now. */
+      scheduledSendAt?: string;
+    };
     const draft = body?.draft;
     if (!draft) {
       return NextResponse.json(
@@ -40,12 +48,59 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const settings = await getSettings();
+    // ─── Scheduled-send branch ────────────────────────────────
+    // When scheduledSendAt is set and in the future, we persist the draft
+    // (with the timestamp) and skip the immediate pipeline. The cron at
+    // /api/cron/scheduled-invoices picks it up at fire time and runs the
+    // exact same sendInvoiceFromDraft() — single source of truth.
+    if (body.scheduledSendAt) {
+      const scheduledAt = new Date(body.scheduledSendAt);
+      if (isNaN(scheduledAt.getTime())) {
+        return NextResponse.json(
+          { error: 'scheduledSendAt is not a valid ISO timestamp' },
+          { status: 400 },
+        );
+      }
+      const earliest = new Date(Date.now() + MIN_SCHEDULE_LEAD_MINUTES * 60_000);
+      if (scheduledAt.getTime() < earliest.getTime()) {
+        return NextResponse.json(
+          { error: `Scheduled time must be at least ${MIN_SCHEDULE_LEAD_MINUTES} minutes from now` },
+          { status: 400 },
+        );
+      }
 
-    // Delegate everything to the shared pipeline. It handles its own
-    // validation (throws InvoicePipelineValidationError on bad input)
-    // plus the full breakdown → customer → number → PDF → email →
-    // save → draft-delete sequence.
+      // Lightweight validation so the cron doesn't pick up a draft that
+      // would just throw on send. Same shape as the pipeline's backstop.
+      if (!draft.client?.name?.trim()) {
+        return NextResponse.json({ error: 'Client name is required' }, { status: 400 });
+      }
+      if (!draft.client?.email?.includes('@')) {
+        return NextResponse.json({ error: 'Valid client email is required' }, { status: 400 });
+      }
+      if (!draft.serviceSlug) {
+        return NextResponse.json({ error: 'Service is required' }, { status: 400 });
+      }
+
+      const persistedDraft: InvoiceDraft = {
+        ...draft,
+        scheduledSendAt: scheduledAt.toISOString(),
+        scheduledSendAttempts: 0,
+        scheduledSendLastError: undefined,
+        scheduledSendLastAttemptAt: undefined,
+        updatedAt: new Date().toISOString(),
+      };
+      await saveDraft(persistedDraft);
+
+      return NextResponse.json({
+        ok: true,
+        scheduled: true,
+        scheduledSendAt: persistedDraft.scheduledSendAt,
+        draftId: persistedDraft.draftId,
+      });
+    }
+
+    // ─── Immediate send (existing flow) ───────────────────────
+    const settings = await getSettings();
     const { invoice, emailError, stripeWarning } = await sendInvoiceFromDraft(
       draft,
       settings,

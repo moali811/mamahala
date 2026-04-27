@@ -16,7 +16,7 @@ import {
   Sparkles, Globe, Receipt, Loader2, X, ChevronDown, AlertCircle,
   LayoutDashboard, Users, RefreshCw, Search, Upload, Download,
   TrendingUp, TrendingDown, Calendar, Mail, Wand2, RotateCw, AlertTriangle,
-  Plus, Mic, MicOff,
+  Plus, Mic, MicOff, Clock, CalendarClock,
 } from 'lucide-react';
 import { services, serviceCategories } from '@/data/services';
 import type { ServiceCategory } from '@/types';
@@ -66,7 +66,7 @@ interface Props {
   password: string;
 }
 
-type Tab = 'dashboard' | 'compose' | 'history' | 'customers' | 'recurring' | 'reports';
+type Tab = 'dashboard' | 'compose' | 'scheduled' | 'history' | 'customers' | 'recurring' | 'reports';
 type StatusFilter = 'all' | 'draft' | 'sent' | 'paid' | 'overdue' | 'void' | 'unpaid';
 
 // Local default draft
@@ -89,6 +89,42 @@ function makeEmptyDraft(): InvoiceDraft {
     createdAt: now,
     updatedAt: now,
   };
+}
+
+/* ─── Scheduled-send helpers ─────────────────────────────────────
+   datetime-local <input> uses browser-local time semantics — neither
+   the value the user types NOR the value we read back carries a tz
+   suffix. Converting via `new Date(localStr)` gives us the right
+   instant in the admin's tz (the browser interprets the bare string
+   as local).
+   ──────────────────────────────────────────────────────────────── */
+function defaultScheduleLocal(): string {
+  // Tomorrow at 9:00 AM in admin's local time.
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  d.setHours(9, 0, 0, 0);
+  return toLocalInputValue(d);
+}
+function toLocalInputValue(d: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+function localInputToISO(local: string): string | null {
+  const d = new Date(local);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+function describeSchedule(local: string): string {
+  const d = new Date(local);
+  if (isNaN(d.getTime())) return '';
+  const diffMs = d.getTime() - Date.now();
+  const diffMin = Math.round(diffMs / 60_000);
+  if (diffMin < 0) return 'in the past';
+  if (diffMin < 60) return `in ${diffMin} min`;
+  const diffH = Math.round(diffMin / 60);
+  if (diffH < 24) return `in ~${diffH}h`;
+  const diffD = Math.round(diffH / 24);
+  if (diffD < 7) return `in ~${diffD}d`;
+  return d.toLocaleDateString();
 }
 
 // Fallback settings for first paint (before KV load)
@@ -282,6 +318,7 @@ export default function InvoicesModule({ password }: Props) {
       <div className="flex items-center gap-1 mb-5 border-b border-[#EDE8DF] overflow-x-auto snap-x snap-mandatory scrollbar-none">
         <TabButton active={tab === 'dashboard'} onClick={() => setTab('dashboard')} icon={<LayoutDashboard className="w-4 h-4" />} label="Dashboard" />
         <TabButton active={tab === 'compose'} onClick={() => setTab('compose')} icon={<FileText className="w-4 h-4" />} label="Compose" />
+        <TabButton active={tab === 'scheduled'} onClick={() => setTab('scheduled')} icon={<CalendarClock className="w-4 h-4" />} label="Scheduled" />
         <TabButton active={tab === 'history'} onClick={() => setTab('history')} icon={<History className="w-4 h-4" />} label="History" />
         <TabButton active={tab === 'customers'} onClick={() => setTab('customers')} icon={<Users className="w-4 h-4" />} label="Customers" />
         <TabButton active={tab === 'recurring'} onClick={() => setTab('recurring')} icon={<RefreshCw className="w-4 h-4" />} label="Recurring" />
@@ -325,6 +362,12 @@ export default function InvoicesModule({ password }: Props) {
           recentInvoices={invoices}
           onBanner={setBanner}
           onRefreshCustomers={() => refreshCustomers(false)}
+        />
+      )}
+      {tab === 'scheduled' && (
+        <ScheduledTab
+          bearerHeaders={bearerHeaders}
+          onBanner={setBanner}
         />
       )}
       {tab === 'history' && (
@@ -441,6 +484,13 @@ function ComposeTab({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const saveTimer = useRef<NodeJS.Timeout | null>(null);
+  // Scheduled-send state — when toggled on with a future datetime, the
+  // create endpoint persists the draft and the cron sends it at that time.
+  const [scheduleEnabled, setScheduleEnabled] = useState(false);
+  const [scheduleLocal, setScheduleLocal] = useState(() => defaultScheduleLocal());
+  const adminTz = typeof window !== 'undefined'
+    ? Intl.DateTimeFormat().resolvedOptions().timeZone
+    : 'America/Toronto';
 
   // The currently-selected customer for the combobox + snapshot
   const selectedCustomer = useMemo(
@@ -696,6 +746,54 @@ function ComposeTab({
       onBanner({ kind: 'error', text: 'Complete the form first' });
       return;
     }
+
+    // Scheduled-send branch — persist + queue, don't send now.
+    if (scheduleEnabled) {
+      const isoSchedule = localInputToISO(scheduleLocal);
+      if (!isoSchedule) {
+        onBanner({ kind: 'error', text: 'Invalid scheduled time' });
+        return;
+      }
+      if (new Date(isoSchedule).getTime() <= Date.now() + 5 * 60_000) {
+        onBanner({ kind: 'error', text: 'Scheduled time must be at least 5 minutes from now' });
+        return;
+      }
+      const niceTime = new Date(isoSchedule).toLocaleString(undefined, {
+        weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+      });
+      const confirmed = confirm(
+        `Schedule invoice for ${draft.client.email} (${breakdown.formattedTotal}) to send on ${niceTime} (${adminTz})?`,
+      );
+      if (!confirmed) return;
+
+      setSending(true);
+      try {
+        const res = await fetch('/api/admin/invoices/create', {
+          method: 'POST',
+          headers: bearerHeaders,
+          body: JSON.stringify({ draft, scheduledSendAt: isoSchedule }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          onBanner({ kind: 'error', text: data.error || 'Schedule failed' });
+          return;
+        }
+        onBanner({
+          kind: 'success',
+          text: `Invoice scheduled to send ${describeSchedule(scheduleLocal)} (${niceTime}). View in Scheduled tab to edit or cancel.`,
+        });
+        setDraft(makeEmptyDraft());
+        setScheduleEnabled(false);
+        setScheduleLocal(defaultScheduleLocal());
+      } catch {
+        onBanner({ kind: 'error', text: 'Server error' });
+      } finally {
+        setSending(false);
+      }
+      return;
+    }
+
+    // Immediate send (existing flow)
     const confirmed = confirm(
       settings.dryRun
         ? `Create invoice for ${draft.client.email}? (Dry Run mode — no email will be sent.)`
@@ -1412,6 +1510,36 @@ function ComposeTab({
           )}
         </div>
 
+        {/* Schedule toggle + picker */}
+        <div className="space-y-2 rounded-lg border border-[#E8E4DE] p-3 bg-[#FAF7F2]/40">
+          <label className="flex items-center gap-2 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={scheduleEnabled}
+              onChange={e => setScheduleEnabled(e.target.checked)}
+              className="w-4 h-4 rounded border-[#C0B8B0] text-[#7A3B5E] focus:ring-2 focus:ring-[#7A3B5E]/20"
+            />
+            <CalendarClock className="w-4 h-4 text-[#7A3B5E]" />
+            <span className="text-sm font-semibold text-[#4A4A5C]">Schedule send for later</span>
+          </label>
+          {scheduleEnabled && (
+            <div className="flex flex-wrap items-center gap-2 pl-6">
+              <input
+                type="datetime-local"
+                value={scheduleLocal}
+                onChange={e => setScheduleLocal(e.target.value)}
+                min={toLocalInputValue(new Date(Date.now() + 5 * 60_000))}
+                className="px-3 py-1.5 rounded-lg border border-[#E8E4DE] text-sm text-[#4A4A5C] bg-white focus:outline-none focus:border-[#7A3B5E] focus:ring-1 focus:ring-[#7A3B5E]/20"
+              />
+              <span className="text-xs text-[#8E8E9F] inline-flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {adminTz}
+                {scheduleLocal && <span className="text-[#7A3B5E] font-medium ml-1">· {describeSchedule(scheduleLocal)}</span>}
+              </span>
+            </div>
+          )}
+        </div>
+
         {/* Actions */}
         <div className="flex flex-wrap gap-2">
           <button
@@ -1431,10 +1559,16 @@ function ComposeTab({
           >
             {sending ? (
               <Loader2 className="w-4 h-4 animate-spin" />
+            ) : scheduleEnabled ? (
+              <CalendarClock className="w-4 h-4" />
             ) : (
               <Send className="w-4 h-4" />
             )}
-            {sending ? 'Sending…' : settings.dryRun ? 'Create (dry run)' : 'Send Invoice'}
+            {sending
+              ? (scheduleEnabled ? 'Scheduling…' : 'Sending…')
+              : scheduleEnabled
+                ? 'Schedule Send'
+                : settings.dryRun ? 'Create (dry run)' : 'Send Invoice'}
           </button>
         </div>
       </div>
@@ -1846,6 +1980,192 @@ function BreakdownCard({ breakdown }: { breakdown: InvoiceRateBreakdown | null }
         </div>
       )}
     </motion.div>
+  );
+}
+
+/* ═══════════════ Scheduled Tab ═══════════════
+   Lists drafts with a `scheduledSendAt` set. Lets Dr. Hala cancel or
+   send-now before the cron fires. The cron at /api/cron/scheduled-invoices
+   runs every 5 minutes and sends drafts whose time has arrived. */
+
+function ScheduledTab({
+  bearerHeaders,
+  onBanner,
+}: {
+  bearerHeaders: HeadersInit;
+  onBanner: (b: { kind: 'success' | 'error' | 'info'; text: string }) => void;
+}) {
+  const [scheduled, setScheduled] = useState<InvoiceDraft[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/invoices/scheduled', { headers: bearerHeaders });
+      const data = await res.json();
+      if (res.ok && Array.isArray(data.scheduled)) {
+        setScheduled(data.scheduled);
+      } else if (!res.ok) {
+        onBanner({ kind: 'error', text: data.error || 'Failed to load scheduled invoices' });
+      }
+    } catch {
+      onBanner({ kind: 'error', text: 'Failed to load scheduled invoices' });
+    } finally {
+      setLoading(false);
+    }
+  }, [bearerHeaders, onBanner]);
+
+  useEffect(() => { refresh(); }, [refresh]);
+
+  const handleCancel = async (draftId: string) => {
+    if (!confirm('Cancel this scheduled send? The draft itself will be kept so you can edit and resend later.')) return;
+    setBusyId(draftId);
+    try {
+      const res = await fetch(`/api/admin/invoices/scheduled/${draftId}/cancel`, {
+        method: 'POST',
+        headers: bearerHeaders,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        onBanner({ kind: 'error', text: data.error || 'Cancel failed' });
+        return;
+      }
+      onBanner({ kind: 'success', text: 'Scheduled send cancelled. The draft is still available in Compose.' });
+      refresh();
+    } catch {
+      onBanner({ kind: 'error', text: 'Server error' });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleSendNow = async (draft: InvoiceDraft) => {
+    if (!confirm(`Send invoice to ${draft.client.email} now? This will skip the scheduled time.`)) return;
+    setBusyId(draft.draftId);
+    try {
+      const res = await fetch(`/api/admin/invoices/scheduled/${draft.draftId}/send-now`, {
+        method: 'POST',
+        headers: bearerHeaders,
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        onBanner({ kind: 'error', text: data.error || 'Send failed' });
+        return;
+      }
+      const num = data.invoice?.invoiceNumber ?? '(invoice)';
+      if (data.emailError) {
+        onBanner({ kind: 'error', text: `Invoice ${num} saved but email failed: ${data.emailError}` });
+      } else {
+        onBanner({ kind: 'success', text: `Invoice ${num} sent now.` });
+      }
+      refresh();
+    } catch {
+      onBanner({ kind: 'error', text: 'Server error' });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 text-[#C8A97D] animate-spin" />
+      </div>
+    );
+  }
+
+  if (scheduled.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl border border-[#EDE8DF] p-10 text-center">
+        <CalendarClock className="w-10 h-10 text-[#C0B8B0] mx-auto mb-3" />
+        <p className="text-sm text-[#4A4A5C] font-semibold">No invoices scheduled.</p>
+        <p className="text-xs text-[#8E8E9F] mt-1">
+          Use the Compose tab and tick &quot;Schedule send for later&quot; to queue an invoice for a future date and time.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {scheduled.map(draft => {
+        const sendAt = draft.scheduledSendAt ? new Date(draft.scheduledSendAt) : null;
+        const overdue = sendAt && sendAt.getTime() < Date.now() - 60_000;
+        const attempts = draft.scheduledSendAttempts ?? 0;
+        const maxedOut = attempts >= 3;
+        return (
+          <div
+            key={draft.draftId}
+            className={`bg-white rounded-xl border p-4 ${
+              maxedOut ? 'border-rose-300' : overdue ? 'border-amber-300' : 'border-[#EDE8DF]'
+            }`}
+          >
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-sm font-semibold text-[#2D2A33]">{draft.client.name}</span>
+                  <span className="text-xs text-[#8E8E9F]" dir="ltr">{draft.client.email}</span>
+                  {maxedOut && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-rose-700 bg-rose-100 px-2 py-0.5 rounded-full">
+                      <AlertTriangle className="w-3 h-3" /> Send failed {attempts}× — review
+                    </span>
+                  )}
+                  {overdue && !maxedOut && (
+                    <span className="text-[10px] font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                      Pending — cron next tick
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-[#8E8E9F] mt-1">
+                  {draft.serviceSlug} · {draft.subject ?? draft.adminNote?.split('\n')[0] ?? ''}
+                </p>
+                <div className="flex items-center gap-3 mt-2 text-xs text-[#4A4A5C]">
+                  <span className="inline-flex items-center gap-1">
+                    <CalendarClock className="w-3.5 h-3.5 text-[#7A3B5E]" />
+                    {sendAt ? sendAt.toLocaleString(undefined, {
+                      weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+                    }) : '—'}
+                  </span>
+                  {draft.scheduledSendLastError && (
+                    <span className="text-rose-700 truncate" title={draft.scheduledSendLastError}>
+                      Last error: {draft.scheduledSendLastError.slice(0, 60)}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => handleSendNow(draft)}
+                  disabled={busyId === draft.draftId}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#7A3B5E] text-white text-xs font-semibold hover:bg-[#5A2D47] disabled:opacity-50 transition-colors"
+                >
+                  {busyId === draft.draftId ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                  Send now
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleCancel(draft.draftId)}
+                  disabled={busyId === draft.draftId}
+                  className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-[#E8E4DE] text-[#4A4A5C] text-xs font-semibold hover:bg-[#FAF7F2] disabled:opacity-50 transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  Cancel schedule
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+      <button
+        type="button"
+        onClick={refresh}
+        className="text-xs text-[#7A3B5E] hover:underline mt-2"
+      >
+        Refresh
+      </button>
+    </div>
   );
 }
 

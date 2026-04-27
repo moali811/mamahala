@@ -310,6 +310,10 @@ export async function processBookingIntake(
     // this in preference to daysUntilDue so every booking-derived
     // invoice defaults to "pay by the session."
     sessionStartTime: input.startTime,
+    // Back-link so the Stripe webhook can persist payment_intent IDs
+    // onto the booking after checkout completes. Required for refunds
+    // on late cancel / reschedule.
+    sourceBookingId: input.bookingId,
     createdAt: now,
     updatedAt: now,
   };

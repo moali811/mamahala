@@ -79,6 +79,18 @@ function ManageBookingInner() {
   const [doneAction, setDoneAction] = useState<'reschedule' | 'cancel' | null>(null);
   const [cancelling, setCancelling] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
+  const [feePreview, setFeePreview] = useState<{
+    outcome: 'free' | 'fee' | 'blocked' | 'past';
+    feeCents: number;
+    refundCents: number;
+    currency: string;
+    feePercent: number;
+    freeWindowHours: number;
+    hardCutoffHours: number;
+    hoursUntil: number;
+    paidAmountCents: number;
+  } | null>(null);
+  const [feeLoading, setFeeLoading] = useState(false);
 
   // Reschedule state
   const [selectedDate, setSelectedDate] = useState('');
@@ -98,6 +110,22 @@ function ManageBookingInner() {
       .catch(() => setError('Failed to load booking'))
       .finally(() => setLoading(false));
   }, [token]);
+
+  // Fetch fee preview when entering cancel view — gives the client an
+  // honest "you'll be refunded $X (Y% late fee applies)" before they click.
+  useEffect(() => {
+    if (view !== 'cancel' || !token || feePreview) return;
+    setFeeLoading(true);
+    fetch(`/api/book/policy?token=${token}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data?.fee) {
+          setFeePreview({ ...data.fee, paidAmountCents: data.paidAmountCents ?? 0 });
+        }
+      })
+      .catch(() => {})
+      .finally(() => setFeeLoading(false));
+  }, [view, token, feePreview]);
 
   // Fetch slots when date changes (reschedule)
   useEffect(() => {
@@ -399,6 +427,52 @@ function ManageBookingInner() {
               {view === 'cancel' && (
                 <div className="bg-white rounded-2xl p-6 border border-[#F0ECE8] space-y-4">
                   <h3 className="font-semibold text-[#4A4A5C]">{isRTL ? 'هل أنت متأكد؟' : 'Are you sure?'}</h3>
+
+                  {/* Fee preview — honest pre-disclosure */}
+                  {feeLoading && (
+                    <div className="flex items-center gap-2 text-xs text-[#8E8E9F]">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      {isRTL ? 'جارٍ حساب الرسوم...' : 'Calculating refund details…'}
+                    </div>
+                  )}
+                  {feePreview && feePreview.outcome === 'blocked' && (
+                    <div className="p-3 rounded-xl bg-[#C45B5B]/8 border border-[#C45B5B]/20">
+                      <p className="text-xs text-[#C45B5B] leading-relaxed">
+                        {isRTL
+                          ? `لم يعد بالإمكان الإلغاء عبر الإنترنت (الجلسة بعد أقل من ${feePreview.hardCutoffHours} ساعة). يُرجى التواصل معنا مباشرة.`
+                          : `Self-cancel is closed (under ${feePreview.hardCutoffHours}h to session). Please contact us directly so we can help.`}
+                      </p>
+                    </div>
+                  )}
+                  {feePreview && feePreview.outcome === 'fee' && (
+                    <div className="p-3 rounded-xl bg-[#FFFAF0] border border-[#D49A4E]/30 space-y-1.5">
+                      <p className="text-xs font-semibold text-[#8B6322]">
+                        {isRTL
+                          ? `رسوم إلغاء متأخر (${Math.round(feePreview.feePercent * 100)}٪) تُطبق`
+                          : `Late-cancel fee (${Math.round(feePreview.feePercent * 100)}%) applies`}
+                      </p>
+                      <p className="text-xs text-[#8B6322]/90 leading-relaxed">
+                        {isRTL
+                          ? `ستحصل على استرداد ${(feePreview.refundCents / 100).toFixed(2)} ${feePreview.currency.toUpperCase()} (من ${(feePreview.paidAmountCents / 100).toFixed(2)} مدفوعة).`
+                          : `You'll be refunded ${(feePreview.refundCents / 100).toFixed(2)} ${feePreview.currency.toUpperCase()} (of ${(feePreview.paidAmountCents / 100).toFixed(2)} paid).`}
+                      </p>
+                      <p className="text-[10px] text-[#8B6322]/70 italic">
+                        {isRTL
+                          ? 'إذا كان لديك ظرف عاجل، اذكره في الملاحظة وسنراجع الرسوم.'
+                          : 'If something urgent came up, mention it below — we review fee waivers compassionately.'}
+                      </p>
+                    </div>
+                  )}
+                  {feePreview && feePreview.outcome === 'free' && feePreview.paidAmountCents > 0 && (
+                    <div className="p-3 rounded-xl bg-[#F0FAF5] border border-[#3B8A6E]/20">
+                      <p className="text-xs text-[#2D6E54] leading-relaxed">
+                        {isRTL
+                          ? `إلغاء مجاني — ضمن نافذة الـ${feePreview.freeWindowHours} ساعة. سيُسترد المبلغ كاملًا (${(feePreview.refundCents / 100).toFixed(2)} ${feePreview.currency.toUpperCase()}).`
+                          : `Free cancellation — within the ${feePreview.freeWindowHours}-hour window. Full refund of ${(feePreview.refundCents / 100).toFixed(2)} ${feePreview.currency.toUpperCase()}.`}
+                      </p>
+                    </div>
+                  )}
+
                   <textarea
                     value={cancelReason}
                     onChange={e => setCancelReason(e.target.value)}
@@ -412,8 +486,8 @@ function ManageBookingInner() {
                     </button>
                     <button
                       onClick={handleCancel}
-                      disabled={cancelling}
-                      className="flex-1 py-2.5 rounded-xl bg-[#C45B5B] text-white text-sm font-semibold disabled:opacity-50 flex items-center justify-center gap-2"
+                      disabled={cancelling || feePreview?.outcome === 'blocked' || feePreview?.outcome === 'past'}
+                      className="flex-1 py-2.5 rounded-xl bg-[#C45B5B] text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
                       {isRTL ? 'تأكيد الإلغاء' : 'Confirm Cancel'}

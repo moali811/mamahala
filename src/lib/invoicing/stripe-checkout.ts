@@ -56,12 +56,28 @@ export async function createInvoiceCheckoutSession(opts: {
   totalCAD: number;
   displayTotal: string;
   displayCurrency: string;
+  /**
+   * Optional originating booking ID. When provided, propagates into the
+   * Stripe session metadata so the webhook can persist payment_intent
+   * and charge IDs onto the Booking record (needed for partial refunds
+   * on late cancel / reschedule).
+   */
+  bookingId?: string;
 }): Promise<string | null> {
   const stripe = getStripeClient();
   if (!stripe) return null;
 
   const amountCents = Math.round(opts.totalCAD * 100);
   if (amountCents <= 0) return null; // free sessions don't need Stripe
+
+  const metadata: Record<string, string> = {
+    type: 'invoice',
+    invoiceId: opts.invoiceId,
+    invoiceNumber: opts.invoiceNumber,
+    clientEmail: opts.clientEmail,
+    clientName: opts.clientName,
+  };
+  if (opts.bookingId) metadata.bookingId = opts.bookingId;
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
@@ -81,13 +97,7 @@ export async function createInvoiceCheckoutSession(opts: {
         quantity: 1,
       },
     ],
-    metadata: {
-      type: 'invoice',
-      invoiceId: opts.invoiceId,
-      invoiceNumber: opts.invoiceNumber,
-      clientEmail: opts.clientEmail,
-      clientName: opts.clientName,
-    },
+    metadata,
     payment_intent_data: {
       description: `Invoice ${opts.invoiceNumber} — ${opts.serviceName}`,
     },

@@ -27,6 +27,9 @@ export async function GET() {
       name: customer?.name ?? null,
       phone: customer?.phone ?? null,
       country: customer?.country ?? null,
+      lastBookedServiceSlug: customer?.lastBookedServiceSlug ?? null,
+      preferredSessionMode: customer?.preferredSessionMode ?? null,
+      creditCents: customer?.creditCents ?? 0,
     });
   } catch {
     return NextResponse.json({ authenticated: false });
