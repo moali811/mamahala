@@ -2067,6 +2067,34 @@ function ScheduledTab({
     }
   };
 
+  const handleRunCronNow = async () => {
+    if (!confirm('Run the scheduled-invoices cron now? Any draft whose scheduled time has passed will be sent.')) return;
+    setBusyId('__cron__');
+    try {
+      const res = await fetch('/api/cron/scheduled-invoices', { headers: bearerHeaders });
+      const data = await res.json();
+      if (!res.ok) {
+        onBanner({ kind: 'error', text: data.error || 'Cron run failed' });
+        return;
+      }
+      const sent = data.sent ?? 0;
+      const failed = data.failed ?? 0;
+      const processed = data.processed ?? 0;
+      if (processed === 0) {
+        onBanner({ kind: 'info', text: 'No scheduled invoices were due.' });
+      } else if (failed > 0) {
+        onBanner({ kind: 'error', text: `Processed ${processed}: ${sent} sent, ${failed} failed. Review below.` });
+      } else {
+        onBanner({ kind: 'success', text: `Sent ${sent} scheduled invoice${sent === 1 ? '' : 's'}.` });
+      }
+      refresh();
+    } catch {
+      onBanner({ kind: 'error', text: 'Server error' });
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -2087,8 +2115,35 @@ function ScheduledTab({
     );
   }
 
+  const planNote = (
+    <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 flex items-start gap-2">
+      <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+      <div className="flex-1">
+        <strong>Vercel Hobby plan:</strong> the auto-send cron runs once a day (09:00 UTC).
+        For exact-time delivery, upgrade to Pro and change the schedule to <code>*/5 * * * *</code> in
+        <code className="mx-1">vercel.json</code>. Until then, use &quot;Run cron now&quot; below or
+        the per-row &quot;Send now&quot; to fire on demand.
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-3">
+      {planNote}
+      <div className="flex items-center justify-between">
+        <p className="text-xs text-[#8E8E9F]">
+          {scheduled.length} invoice{scheduled.length === 1 ? '' : 's'} scheduled
+        </p>
+        <button
+          type="button"
+          onClick={handleRunCronNow}
+          disabled={busyId === '__cron__'}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#7A3B5E] text-[#7A3B5E] text-xs font-semibold hover:bg-[#7A3B5E]/5 disabled:opacity-50 transition-colors"
+        >
+          {busyId === '__cron__' ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CalendarClock className="w-3.5 h-3.5" />}
+          Run cron now
+        </button>
+      </div>
       {scheduled.map(draft => {
         const sendAt = draft.scheduledSendAt ? new Date(draft.scheduledSendAt) : null;
         const overdue = sendAt && sendAt.getTime() < Date.now() - 60_000;

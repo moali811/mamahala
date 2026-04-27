@@ -1,5 +1,13 @@
 /* Cron: /api/cron/scheduled-invoices
-   Scheduled via vercel.json: every 5 minutes
+   Scheduled via vercel.json: daily at 09:00 UTC
+
+   PLAN LIMITATION: Vercel Hobby caps crons at once-per-day. With this
+   schedule, a draft set for "tomorrow 2pm" actually goes out at 09:00
+   UTC the day-after. To get 5-minute precision (closer to the picked
+   time), upgrade to Vercel Pro and change the schedule to every 5 min.
+   In the meantime the admin "Run now" button in the Scheduled tab hits
+   this same endpoint with the admin Bearer token, so Dr. Hala can fire
+   the queue any time without waiting for the daily tick.
 
    Scheduled-Send Engine:
    Scans all invoice drafts; any draft whose `scheduledSendAt <= now`
