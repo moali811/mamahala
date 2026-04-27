@@ -358,16 +358,16 @@ export async function generateInvoicePdf(
   }
 
   // ─── PAYMENT INSTRUCTIONS (region-aware, single-block primary) ─
-  // Canadian clients see one locked e-Transfer block. International
-  // clients see one block from the cascade (Stripe > wire > PayPal
-  // > contact fallback). The old "Dr. Hala can arrange any of these"
-  // four-option fallback is gone.
+  // CA → Interac e-Transfer. Gulf → Wio Bank AED transfer (no fees).
+  // International → Stripe link / wire / PayPal / contact fallback.
+  // The old "Dr. Hala can arrange any of these" four-option fallback
+  // is gone.
   const paymentResult = buildPaymentInstructions(invoice, settings);
   const allBlocks = [paymentResult.primary, ...paymentResult.secondary];
   doc.setFont('helvetica', 'bold');
   doc.setFontSize(8);
   doc.setTextColor(...MUTED);
-  doc.text('OTHER PAYMENT METHODS', MARGIN, y);
+  doc.text('PAYMENT INSTRUCTIONS', MARGIN, y);
   y += 5;
 
   for (const block of allBlocks) {

@@ -15,6 +15,7 @@ import AvailabilityEditor from './AvailabilityEditor';
 import NewBookingModal from './NewBookingModal';
 import CalendarView from './CalendarView';
 import RescheduleBookingModal from './RescheduleBookingModal';
+import CancelBookingModal from './CancelBookingModal';
 import { toISO2 } from '@/config/countries';
 
 interface Props {
@@ -72,6 +73,8 @@ export default function BookingsModule({ password }: Props) {
 
   // Reschedule modal — admin moves a booking to a new slot, with fee + override.
   const [rescheduleTarget, setRescheduleTarget] = useState<Booking | null>(null);
+  // Cancel modal — admin cancels with fee preview + waiver + audit log.
+  const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
 
   const headers = { Authorization: `Bearer ${password}`, 'Content-Type': 'application/json' };
 
@@ -554,6 +557,19 @@ export default function BookingsModule({ password }: Props) {
         />
       )}
 
+      {cancelTarget && (
+        <CancelBookingModal
+          booking={cancelTarget}
+          bearerHeaders={headers}
+          onClose={() => setCancelTarget(null)}
+          onSuccess={(msg) => {
+            setSuccess(msg);
+            fetchBookings({ silent: true });
+          }}
+          onError={(msg) => setError(msg)}
+        />
+      )}
+
       {/* Alerts */}
       {pendingCount > 0 && (
         <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-center gap-3">
@@ -903,7 +919,15 @@ export default function BookingsModule({ password }: Props) {
                     )}
                     {booking.status !== 'cancelled' && booking.status !== 'declined' && booking.status !== 'completed' && (
                       <button
-                        onClick={() => handleStatusChangeWithDialog(booking.bookingId, booking.clientName, 'cancelled' as BookingStatus)}
+                        onClick={() => {
+                          // Active client bookings (with possible payment) → fee-preview modal.
+                          // Admin-internal pending-review drafts → simple confirm dialog.
+                          if (['confirmed', 'approved', 'pending_approval'].includes(booking.status)) {
+                            setCancelTarget(booking);
+                          } else {
+                            handleStatusChangeWithDialog(booking.bookingId, booking.clientName, 'cancelled' as BookingStatus);
+                          }
+                        }}
                         disabled={isLoading}
                         className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#C45B5B]/8 text-[#C45B5B] hover:bg-[#C45B5B] hover:text-white disabled:opacity-50 transition-all"
                       >
