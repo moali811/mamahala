@@ -147,6 +147,16 @@ function placeholderSettings(): InvoiceSettings {
     defaultDaysUntilDue: 7,
     defaultAllowETransfer: true,
     eTransferEmail: 'admin@mamahala.ca',
+    gulfBank: {
+      bankName: 'Wio Bank (P.J.S.C.)',
+      accountName: 'HALA AWAD HASSAN ALI',
+      accountNumber: '6789405394',
+      iban: 'AE360860000006789405394',
+      swift: 'WIOBAEADXXX',
+      routingCode: '808610001',
+      branch: 'Etihad Airways Centre, 5th Floor, Abu Dhabi, UAE',
+      currency: 'AED',
+    },
     issuerBlock: {
       name: 'Mama Hala Consulting Group',
       line1: '430 Hazeldean Rd',
@@ -3707,6 +3717,85 @@ function SettingsDrawer({
               className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm"
             />
           </Field>
+
+          {/* Gulf bank transfer (UAE/GCC clients see this as primary, no Stripe fees) */}
+          <div className="space-y-2 rounded-lg border border-[#E8E4DE] p-3 bg-[#FAF7F2]/40">
+            <p className="text-xs font-semibold text-[#4A4A5C]">Gulf bank transfer (UAE / GCC)</p>
+            <p className="text-[10px] text-[#8E8E9F] leading-relaxed">
+              Shown as the primary payment method to clients in AE / SA / KW / BH / QA / OM. Leave IBAN empty to fall back to Stripe / wire.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <Field label="Bank name">
+                <input
+                  type="text"
+                  value={local.gulfBank?.bankName ?? ''}
+                  onChange={(e) => setLocal({ ...local, gulfBank: { ...(local.gulfBank ?? { bankName: '', accountName: '', iban: '' }), bankName: e.target.value } })}
+                  className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm"
+                  placeholder="Wio Bank (P.J.S.C.)"
+                />
+              </Field>
+              <Field label="Account name">
+                <input
+                  type="text"
+                  value={local.gulfBank?.accountName ?? ''}
+                  onChange={(e) => setLocal({ ...local, gulfBank: { ...(local.gulfBank ?? { bankName: '', accountName: '', iban: '' }), accountName: e.target.value } })}
+                  className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm"
+                  placeholder="HALA AWAD HASSAN ALI"
+                />
+              </Field>
+              <Field label="IBAN (required)">
+                <input
+                  type="text"
+                  value={local.gulfBank?.iban ?? ''}
+                  onChange={(e) => setLocal({ ...local, gulfBank: { ...(local.gulfBank ?? { bankName: '', accountName: '', iban: '' }), iban: e.target.value.replace(/\s+/g, '') } })}
+                  className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm font-mono"
+                  placeholder="AE36..."
+                />
+              </Field>
+              <Field label="Currency">
+                <input
+                  type="text"
+                  value={local.gulfBank?.currency ?? 'AED'}
+                  onChange={(e) => setLocal({ ...local, gulfBank: { ...(local.gulfBank ?? { bankName: '', accountName: '', iban: '' }), currency: e.target.value.toUpperCase() } })}
+                  className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm"
+                  placeholder="AED"
+                />
+              </Field>
+              <Field label="Account number (optional)">
+                <input
+                  type="text"
+                  value={local.gulfBank?.accountNumber ?? ''}
+                  onChange={(e) => setLocal({ ...local, gulfBank: { ...(local.gulfBank ?? { bankName: '', accountName: '', iban: '' }), accountNumber: e.target.value || undefined } })}
+                  className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm font-mono"
+                />
+              </Field>
+              <Field label="SWIFT (optional)">
+                <input
+                  type="text"
+                  value={local.gulfBank?.swift ?? ''}
+                  onChange={(e) => setLocal({ ...local, gulfBank: { ...(local.gulfBank ?? { bankName: '', accountName: '', iban: '' }), swift: e.target.value || undefined } })}
+                  className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm font-mono"
+                  placeholder="WIOBAEADXXX"
+                />
+              </Field>
+              <Field label="Routing code (optional)">
+                <input
+                  type="text"
+                  value={local.gulfBank?.routingCode ?? ''}
+                  onChange={(e) => setLocal({ ...local, gulfBank: { ...(local.gulfBank ?? { bankName: '', accountName: '', iban: '' }), routingCode: e.target.value || undefined } })}
+                  className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm font-mono"
+                />
+              </Field>
+              <Field label="Branch (optional)">
+                <input
+                  type="text"
+                  value={local.gulfBank?.branch ?? ''}
+                  onChange={(e) => setLocal({ ...local, gulfBank: { ...(local.gulfBank ?? { bankName: '', accountName: '', iban: '' }), branch: e.target.value || undefined } })}
+                  className="w-full px-3 py-2 rounded-lg border border-[#E8E4DE] text-sm"
+                />
+              </Field>
+            </div>
+          </div>
 
           <Field label="International wire instructions (optional)">
             <textarea
