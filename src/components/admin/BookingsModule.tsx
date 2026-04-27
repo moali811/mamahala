@@ -6,7 +6,7 @@ import {
   Calendar, Clock, User, Mail, Phone, Check, X, Loader2,
   AlertCircle, RefreshCw, ChevronDown, Video, Building2,
   FileText, ExternalLink, MessageSquare, Trash2, ArrowUpDown,
-  Plus,
+  Plus, CalendarClock,
 } from 'lucide-react';
 import type { Booking, BookingStatus } from '@/lib/booking/types';
 import type { InvoiceDraft } from '@/lib/invoicing/types';
@@ -14,6 +14,7 @@ import InvoiceReviewSheet from './InvoiceReviewSheet';
 import AvailabilityEditor from './AvailabilityEditor';
 import NewBookingModal from './NewBookingModal';
 import CalendarView from './CalendarView';
+import RescheduleBookingModal from './RescheduleBookingModal';
 import { toISO2 } from '@/config/countries';
 
 interface Props {
@@ -68,6 +69,9 @@ export default function BookingsModule({ password }: Props) {
 
   // "New Booking" modal — admin manually books a client
   const [newBookingOpen, setNewBookingOpen] = useState(false);
+
+  // Reschedule modal — admin moves a booking to a new slot, with fee + override.
+  const [rescheduleTarget, setRescheduleTarget] = useState<Booking | null>(null);
 
   const headers = { Authorization: `Bearer ${password}`, 'Content-Type': 'application/json' };
 
@@ -537,6 +541,19 @@ export default function BookingsModule({ password }: Props) {
         }}
       />
 
+      {rescheduleTarget && (
+        <RescheduleBookingModal
+          booking={rescheduleTarget}
+          bearerHeaders={headers}
+          onClose={() => setRescheduleTarget(null)}
+          onSuccess={(msg) => {
+            setSuccess(msg);
+            fetchBookings({ silent: true });
+          }}
+          onError={(msg) => setError(msg)}
+        />
+      )}
+
       {/* Alerts */}
       {pendingCount > 0 && (
         <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-center gap-3">
@@ -872,6 +889,16 @@ export default function BookingsModule({ password }: Props) {
                         className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#5B8AC4]/10 text-[#5B8AC4] hover:bg-[#5B8AC4] hover:text-white disabled:opacity-50 transition-all"
                       >
                         Mark Completed
+                      </button>
+                    )}
+                    {(booking.status === 'confirmed' || booking.status === 'approved' || booking.status === 'pending_approval') && (
+                      <button
+                        onClick={() => setRescheduleTarget(booking)}
+                        disabled={isLoading}
+                        className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[#7A3B5E]/8 text-[#7A3B5E] hover:bg-[#7A3B5E] hover:text-white disabled:opacity-50 transition-all inline-flex items-center gap-1"
+                      >
+                        <CalendarClock className="w-3 h-3" />
+                        Reschedule
                       </button>
                     )}
                     {booking.status !== 'cancelled' && booking.status !== 'declined' && booking.status !== 'completed' && (
