@@ -19,6 +19,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getInvoiceByPaymentToken } from '@/lib/invoicing/kv-store';
 import { getSettings } from '@/lib/invoicing/kv-store';
 import { services } from '@/data/services';
+import { GCC_COUNTRIES } from '@/config/pricing';
 import { resolveCardPayUrl } from '@/lib/invoicing/stripe-checkout';
 import { BUSINESS } from '@/config/business';
 import { getClientIp, limitPayLookup } from '@/lib/rate-limit';
@@ -47,6 +48,18 @@ export interface PayConciergeData {
   eTransfer: {
     email: string;
     instructions: string;
+  } | null;
+
+  /** UAE / Gulf bank transfer details — only set for GCC clients when configured. */
+  gulfBank: {
+    bankName: string;
+    accountName: string;
+    accountNumber?: string;
+    iban: string;
+    swift?: string;
+    routingCode?: string;
+    branch?: string;
+    currency: string;
   } | null;
 
   /** Wire transfer instructions — from admin settings. */
@@ -101,6 +114,7 @@ export async function GET(request: NextRequest) {
   const bd = invoice.breakdown;
   const country = invoice.draft.client.country.toUpperCase();
   const isCA = country === 'CA';
+  const isGulf = GCC_COUNTRIES.includes(country);
 
   const data: PayConciergeData = {
     invoiceNumber: invoice.invoiceNumber,
@@ -124,8 +138,23 @@ export async function GET(request: NextRequest) {
             instructions: `Auto-deposit is enabled — no security question needed. Please reference ${invoice.invoiceNumber} in the memo.`,
           }
         : null,
+    gulfBank:
+      isGulf && settings.gulfBank?.iban
+        ? {
+            bankName: settings.gulfBank.bankName,
+            accountName: settings.gulfBank.accountName,
+            accountNumber: settings.gulfBank.accountNumber,
+            iban: settings.gulfBank.iban,
+            swift: settings.gulfBank.swift,
+            routingCode: settings.gulfBank.routingCode,
+            branch: settings.gulfBank.branch,
+            currency: settings.gulfBank.currency || 'AED',
+          }
+        : null,
     wire:
-      !isCA && settings.wireInstructions && settings.wireInstructions.trim()
+      // Suppress wire when a Gulf bank transfer block is already showing —
+      // gulfBank IS the local-currency wire option, no point duplicating.
+      !isCA && !(isGulf && settings.gulfBank?.iban) && settings.wireInstructions && settings.wireInstructions.trim()
         ? { instructions: settings.wireInstructions }
         : null,
     paypalLink:

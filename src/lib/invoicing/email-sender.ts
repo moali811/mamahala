@@ -116,7 +116,75 @@ function buildInvoiceEmailHtml(
         </table>
       </div>
 
-      <!-- Pay Online -->
+      ${(() => {
+        if (paymentResult.region === 'CA') {
+          return `
+      <!-- Pay by Interac e-Transfer (CA hero — fee-free, primary) -->
+      <div style="background:#F0FAF5;border-radius:16px;padding:24px;margin-bottom:20px;">
+        <p style="margin:0 0 4px;color:#3B8A6E;font-size:14px;font-weight:700;text-align:center;">${t.payCAHeading}</p>
+        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;text-align:center;line-height:1.6;">${t.payCAPrompt(escapeHtml(bd.formattedTotal))}</p>
+        <table style="width:100%;border-collapse:collapse;background:white;border-radius:10px;margin-bottom:14px;">
+          <tr>
+            <td style="padding:10px 14px;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;width:38%;">${t.payCASendToLabel}</td>
+            <td style="padding:10px 14px;color:#2D2A33;font-size:14px;font-weight:600;font-family:monospace;">${escapeHtml(settings.eTransferEmail || settings.issuerBlock.email || 'admin@mamahala.ca')}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;border-top:1px solid #F3EFE8;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.payCAReferenceLabel}</td>
+            <td style="padding:10px 14px;border-top:1px solid #F3EFE8;color:#2D2A33;font-size:14px;font-weight:600;font-family:monospace;">${escapeHtml(invoice.invoiceNumber)}</td>
+          </tr>
+        </table>
+        <p style="margin:0;text-align:center;">
+          <a href="${buildPaymentConciergeUrl(invoice)}" style="display:inline-block;padding:10px 28px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600;">${t.payCta(escapeHtml(bd.formattedTotal))}</a>
+        </p>
+        ${invoice.stripeCheckoutUrl ? `
+        <p style="margin:14px 0 0;font-size:11px;color:#8E8E9F;text-align:center;">
+          <a href="${buildPaymentConciergeUrl(invoice)}" style="color:#7A3B5E;text-decoration:underline;">${t.payCACardOptionLink}</a>
+        </p>` : ''}
+      </div>`;
+        }
+        if (paymentResult.region === 'GULF' && settings.gulfBank?.iban) {
+          const gb = settings.gulfBank;
+          const ccy = gb.currency || 'AED';
+          // Optional details rendered inline since email clients don't support <details>
+          const extraRows = [
+            gb.accountNumber ? `<tr><td style="padding:8px 14px;border-top:1px solid #F3EFE8;color:#8E8E9F;font-size:10px;text-transform:uppercase;letter-spacing:1px;">Account #</td><td style="padding:8px 14px;border-top:1px solid #F3EFE8;color:#4A4A5C;font-size:12px;font-family:monospace;" dir="ltr">${escapeHtml(gb.accountNumber)}</td></tr>` : '',
+            gb.swift ? `<tr><td style="padding:8px 14px;border-top:1px solid #F3EFE8;color:#8E8E9F;font-size:10px;text-transform:uppercase;letter-spacing:1px;">SWIFT</td><td style="padding:8px 14px;border-top:1px solid #F3EFE8;color:#4A4A5C;font-size:12px;font-family:monospace;" dir="ltr">${escapeHtml(gb.swift)}</td></tr>` : '',
+          ].join('');
+          return `
+      <!-- Pay by local bank transfer (Gulf hero — fee-free, primary) -->
+      <div style="background:#F0FAF5;border-radius:16px;padding:24px;margin-bottom:20px;">
+        <p style="margin:0 0 4px;color:#3B8A6E;font-size:14px;font-weight:700;text-align:center;">${t.payGulfHeading}</p>
+        <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;text-align:center;line-height:1.6;">${t.payGulfPrompt(escapeHtml(bd.formattedTotal), escapeHtml(ccy))}</p>
+        <table style="width:100%;border-collapse:collapse;background:white;border-radius:10px;margin-bottom:14px;">
+          <tr>
+            <td style="padding:10px 14px;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;width:38%;">${t.payGulfBankLabel}</td>
+            <td style="padding:10px 14px;color:#2D2A33;font-size:14px;font-weight:600;">${escapeHtml(gb.bankName)}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;border-top:1px solid #F3EFE8;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.payGulfAccountNameLabel}</td>
+            <td style="padding:10px 14px;border-top:1px solid #F3EFE8;color:#2D2A33;font-size:14px;font-weight:600;">${escapeHtml(gb.accountName)}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;border-top:1px solid #F3EFE8;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.payGulfIbanLabel}</td>
+            <td style="padding:10px 14px;border-top:1px solid #F3EFE8;color:#2D2A33;font-size:14px;font-weight:600;font-family:monospace;" dir="ltr">${escapeHtml(gb.iban)}</td>
+          </tr>
+          <tr>
+            <td style="padding:10px 14px;border-top:1px solid #F3EFE8;color:#8E8E9F;font-size:11px;text-transform:uppercase;letter-spacing:1px;">${t.payGulfReferenceLabel}</td>
+            <td style="padding:10px 14px;border-top:1px solid #F3EFE8;color:#2D2A33;font-size:14px;font-weight:600;font-family:monospace;">${escapeHtml(invoice.invoiceNumber)}</td>
+          </tr>
+          ${extraRows}
+        </table>
+        <p style="margin:0;text-align:center;">
+          <a href="${buildPaymentConciergeUrl(invoice)}" style="display:inline-block;padding:10px 28px;background:#3B8A6E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600;">${t.payCta(escapeHtml(bd.formattedTotal))}</a>
+        </p>
+        ${invoice.stripeCheckoutUrl ? `
+        <p style="margin:14px 0 0;font-size:11px;color:#8E8E9F;text-align:center;">
+          <a href="${buildPaymentConciergeUrl(invoice)}" style="color:#7A3B5E;text-decoration:underline;">${t.payCACardOptionLink}</a>
+        </p>` : ''}
+      </div>`;
+        }
+        return `
+      <!-- Pay Online (international — Stripe primary) -->
       <div style="background:#F0FAF5;border-radius:16px;padding:24px;margin-bottom:20px;text-align:center;">
         <p style="margin:0 0 4px;color:#3B8A6E;font-size:14px;font-weight:700;">${t.payOnlineHeading}</p>
         <p style="margin:0 0 16px;color:#4A4A5C;font-size:13px;">${t.payOnlinePrompt(escapeHtml(bd.formattedTotal), !!invoice.stripeCheckoutUrl)}</p>
@@ -125,11 +193,12 @@ function buildInvoiceEmailHtml(
         <p style="margin:14px 0 0;font-size:11px;color:#8E8E9F;">${t.otherPaymentPrompt} <a href="${buildPaymentConciergeUrl(invoice)}" style="color:#7A3B5E;text-decoration:underline;">${t.otherPaymentLink}</a></p>` : ''}
       </div>
 
-      <!-- Other payment methods -->
+      <!-- Other payment methods (international) -->
       <div style="margin-bottom:20px;">
         <p style="margin:0 0 12px;color:#8E8E9F;font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:1px;">${t.otherPaymentMethodsHeading}</p>
         ${blocksHtml}
-      </div>
+      </div>`;
+      })()}
 
       <!-- PDF reminder -->
       <div style="padding:14px;background:#F3EFE8;border-radius:8px;margin-bottom:20px;">

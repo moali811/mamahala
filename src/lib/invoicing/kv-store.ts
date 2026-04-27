@@ -56,6 +56,20 @@ export function getDefaultSettings(): InvoiceSettings {
     defaultDaysUntilDue: 1,
     defaultAllowETransfer: true,
     eTransferEmail: BUSINESS.email || 'admin@mamahala.ca',
+    /* ── Gulf bank transfer (Wio Bank, Dubai) ──
+       Default ships with Dr. Hala's Wio Bank account so Gulf clients see
+       a local AED transfer option immediately. Editable in the admin
+       Settings drawer — change bankName/IBAN if she switches banks. */
+    gulfBank: {
+      bankName: 'Wio Bank (P.J.S.C.)',
+      accountName: 'HALA AWAD HASSAN ALI',
+      accountNumber: '6789405394',
+      iban: 'AE360860000006789405394',
+      swift: 'WIOBAEADXXX',
+      routingCode: '808610001',
+      branch: 'Etihad Airways Centre, 5th Floor, Abu Dhabi, UAE',
+      currency: 'AED',
+    },
     wireInstructions: '',
     paypalLink: '',
     hstNumber: '',

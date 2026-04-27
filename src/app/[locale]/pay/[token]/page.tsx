@@ -44,6 +44,7 @@ export default function PayConciergePage({
   const [errorKind, setErrorKind] = useState<'notfound' | 'cancelled' | 'other'>('other');
   const [loading, setLoading] = useState(true);
   const [copiedEmail, setCopiedEmail] = useState(false);
+  const [copiedField, setCopiedField] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -86,6 +87,14 @@ export default function PayConciergePage({
       await navigator.clipboard.writeText(data.eTransfer.email);
       setCopiedEmail(true);
       setTimeout(() => setCopiedEmail(false), 2000);
+    } catch { /* clipboard unavailable */ }
+  };
+
+  const copyField = async (key: string, value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopiedField(key);
+      setTimeout(() => setCopiedField(c => (c === key ? null : c)), 2000);
     } catch { /* clipboard unavailable */ }
   };
 
@@ -185,7 +194,7 @@ export default function PayConciergePage({
   }
 
   // ─── Payment options ───────────────────────────────────
-  const hasAnyMethod = data.cardPayUrl || data.eTransfer || data.wire || data.paypalLink;
+  const hasAnyMethod = data.cardPayUrl || data.eTransfer || data.gulfBank || data.wire || data.paypalLink;
 
   return (
     <div
@@ -247,91 +256,166 @@ export default function PayConciergePage({
           </div>
         ) : (
           <div className="space-y-3">
-            {/* Method 1: Pay with Card (Stripe) */}
-            {data.cardPayUrl && (
-              <motion.a
+            {/* Gulf bank transfer (Wio AED) — primary for UAE/GCC clients (no Stripe fees, native UX) */}
+            {data.gulfBank && (
+              <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.1 }}
-                href={data.cardPayUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block bg-white rounded-2xl overflow-hidden shadow-sm border border-[#F0ECE8] hover:border-[#3B8A6E] hover:shadow-md transition-all group"
+                className="bg-white rounded-2xl p-5 shadow-sm border-2 border-[#3B8A6E]/30"
               >
-                {/* Primary CTA area */}
-                <div className="p-5">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-[#F0FAF5] flex items-center justify-center shrink-0 group-hover:bg-[#3B8A6E]/15 transition-colors">
-                      <CreditCard className="w-6 h-6 text-[#3B8A6E]" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-[#2D2A33] mb-0.5">
-                        {isRTL ? `ادفع ${data.amount.formatted} بالبطاقة` : `Pay ${data.amount.formatted} with Card`}
-                      </p>
-                      <p className="text-xs text-[#8E8E9F]">
-                        {isRTL ? 'فيزا، ماستركارد، أبل باي — عبر Stripe' : 'Visa, Mastercard, Apple Pay — via Stripe'}
-                      </p>
-                    </div>
-                    <ExternalLink className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#3B8A6E] shrink-0" />
+                <div className="flex items-center gap-4 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-[#F0FAF5] flex items-center justify-center shrink-0">
+                    <Globe className="w-6 h-6 text-[#3B8A6E]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-[#2D2A33] mb-0.5">
+                      {isRTL
+                        ? `حوّل ${data.amount.formatted} عبر التحويل البنكي المحلي`
+                        : `Transfer ${data.amount.formatted} via local bank transfer`}
+                    </p>
+                    <p className="text-xs text-[#3B8A6E] font-medium">
+                      {isRTL
+                        ? `${data.gulfBank.bankName} · ${data.gulfBank.currency} · بدون رسوم`
+                        : `${data.gulfBank.bankName} · ${data.gulfBank.currency} · no fees`}
+                    </p>
                   </div>
                 </div>
-                {/* Smart helper text — adapts to Stripe tier */}
-                <div className="px-5 pb-4 pt-0">
-                  {data.cardPayIsCheckoutSession ? (
-                    /* Tier 1: Dynamic Checkout Session — amount pre-filled, one click */
-                    <p className="text-[11px] text-[#3B8A6E] flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3 h-3 shrink-0" />
-                      {isRTL
-                        ? 'المبلغ محمّل تلقائياً — أدخل بيانات البطاقة فقط'
-                        : 'Amount pre-filled — just enter your card details'}
-                    </p>
-                  ) : (
-                    /* Tier 2/3: Payment Link — client may need to confirm amount */
-                    <div className="text-[11px] text-[#8E8E9F] bg-[#FFFAF5] rounded-lg p-2.5 space-y-1">
-                      <p className="font-medium">
-                        {isRTL ? 'إذا طُلب منك، أدخل:' : 'If prompted, enter:'}
-                      </p>
-                      <p>
-                        {isRTL ? 'المبلغ' : 'Amount'}: <span className="font-semibold text-[#7A3B5E] font-mono">{data.amount.formatted}</span>
-                      </p>
-                      <p>
-                        {isRTL ? 'مرجع' : 'Reference'}: <span className="font-semibold text-[#7A3B5E] font-mono">{data.invoiceNumber}</span>
-                      </p>
-                    </div>
-                  )}
+
+                {/* IBAN — primary copyable field */}
+                <div className="bg-[#F0FAF5] rounded-lg p-3 mb-2">
+                  <p className="text-[10px] font-semibold text-[#3B8A6E] uppercase tracking-[0.1em] mb-1">IBAN</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <code className="text-sm font-mono text-[#2D6E54] font-semibold truncate" dir="ltr">
+                      {data.gulfBank.iban}
+                    </code>
+                    <button
+                      type="button"
+                      onClick={() => copyField('iban', data.gulfBank!.iban)}
+                      className="shrink-0 px-2.5 py-1 rounded-md bg-white border border-[#3B8A6E]/30 text-xs font-semibold text-[#3B8A6E] hover:bg-[#3B8A6E]/10 transition-colors flex items-center gap-1"
+                    >
+                      {copiedField === 'iban' ? (
+                        <>
+                          <CheckCircle2 className="w-3 h-3" />
+                          {isRTL ? 'تم النسخ' : 'Copied'}
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3 h-3" />
+                          {isRTL ? 'نسخ' : 'Copy'}
+                        </>
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </motion.a>
+
+                {/* Account name + reference */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                  <div className="bg-[#FAF7F2] rounded-lg p-3">
+                    <p className="text-[10px] font-semibold text-[#8E8E9F] uppercase tracking-[0.1em] mb-1">
+                      {isRTL ? 'اسم الحساب' : 'Account name'}
+                    </p>
+                    <p className="text-xs text-[#2D2A33] font-semibold">{data.gulfBank.accountName}</p>
+                  </div>
+                  <div className="bg-[#FAF7F2] rounded-lg p-3">
+                    <p className="text-[10px] font-semibold text-[#8E8E9F] uppercase tracking-[0.1em] mb-1">
+                      {isRTL ? 'مرجع / مذكّرة' : 'Reference / memo'}
+                    </p>
+                    <code className="text-xs font-mono text-[#2D2A33] font-semibold">{data.invoiceNumber}</code>
+                  </div>
+                </div>
+
+                {/* Optional details — collapsed expandable for SWIFT / account number / branch */}
+                <details className="bg-[#FAF7F2] rounded-lg overflow-hidden">
+                  <summary className="px-3 py-2 text-[11px] font-semibold text-[#7A3B5E] cursor-pointer hover:bg-[#F0ECE8] transition-colors">
+                    {isRTL ? 'تفاصيل إضافية (SWIFT، رقم الحساب، الفرع)' : 'More details (SWIFT, account #, branch)'}
+                  </summary>
+                  <div className="px-3 pb-3 pt-1 space-y-2 text-[11px]">
+                    {data.gulfBank.accountNumber && (
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[#8E8E9F]">{isRTL ? 'رقم الحساب' : 'Account #'}</span>
+                        <div className="flex items-center gap-1.5">
+                          <code className="font-mono text-[#2D2A33]">{data.gulfBank.accountNumber}</code>
+                          <button
+                            type="button"
+                            onClick={() => copyField('account', data.gulfBank!.accountNumber!)}
+                            className="text-[#7A3B5E] hover:underline text-[10px]"
+                          >
+                            {copiedField === 'account' ? (isRTL ? '✓' : '✓') : (isRTL ? 'نسخ' : 'copy')}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {data.gulfBank.swift && (
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[#8E8E9F]">SWIFT</span>
+                        <div className="flex items-center gap-1.5">
+                          <code className="font-mono text-[#2D2A33]" dir="ltr">{data.gulfBank.swift}</code>
+                          <button
+                            type="button"
+                            onClick={() => copyField('swift', data.gulfBank!.swift!)}
+                            className="text-[#7A3B5E] hover:underline text-[10px]"
+                          >
+                            {copiedField === 'swift' ? '✓' : (isRTL ? 'نسخ' : 'copy')}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {data.gulfBank.routingCode && (
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[#8E8E9F]">{isRTL ? 'رمز التوجيه' : 'Routing code'}</span>
+                        <code className="font-mono text-[#2D2A33]">{data.gulfBank.routingCode}</code>
+                      </div>
+                    )}
+                    {data.gulfBank.branch && (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[#8E8E9F]">{isRTL ? 'الفرع' : 'Branch'}</span>
+                        <span className="text-[#2D2A33] leading-snug">{data.gulfBank.branch}</span>
+                      </div>
+                    )}
+                  </div>
+                </details>
+
+                <p className="text-[10px] text-[#8E8E9F] leading-relaxed mt-2">
+                  {isRTL
+                    ? `سيستلم البنك التحويل خلال ساعات داخل الإمارات ودول الخليج. يُرجى إضافة رقم الفاتورة في خانة الملاحظات.`
+                    : `Most UAE & GCC bank transfers arrive within hours. Please include the invoice number in the memo.`}
+                </p>
+              </motion.div>
             )}
 
-            {/* Method 2: Interac e-Transfer */}
+            {/* Interac e-Transfer — primary for Canadian invoices (no Stripe fees) */}
             {data.eTransfer && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.15 }}
-                className="bg-white rounded-2xl p-5 shadow-sm border border-[#F0ECE8]"
+                transition={{ duration: 0.3, delay: 0.1 }}
+                className="bg-white rounded-2xl p-5 shadow-sm border-2 border-[#3B8A6E]/30"
               >
                 <div className="flex items-center gap-4 mb-3">
-                  <div className="w-12 h-12 rounded-xl bg-[#FFFAF5] flex items-center justify-center shrink-0">
-                    <DollarSign className="w-6 h-6 text-[#C8A97D]" />
+                  <div className="w-12 h-12 rounded-xl bg-[#F0FAF5] flex items-center justify-center shrink-0">
+                    <DollarSign className="w-6 h-6 text-[#3B8A6E]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-bold text-[#2D2A33] mb-0.5">
-                      {isRTL ? 'تحويل Interac (كندا)' : 'Interac e-Transfer (Canada)'}
+                      {isRTL ? `أرسل ${data.amount.formatted} عبر Interac` : `Send ${data.amount.formatted} by Interac e-Transfer`}
                     </p>
-                    <p className="text-xs text-[#8E8E9F]">
-                      {isRTL ? 'الطريقة الأسرع للحسابات المصرفيّة في كندا' : 'Fastest for Canadian bank accounts'}
+                    <p className="text-xs text-[#3B8A6E] font-medium">
+                      {isRTL ? 'إيداع تلقائي · بدون رسوم · الأسرع' : 'Auto-deposit · no fees · fastest'}
                     </p>
                   </div>
                 </div>
-                <div className="bg-[#FFFAF5] rounded-lg p-3 mb-2">
+                <div className="bg-[#F0FAF5] rounded-lg p-3 mb-2">
+                  <p className="text-[10px] font-semibold text-[#3B8A6E] uppercase tracking-[0.1em] mb-1">
+                    {isRTL ? 'إلى' : 'Send to'}
+                  </p>
                   <div className="flex items-center justify-between gap-2">
-                    <code className="text-sm font-mono text-[#7A3B5E] font-semibold truncate">
+                    <code className="text-sm font-mono text-[#2D6E54] font-semibold truncate">
                       {data.eTransfer.email}
                     </code>
                     <button
                       onClick={copyEmail}
-                      className="shrink-0 px-2.5 py-1 rounded-md bg-white border border-[#C8A97D]/30 text-xs font-semibold text-[#C8A97D] hover:bg-[#C8A97D]/10 transition-colors flex items-center gap-1"
+                      className="shrink-0 px-2.5 py-1 rounded-md bg-white border border-[#3B8A6E]/30 text-xs font-semibold text-[#3B8A6E] hover:bg-[#3B8A6E]/10 transition-colors flex items-center gap-1"
                     >
                       {copiedEmail ? (
                         <>
@@ -347,11 +431,84 @@ export default function PayConciergePage({
                     </button>
                   </div>
                 </div>
+                <div className="bg-[#FAF7F2] rounded-lg p-3 mb-2">
+                  <p className="text-[10px] font-semibold text-[#8E8E9F] uppercase tracking-[0.1em] mb-1">
+                    {isRTL ? 'مرجع / مذكّرة' : 'Reference / memo'}
+                  </p>
+                  <code className="text-sm font-mono text-[#2D2A33] font-semibold">
+                    {data.invoiceNumber}
+                  </code>
+                </div>
                 <p className="text-[11px] text-[#8E8E9F] leading-relaxed">
                   {data.eTransfer.instructions}
                 </p>
               </motion.div>
             )}
+
+            {/* Pay with Card (Stripe) — primary internationally, secondary for CA + Gulf */}
+            {data.cardPayUrl && (() => {
+              const localPrimary = !!data.eTransfer || !!data.gulfBank;
+              return (
+              <motion.a
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: localPrimary ? 0.15 : 0.1 }}
+                href={data.cardPayUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`block bg-white rounded-2xl overflow-hidden shadow-sm transition-all group ${
+                  localPrimary
+                    ? 'border border-[#F0ECE8] hover:border-[#7A3B5E]/40 hover:shadow-md'
+                    : 'border border-[#F0ECE8] hover:border-[#3B8A6E] hover:shadow-md'
+                }`}
+              >
+                {/* Primary CTA area */}
+                <div className="p-5">
+                  <div className="flex items-center gap-4">
+                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-colors ${
+                      localPrimary ? 'bg-[#FAF7F2] group-hover:bg-[#7A3B5E]/10' : 'bg-[#F0FAF5] group-hover:bg-[#3B8A6E]/15'
+                    }`}>
+                      <CreditCard className={`w-6 h-6 ${localPrimary ? 'text-[#7A3B5E]' : 'text-[#3B8A6E]'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-[#2D2A33] mb-0.5">
+                        {localPrimary
+                          ? (isRTL ? 'أو ادفع بالبطاقة' : 'Or pay by card')
+                          : (isRTL ? `ادفع ${data.amount.formatted} بالبطاقة` : `Pay ${data.amount.formatted} with Card`)}
+                      </p>
+                      <p className="text-xs text-[#8E8E9F]">
+                        {isRTL ? 'فيزا، ماستركارد، أبل باي — عبر Stripe' : 'Visa, Mastercard, Apple Pay — via Stripe'}
+                      </p>
+                    </div>
+                    <ExternalLink className="w-4 h-4 text-[#8E8E9F] group-hover:text-[#3B8A6E] shrink-0" />
+                  </div>
+                </div>
+                {/* Smart helper text — adapts to Stripe tier */}
+                <div className="px-5 pb-4 pt-0">
+                  {data.cardPayIsCheckoutSession ? (
+                    <p className="text-[11px] text-[#3B8A6E] flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3 h-3 shrink-0" />
+                      {isRTL
+                        ? 'المبلغ محمّل تلقائياً — أدخل بيانات البطاقة فقط'
+                        : 'Amount pre-filled — just enter your card details'}
+                    </p>
+                  ) : (
+                    <div className="text-[11px] text-[#8E8E9F] bg-[#FFFAF5] rounded-lg p-2.5 space-y-1">
+                      <p className="font-medium">
+                        {isRTL ? 'إذا طُلب منك، أدخل:' : 'If prompted, enter:'}
+                      </p>
+                      <p>
+                        {isRTL ? 'المبلغ' : 'Amount'}: <span className="font-semibold text-[#7A3B5E] font-mono">{data.amount.formatted}</span>
+                      </p>
+                      <p>
+                        {isRTL ? 'مرجع' : 'Reference'}: <span className="font-semibold text-[#7A3B5E] font-mono">{data.invoiceNumber}</span>
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </motion.a>
+              );
+            })()}
 
             {/* Method 3: International Wire */}
             {data.wire && (

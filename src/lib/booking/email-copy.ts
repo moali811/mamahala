@@ -212,6 +212,20 @@ export interface BookingEmailCopy {
     otherPaymentPrompt: string;
     otherPaymentLink: string;
     otherPaymentMethodsHeading: string;
+    // CA-specific hero (Interac-first, fee-free)
+    payCAHeading: string;
+    payCAPrompt: (formattedTotal: string) => string;
+    payCAReferenceLabel: string;
+    payCASendToLabel: string;
+    payCACardOptionLink: string;
+    // Gulf bank transfer hero (UAE/GCC, fee-free)
+    payGulfHeading: string;
+    payGulfPrompt: (formattedTotal: string, currency: string) => string;
+    payGulfBankLabel: string;
+    payGulfAccountNameLabel: string;
+    payGulfIbanLabel: string;
+    payGulfReferenceLabel: string;
+    payGulfMoreDetails: string;
     pdfReminder: string;
     closing: (email: string) => string;
     signoff: string;
@@ -438,6 +452,18 @@ const en: BookingEmailCopy = {
     otherPaymentPrompt: 'Prefer Interac, wire, or PayPal?',
     otherPaymentLink: 'See other payment options',
     otherPaymentMethodsHeading: 'Other Payment Methods',
+    payCAHeading: 'Pay by Interac e-Transfer',
+    payCAPrompt: (total) => `Send <strong>${total}</strong> by Interac e-Transfer — auto-deposit, no fees, fastest path`,
+    payCAReferenceLabel: 'Reference / memo',
+    payCASendToLabel: 'Send to',
+    payCACardOptionLink: 'Or pay by card →',
+    payGulfHeading: 'Pay by local bank transfer',
+    payGulfPrompt: (total, ccy) => `Transfer <strong>${total}</strong> in ${ccy} via Wio Bank — no fees, fastest path within UAE & Gulf`,
+    payGulfBankLabel: 'Bank',
+    payGulfAccountNameLabel: 'Account name',
+    payGulfIbanLabel: 'IBAN',
+    payGulfReferenceLabel: 'Reference / memo',
+    payGulfMoreDetails: 'See SWIFT, account number & branch',
     pdfReminder: 'A detailed PDF invoice is attached to this email. Please keep it for your records.',
     closing: (email) => `If you have any questions about this invoice, please reply to this email, WhatsApp us, or email <a href="mailto:${email}" style="color:#7A3B5E;">${email}</a>.`,
     signoff: 'Warmly,',
@@ -660,6 +686,18 @@ const ar: BookingEmailCopy = {
     otherPaymentPrompt: 'تفضّل Interac أو التحويل البنكي أو PayPal؟',
     otherPaymentLink: 'اطّلع على خيارات الدفع الأخرى',
     otherPaymentMethodsHeading: 'طرق دفع أخرى',
+    payCAHeading: 'الدفع عبر Interac e-Transfer',
+    payCAPrompt: (total) => `أرسل <strong>${total}</strong> عبر Interac e-Transfer — إيداع تلقائي، بدون رسوم، أسرع طريقة`,
+    payCAReferenceLabel: 'المرجع / المذكّرة',
+    payCASendToLabel: 'إلى',
+    payCACardOptionLink: 'أو ادفع بالبطاقة ←',
+    payGulfHeading: 'الدفع عبر التحويل البنكي المحلي',
+    payGulfPrompt: (total, ccy) => `حوّل <strong>${total}</strong> بعملة ${ccy} عبر بنك Wio — بدون رسوم، أسرع طريقة داخل الإمارات والخليج`,
+    payGulfBankLabel: 'البنك',
+    payGulfAccountNameLabel: 'اسم الحساب',
+    payGulfIbanLabel: 'IBAN',
+    payGulfReferenceLabel: 'المرجع / المذكّرة',
+    payGulfMoreDetails: 'تفاصيل SWIFT ورقم الحساب والفرع',
     pdfReminder: 'فاتورة PDF مفصّلة مرفقة بهذا البريد. يُرجى الاحتفاظ بها في سجلّاتك.',
     closing: (email) => `إن كان لديك أي استفسار حول هذه الفاتورة، يُرجى الردّ على هذا البريد، أو التواصل معنا عبر واتساب، أو مراسلتنا على <a href="mailto:${email}" style="color:#7A3B5E;">${email}</a>.`,
     signoff: 'بِوُدّ،',

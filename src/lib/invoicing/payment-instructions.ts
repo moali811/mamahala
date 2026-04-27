@@ -25,9 +25,11 @@
    ================================================================ */
 
 import type { StoredInvoice, InvoiceSettings } from './types';
+import { GCC_COUNTRIES } from '@/config/pricing';
 
 export type PaymentMethodKind =
   | 'etransfer'
+  | 'gulf-bank'
   | 'stripe'
   | 'wire'
   | 'paypal'
@@ -53,7 +55,7 @@ export interface PaymentInstructionsResult {
    * without a type change.
    */
   secondary: PaymentMethodBlock[];
-  region: 'CA' | 'INTL';
+  region: 'CA' | 'GULF' | 'INTL';
 }
 
 /**
@@ -75,12 +77,25 @@ export function buildPaymentInstructions(
   settings: InvoiceSettings,
 ): PaymentInstructionsResult {
   const country = invoice.draft.client.country.toUpperCase();
-  const region: 'CA' | 'INTL' = country === 'CA' ? 'CA' : 'INTL';
+  const region: 'CA' | 'GULF' | 'INTL' =
+    country === 'CA' ? 'CA'
+      : GCC_COUNTRIES.includes(country) ? 'GULF'
+      : 'INTL';
 
   if (region === 'CA') {
     return {
       region,
       primary: buildETransferBlock(invoice, settings),
+      secondary: [],
+    };
+  }
+
+  // Gulf clients: prefer local AED bank transfer (no Stripe fees, native UX).
+  // Fall back to Stripe/wire if bank details aren't configured.
+  if (region === 'GULF' && hasGulfBank(settings)) {
+    return {
+      region,
+      primary: buildGulfBankBlock(invoice, settings),
       secondary: [],
     };
   }
@@ -134,6 +149,28 @@ function buildETransferBlock(
       'Auto-deposit is enabled - no security question needed.',
       `Please reference: ${invoice.invoiceNumber}`,
     ],
+  };
+}
+
+function buildGulfBankBlock(
+  invoice: StoredInvoice,
+  settings: InvoiceSettings,
+): PaymentMethodBlock {
+  const b = settings.gulfBank!;
+  const lines = [
+    `Bank: ${b.bankName}`,
+    `Account name: ${b.accountName}`,
+    `IBAN: ${b.iban}`,
+  ];
+  if (b.accountNumber) lines.push(`Account number: ${b.accountNumber}`);
+  if (b.swift) lines.push(`SWIFT: ${b.swift}`);
+  if (b.routingCode) lines.push(`Routing code: ${b.routingCode}`);
+  if (b.branch) lines.push(`Branch: ${b.branch}`);
+  lines.push(`Reference: ${invoice.invoiceNumber}`);
+  return {
+    kind: 'gulf-bank',
+    heading: `Local bank transfer (${b.currency || 'AED'} - Wio Bank)`,
+    bodyLines: lines,
   };
 }
 
@@ -192,6 +229,10 @@ function buildContactBlock(
 }
 
 // ─── Availability Predicates ────────────────────────────────────
+
+function hasGulfBank(settings: InvoiceSettings): boolean {
+  return !!settings.gulfBank?.iban && settings.gulfBank.iban.trim().length > 0;
+}
 
 function hasStripeLink(invoice: StoredInvoice): boolean {
   return !!invoice.draft.stripePaymentLink && invoice.draft.stripePaymentLink.trim().length > 0;

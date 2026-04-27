@@ -318,7 +318,24 @@ export interface InvoiceSettings {
   defaultAllowETransfer: boolean;
   /** Where Canadian clients send Interac e-Transfer. */
   eTransferEmail: string;
-  /** Optional wire transfer instructions (shown to non-CA clients). */
+  /**
+   * UAE / Gulf local bank transfer details. Shown to clients in GCC
+   * countries (AE, SA, KW, BH, QA, OM) as the primary payment method —
+   * cheaper than Stripe (which charges ~2.9% + AED 1) and feels native
+   * to local clients who are used to IBAN transfers. All fields editable
+   * in the admin settings drawer; leave empty to fall back to wire/Stripe.
+   */
+  gulfBank?: {
+    bankName: string;        // e.g. "Wio Bank (P.J.S.C.)"
+    accountName: string;     // e.g. "HALA AWAD HASSAN ALI"
+    accountNumber?: string;  // e.g. "6789405394"
+    iban: string;            // e.g. "AE360860000006789405394"
+    swift?: string;          // e.g. "WIOBAEADXXX"
+    routingCode?: string;    // e.g. "808610001"
+    branch?: string;         // e.g. "Etihad Airways Centre, 5th Floor, Abu Dhabi, UAE"
+    currency?: string;       // e.g. "AED" — defaults to AED
+  };
+  /** Optional wire transfer instructions (shown to non-CA, non-Gulf clients). */
   wireInstructions?: string;
   /** Optional PayPal.me link (shown to non-CA clients). */
   paypalLink?: string;
