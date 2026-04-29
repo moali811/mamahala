@@ -28,6 +28,8 @@
 import { computeRateBreakdown } from './rate-breakdown';
 import { generateInvoicePdf } from './pdf-generator';
 import { sendInvoiceEmail } from './email-sender';
+import { mintBookingResumeToken } from '@/lib/booking/booking-resume-token';
+import { SITE_URL } from '@/lib/site-url';
 import {
   createInvoiceCheckoutSession,
   isStripeSessionAvailable,
@@ -244,11 +246,22 @@ export async function sendInvoiceFromDraft(
   // ─── PDF ─────────────────────────────────────────────────
   const pdf = await generateInvoicePdf(stored, settings);
 
+  // ─── Mint a booking-resume token for the email CTA ──────
+  // Best-effort: token mint failure should never block invoice send.
+  let bookingResumeUrl: string | undefined;
+  try {
+    const minted = await mintBookingResumeToken(stored.draft.client.email);
+    const locale = stored.draft.preferredLanguage === 'ar' ? 'ar' : 'en';
+    bookingResumeUrl = `${SITE_URL}/api/account/booking-token?token=${encodeURIComponent(minted.token)}&locale=${locale}`;
+  } catch (tokErr) {
+    console.warn('[send-invoice-pipeline] Resume token mint failed:', tokErr);
+  }
+
   // ─── Email (unless dryRun) ───────────────────────────────
   let emailError: string | null = null;
   if (!settings.dryRun) {
     try {
-      const result = await sendInvoiceEmail(stored, pdf, settings);
+      const result = await sendInvoiceEmail(stored, pdf, settings, { bookingResumeUrl });
       stored.emailMessageId = result.messageId;
       stored.emailSentAt = now.toISOString();
     } catch (emailErr) {

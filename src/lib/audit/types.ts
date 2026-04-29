@@ -16,6 +16,8 @@ export type AuditAction =
   | 'booking.refunded'
   | 'booking.mode-corrected'
   | 'booking.status-changed'
+  | 'booking.series-converted'
+  | 'booking.series-prepay-confirmed'
   | 'customer.recognized'
   | 'customer.consent-given'
   | 'customer.consent-revoked'

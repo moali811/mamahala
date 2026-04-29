@@ -87,6 +87,9 @@ export function getDefaultSettings(): InvoiceSettings {
     recurringAutoSendDefault: false,
     paymentRemindersEnabled: false,
     dryRun: false, // Live mode — invoices send real emails
+
+    /* ── Client self-serve recurring (Phase C) ── */
+    selfServeRecurringEnabled: false,
     updatedAt: new Date().toISOString(),
   };
 }

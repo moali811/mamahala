@@ -16,13 +16,14 @@ import NewBookingModal from './NewBookingModal';
 import CalendarView from './CalendarView';
 import RescheduleBookingModal from './RescheduleBookingModal';
 import CancelBookingModal from './CancelBookingModal';
+import ApproveAndConvertDialog from './ApproveAndConvertDialog';
 import { toISO2 } from '@/config/countries';
 
 interface Props {
   password: string;
 }
 
-type FilterStatus = 'all' | 'pending_approval' | 'pending-review' | 'approved' | 'confirmed' | 'completed' | 'cancelled' | 'declined';
+type FilterStatus = 'all' | 'pending_approval' | 'pending-review' | 'approved' | 'confirmed' | 'completed' | 'cancelled' | 'declined' | 'series';
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; label: string; border: string }> = {
   'pending-review': { bg: 'bg-orange-50', text: 'text-orange-600', label: 'Draft', border: 'border-l-orange-300' },
@@ -75,6 +76,8 @@ export default function BookingsModule({ password }: Props) {
   const [rescheduleTarget, setRescheduleTarget] = useState<Booking | null>(null);
   // Cancel modal — admin cancels with fee preview + waiver + audit log.
   const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
+  // Approve & convert dialog — promotes a one-off pending booking into a recurring series.
+  const [convertTarget, setConvertTarget] = useState<Booking | null>(null);
 
   const headers = { Authorization: `Bearer ${password}`, 'Content-Type': 'application/json' };
 
@@ -328,6 +331,7 @@ export default function BookingsModule({ password }: Props) {
   const filtered = bookings.filter(b => {
     if (filter === 'all') return true;
     if (filter === 'cancelled') return b.status === 'cancelled' || b.status === 'declined';
+    if (filter === 'series') return !!b.series?.seriesId;
     return b.status === filter;
   });
   const sorted = [...filtered].sort((a, b) => {
@@ -570,6 +574,19 @@ export default function BookingsModule({ password }: Props) {
         />
       )}
 
+      {convertTarget && (
+        <ApproveAndConvertDialog
+          booking={convertTarget}
+          password={password}
+          onClose={() => setConvertTarget(null)}
+          onSuccess={({ siblingCount }) => {
+            setConvertTarget(null);
+            setSuccess(`Approved and added ${siblingCount} more session${siblingCount === 1 ? '' : 's'} to the series. Review the bundled invoice in the Invoices tab.`);
+            fetchBookings({ silent: true });
+          }}
+        />
+      )}
+
       {/* Alerts */}
       {pendingCount > 0 && (
         <div className="p-4 rounded-xl bg-amber-50 border border-amber-100 flex items-center gap-3">
@@ -622,6 +639,7 @@ export default function BookingsModule({ password }: Props) {
           { key: 'confirmed' as FilterStatus, label: 'Confirmed', count: bookings.filter(b => b.status === 'confirmed').length },
           { key: 'completed' as FilterStatus, label: 'Completed', count: bookings.filter(b => b.status === 'completed').length },
           { key: 'cancelled' as FilterStatus, label: 'Cancelled', count: bookings.filter(b => b.status === 'cancelled' || b.status === 'declined').length },
+          { key: 'series' as FilterStatus, label: 'Series', count: bookings.filter(b => !!b.series?.seriesId).length },
           { key: 'all' as FilterStatus, label: 'All', count: bookings.length },
         ]).map(tab => (
           <button
@@ -839,6 +857,18 @@ export default function BookingsModule({ password }: Props) {
                         {isLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                         Approve & Review Invoice
                       </button>
+                      {/* Convert-to-series only makes sense for client-submitted bookings,
+                          not admin-created drafts (those use the +New Booking flow). */}
+                      {booking.status === 'pending_approval' && !booking.series && (
+                        <button
+                          onClick={() => setConvertTarget(booking)}
+                          disabled={isLoading}
+                          className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-[#7A3B5E]/30 text-[#7A3B5E] text-xs font-semibold hover:bg-[#7A3B5E]/5 disabled:opacity-50 transition-all"
+                        >
+                          <CalendarClock className="w-3.5 h-3.5" />
+                          Approve & Make Recurring
+                        </button>
+                      )}
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleApprove(booking.bookingId)}

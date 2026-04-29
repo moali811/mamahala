@@ -1,7 +1,12 @@
-/* GET /api/account/session — Check client auth status */
+/* GET /api/account/session — Check client auth status
+
+   Returns auth state plus a slim profile view used by:
+     - useBookingWizard hydration (prefill empty fields)
+     - ReturningClientBanner (greet by first name, surface rebook CTA)
+     - Self-serve eligibility (paidSessionsCount gate) */
 
 import { NextResponse } from 'next/server';
-import { getBookingSession } from '@/lib/booking/booking-store';
+import { getBookingSession, getBookingsByCustomer } from '@/lib/booking/booking-store';
 import { getCustomer } from '@/lib/invoicing/customer-store';
 import { cookies } from 'next/headers';
 
@@ -19,17 +24,32 @@ export async function GET() {
       return NextResponse.json({ authenticated: false });
     }
 
-    const customer = await getCustomer(session.email);
+    const [customer, bookings] = await Promise.all([
+      getCustomer(session.email),
+      getBookingsByCustomer(session.email),
+    ]);
+
+    // Paid + completed sessions, excluding any that were refunded.
+    // Used as the eligibility gate for client self-serve recurring.
+    const paidSessionsCount = bookings.filter(
+      b => b.status === 'completed'
+        && !!b.paidAt
+        && !b.refundedAmountCents,
+    ).length;
+
+    const firstName = customer?.name?.split(' ')[0] ?? null;
 
     return NextResponse.json({
       authenticated: true,
       email: session.email,
       name: customer?.name ?? null,
+      firstName,
       phone: customer?.phone ?? null,
       country: customer?.country ?? null,
       lastBookedServiceSlug: customer?.lastBookedServiceSlug ?? null,
       preferredSessionMode: customer?.preferredSessionMode ?? null,
       creditCents: customer?.creditCents ?? 0,
+      paidSessionsCount,
     });
   } catch {
     return NextResponse.json({ authenticated: false });

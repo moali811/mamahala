@@ -37,6 +37,7 @@ function escapeHtml(s: string): string {
 function buildInvoiceEmailHtml(
   invoice: StoredInvoice,
   settings: InvoiceSettings,
+  options?: { bookingResumeUrl?: string },
 ): string {
   const locale: EmailLocale = invoice.draft.preferredLanguage === 'ar' ? 'ar' : 'en';
   const t = emailCopy(locale).invoiceEmail;
@@ -205,6 +206,15 @@ function buildInvoiceEmailHtml(
         <p style="margin:0;color:#4A4A5C;font-size:13px;line-height:1.6;">${t.pdfReminder}</p>
       </div>
 
+      ${options?.bookingResumeUrl ? `
+      <!-- One-click resume CTA — recognized booking flow -->
+      <div style="padding:18px;background:#FFFAF5;border:1px solid #EFE2D2;border-radius:12px;margin-bottom:20px;text-align:center;">
+        <p style="margin:0 0 4px;color:#7A3B5E;font-size:13px;font-weight:700;">${t.resumeBookingHeading}</p>
+        <p style="margin:0 0 12px;color:#4A4A5C;font-size:12px;line-height:1.5;">${t.resumeBookingBody}</p>
+        <a href="${escapeHtml(options.bookingResumeUrl)}" style="display:inline-block;padding:10px 22px;background:#7A3B5E;color:#FFFFFF;text-decoration:none;border-radius:10px;font-size:13px;font-weight:600;">${t.resumeBookingCta}</a>
+      </div>
+      ` : ''}
+
       <!-- Closing -->
       <p style="margin:20px 0 8px;color:#4A4A5C;font-size:14px;line-height:1.7;">${t.closing(escapeHtml(settings.issuerBlock.email))}</p>
 
@@ -231,7 +241,7 @@ export async function sendInvoiceEmail(
   invoice: StoredInvoice,
   pdfBuffer: Buffer,
   settings: InvoiceSettings,
-  options?: { customSubject?: string; customHtml?: string },
+  options?: { customSubject?: string; customHtml?: string; bookingResumeUrl?: string },
 ): Promise<{ messageId: string }> {
   if (!process.env.RESEND_API_KEY) {
     throw new Error('RESEND_API_KEY is not configured');
@@ -264,7 +274,7 @@ export async function sendInvoiceEmail(
     subject:
       options?.customSubject ??
       t.subject(invoice.invoiceNumber, businessName),
-    html: options?.customHtml ?? buildInvoiceEmailHtml(invoice, settings),
+    html: options?.customHtml ?? buildInvoiceEmailHtml(invoice, settings, { bookingResumeUrl: options?.bookingResumeUrl }),
     attachments: [
       {
         filename: `${invoice.invoiceNumber}.pdf`,

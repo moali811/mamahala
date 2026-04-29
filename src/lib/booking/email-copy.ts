@@ -227,6 +227,10 @@ export interface BookingEmailCopy {
     payGulfReferenceLabel: string;
     payGulfMoreDetails: string;
     pdfReminder: string;
+    /** Optional one-click resume block — rendered when bookingResumeUrl is provided. */
+    resumeBookingHeading: string;
+    resumeBookingBody: string;
+    resumeBookingCta: string;
     closing: (email: string) => string;
     signoff: string;
     team: string;
@@ -465,6 +469,9 @@ const en: BookingEmailCopy = {
     payGulfReferenceLabel: 'Reference / memo',
     payGulfMoreDetails: 'See SWIFT, account number & branch',
     pdfReminder: 'A detailed PDF invoice is attached to this email. Please keep it for your records.',
+    resumeBookingHeading: 'Ready for your next session?',
+    resumeBookingBody: 'One click takes you straight to a recognized booking page — no email or details to retype.',
+    resumeBookingCta: 'Book my next session',
     closing: (email) => `If you have any questions about this invoice, please reply to this email, WhatsApp us, or email <a href="mailto:${email}" style="color:#7A3B5E;">${email}</a>.`,
     signoff: 'Warmly,',
     team: 'The Mama Hala Team',
@@ -699,6 +706,9 @@ const ar: BookingEmailCopy = {
     payGulfReferenceLabel: 'المرجع / المذكّرة',
     payGulfMoreDetails: 'تفاصيل SWIFT ورقم الحساب والفرع',
     pdfReminder: 'فاتورة PDF مفصّلة مرفقة بهذا البريد. يُرجى الاحتفاظ بها في سجلّاتك.',
+    resumeBookingHeading: 'جاهز/ة لجلستك القادمة؟',
+    resumeBookingBody: 'بنقرة واحدة تنتقل/ين مباشرة إلى صفحة الحجز — دون إعادة إدخال البريد أو البيانات.',
+    resumeBookingCta: 'احجز/ي جلستي القادمة',
     closing: (email) => `إن كان لديك أي استفسار حول هذه الفاتورة، يُرجى الردّ على هذا البريد، أو التواصل معنا عبر واتساب، أو مراسلتنا على <a href="mailto:${email}" style="color:#7A3B5E;">${email}</a>.`,
     signoff: 'بِوُدّ،',
     team: 'فريق ماما هالة',

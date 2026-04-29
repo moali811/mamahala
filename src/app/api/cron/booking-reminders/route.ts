@@ -117,7 +117,20 @@ export async function GET(request: NextRequest) {
         && !booking.followUpSentAt
       ) {
         try {
-          const { subject, html } = buildFollowUpEmail(booking);
+          // Mint a 30-day single-use resume token so the "Book next session"
+          // CTA drops the client straight into a recognized booking flow.
+          // Best-effort: mint failure falls back to /book without auth.
+          let bookingResumeUrl: string | undefined;
+          try {
+            const { mintBookingResumeToken } = await import('@/lib/booking/booking-resume-token');
+            const { SITE_URL } = await import('@/lib/site-url');
+            const minted = await mintBookingResumeToken(booking.clientEmail);
+            const locale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
+            bookingResumeUrl = `${SITE_URL}/api/account/booking-token?token=${encodeURIComponent(minted.token)}&locale=${locale}`;
+          } catch (tokErr) {
+            console.warn(`[Follow-up] Resume token mint failed for ${booking.bookingId}:`, tokErr);
+          }
+          const { subject, html } = buildFollowUpEmail(booking, undefined, { bookingResumeUrl });
           const messageId = await sendBookingEmail({ to: booking.clientEmail, subject, html });
           if (messageId) {
             await updateBooking(booking.bookingId, { followUpSentAt: new Date().toISOString() });

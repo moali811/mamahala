@@ -94,6 +94,93 @@ export async function POST(req: NextRequest) {
 
   const meta = session.metadata || {};
 
+  // ─── Series prepay (client self-serve recurring) ───────────
+  // The client paid for an entire bundled series upfront. Activate
+  // every sibling (creates GCal events, flips status to 'approved'
+  // — Dr. Hala still approves the whole series with one click via
+  // the admin notification email).
+  if (meta.kind === 'series-prepay' && meta.seriesId && meta.anchorBookingId) {
+    try {
+      const { activateSeriesFromAnchor } = await import('@/lib/booking/admin-booking-flow');
+      const { getBooking, getBookingsBySeriesId, updateBooking } = await import('@/lib/booking/booking-store');
+      const { dispatchToAllAdmins } = await import('@/lib/push/dispatch');
+      const { appendAudit } = await import('@/lib/audit/log');
+
+      const anchor = await getBooking(meta.anchorBookingId);
+      if (!anchor) {
+        console.error(`[Stripe Webhook] series-prepay: anchor ${meta.anchorBookingId} not found`);
+        return NextResponse.json({ received: true, error: 'anchor not found' });
+      }
+
+      // Stamp paidUpfront on every sibling first so activate sees it.
+      const siblings = await getBookingsBySeriesId(meta.seriesId);
+      for (const sib of siblings) {
+        if (sib.series && !sib.series.paidUpfront) {
+          await updateBooking(sib.bookingId, {
+            series: { ...sib.series, paidUpfront: true },
+          });
+        }
+      }
+
+      // Persist Stripe payment refs onto the anchor booking for refund support.
+      const paymentIntentId = typeof session.payment_intent === 'string'
+        ? session.payment_intent
+        : session.payment_intent?.id;
+      const amountTotal = session.amount_total ?? null;
+      const now = new Date().toISOString();
+      await updateBooking(meta.anchorBookingId, {
+        stripeCheckoutSessionId: session.id,
+        ...(paymentIntentId ? { stripePaymentIntentId: paymentIntentId } : {}),
+        paidAt: now,
+        ...(amountTotal != null ? { paidAmountCents: amountTotal } : {}),
+        paidCurrency: (session.currency || 'cad').toUpperCase(),
+        paymentMethod: 'stripe',
+      });
+
+      // Activate every sibling (anchor sends confirmation + invoice; siblings silent).
+      await activateSeriesFromAnchor(meta.anchorBookingId, {
+        sendClientEmail: true,
+        notifyAdminOnSuccess: false, // we send our own series-aware push below
+        sendInvoice: false, // already paid — skip invoice send pipeline
+      });
+
+      // Audit
+      appendAudit({
+        actor: 'webhook',
+        action: 'booking.series-prepay-confirmed',
+        entityId: meta.anchorBookingId,
+        customerEmail: anchor.clientEmail,
+        details: {
+          seriesId: meta.seriesId,
+          totalSessions: siblings.length,
+          stripeSessionId: session.id,
+          amountCents: amountTotal,
+        },
+      }).catch(() => { /* best-effort */ });
+
+      // Push to admin: a self-serve series needs Dr. Hala's review.
+      try {
+        const totalLocal = (amountTotal ?? 0) / 100;
+        const ccy = (session.currency || 'cad').toUpperCase();
+        const amount = new Intl.NumberFormat('en-CA', { style: 'currency', currency: ccy }).format(totalLocal);
+        dispatchToAllAdmins({
+          title: 'New self-serve series 🌀',
+          body: `${anchor.clientName} prepaid ${amount} for a ${siblings.length}-session series — review`,
+          url: `/admin?tab=bookings&series=${meta.seriesId}`,
+          tag: `series-prepay-${meta.seriesId}`,
+          data: { kind: 'series-prepay', seriesId: meta.seriesId },
+        }).catch((err) => console.error('[Stripe Webhook] push dispatch failed:', err));
+      } catch (pushErr) {
+        console.error('[Stripe Webhook] series-prepay push import failed:', pushErr);
+      }
+
+      console.log(`[Stripe Webhook] Series ${meta.seriesId} prepay confirmed; activated ${siblings.length} sibling(s)`);
+    } catch (seriesErr) {
+      console.error('Stripe webhook: series-prepay processing failed:', seriesErr);
+    }
+    return NextResponse.json({ received: true, success: true, type: 'series-prepay' });
+  }
+
   // ─── Invoice payment handling ──────────────────────────────
   if (meta.type === 'invoice' && meta.invoiceId) {
     try {

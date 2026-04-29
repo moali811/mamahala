@@ -3714,6 +3714,21 @@ function SettingsDrawer({
             </div>
           </label>
 
+          <label className="flex items-start gap-2 p-3 rounded-lg bg-[#F5F0EB] border border-[#7A3B5E]/20">
+            <input
+              type="checkbox"
+              checked={local.selfServeRecurringEnabled ?? false}
+              onChange={(e) => setLocal({ ...local, selfServeRecurringEnabled: e.target.checked })}
+              className="mt-0.5 w-4 h-4 accent-[#7A3B5E]"
+            />
+            <div>
+              <div className="text-sm font-semibold text-[#7A3B5E]">Self-serve recurring (clients book series)</div>
+              <div className="text-[11px] text-[#6B6580]">
+                Lets returning clients with ≥ 2 paid sessions book a 4-session block (or 8 once they have ≥ 5 paid). Bundled-prepay only — Stripe captures the full amount upfront. Dr. Hala still approves every series with one click.
+              </div>
+            </div>
+          </label>
+
           <Field label="Default days until due">
             <input
               type="number"

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import type { Booking } from '@/lib/booking/types';
 import Breadcrumb from '@/components/layout/Breadcrumb';
+import ManageSeriesPanel from '@/components/account/ManageSeriesPanel';
 
 type Tab = 'upcoming' | 'history' | 'receipts';
 
@@ -207,12 +208,29 @@ function AccountInner() {
           <AnimatePresence mode="wait">
             <motion.div key={tab} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
               {tab === 'upcoming' && (
-                <div className="space-y-3">
-                  {upcoming.length === 0 ? (
-                    <EmptyState isRTL={isRTL} message={isRTL ? 'لا توجد جلسات قادمة' : 'No upcoming sessions'} locale={locale} type="upcoming" />
-                  ) : (
-                    upcoming.map(b => <BookingCard key={b.bookingId} booking={b} isRTL={isRTL} locale={locale} />)
-                  )}
+                <div className="space-y-4">
+                  <ManageSeriesPanel
+                    bookings={upcoming}
+                    locale={isRTL ? 'ar' : 'en'}
+                    onChanged={() => {
+                      // Re-fetch upcoming after a series cancellation so the
+                      // booking cards stay in sync with the series panel.
+                      fetch('/api/account/bookings')
+                        .then(r => r.json())
+                        .then(d => {
+                          setUpcoming(d.upcoming ?? []);
+                          setPast(d.past ?? []);
+                        })
+                        .catch(() => { /* silent */ });
+                    }}
+                  />
+                  <div className="space-y-3">
+                    {upcoming.length === 0 ? (
+                      <EmptyState isRTL={isRTL} message={isRTL ? 'لا توجد جلسات قادمة' : 'No upcoming sessions'} locale={locale} type="upcoming" />
+                    ) : (
+                      upcoming.map(b => <BookingCard key={b.bookingId} booking={b} isRTL={isRTL} locale={locale} />)
+                    )}
+                  </div>
                 </div>
               )}
               {tab === 'history' && (

@@ -850,6 +850,7 @@ export function buildPaymentConfirmationEmail(
 export function buildFollowUpEmail(
   booking: Booking,
   aiFollowUpMessage?: string,
+  options?: { bookingResumeUrl?: string },
 ): { subject: string; html: string } {
   const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
   const t = emailCopy(locale);
@@ -888,7 +889,7 @@ export function buildFollowUpEmail(
       </table>
     </div>
     <div style="text-align:center;padding:16px 0 20px;">
-      <a href="${SITE_URL}/${locale}/book" style="${styles.button}">${t.followUp.bookNextCta}</a>
+      <a href="${options?.bookingResumeUrl || `${SITE_URL}/${locale}/book`}" style="${styles.button}">${t.followUp.bookNextCta}</a>
     </div>
     <div style="text-align:center;padding:0 0 12px;">
       <a href="${SITE_URL}/${locale}/account" style="${styles.buttonSecondary}">${t.followUp.viewAccount}</a>

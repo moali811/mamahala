@@ -44,7 +44,7 @@ import { PRICING_TIERS, type PricingTierKey } from '@/config/pricing';
 import { COUNTRIES, COUNTRIES_BY_CODE } from '@/config/countries';
 import type { Service, ServiceCategory } from '@/types';
 import type { InvoiceDraft } from '@/lib/invoicing/types';
-import type { Booking } from '@/lib/booking/types';
+import type { Booking, RecurrenceFrequency } from '@/lib/booking/types';
 import InvoiceReviewSheet from './InvoiceReviewSheet';
 import AIComposeBar, { type ComposedFilled } from './AIComposeBar';
 
@@ -245,7 +245,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
 
   // ─── Recurring state ───────────────────────────────────────
   const [isRecurring, setIsRecurring] = useState(false);
-  const [recurringFrequency, setRecurringFrequency] = useState<'weekly' | 'biweekly'>('weekly');
+  const [recurringFrequency, setRecurringFrequency] = useState<RecurrenceFrequency>('weekly');
   const [recurringCount, setRecurringCount] = useState(6);
   const [recurringInvoiceMode, setRecurringInvoiceMode] = useState<'per-session' | 'bundled'>('per-session');
   const [seriesPlan, setSeriesPlan] = useState<PlanSlot[] | null>(null);
@@ -1092,8 +1092,8 @@ interface Step1Props {
   providerLoc: ProviderLocationInfo | null;
   isRecurring: boolean;
   setIsRecurring: (v: boolean) => void;
-  recurringFrequency: 'weekly' | 'biweekly';
-  setRecurringFrequency: (v: 'weekly' | 'biweekly') => void;
+  recurringFrequency: RecurrenceFrequency;
+  setRecurringFrequency: (v: RecurrenceFrequency) => void;
   recurringCount: number;
   setRecurringCount: (v: number) => void;
   recurringInvoiceMode: 'per-session' | 'bundled';
@@ -1988,8 +1988,8 @@ function RecurringSection({
 }: {
   isRecurring: boolean;
   setIsRecurring: (v: boolean) => void;
-  frequency: 'weekly' | 'biweekly';
-  setFrequency: (v: 'weekly' | 'biweekly') => void;
+  frequency: RecurrenceFrequency;
+  setFrequency: (v: RecurrenceFrequency) => void;
   count: number;
   setCount: (v: number) => void;
   invoiceMode: 'per-session' | 'bundled';
@@ -2024,19 +2024,23 @@ function RecurringSection({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
               <label className="block text-[11px] font-semibold text-[#4A4A5C] mb-1.5 uppercase tracking-wider">Frequency</label>
-              <div className="grid grid-cols-2 gap-1.5">
-                {(['weekly', 'biweekly'] as const).map(f => (
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { key: 'weekly', label: 'Weekly' },
+                  { key: 'biweekly', label: 'Biweekly' },
+                  { key: 'every3weeks', label: 'Every 3 wks' },
+                ] as const).map(opt => (
                   <button
-                    key={f}
+                    key={opt.key}
                     type="button"
-                    onClick={() => setFrequency(f)}
+                    onClick={() => setFrequency(opt.key)}
                     className={`px-2 py-2 rounded-lg text-xs font-semibold transition-all active:scale-95 ${
-                      frequency === f
+                      frequency === opt.key
                         ? 'bg-[#7A3B5E] text-white'
                         : 'bg-white text-[#4A4A5C] hover:bg-[#F5F0EB] border border-[#E8E4DE]'
                     }`}
                   >
-                    {f === 'weekly' ? 'Weekly' : 'Biweekly'}
+                    {opt.label}
                   </button>
                 ))}
               </div>

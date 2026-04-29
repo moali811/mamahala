@@ -25,6 +25,10 @@ import type { ServiceRecommendation, TimeSlot, DayAvailability, SessionMode } fr
 import type { ServiceCategory, Service } from '@/types';
 import Breadcrumb from '@/components/layout/Breadcrumb';
 import PageTracker from '@/components/analytics/PageTracker';
+import ReturningClientBanner from '@/components/booking/ReturningClientBanner';
+import SoftWelcomeBanner from '@/components/booking/SoftWelcomeBanner';
+import SelfServeRecurringStep from '@/components/booking/SelfServeRecurringStep';
+import type { SelfServeEligibility } from '@/lib/booking/self-serve-eligibility';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Sparkles, Users, User, Heart, Leaf, GraduationCap, Shield, Baby, Compass,
@@ -90,6 +94,41 @@ export default function BookPage() {
     }
   }, [preSelectedService]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ─── Resume from booking-token email link (?resume=1) ──────────
+  // The booking-token route sets the booking_session cookie and redirects
+  // here. Once the wizard's hydrate fetch confirms the session is real,
+  // skip the intake step — the client already knows what they want.
+  const resumeRequested = searchParams.get('resume') === '1';
+  const resumeJumped = useRef(false);
+  useEffect(() => {
+    if (
+      resumeRequested
+      && !resumeJumped.current
+      && wizard.formData.isAuthenticatedReturning
+      && wizard.step === 'intake'
+    ) {
+      resumeJumped.current = true;
+      wizard.goToStep('service');
+    }
+  }, [resumeRequested, wizard.formData.isAuthenticatedReturning, wizard.step]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // One-click rebook from the ReturningClientBanner — pre-selects the
+  // last service (from the customer record) and jumps to datetime.
+  const handleRebookLast = useCallback((slug: string) => {
+    const svc = services.find(s => s.slug === slug);
+    if (!svc) return;
+    const duration = PRICING_TIERS[svc.pricingTierKey]?.durationMinutes ?? 50;
+    wizard.updateForm({
+      serviceSlug: svc.slug,
+      serviceName: svc.name,
+      serviceNameAr: svc.nameAr,
+      serviceCategory: svc.category,
+      pricingTierKey: svc.pricingTierKey,
+      durationMinutes: duration,
+    });
+    wizard.goToStep('datetime');
+  }, [wizard]);
+
   // For direct booking, show only 3 steps (datetime, info, confirm)
   const directSteps: BookingStep[] = ['datetime', 'info', 'confirm'];
   const directStepLabels: Record<string, { en: string; ar: string }> = {
@@ -115,6 +154,24 @@ export default function BookPage() {
           locale={locale}
         />
       </div>
+
+      {/* Recognition banners — render only on early steps so they don't
+          distract from the active task once the user is mid-flow. */}
+      {step !== 'success' && (step === 'intake' || step === 'service') && (
+        <>
+          {formData.isAuthenticatedReturning && (
+            <ReturningClientBanner
+              firstName={formData.recognizedFirstName}
+              lastBookedServiceSlug={formData.recognizedLastServiceSlug}
+              locale={isRTL ? 'ar' : 'en'}
+              onRebookLast={handleRebookLast}
+            />
+          )}
+          {!formData.isAuthenticatedReturning && formData.isSoftRecognized && (
+            <SoftWelcomeBanner locale={isRTL ? 'ar' : 'en'} />
+          )}
+        </>
+      )}
 
       {/* Service Context Banner (direct booking from service page) */}
       {isDirectBooking && preSelectedService && step !== 'success' && (
@@ -1663,7 +1720,24 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
 
 function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
   const [consent, setConsent] = useState(false);
-  const { formData, confirmBooking, isLoading } = wizard;
+  const [recurringExpanded, setRecurringExpanded] = useState(false);
+  const [eligibility, setEligibility] = useState<SelfServeEligibility | null>(null);
+  const { formData, confirmBooking, submitSeries, isLoading } = wizard;
+
+  // Fetch self-serve eligibility once when this step mounts. Authenticated
+  // returning clients with the gate met see the "Make this recurring?"
+  // expander; everyone else sees the standard single-booking confirm flow.
+  useEffect(() => {
+    if (!formData.isAuthenticatedReturning) return;
+    let cancelled = false;
+    fetch('/api/account/eligibility')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setEligibility(data as SelfServeEligibility);
+      })
+      .catch(() => { /* silent — single booking still works */ });
+    return () => { cancelled = true; };
+  }, [formData.isAuthenticatedReturning]);
   const dateStr = new Date(formData.selectedStartTime).toLocaleDateString(
     isRTL ? 'ar' : 'en-US',
     { timeZone: formData.clientTimezone, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' },
@@ -1733,6 +1807,35 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
         )}
       </div>
 
+      {/* Self-serve recurring expander — only when authenticated + eligible */}
+      {eligibility?.eligible && (
+        <div className="space-y-2">
+          {!recurringExpanded ? (
+            <button
+              type="button"
+              onClick={() => setRecurringExpanded(true)}
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl border-2 border-dashed border-[#7A3B5E]/30 bg-white px-4 py-3 text-sm font-semibold text-[#7A3B5E] hover:bg-[#7A3B5E]/5 transition-colors"
+            >
+              <Sparkles className="w-4 h-4" />
+              {isRTL ? 'هل تجعلينها سلسلة متكررة؟' : 'Make this recurring?'}
+            </button>
+          ) : (
+            <SelfServeRecurringStep
+              eligibility={eligibility}
+              serviceSlug={formData.serviceSlug}
+              serviceName={isRTL ? (formData.serviceNameAr || formData.serviceName) : formData.serviceName}
+              durationMinutes={formData.durationMinutes}
+              startTime={formData.selectedStartTime}
+              endTime={formData.selectedEndTime}
+              clientTimezone={formData.clientTimezone}
+              locale={isRTL ? 'ar' : 'en'}
+              isLoading={isLoading}
+              onSubmit={async (args) => { await submitSeries(args); }}
+            />
+          )}
+        </div>
+      )}
+
       {/* Consent */}
       <label className="flex items-start gap-3 cursor-pointer bg-[#FAF7F2] rounded-xl p-4 border border-[#F0ECE8]">
         <input
@@ -1750,7 +1853,7 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
 
       <button
         onClick={confirmBooking}
-        disabled={isLoading || !consent}
+        disabled={isLoading || !consent || recurringExpanded}
         className="w-full py-3.5 rounded-xl bg-[#7A3B5E] text-white font-semibold hover:bg-[#6A2E4E] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
       >
         {isLoading ? (

@@ -24,7 +24,7 @@ export type ReminderType = '24h' | '1h';
 
 // ─── Recurrence (series of bookings) ────────────────────────────
 
-export type RecurrenceFrequency = 'weekly' | 'biweekly';
+export type RecurrenceFrequency = 'weekly' | 'biweekly' | 'every3weeks';
 
 export interface RecurrenceSeriesMeta {
   /** Unique series id (`ser_{uuid}`), shared across all siblings. */
@@ -45,6 +45,12 @@ export interface RecurrenceSeriesMeta {
   bundleAnchorBookingId?: string;
   /** Indices that have been cancelled. Maintained on every sibling for UI display. */
   seriesCancelledIndices?: number[];
+  /** Channel that produced this series. Distinguishes admin actions from client self-serve. */
+  origin?: 'admin-create' | 'admin-approval-convert' | 'self-serve';
+  /** When set, identifies the original one-off booking that was promoted into a series. */
+  convertedFromBookingId?: string;
+  /** True once a bundled invoice has been paid in full upfront (Stripe webhook stamp). */
+  paidUpfront?: boolean;
 }
 
 // ─── Core Booking Record ────────────────────────────────────────

@@ -21,13 +21,16 @@ export async function GET() {
     const bookings = await getBookingsByCustomer(session.email);
     const now = new Date().toISOString();
 
-    // Split into upcoming and past
+    // Upcoming includes any active state with a future startTime so series
+    // siblings (which sit in 'approved' or 'pending-review' until completion)
+    // surface in the ManageSeriesPanel alongside one-off confirmed bookings.
+    const upcomingActive = new Set(['confirmed', 'approved', 'pending-review', 'pending_approval']);
     const upcoming = bookings
-      .filter(b => b.startTime > now && b.status === 'confirmed')
+      .filter(b => b.startTime > now && upcomingActive.has(b.status))
       .sort((a, b) => a.startTime.localeCompare(b.startTime));
 
     const past = bookings
-      .filter(b => b.startTime <= now || b.status !== 'confirmed')
+      .filter(b => b.startTime <= now || !upcomingActive.has(b.status))
       .sort((a, b) => b.startTime.localeCompare(a.startTime))
       .slice(0, 20); // Limit past to 20
 
@@ -58,5 +61,18 @@ function sanitizeBooking(b: any) {
     cancelledAt: b.cancelledAt,
     cancelReason: b.cancelReason,
     rescheduledTo: b.rescheduledTo,
+    // Series metadata — needed by ManageSeriesPanel to group siblings.
+    // Internal-only fields like bundleInvoiceDraftId stay out.
+    series: b.series
+      ? {
+          seriesId: b.series.seriesId,
+          seriesIndex: b.series.seriesIndex,
+          seriesTotal: b.series.seriesTotal,
+          frequency: b.series.frequency,
+          invoiceMode: b.series.invoiceMode,
+          paidUpfront: b.series.paidUpfront ?? false,
+          origin: b.series.origin,
+        }
+      : undefined,
   };
 }

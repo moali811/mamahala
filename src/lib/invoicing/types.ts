@@ -411,6 +411,15 @@ export interface InvoiceSettings {
   /* ── Dry Run mode ── */
   /** When ON, create invoice + generate PDF + store KV, but skip the email send. */
   dryRun: boolean;
+
+  /* ── Self-serve recurring (client-side bundled prepay) ── */
+  /**
+   * Master toggle for the client-side "Make this recurring?" expander on /book.
+   * Off by default — Mo flips on once Phase A admin convert flow has been
+   * exercised in production. Eligibility is also gated on per-customer
+   * paid-session count (see self-serve-eligibility.ts).
+   */
+  selfServeRecurringEnabled?: boolean;
   updatedAt: string;
 }
 

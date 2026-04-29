@@ -16,14 +16,10 @@
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getBooking, updateBooking, createManageToken } from '@/lib/booking/booking-store';
-import { createCalendarEvent } from '@/lib/booking/google-calendar';
-import { sendBookingEmail } from '@/lib/booking/emails';
-import { emailCopy, type EmailLocale } from '@/lib/booking/email-copy';
 import { authorizeWithLimit } from '@/lib/invoicing/auth';
-import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { SITE_URL } from '@/lib/site-url';
 import { verifyAdminActionToken } from '@/lib/booking/admin-action-token';
+import { processApproval } from '@/lib/booking/approval-flow';
 
 // GET — one-click from email. Auth = HMAC token in ?token= bound to
 // the booking id. An attacker who tricks Dr. Hala into clicking a
@@ -73,85 +69,6 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ ok: true, ...result });
-}
-
-async function processApproval(bookingId: string): Promise<{
-  error?: string;
-  clientName?: string;
-  meetLink?: string;
-  draftId?: string;
-}> {
-  const booking = await getBooking(bookingId);
-  if (!booking) return { error: 'Booking not found' };
-
-  if (booking.status !== 'pending_approval') {
-    return { error: `Booking is already ${booking.status} — cannot approve` };
-  }
-
-  // 1. Mark as approved
-  const now = new Date().toISOString();
-  await updateBooking(bookingId, {
-    status: 'approved',
-    approvedAt: now,
-    approvedBy: 'admin',
-  });
-
-  // 2. Create Google Calendar event + Meet link
-  let meetLink: string | undefined;
-  try {
-    const calResult = await createCalendarEvent({ ...booking, status: 'approved' as const });
-    if (calResult) {
-      meetLink = calResult.meetLink;
-      await updateBooking(bookingId, {
-        calendarEventId: calResult.eventId,
-        meetLink: calResult.meetLink,
-      });
-    }
-  } catch (err) {
-    console.error('[Approve] GCal failed:', err);
-  }
-
-  // 3. Send short "approved" notification to client (NOT the invoice — that comes later).
-  // Honors booking.preferredLanguage so AR clients get AR copy; the localized
-  // strings (subject/heading/body/meet block) live in email-copy.ts `approved`.
-  const locale: EmailLocale = booking.preferredLanguage === 'ar' ? 'ar' : 'en';
-  const t = emailCopy(locale);
-  const firstName = booking.clientName.split(' ')[0];
-  const serviceName = booking.serviceName || booking.serviceSlug.replace(/-/g, ' ');
-  const dateTime = new Date(booking.startTime).toLocaleString(locale === 'ar' ? 'ar' : 'en-US', {
-    timeZone: booking.clientTimezone,
-    weekday: 'long', month: 'long', day: 'numeric',
-    hour: 'numeric', minute: '2-digit',
-    hour12: locale !== 'ar',
-  });
-
-  const html = emailWrapper(`
-    <div style="${emailStyles.card}">
-      <div style="text-align:center;margin:0 0 16px;">
-        <div style="display:inline-block;width:48px;height:48px;border-radius:50%;background:#F0FAF5;line-height:48px;font-size:24px;text-align:center;">&#10003;</div>
-      </div>
-      <h2 style="${emailStyles.heading};text-align:center;">${t.approved.heading(firstName)}</h2>
-      <p style="${emailStyles.text}">${t.approved.body(serviceName, dateTime)}</p>
-      <p style="${emailStyles.text}">${t.approved.invoiceNote}</p>
-      ${booking.sessionMode === 'online' ? `
-      <div style="${emailStyles.goldAccent}">
-        <p style="margin:0;font-size:13px;color:#4A4A5C;">${t.approved.onlineFallback}</p>
-      </div>
-      ` : ''}
-    </div>
-  `, { locale });
-
-  await sendBookingEmail({
-    to: booking.clientEmail,
-    subject: t.approved.subject(serviceName),
-    html,
-  }).catch(err => console.error('[Approve] Client notification failed:', err));
-
-  return {
-    clientName: booking.clientName,
-    meetLink,
-    draftId: booking.draftId,
-  };
 }
 
 function renderPage(success: boolean, messageOrName: string, draftId?: string): string {

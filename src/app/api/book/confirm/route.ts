@@ -341,7 +341,19 @@ export async function POST(request: NextRequest) {
       aiConfirmationMessage: finalBooking.aiConfirmationMessage,
     };
 
-    return NextResponse.json(result, { status: 201 });
+    const response = NextResponse.json(result, { status: 201 });
+    // Drop a non-PII `last_visit` marker so the wizard renders the
+    // SoftWelcomeBanner on subsequent anonymous visits. Not HttpOnly —
+    // the wizard reads it client-side via document.cookie. PIPEDA-safe:
+    // value is just `1`, no identifying info.
+    response.cookies.set('last_visit', '1', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
+      path: '/',
+    });
+    return response;
   } catch (err) {
     console.error('[Booking Confirm] Error:', err);
     return NextResponse.json({ error: 'Failed to create booking' }, { status: 500 });
