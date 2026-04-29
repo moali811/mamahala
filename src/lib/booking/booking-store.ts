@@ -280,6 +280,45 @@ export async function listBlockedDates(): Promise<BlockedDate[]> {
     .sort((a, b) => a.date.localeCompare(b.date));
 }
 
+/**
+ * Compute today's YYYY-MM-DD in a given IANA timezone. en-CA's date format
+ * happens to match ISO YYYY-MM-DD exactly, which is convenient.
+ */
+function todayInTimezone(timezone: string): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: timezone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(new Date());
+}
+
+/**
+ * Auto-cleanup: remove every blocked-date entry whose date is strictly
+ * before today (in the provider's timezone). Past blocks are dead weight —
+ * they don't affect future availability and they pollute the admin UI.
+ *
+ * Returns the dates that were pruned so callers can log / surface them.
+ * Idempotent: running it on a clean store does nothing.
+ *
+ * Note: we delete via removeBlockedDate so any partial-block GCal events
+ * the API previously created are NOT cleaned up here — those events are
+ * also in the past and will naturally fall out of the calendar view.
+ * Cleaning them would mean an extra round-trip per stale entry; not worth
+ * the cost since GCal silently keeps history regardless.
+ */
+export async function pruneStaleBlockedDates(timezone: string): Promise<string[]> {
+  if (!KV_AVAILABLE) return [];
+
+  const today = todayInTimezone(timezone);
+  const all = await listBlockedDates();
+  const stale = all.filter(b => b.date < today);
+  if (stale.length === 0) return [];
+
+  await Promise.all(stale.map(b => removeBlockedDate(b.date)));
+  return stale.map(b => b.date);
+}
+
 // ─── Day Overrides ──────────────────────────────────────────────
 
 export async function getDayOverride(date: string): Promise<DayOverride | null> {

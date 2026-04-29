@@ -10,6 +10,7 @@ import {
   listBlockedDates,
   getBlockedDate,
   getAvailabilityRules,
+  pruneStaleBlockedDates,
 } from '@/lib/booking/booking-store';
 import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import {
@@ -27,8 +28,15 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    // Auto-prune past blocked dates before returning. They're dead weight in
+    // the admin UI and KV — past blocks don't affect future availability.
+    const rules = await getAvailabilityRules();
+    const pruned = await pruneStaleBlockedDates(rules.timezone);
+    if (pruned.length > 0) {
+      console.log(`[Admin Block Date] Pruned ${pruned.length} stale block(s):`, pruned.join(', '));
+    }
     const blockedDates = await listBlockedDates();
-    return NextResponse.json({ blockedDates });
+    return NextResponse.json({ blockedDates, pruned });
   } catch (err) {
     console.error('[Admin Block Date] List error:', err);
     return NextResponse.json({ error: 'Failed to list blocked dates' }, { status: 500 });
