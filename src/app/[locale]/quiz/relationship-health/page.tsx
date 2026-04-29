@@ -18,6 +18,7 @@ import {
   Download,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { scrollToElement } from '@/lib/scroll';
 import { questions, dimensions, tiers, dimensionInsights } from '@/data/relationship-health-quiz';
 import {
   generateSessionId,
@@ -83,7 +84,7 @@ function RelationshipHealthQuizInner() {
   // Scroll to quiz content on step change (critical for mobile)
   useEffect(() => {
     if (step > 0 && quizRef.current) {
-      quizRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      void scrollToElement(quizRef.current);
     }
   }, [step]);
 
@@ -231,7 +232,7 @@ function RelationshipHealthQuizInner() {
       </section>
 
       {/* Quiz Content */}
-      <section ref={quizRef} className="py-16 lg:py-20 scroll-mt-20">
+      <section ref={quizRef} className="py-16 lg:py-20 scroll-anchor">
         <div className="container-main max-w-4xl">
           <AnimatePresence mode="wait">
             {/* INTRO */}

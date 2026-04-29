@@ -64,20 +64,9 @@ export default function Header({ locale, messages }: HeaderProps) {
     window.location.href = `/${altLocale}${pathnameWithoutLocale}${window.location.search}`;
   }, [altLocale, pathnameWithoutLocale]);
 
-  useEffect(() => {
-    const savedY = sessionStorage.getItem('mh_scroll_y');
-    if (savedY) {
-      sessionStorage.removeItem('mh_scroll_y');
-      const y = parseInt(savedY, 10);
-      // Wait for content to render before restoring scroll
-      const restore = () => window.scrollTo({ top: y, behavior: 'instant' as ScrollBehavior });
-      // Try multiple times as content loads
-      restore();
-      requestAnimationFrame(restore);
-      setTimeout(restore, 100);
-      setTimeout(restore, 300);
-    }
-  }, []);
+  // Locale-switch scroll restoration is handled by the inline script in
+  // src/app/layout.tsx — runs pre-hydration, retries via rAF until the
+  // document is tall enough to hold the saved scroll position.
 
   /* ── Build services mega-menu data ───────── */
   const generalSlugs = new Set(['initial-consultation', 'online-phone-consultation']);
@@ -111,7 +100,11 @@ export default function Header({ locale, messages }: HeaderProps) {
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    document.body.style.overscrollBehavior = mobileOpen ? 'contain' : '';
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.overscrollBehavior = '';
+    };
   }, [mobileOpen]);
 
   // Close mobile menu on route change

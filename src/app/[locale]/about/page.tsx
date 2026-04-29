@@ -553,9 +553,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
     const willShow = !showForm;
     setShowForm(willShow);
     if (willShow) {
-      setTimeout(() => {
-        formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+      if (formRef.current) void scrollToElement(formRef.current);
     }
   }, [showForm]);
 
@@ -603,7 +601,7 @@ function InterviewSection({ locale, isRTL }: { locale: string; isRTL: boolean })
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="max-w-2xl mx-auto mt-6 scroll-mt-24"
+              className="max-w-2xl mx-auto mt-6 scroll-anchor"
             >
               <ChatForm
                 steps={[

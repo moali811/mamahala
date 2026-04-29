@@ -506,7 +506,7 @@ export default function PrivacyPolicyPage() {
               <ScrollReveal key={section.id}>
                 <div
                   id={section.id}
-                  className={`rounded-2xl border shadow-[var(--shadow-subtle)] scroll-mt-24 overflow-hidden ${
+                  className={`rounded-2xl border shadow-[var(--shadow-subtle)] scroll-anchor overflow-hidden ${
                     section.highlight
                       ? 'border-[#C4878A]/20 ring-1 ring-[#C4878A]/10 bg-white'
                       : isAlternate
@@ -596,7 +596,7 @@ export default function PrivacyPolicyPage() {
         {/* Back to top */}
         <div className="text-center mt-12">
           <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => scrollToTop()}
             className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
           >
             <svg className="w-4 h-4 rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">

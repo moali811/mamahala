@@ -71,7 +71,10 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){var p=window.location.pathname;var isAr=p.startsWith('/ar');document.documentElement.lang=isAr?'ar':'en';document.documentElement.dir=isAr?'rtl':'ltr';var y=sessionStorage.getItem('mh_scroll_y');if(y){sessionStorage.removeItem('mh_scroll_y');if('scrollRestoration' in history)history.scrollRestoration='manual';window.addEventListener('load',function(){setTimeout(function(){window.scrollTo(0,parseInt(y,10))},100)});}})();`,
+            // Pre-React: set lang/dir from URL, and if a locale-switch saved a
+            // scroll target, restore it via an rAF loop that waits until the
+            // document is tall enough (instead of fragile escalating timeouts).
+            __html: `(function(){var p=window.location.pathname;var isAr=p.startsWith('/ar');document.documentElement.lang=isAr?'ar':'en';document.documentElement.dir=isAr?'rtl':'ltr';var raw=sessionStorage.getItem('mh_scroll_y');if(!raw)return;var y=parseInt(raw,10);if(!(y>0))return;sessionStorage.removeItem('mh_scroll_y');if('scrollRestoration' in history){try{history.scrollRestoration='manual'}catch(e){}}var deadline=Date.now()+1500;function attempt(){var max=document.documentElement.scrollHeight-window.innerHeight;if(max>=y){window.scrollTo(0,y);return}if(Date.now()>deadline){window.scrollTo(0,Math.max(0,max));return}requestAnimationFrame(attempt)}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',attempt)}else{attempt()}})();`,
           }}
         />
       </head>

@@ -1132,7 +1132,7 @@ function DownloadsPageInner() {
             })}
           </div>
 
-          <div id="toolkit-grid" className="scroll-mt-24" />
+          <div id="toolkit-grid" className="scroll-anchor" />
           <MobileCarousel desktopGrid="sm:grid-cols-2 lg:grid-cols-3" gap={32} mobileWidth="85vw" key={currentPage}>
             {paginatedResources.map((resource) => {
               const title = isRTL ? resource.title.ar : resource.title.en;
@@ -1278,7 +1278,7 @@ function DownloadsPageInner() {
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-12">
               <button
-                onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); document.getElementById('toolkit-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+                onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); scrollToElement('toolkit-grid'); }}
                 disabled={currentPage === 1}
                 className="p-2.5 rounded-full border border-[#F3EFE8] bg-white text-[#4A4A5C] hover:bg-[#FAF7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               >
@@ -1287,7 +1287,7 @@ function DownloadsPageInner() {
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                 <button
                   key={page}
-                  onClick={() => { setCurrentPage(page); document.getElementById('toolkit-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+                  onClick={() => { setCurrentPage(page); scrollToElement('toolkit-grid'); }}
                   className={`w-10 h-10 rounded-full text-sm font-medium transition-all duration-200 ${
                     currentPage === page
                       ? 'bg-[#7A3B5E] text-white shadow-sm'
@@ -1298,7 +1298,7 @@ function DownloadsPageInner() {
                 </button>
               ))}
               <button
-                onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); document.getElementById('toolkit-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
+                onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); scrollToElement('toolkit-grid'); }}
                 disabled={currentPage === totalPages}
                 className="p-2.5 rounded-full border border-[#F3EFE8] bg-white text-[#4A4A5C] hover:bg-[#FAF7F2] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
               >

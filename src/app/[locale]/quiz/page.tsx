@@ -12,6 +12,7 @@ import {
   GraduationCap, TreePine, Activity,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { scrollToElement, scrollToTop } from '@/lib/scroll';
 import { services } from '@/data/services';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -235,7 +236,7 @@ export default function QuizPage() {
 
   // Scroll to top on mount to ensure hero is fully visible
   useEffect(() => {
-    window.scrollTo({ top: 0 });
+    void scrollToTop({ behavior: 'instant' });
   }, []);
 
   const [step, setStep] = useState(0);
@@ -245,7 +246,7 @@ export default function QuizPage() {
   // Scroll to quiz section on every step change and results
   useEffect(() => {
     if ((step > 0 || showResults) && quizRef.current) {
-      quizRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      void scrollToElement(quizRef.current);
     }
   }, [step, showResults]);
 
@@ -299,7 +300,7 @@ export default function QuizPage() {
         <WaveDivider position="bottom" fillColor="#FAF7F2" variant="gentle" />
       </section>
 
-      <div ref={quizRef} className="max-w-2xl mx-auto px-6 py-16 scroll-mt-20">
+      <div ref={quizRef} className="max-w-2xl mx-auto px-6 py-16 scroll-anchor">
         {!showResults ? (
           <>
             {/* Progress Bar */}

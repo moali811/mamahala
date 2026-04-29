@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTourState } from './useTourState';
 import TourSpotlight from './TourSpotlight';
+import { scrollWindowToY } from '@/lib/scroll';
 
 export interface ProgramsTourProps {
   locale: string;
@@ -128,17 +129,15 @@ export default function ProgramsTour({ locale }: ProgramsTourProps) {
       const bottomReserve = isMobile ? 240 : 60;
       const offScreen = rect.top < 80 || rect.bottom > window.innerHeight - bottomReserve;
       if (offScreen) {
-        // Compute absolute target Y. Using 'auto' (instant) so it works even
-        // when the tab is backgrounded / document is hidden, where 'smooth'
-        // gets throttled to 0. setTimeout (not rAF) because rAF is also
-        // throttled in hidden tabs — this guarantees ready-flag flips.
         const absoluteTop = rect.top + window.scrollY;
         // Center within the *usable* vertical area. On mobile that excludes
         // the bottom-sheet zone so the target isn't occluded.
         const usableHeight = window.innerHeight - bottomReserve;
         const targetY = Math.max(0, absoluteTop - Math.max(0, (usableHeight - rect.height) / 2));
-        window.scrollTo({ top: targetY, behavior: 'auto' });
-        window.setTimeout(() => setReady(true), 80);
+        // scrollWindowToY: smooth + intent-aware, auto-flips to instant under
+        // prefers-reduced-motion, resolves when scroll actually ends (capped
+        // so the spotlight reveal still fires in backgrounded tabs).
+        void scrollWindowToY(targetY, { cancelOnUserInput: false }).then(() => setReady(true));
       } else {
         setReady(true);
       }

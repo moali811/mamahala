@@ -20,6 +20,7 @@ import {
   Download,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { scrollToElement } from '@/lib/scroll';
 import { questions, domains, tiers, domainInsights } from '@/data/executive-function-quiz';
 import type { EFDomain } from '@/data/executive-function-quiz';
 import ScrollReveal from '@/components/motion/ScrollReveal';
@@ -97,7 +98,7 @@ export default function ExecutiveFunctionQuizPage() {
   // Scroll to quiz content on step change (critical for mobile)
   useEffect(() => {
     if (step > 0 && quizRef.current) {
-      quizRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      void scrollToElement(quizRef.current);
     }
   }, [step]);
 
@@ -185,7 +186,7 @@ export default function ExecutiveFunctionQuizPage() {
       </section>
 
       {/* Quiz Content */}
-      <section ref={quizRef} className="py-16 lg:py-20 scroll-mt-20">
+      <section ref={quizRef} className="py-16 lg:py-20 scroll-anchor">
         <div className="container-main max-w-4xl">
           <AnimatePresence mode="wait">
             {/* ── INTRO ── */}

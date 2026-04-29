@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTourState } from './useTourState';
 import TourSpotlight from './TourSpotlight';
+import { scrollWindowToY } from '@/lib/scroll';
 
 export interface ProgramOverviewTourProps {
   locale: string;
@@ -160,9 +161,9 @@ export default function ProgramOverviewTour({ locale, programTitle, isFree }: Pr
       const absoluteTop = rect.top + window.scrollY;
       const usableHeight = window.innerHeight - bottomReserve;
       const targetY = Math.max(0, absoluteTop - Math.max(0, (usableHeight - rect.height) / 2));
-      window.scrollTo({ top: targetY, behavior: 'auto' });
-      // setTimeout (not rAF) — rAF is throttled in hidden tabs.
-      window.setTimeout(() => setReady(true), 80);
+      // scrollWindowToY: smooth + intent-aware, auto-flips to instant under
+      // prefers-reduced-motion, resolves when scroll actually ends (capped).
+      void scrollWindowToY(targetY, { cancelOnUserInput: false }).then(() => setReady(true));
     } else {
       setReady(true);
     }

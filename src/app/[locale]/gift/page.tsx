@@ -71,7 +71,7 @@ export default function GiftPage() {
     scrollToWizard();
   };
   const scrollToWizard = () => {
-    setTimeout(() => wizardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    if (wizardRef.current) void scrollToElement(wizardRef.current);
   };
 
   // Resolve display names

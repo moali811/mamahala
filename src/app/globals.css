@@ -72,6 +72,14 @@
   --container-padding: 1.5rem;
   --section-padding-y: 7rem;
   --section-padding-y-lg: 9rem;
+
+  /* Scroll system — single source of truth for header / nav / keyboard
+     clearance. JS scrolls and native anchor links both honour these. */
+  --header-height: 4rem;            /* h-16 fixed header */
+  --bottom-nav-height: 0px;         /* website has no fixed bottom nav */
+  --keyboard-inset-bottom: 0px;     /* set at runtime via visualViewport */
+  --scroll-clearance-top: calc(var(--header-height) + 1rem);
+  --scroll-clearance-bottom: calc(var(--bottom-nav-height) + var(--keyboard-inset-bottom) + 1rem);
 }
 
 @media (min-width: 1024px) {
@@ -83,11 +91,33 @@
 }
 
 /* --- Base Styles --- */
+/* Smart-scroll system: token-driven scroll-padding */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5rem;
+  scroll-padding-top: var(--scroll-clearance-top);
+  scroll-padding-bottom: var(--scroll-clearance-bottom);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Respect users who ask for less motion — flips smooth scroll to instant
+   and collapses transition/animation durations across the app. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Unified scroll target — replaces scattered scroll-mt-{4,20,24,28} usage.
+   Components that need extra clearance (e.g. behind a sticky progress bar)
+   pass `extraOffsetTop` via the ScrollAnchor component. */
+.scroll-anchor {
+  scroll-margin-top: var(--scroll-clearance-top);
+  scroll-margin-bottom: var(--scroll-clearance-bottom);
 }
 
 /* Prevent iOS auto-zoom on input focus — minimum 16px font size */

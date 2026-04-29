@@ -426,7 +426,7 @@ export default function ChatForm({
       {activeStep && !typing && !sent && ['text', 'email', 'tel', 'textarea', 'date'].includes(activeStep.type) && (
         <div className="border-t border-[#F3EFE8] px-4 py-3 flex-shrink-0">
           {validationError && (
-            <p className="text-[11px] text-red-500 mb-1.5 px-1">{validationError}</p>
+            <p className="text-[11px] text-red-500 mb-1.5 px-1" role="alert">{validationError}</p>
           )}
           <div className="flex items-end gap-2">
             {activeStep.type === 'textarea' ? (
@@ -437,6 +437,7 @@ export default function ChatForm({
                 onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleTextSubmit(); } }}
                 placeholder={activeStep.placeholder || ''}
                 rows={activeStep.rows || 3}
+                aria-invalid={validationError ? true : undefined}
                 className="flex-1 px-4 py-2.5 rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] text-[16px] sm:text-sm text-[#2D2A33] placeholder-[#8E8E9F] outline-none resize-none"
                 onFocus={(e) => e.target.style.borderColor = themeColor}
                 onBlur={(e) => e.target.style.borderColor = '#F3EFE8'}
@@ -449,6 +450,7 @@ export default function ChatForm({
                 onChange={(e) => { setInputValue(e.target.value); setValidationError(null); }}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleTextSubmit(); }}
                 placeholder={activeStep.placeholder || ''}
+                aria-invalid={validationError ? true : undefined}
                 className="flex-1 px-4 py-2.5 rounded-xl border border-[#F3EFE8] bg-[#FAF7F2] text-[16px] sm:text-sm text-[#2D2A33] placeholder-[#8E8E9F] outline-none"
                 style={{ borderColor: undefined }}
                 onFocus={(e) => e.target.style.borderColor = themeColor}

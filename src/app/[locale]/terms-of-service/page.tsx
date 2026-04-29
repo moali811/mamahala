@@ -390,7 +390,7 @@ export default function TermsPage() {
               <ScrollReveal key={section.id}>
                 <div
                   id={section.id}
-                  className={`rounded-2xl border shadow-[var(--shadow-subtle)] scroll-mt-24 overflow-hidden ${
+                  className={`rounded-2xl border shadow-[var(--shadow-subtle)] scroll-anchor overflow-hidden ${
                     section.highlight
                       ? 'border-[#C8A97D]/30 ring-1 ring-[#C8A97D]/10'
                       : 'border-[#F3EFE8]'
@@ -486,7 +486,7 @@ export default function TermsPage() {
         {/* Back to top */}
         <div className="text-center mt-12">
           <button
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            onClick={() => scrollToTop()}
             className="inline-flex items-center gap-2 text-sm text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
           >
             <ArrowUp className="w-4 h-4" />

@@ -29,6 +29,7 @@ import ReturningClientBanner from '@/components/booking/ReturningClientBanner';
 import SoftWelcomeBanner from '@/components/booking/SoftWelcomeBanner';
 import SelfServeRecurringStep from '@/components/booking/SelfServeRecurringStep';
 import type { SelfServeEligibility } from '@/lib/booking/self-serve-eligibility';
+import { scrollToElement } from '@/lib/scroll';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Sparkles, Users, User, Heart, Leaf, GraduationCap, Shield, Baby, Compass,
@@ -63,13 +64,16 @@ export default function BookPage() {
   const ForwardArrow = isRTL ? ChevronLeft : ChevronRight;
   const stepContentRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to top of step content when step changes
+  // Scroll to top of step content when step changes. The smart scroll waits
+  // for layout settle (covers AnimatePresence swap) and respects reduced-motion.
+  const isFirstStepRender = useRef(true);
   useEffect(() => {
-    // Small delay to let AnimatePresence swap content
-    const t = setTimeout(() => {
-      stepContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
-    return () => clearTimeout(t);
+    if (isFirstStepRender.current) {
+      isFirstStepRender.current = false;
+      return;
+    }
+    if (!stepContentRef.current) return;
+    void scrollToElement(stepContentRef.current);
   }, [step]);
 
   // ─── Direct booking from service page (?service= param) ────────
@@ -200,7 +204,7 @@ export default function BookPage() {
 
       {/* Progress Bar */}
       {step !== 'success' && (
-        <div ref={stepContentRef} className="max-w-2xl mx-auto px-4 py-6 scroll-mt-4">
+        <div ref={stepContentRef} className="max-w-2xl mx-auto px-4 py-6 scroll-anchor">
           <div className="flex items-center justify-between">
             {visibleSteps.map((s, i) => {
               const isActive = s === step;
@@ -617,10 +621,11 @@ function DateTimeStep({ wizard, locale, isRTL, onProviderTimezone, onInPersonEna
         // the admin changed it between month and day loads.
         if (data.timezone) { setProviderTimezone(data.timezone); onProviderTimezone?.(data.timezone); }
         if (typeof data.inPersonEnabled === 'boolean') onInPersonEnabled?.(data.inPersonEnabled);
-        // Scroll to slots on mobile (delay for animation)
-        setTimeout(() => {
-          slotsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 350);
+        // Scroll to slots on mobile. Layout-settle handles the AnimatePresence
+        // entrance animation, so we don't need a fixed-duration delay.
+        if (slotsRef.current) {
+          void scrollToElement(slotsRef.current);
+        }
       })
       .catch(() => setDaySlots([]))
       .finally(() => setLoadingDay(false));
@@ -888,7 +893,7 @@ function DateTimeStep({ wizard, locale, isRTL, onProviderTimezone, onInPersonEna
             <motion.div
               key="slots-panel"
               ref={slotsRef}
-              className="flex-1 min-w-0 mt-6 lg:mt-0 lg:sticky lg:top-24 scroll-mt-24"
+              className="flex-1 min-w-0 mt-6 lg:mt-0 lg:sticky lg:top-24 scroll-anchor"
               initial={{ opacity: 0, x: 40, scale: 0.97 }}
               animate={{ opacity: 1, x: 0, scale: 1 }}
               exit={{ opacity: 0, x: 40, scale: 0.97 }}

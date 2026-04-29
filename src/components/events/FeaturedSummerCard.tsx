@@ -16,6 +16,7 @@
    ================================================================ */
 
 import { useState, useEffect } from 'react';
+import { scrollToElement, scrollToTop } from '@/lib/scroll';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -183,7 +184,7 @@ export default function FeaturedSummerCard({ event, locale, pulseCount, onResona
   return (
     <motion.div
       id={event.slug}
-      className="relative rounded-3xl overflow-hidden bg-white flex flex-col scroll-mt-24"
+      className="relative rounded-3xl overflow-hidden bg-white flex flex-col scroll-anchor"
       style={{
         border: `2px solid ${theme.border}`,
         boxShadow: `0 12px 48px ${theme.primary}18, 0 4px 16px rgba(0,0,0,0.04)`,

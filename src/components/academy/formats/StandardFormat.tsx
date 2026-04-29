@@ -5,6 +5,7 @@ import { ChevronRight, ArrowLeft, ChevronDown, Check, List } from 'lucide-react'
 import BlockRenderer, { type BlockContext } from '@/components/academy/blocks/BlockRenderer';
 import type { LessonBlock } from '@/types';
 import { t } from '@/lib/academy-helpers';
+import { scrollToElement, scrollToTop } from '@/lib/scroll';
 
 interface Props {
   blocks: LessonBlock[];
@@ -146,21 +147,21 @@ export default function StandardFormat({ blocks, ctx }: Props) {
     if (!isLast) {
       setSectionIndex(i => i + 1);
       // Scroll to top of stage so user starts the new section from the top
-      setTimeout(() => stageRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 50);
+      if (stageRef.current) void scrollToElement(stageRef.current);
     }
   };
 
   const goPrev = () => {
     if (!isFirst) {
       setSectionIndex(i => i - 1);
-      setTimeout(() => stageRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 50);
+      if (stageRef.current) void scrollToElement(stageRef.current);
     }
   };
 
   const jumpTo = (idx: number) => {
     setSectionIndex(idx);
     setMenuOpen(false);
-    setTimeout(() => stageRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' }), 50);
+    if (stageRef.current) void scrollToElement(stageRef.current);
   };
 
   if (!section) return null;
@@ -183,7 +184,7 @@ export default function StandardFormat({ blocks, ctx }: Props) {
   }
 
   return (
-    <div ref={stageRef} className="scroll-mt-24">
+    <div ref={stageRef} className="scroll-anchor">
       {/* Section header — sticky within view */}
       <div className="sticky top-16 z-20 -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 mb-5 backdrop-blur-md bg-[#FAF7F2]/85 border-b border-[#F0E8D8]">
         <div className="flex items-center justify-between gap-4 mb-2">

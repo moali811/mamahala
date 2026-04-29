@@ -229,7 +229,7 @@ export default function ServiceCategoryPage() {
                       onClick={() => {
                         const el = document.getElementById(`service-${scenario.slug}`);
                         if (el) {
-                          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          void scrollToElement(el, { block: 'center' });
                           el.classList.add('ring-2', 'ring-offset-2');
                           el.style.setProperty('--tw-ring-color', accent);
                           setTimeout(() => el.classList.remove('ring-2', 'ring-offset-2'), 2000);

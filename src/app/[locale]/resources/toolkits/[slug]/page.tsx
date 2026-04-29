@@ -166,7 +166,7 @@ export default function ToolkitDetailPage() {
     setExpandedDay(null);
     // Wait one frame so the new section DOM mounts before we scroll to it.
     requestAnimationFrame(() => {
-      contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (contentRef.current) void scrollToElement(contentRef.current);
     });
   }, []);
 
@@ -430,7 +430,7 @@ export default function ToolkitDetailPage() {
       {section && (
         <main
           ref={contentRef}
-          className="px-6 py-10 max-w-4xl mx-auto scroll-mt-28"
+          className="px-6 py-10 max-w-4xl mx-auto scroll-anchor"
         >
           <AnimatePresence mode="wait">
             <motion.div

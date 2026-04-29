@@ -23,6 +23,7 @@ import WaveDivider from '@/components/ui/WaveDivider';
 import HeroDecorCluster from '@/components/ui/HeroDecorCluster';
 import FinalCTA from '@/components/shared/FinalCTA';
 import { useBlog } from '@/hooks/useBlog';
+import { scrollToElement } from '@/lib/scroll';
 
 const badgeVariants: Record<string, 'sage' | 'plum' | 'sand' | 'neutral'> = {
   youth: 'sage',
@@ -175,7 +176,7 @@ export default function BlogListingPage() {
       {/* ================================================================ */}
       {/*  CATEGORY FILTER & BLOG GRID                                     */}
       {/* ================================================================ */}
-      <section className="py-20 lg:py-28 bg-[#FAF7F2]">
+      <section id="blog-grid" className="scroll-anchor py-20 lg:py-28 bg-[#FAF7F2]">
         <div className="container-main">
           {/* Category Filter Tabs */}
           <ScrollReveal className="mb-12">
@@ -264,7 +265,7 @@ export default function BlogListingPage() {
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-14">
               <button
-                onClick={() => { setCurrentPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                onClick={() => { setCurrentPage((p) => Math.max(1, p - 1)); void scrollToElement('#blog-grid'); }}
                 disabled={currentPage === 1}
                 className="w-10 h-10 rounded-full flex items-center justify-center border border-[#F3EFE8] bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
@@ -273,7 +274,7 @@ export default function BlogListingPage() {
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                 <button
                   key={page}
-                  onClick={() => { setCurrentPage(page); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                  onClick={() => { setCurrentPage(page); void scrollToElement('#blog-grid'); }}
                   className={`w-10 h-10 rounded-full text-sm font-semibold transition-all duration-200 ${
                     currentPage === page
                       ? 'bg-[#7A3B5E] text-white shadow-md'
@@ -284,7 +285,7 @@ export default function BlogListingPage() {
                 </button>
               ))}
               <button
-                onClick={() => { setCurrentPage((p) => Math.min(totalPages, p + 1)); window.scrollTo({ top: 400, behavior: 'smooth' }); }}
+                onClick={() => { setCurrentPage((p) => Math.min(totalPages, p + 1)); void scrollToElement('#blog-grid'); }}
                 disabled={currentPage === totalPages}
                 className="w-10 h-10 rounded-full flex items-center justify-center border border-[#F3EFE8] bg-white text-[#4A4A5C] hover:bg-[#F3EFE8] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >

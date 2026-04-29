@@ -12,6 +12,7 @@ import {
 import { SnapchatIcon, TelegramIcon, TiktokIcon } from '@/components/icons/SocialIcons';
 import { BUSINESS, getBookingUrl } from '@/config/business';
 import type { Locale } from '@/types';
+import { scrollToTop } from '@/lib/scroll';
 
 interface FooterProps {
   locale: Locale;
@@ -239,7 +240,7 @@ export default function Footer({ locale, messages }: FooterProps) {
             ))}
             <span className="hidden sm:block h-3 w-px bg-[#D4ADA8]/30" />
             <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              onClick={() => { void scrollToTop(); }}
               className="flex items-center gap-1.5 text-xs font-medium text-[#7A3B5E]/60 hover:text-[#7A3B5E] transition-colors group"
             >
               <span className="w-6 h-6 rounded-full border border-[#7A3B5E]/20 group-hover:border-[#7A3B5E]/40 group-hover:bg-[#7A3B5E]/5 flex items-center justify-center transition-all">

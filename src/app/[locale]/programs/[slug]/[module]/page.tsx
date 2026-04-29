@@ -280,7 +280,7 @@ export default function ModuleLessonPage() {
   const scrollToSection = useCallback((id: string) => {
     const el = sectionRefs.current[id];
     if (el) {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      void scrollToElement(el);
     }
   }, []);
 
@@ -644,7 +644,7 @@ export default function ModuleLessonPage() {
           isRTL={isRTL}
           color={program.color}
           icon="quiz"
-          onClick={() => document.querySelector('[data-section-id="quiz"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          onClick={() => scrollToElement('[data-section-id="quiz"]')}
         />
 
         {/* ─── DR. HALA'S NOTE ─── */}
@@ -814,7 +814,7 @@ export default function ModuleLessonPage() {
           isRTL={isRTL}
           color={program.color}
           icon="complete"
-          onClick={() => document.getElementById('module-complete-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+          onClick={() => void scrollToElement('module-complete-btn', { block: 'center' })}
         />
 
         {/* ─── AI FAQ ─── */}

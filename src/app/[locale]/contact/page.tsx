@@ -18,6 +18,7 @@ import Breadcrumb from '@/components/layout/Breadcrumb';
 import WaveDivider from '@/components/ui/WaveDivider';
 import ChatForm, { type ChatStep } from '@/components/ui/ChatForm';
 import PageTracker from '@/components/analytics/PageTracker';
+import { scrollToElement } from '@/lib/scroll';
 
 /* ================================================================
    Contact Page — AI-Feel Conversational Chat Form
@@ -65,12 +66,12 @@ export default function ContactPage() {
   const t = (en: string, ar: string) => isRTL ? ar : en;
   const formRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll to form section after page loads
+  // Auto-scroll to form section after page loads. The smart scroll primitive
+  // waits for layout to settle (covers entrance animations) and respects
+  // prefers-reduced-motion automatically.
   useEffect(() => {
-    const timer = setTimeout(() => {
-      formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 800);
-    return () => clearTimeout(timer);
+    if (!formRef.current) return;
+    void scrollToElement(formRef.current);
   }, []);
 
   // Track contact_form event on successful submission

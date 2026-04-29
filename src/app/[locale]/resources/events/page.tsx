@@ -266,7 +266,7 @@ export default function EventsPage() {
                     className="inline-flex items-center gap-1.5 hover:text-[#7A3B5E] transition-colors cursor-pointer"
                     onClick={(e) => {
                       e.preventDefault();
-                      document.getElementById('past-events')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      void scrollToElement('past-events');
                     }}
                   >
                     <History className="w-4 h-4 text-[#B08B6E]" />
@@ -491,7 +491,7 @@ export default function EventsPage() {
         const hiddenCount = Math.max(0, past.length - HOMEPAGE_LIMIT);
 
         return (
-        <section id="past-events" className="py-20 lg:py-28 bg-[#FAF7F2] scroll-mt-24">
+        <section id="past-events" className="py-20 lg:py-28 bg-[#FAF7F2] scroll-anchor">
           <div className="container-main">
             <ScrollReveal className="mb-8">
               <div className="flex items-center gap-3 mb-2">

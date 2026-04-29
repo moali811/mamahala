@@ -318,8 +318,7 @@ export default function ProgramsPage() {
                   <ArrowRight className="w-5 h-5" />
                 </button>
                 <button
-                  onClick={() => {
-                    document.getElementById('all-programs')?.scrollIntoView({ behavior: 'smooth' });
+                  onClick={() => { void scrollToElement('all-programs');
                   }}
                   className="block mx-auto mt-4 text-sm text-[#8E8E9F] hover:text-[#6B6580] transition-colors"
                 >

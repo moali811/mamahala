@@ -313,9 +313,7 @@ export default function ProgramOverviewPage() {
       if (levelMatch) {
         const n = Number(levelMatch[1]);
         setExpandedLevel(n);
-        setTimeout(() => {
-          document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
+        void scrollToElement('curriculum');
       }
       window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
     }
@@ -332,9 +330,7 @@ export default function ProgramOverviewPage() {
       } catch { /* ignore */ }
       setEnrolled(false);
       setSignInOpen(true);
-      setTimeout(() => {
-        document.getElementById('enroll')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+      void scrollToElement('enroll');
       window.history.replaceState({}, '', `/${locale}/programs/${slug}`);
     }
 
@@ -443,9 +439,7 @@ export default function ProgramOverviewPage() {
             }
           } catch { /* non-critical */ }
         }
-        setTimeout(() => {
-          document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 600);
+        void scrollToElement('curriculum');
       }
     } catch {
       /* Network error — server is the source of truth, local-only unlock removed */
@@ -1137,7 +1131,7 @@ export default function ProgramOverviewPage() {
                               {isRTL ? 'أكمِلْ الرّحلةَ' : 'Continue Your Journey'}
                             </a>
                             <button
-                              onClick={() => document.getElementById('curriculum')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+                              onClick={() => void scrollToElement('curriculum')}
                               className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl border border-[#F3EFE8] text-sm font-semibold text-[#4A4A5C] hover:border-[#C8A97D]/30 transition-all"
                             >
                               <Layers className="w-4 h-4" />
