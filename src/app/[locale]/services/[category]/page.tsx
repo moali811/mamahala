@@ -10,6 +10,7 @@ import {
   GraduationCap, Users, User, Heart, Leaf, Clock, HelpCircle, Sprout, Smile, TreePine,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { scrollToElement } from '@/lib/scroll';
 import { getBookingUrl } from '@/config/business';
 import { useServices } from '@/hooks/useServices';
 import { useTestimonials } from '@/hooks/useTestimonials';

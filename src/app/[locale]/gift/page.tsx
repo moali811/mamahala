@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useState, useRef } from 'react';
 import Honeypot from '@/components/ui/Honeypot';
+import { scrollToElement } from '@/lib/scroll';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Gift, Heart, Send, ChevronDown, Check, CheckCircle2,

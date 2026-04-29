@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Activity, CalendarCheck, Sparkles, History, Heart, Flame, Compass } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { scrollToElement } from '@/lib/scroll';
 import { categorizeEvents } from '@/lib/event-lifecycle';
 import { getSeasonalTheme } from '@/lib/seasonal-themes';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';

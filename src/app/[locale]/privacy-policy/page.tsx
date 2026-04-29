@@ -10,6 +10,7 @@ import {
   FileText, Brain,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { scrollToTop } from '@/lib/scroll';
 import { fadeUp, staggerContainer } from '@/lib/animations';
 import ScrollReveal from '@/components/motion/ScrollReveal';
 import Breadcrumb from '@/components/layout/Breadcrumb';

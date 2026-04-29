@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { AcademyProgram, AcademyModule } from '@/types';
 import Badge from '@/components/ui/Badge';
+import { scrollToElement } from '@/lib/scroll';
 import Button from '@/components/ui/Button';
 import Accordion from '@/components/ui/Accordion';
 import MyLearningButton from '@/components/academy/layout/MyLearningButton';

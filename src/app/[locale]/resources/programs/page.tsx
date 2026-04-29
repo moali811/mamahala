@@ -11,6 +11,7 @@ import {
   CloudRain, Pause, Eye, Globe, UserCheck,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { scrollToElement } from '@/lib/scroll';
 import { BUSINESS } from '@/config/business';
 import { ease, fadeUp, staggerContainer, viewportOnce } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';

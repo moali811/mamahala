@@ -10,6 +10,7 @@ import {
   Compass, TreePine, Play, Star, Shield, Download,
 } from 'lucide-react';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { scrollToElement } from '@/lib/scroll';
 import type { AcademyProgram, AcademyLevel } from '@/types';
 import { ease, drawLine, fadeUp, viewportOnce } from '@/lib/animations';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';

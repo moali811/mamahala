@@ -32,6 +32,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { getMessages, type Locale } from '@/lib/i18n';
+import { scrollToElement } from '@/lib/scroll';
 import ScrollReveal, { StaggerReveal, StaggerChild } from '@/components/motion/ScrollReveal';
 import MobileCarousel from '@/components/ui/MobileCarousel';
 import Breadcrumb from '@/components/layout/Breadcrumb';

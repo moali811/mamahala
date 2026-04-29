@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useCallback, useRef } from 'react';
 import FinalCTA from '@/components/shared/FinalCTA';
+import { scrollToElement } from '@/lib/scroll';
 import {
   Target,
   Eye,

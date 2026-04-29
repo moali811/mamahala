@@ -22,6 +22,7 @@ import {
 
 import type { Locale } from '@/types';
 import type { ToolkitMeta, ToolkitSection, ToolkitBlock } from '@/types/toolkit';
+import { scrollToElement } from '@/lib/scroll';
 import { getToolkit } from '@/data/toolkits';
 import ToolkitBlockRenderer, { type ToolkitBlockContext } from '@/components/toolkit/ToolkitBlockRenderer';
 import FinalCTA from '@/components/shared/FinalCTA';

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { scrollToElement } from '@/lib/scroll';
 import Image from 'next/image';
 
 // ─── Scene data — original Programs page narrative ─────────────────────────
