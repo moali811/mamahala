@@ -9,6 +9,7 @@
      {
        draftEdits?: Partial<InvoiceDraft>;  // last-minute draft tweaks
        sendClientEmail?: boolean;            // default true
+       sendInvoice?: boolean;                // default true (no-op on free)
      }
 
    Guards against races: if the booking is no longer in
@@ -32,6 +33,7 @@ interface ConfirmAndSendBody {
   /** Optional last-minute invoice draft updates (merged via PATCH semantics). */
   draftEdits?: Partial<InvoiceDraft>;
   sendClientEmail?: boolean;
+  sendInvoice?: boolean;
 }
 
 export async function POST(
@@ -95,6 +97,7 @@ export async function POST(
     // ─── Activate: GCal + emails + status flip ──────────────
     const isSeries = !!booking.series?.seriesId;
     const sendClientEmail = body.sendClientEmail !== false;
+    const sendInvoice = body.sendInvoice !== false;
 
     if (isSeries) {
       // Resolve the anchor for this series. The anchor is either the
@@ -117,7 +120,7 @@ export async function POST(
         anchorId = booking.bookingId;
       }
 
-      const result = await activateSeriesFromAnchor(anchorId, { sendClientEmail });
+      const result = await activateSeriesFromAnchor(anchorId, { sendClientEmail, sendInvoice });
       return NextResponse.json({
         ok: true,
         kind: 'series',
@@ -134,7 +137,7 @@ export async function POST(
     }
 
     // Single-booking path
-    const result = await activateBooking(booking.bookingId, { sendClientEmail });
+    const result = await activateBooking(booking.bookingId, { sendClientEmail, sendInvoice });
     if (!result) {
       return NextResponse.json(
         { error: 'Activation failed — booking may have been modified concurrently' },

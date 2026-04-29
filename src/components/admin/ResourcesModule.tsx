@@ -23,8 +23,9 @@ import { useEffect, useState, useMemo } from 'react';
 import {
   BookOpen, Sparkles, TrendingUp, Download, Lock, DollarSign,
   Users, Loader2, AlertTriangle, RefreshCw, Mail, Copy, Check,
-  Shield, Star, ChevronDown, ChevronRight, Unlock, Search,
+  Shield, Star, ChevronDown, ChevronRight, Unlock, Search, Gift,
 } from 'lucide-react';
+import GrantAccessModal from './GrantAccessModal';
 
 interface ToolkitStatRow {
   slug: string;
@@ -142,6 +143,7 @@ export default function ResourcesModule({ password }: Props) {
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [grantOpen, setGrantOpen] = useState(false);
 
   const loadStats = async () => {
     setLoading(true);
@@ -213,6 +215,27 @@ export default function ResourcesModule({ password }: Props) {
 
   return (
     <div className="space-y-4">
+      {/* Action bar — admin grants live here */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-base font-bold text-[#2D2A33]" style={{ fontFamily: 'Georgia, serif' }}>
+            Resources
+          </h2>
+          <p className="text-[11px] text-[#8E8E9F] mt-0.5">
+            Toolkits, programs, and direct unlocks for known clients.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setGrantOpen(true)}
+          data-cta="open-grant-access"
+          className="shrink-0 inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-[#7A3B5E] text-white text-[12px] sm:text-[13px] font-semibold hover:bg-[#6A2E4E] active:scale-[0.97] transition-all shadow-sm"
+        >
+          <Gift className="w-3.5 h-3.5" />
+          Grant Access
+        </button>
+      </div>
+
       {/* Summary tiles */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatTile
@@ -322,6 +345,13 @@ export default function ResourcesModule({ password }: Props) {
           )}
         </div>
       </div>
+
+      <GrantAccessModal
+        open={grantOpen}
+        password={password}
+        onClose={() => setGrantOpen(false)}
+        onGranted={loadStats}
+      />
     </div>
   );
 }

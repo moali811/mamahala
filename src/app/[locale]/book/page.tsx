@@ -317,7 +317,19 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
 
   return (
     <div className="space-y-6">
-      <div className="text-center space-y-3">
+      <div className="relative text-center space-y-3">
+        {/* Top-end escape hatch — visible before scroll for clients who already
+            know what they need. Mirrors to top-left in RTL via logical `end-0`. */}
+        <button
+          type="button"
+          onClick={() => wizard.goToStep('service')}
+          data-cta="intake-skip-top"
+          className="absolute top-0 end-0 inline-flex items-center gap-1 text-xs font-medium text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
+        >
+          {isRTL
+            ? <><ArrowLeft className="w-3.5 h-3.5" /> تخطي إلى الخدمات</>
+            : <>Skip to services <ArrowRight className="w-3.5 h-3.5" /></>}
+        </button>
         <div className="w-14 h-14 rounded-2xl bg-[#7A3B5E]/10 flex items-center justify-center mx-auto">
           <Sparkles className="w-7 h-7 text-[#7A3B5E]" />
         </div>
@@ -355,43 +367,57 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
         </div>
       </div>
 
-      {/* First time toggle */}
-      <div className="bg-white rounded-xl p-4 border border-[#F0ECE8] flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-[#4A4A5C]">
-            {isRTL ? 'هل هذه أول جلسة لك معنا؟' : 'First time booking with us?'}
-          </p>
-          <p className="text-xs text-[#8E8E9F] mt-0.5">
-            {isRTL ? 'ابدأ باستشارة مجانية' : 'Start with a free consultation'}
-          </p>
+      {/* Two-path card: balanced first-timer vs. returning entry points */}
+      <div className="bg-white rounded-xl p-4 border border-[#F0ECE8]">
+        {/* Row 1 — First time? */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-[#4A4A5C]">
+              {isRTL ? 'هل هذه أول جلسة لك معنا؟' : 'First time booking with us?'}
+            </p>
+            <p className="text-xs text-[#8E8E9F] mt-0.5">
+              {isRTL ? 'ابدأ باستشارة مجانية' : 'Start with a free consultation'}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              wizard.updateForm({
+                serviceSlug: 'initial-consultation',
+                serviceName: 'Free Consultation',
+                serviceNameAr: 'استشارة مجانية',
+                serviceCategory: 'adults',
+                pricingTierKey: 'discoveryCall30min',
+                durationMinutes: 30,
+                isNewClient: true,
+              });
+              wizard.goToStep('datetime');
+            }}
+            className="shrink-0 px-4 py-2 rounded-lg bg-[#F5F0EB] text-[#7A3B5E] text-sm font-semibold hover:bg-[#EDE6DF] transition-colors"
+          >
+            {isRTL ? 'نعم، احجز استشارة' : 'Yes, Book Consultation'}
+          </button>
         </div>
-        <button
-          onClick={() => {
-            wizard.updateForm({
-              serviceSlug: 'initial-consultation',
-              serviceName: 'Free Consultation',
-              serviceNameAr: 'استشارة مجانية',
-              serviceCategory: 'adults',
-              pricingTierKey: 'discoveryCall30min',
-              durationMinutes: 30,
-              isNewClient: true,
-            });
-            wizard.goToStep('datetime');
-          }}
-          className="px-4 py-2 rounded-lg bg-[#F5F0EB] text-[#7A3B5E] text-sm font-semibold hover:bg-[#EDE6DF] transition-colors"
-        >
-          {isRTL ? 'نعم، احجز استشارة' : 'Yes, Book Consultation'}
-        </button>
-      </div>
 
-      {/* Skip to service selector */}
-      <div className="text-center">
-        <button
-          onClick={() => wizard.goToStep('service')}
-          className="text-sm text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors underline underline-offset-4"
-        >
-          {isRTL ? 'أعرف ما أحتاج — تخطي للاختيار' : 'I know what I need — skip to services'}
-        </button>
+        <div className="h-px bg-[#F0ECE8] my-3" />
+
+        {/* Row 2 — Returning / knows what they need */}
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-[#4A4A5C]">
+              {isRTL ? 'هل تعرف ما تحتاج؟' : 'Already know what you need?'}
+            </p>
+            <p className="text-xs text-[#8E8E9F] mt-0.5">
+              {isRTL ? 'تصفّح خدماتنا مباشرة' : 'Jump straight to our services'}
+            </p>
+          </div>
+          <button
+            onClick={() => wizard.goToStep('service')}
+            data-cta="intake-skip-card"
+            className="shrink-0 px-4 py-2 rounded-lg border border-[#7A3B5E]/30 text-[#7A3B5E] text-sm font-semibold hover:bg-[#7A3B5E] hover:text-white hover:border-[#7A3B5E] transition-colors"
+          >
+            {isRTL ? 'تصفّح الخدمات' : 'Browse services'}
+          </button>
+        </div>
       </div>
     </div>
   );

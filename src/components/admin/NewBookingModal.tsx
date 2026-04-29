@@ -47,6 +47,7 @@ import type { InvoiceDraft } from '@/lib/invoicing/types';
 import type { Booking, RecurrenceFrequency } from '@/lib/booking/types';
 import InvoiceReviewSheet from './InvoiceReviewSheet';
 import AIComposeBar, { type ComposedFilled } from './AIComposeBar';
+import EmailPresetCard, { type EmailPreset } from './EmailPresetCard';
 
 interface Props {
   open: boolean;
@@ -201,6 +202,15 @@ function formatSlotDateInTz(iso: string, timezone: string): string {
   }
 }
 
+function confirmLabelForPreset(preset: EmailPreset): string {
+  switch (preset) {
+    case 'both': return 'Confirm & Send';
+    case 'approval': return 'Confirm & Send Approval';
+    case 'invoice': return 'Confirm & Send Invoice';
+    case 'silent': return 'Confirm Silently';
+  }
+}
+
 function isSlotMorning(iso: string, timezone: string): boolean {
   try {
     const formatted = new Date(iso).toLocaleString('en-US', {
@@ -232,7 +242,12 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
   const [clientTimezone, setClientTimezone] = useState('America/Toronto');
   const [clientCountry, setClientCountry] = useState('CA');
   const [clientLanguage, setClientLanguage] = useState<'en' | 'ar'>('en');
-  const [sendClientEmail, setSendClientEmail] = useState(false);
+  // Step-2 send preset. Smart-defaulted when entering Step 2; user override allowed.
+  // Free sessions never enter Step 2 (auto-activate with approval-only) — preset
+  // applies to paid bookings only.
+  const [emailPreset, setEmailPreset] = useState<EmailPreset>('both');
+  const sendClientEmail = emailPreset === 'both' || emailPreset === 'approval';
+  const sendInvoice = emailPreset === 'both' || emailPreset === 'invoice';
 
   // ─── Calendar state ────────────────────────────────────────
   const [currentMonth, setCurrentMonth] = useState(() => ymdToday().slice(0, 7));
@@ -298,7 +313,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     setClientPhone('');
     setClientTimezone('America/Toronto');
     setClientCountry('CA');
-    setSendClientEmail(false);
+    setEmailPreset('both');
     setCurrentMonth(ymdToday().slice(0, 7));
     setSelectedDate('');
     setSelectedSlot(null);
@@ -314,6 +329,20 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     setStep2(null);
     setAiComposeSummary(null);
   }, [open]);
+
+  // ─── Effect: smart-default emailPreset when entering Step 2 ─
+  // Computed from booking context. Mo can override at any time.
+  // Only paid bookings reach Step 2; free sessions auto-activate
+  // earlier with a hardcoded approval-only flow.
+  useEffect(() => {
+    if (!step2) return;
+    setEmailPreset('both');
+    // 'both' is the right default for: paid recurring (bundled or
+    // per-session) and paid single-session (new or returning client).
+    // The hint line in EmailPresetCard surfaces the why.
+    // (No branch needed today — kept as effect so adding nuance
+    // later doesn't require touching state-init.)
+  }, [step2]);
 
   // ─── Effect: auto-clear errors ─────────────────────────────
   useEffect(() => {
@@ -506,12 +535,13 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to create booking');
 
-      // Free sessions skip Step 2 and activate immediately
+      // Free sessions skip Step 2 and activate immediately. Free always sends
+      // a confirmation (no draft → invoice flag is a no-op server-side).
       if (data.isFreeSession || !data.primaryDraftId) {
         const actRes = await fetch(`/api/admin/booking/${data.primaryBookingId}/confirm-and-send`, {
           method: 'POST',
           headers,
-          body: JSON.stringify({ sendClientEmail }),
+          body: JSON.stringify({ sendClientEmail: true, sendInvoice: false }),
         });
         const actData = await actRes.json();
         if (!actRes.ok) throw new Error(actData.error || 'Failed to activate booking');
@@ -626,14 +656,15 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
         isNewClient: !filled.clientWasExisting,
       });
 
-      // If free session with no draft, activate immediately (matches manual flow)
+      // If free session with no draft, activate immediately (matches manual flow).
+      // Free always sends confirmation; no invoice draft to send.
       if (!draftId) {
         setSubmitting(true);
         try {
           const actRes = await fetch(`/api/admin/booking/${bookingId}/confirm-and-send`, {
             method: 'POST',
             headers,
-            body: JSON.stringify({ sendClientEmail: false }),
+            body: JSON.stringify({ sendClientEmail: true, sendInvoice: false }),
           });
           const actData = await actRes.json();
           if (!actRes.ok) throw new Error(actData.error || 'Failed to activate booking');
@@ -691,10 +722,17 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
       const res = await fetch(`/api/admin/booking/${step2.booking.bookingId}/confirm-and-send`, {
         method: 'POST',
         headers,
-        body: JSON.stringify({ sendClientEmail }),
+        body: JSON.stringify({ sendClientEmail, sendInvoice }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to confirm booking');
+      // Surface partial-failure: approval succeeded but invoice send blew up.
+      // Keep modal open so admin can retry from Invoices tab.
+      if (data.invoiceEmailError) {
+        setError(`Approval sent, but invoice failed: ${data.invoiceEmailError}. Retry from the Invoices tab.`);
+        onCreated();
+        return;
+      }
       onCreated();
       onClose();
     } catch (err: any) {
@@ -702,7 +740,7 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
     } finally {
       setSubmitting(false);
     }
-  }, [step2, headers, sendClientEmail, onCreated, onClose]);
+  }, [step2, headers, sendClientEmail, sendInvoice, onCreated, onClose]);
 
   // ─── Handler: Step 2 Skip & Send Later ─────────────────────
   const handleSkipForLater = useCallback(async () => {
@@ -890,29 +928,42 @@ export default function NewBookingModal({ open, password, onClose, onCreated }: 
                     seriesSkips={seriesSkips}
                     setSeriesSkips={setSeriesSkips}
                     onCheckSeries={handleCheckSeries}
-                    sendClientEmail={sendClientEmail}
-                    setSendClientEmail={setSendClientEmail}
                     activeSection={activeSection}
                     setActiveSection={setActiveSection}
                     password={password}
                   />
                 ) : (
                   step2 && (
-                    <InvoiceReviewSheet
-                      open
-                      mode="inline"
-                      booking={step2.booking}
-                      draft={step2.draft}
-                      password={password}
-                      onClose={handleClose}
-                      onSent={() => {}}
-                      onConfirm={handleConfirmSend}
-                      onConfirmLabel="Confirm & Send"
-                      onSecondaryAction={{
-                        label: 'Skip & Send Later',
-                        handler: handleSkipForLater,
-                      }}
-                    />
+                    <div className="space-y-3">
+                      <EmailPresetCard
+                        preset={emailPreset}
+                        onChange={setEmailPreset}
+                        isFreeSession={isFreeSession}
+                        isRecurring={isRecurring}
+                        invoiceMode={recurringInvoiceMode}
+                        recurringCount={recurringCount}
+                        isNewClient={aiComposeSummary?.isNewClient ?? null}
+                        clientFirstName={step2.booking.clientName}
+                        draft={step2.draft}
+                        locale={clientLanguage}
+                        password={password}
+                      />
+                      <InvoiceReviewSheet
+                        open
+                        mode="inline"
+                        booking={step2.booking}
+                        draft={step2.draft}
+                        password={password}
+                        onClose={handleClose}
+                        onSent={() => {}}
+                        onConfirm={handleConfirmSend}
+                        onConfirmLabel={confirmLabelForPreset(emailPreset)}
+                        onSecondaryAction={{
+                          label: 'Skip & Send Later',
+                          handler: handleSkipForLater,
+                        }}
+                      />
+                    </div>
                   )
                 )}
 
@@ -1105,8 +1156,6 @@ interface Step1Props {
   seriesSkips: Set<number>;
   setSeriesSkips: (v: Set<number>) => void;
   onCheckSeries: () => void;
-  sendClientEmail: boolean;
-  setSendClientEmail: (v: boolean) => void;
   activeSection: SectionKey;
   setActiveSection: (v: SectionKey) => void;
   /** Admin password, forwarded to the customer-list fetch. */
@@ -1528,17 +1577,7 @@ function Step1Content(props: Step1Props) {
               className="w-full px-4 py-3 rounded-xl border border-[#E8E4DE] text-base text-[#2D2A33] placeholder:text-[#C4C0BC] focus:outline-none focus:ring-2 focus:ring-[#7A3B5E]/20 focus:border-[#7A3B5E]/30 resize-none transition-colors"
             />
           </div>
-          <label className="flex items-center gap-3 cursor-pointer py-1">
-            <input
-              type="checkbox"
-              checked={props.sendClientEmail}
-              onChange={e => props.setSendClientEmail(e.target.checked)}
-              className="w-5 h-5 accent-[#7A3B5E] rounded"
-            />
-            <span className="text-sm text-[#4A4A5C]">
-              Send confirmation email to client
-            </span>
-          </label>
+          {/* Email-send decision moved to Step 2 (EmailPresetCard) */}
         </div>
       </WizardSection>
     </>
