@@ -374,7 +374,7 @@ export default function BookingsModule({ password }: Props) {
       </div>
 
       {/* Availability editor */}
-      {topTab === 'availability' && <AvailabilityEditor password={password} />}
+      {topTab === 'availability' && <AvailabilityEditor password={password} bookings={bookings} />}
 
       {/* Live calendar view — month grid with bookings + GCal overlay */}
       {topTab === 'calendar' && (

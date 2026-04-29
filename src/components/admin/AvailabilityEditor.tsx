@@ -27,14 +27,21 @@ import {
   Globe, CalendarX, Settings as SettingsIcon, ChevronDown,
   Plane, MapPin,
 } from 'lucide-react';
-import type { AvailabilityRules, DaySchedule, BlockedDate } from '@/lib/booking/types';
+import type { AvailabilityRules, DaySchedule, BlockedDate, Booking } from '@/lib/booking/types';
 import type {
   TravelScheduleEntry,
   ProviderTravelSchedule,
 } from '@/lib/booking/provider-location';
+import BlockedDatesCalendar from './BlockedDatesCalendar';
 
 interface Props {
   password: string;
+  /**
+   * Bookings to overlay on the Blocked Dates calendar so Dr. Hala can see
+   * conflicts before blocking. Optional — falls back to an empty list when
+   * not threaded through (e.g. legacy callers).
+   */
+  bookings?: Booking[];
 }
 
 const DAY_LABELS: Record<number, { short: string; full: string }> = {
@@ -57,7 +64,7 @@ const COMMON_TIMEZONES = [
   'Europe/London',
 ];
 
-export default function AvailabilityEditor({ password }: Props) {
+export default function AvailabilityEditor({ password, bookings = [] }: Props) {
   const [rules, setRules] = useState<AvailabilityRules | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -710,8 +717,23 @@ export default function AvailabilityEditor({ password }: Props) {
       {/* ─── Blocked Dates ────────────────────────────── */}
       {section === 'blocked' && (
         <div className="space-y-4">
+          {/* Live calendar — sessions, travel, and existing blocks at a glance.
+              Click any day to select it for the form below. */}
+          <BlockedDatesCalendar
+            password={password}
+            bookings={bookings}
+            blockedDates={blockedDates}
+            travelSchedule={travelSchedule}
+            selectedDate={newBlockDate}
+            onSelectDate={setNewBlockDate}
+          />
+
           <div className="bg-white rounded-xl border border-[#F0ECE8] p-4 space-y-3">
-            <p className="text-xs font-semibold text-[#4A4A5C]">Block a date or time slot</p>
+            <p className="text-xs font-semibold text-[#4A4A5C]">
+              {newBlockDate
+                ? <>Blocking <span className="font-mono text-[#7A3B5E]">{newBlockDate}</span></>
+                : 'Pick a date on the calendar above (or use the field below)'}
+            </p>
 
             {/* Type toggle */}
             <div className="flex gap-1 p-1 bg-[#FAF7F2] rounded-lg w-fit">
