@@ -103,3 +103,11 @@ export function limitPayLookup(ip: string) {
   const hour = Math.floor(Date.now() / 3_600_000);
   return check(`rl:pay-lookup:${ip}:${hour}`, 60, 3600);
 }
+
+/** Academy grant-token verify: 60 per hour per IP. HMAC sigs are 192
+ *  bits so brute-force is infeasible; the limit just blocks bots from
+ *  hammering the endpoint. Recipients only hit this once per device. */
+export function limitGrantVerify(ip: string) {
+  const hour = Math.floor(Date.now() / 3_600_000);
+  return check(`rl:grant-verify:${ip}:${hour}`, 60, 3600);
+}

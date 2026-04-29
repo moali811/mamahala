@@ -22,28 +22,62 @@ function UnlockSuccessInner() {
 
   useEffect(() => {
     const ref = searchParams.get('ref');
+    const grant = searchParams.get('grant');
     if (!ref) {
       setStatus('error');
       return;
     }
 
-    // Logic: The Webhook is already processing the KV update.
+    // Webhook is already processing the KV update for paid flows.
     // We just parse the slug to know where to send the user back to.
+    let slug: string;
     try {
-      const [slug] = ref.split(':');
+      slug = ref.split(':')[0];
       if (!slug) throw new Error("Invalid Ref");
-
-      setStatus('success');
-      
-      // Give them 3 seconds to feel good about the purchase
-      const timer = setTimeout(() => {
-        router.replace(`/${locale}/programs/${slug}`);
-      }, 3000);
-
-      return () => clearTimeout(timer);
     } catch {
       setStatus('error');
+      return;
     }
+
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    // Bridge for admin grants: when a signed grant token is present,
+    // verify it server-side and write academy_email to localStorage so
+    // the program page's identity-based unlock check (/api/academy/access)
+    // succeeds with one click on the recipient's fresh device.
+    // Stripe-paid flows omit `grant` and behave as before.
+    const run = async () => {
+      if (grant) {
+        try {
+          const res = await fetch(
+            `/api/academy/verify-grant?token=${encodeURIComponent(grant)}`,
+            { cache: 'no-store' },
+          );
+          if (res.ok) {
+            const data = (await res.json()) as { email?: string };
+            if (data.email) {
+              try { localStorage.setItem('academy_email', data.email); } catch { /* ignore quota */ }
+            }
+          }
+        } catch {
+          // If verification fails or network is offline, fall through —
+          // the program page will still render, just with a paywall the
+          // recipient can clear via the email-claim form.
+        }
+      }
+      if (cancelled) return;
+      setStatus('success');
+      timer = setTimeout(() => {
+        router.replace(`/${locale}/programs/${slug}`);
+      }, 3000);
+    };
+    run();
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
   }, [searchParams, router, locale]);
 
   return (

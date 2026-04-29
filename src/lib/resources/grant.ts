@@ -19,7 +19,8 @@ import { resilientTeensProgram } from '@/data/programs/resilient-teens';
 import { strongerTogetherProgram } from '@/data/programs/stronger-together';
 import { innerCompassProgram } from '@/data/programs/inner-compass';
 import { getToolkit, toolkitCatalog } from '@/data/toolkits';
-import { buildAccessGrantedEmail, sendAcademyEmail } from '@/lib/academy/emails';
+import { sendAcademyEmail, type BuiltEmail } from '@/lib/academy/emails';
+import { signGrantToken } from '@/lib/academy/grant-token';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 
 export type GrantReason = 'gift' | 'comp' | 'package-perk' | 'beta' | 'make-good' | 'other';
@@ -290,12 +291,12 @@ export async function grantAcademyAccess(
 
   if (input.sendEmail) {
     try {
-      const nextModuleSlug = program.levels[0]?.modules[0]?.slug ?? null;
-      const built = buildAccessGrantedEmail({
-        email,
+      const built = buildAcademyGrantEmail({
         program,
+        recipientEmail: email,
+        recipientName: input.recipientName,
         unlockedLevels: validLevels,
-        nextModuleSlug,
+        reason: input.reason,
       });
       const sent = await sendAcademyEmail(built, email, { force: true });
       result.emailSent = sent.sent;
@@ -306,6 +307,58 @@ export async function grantAcademyAccess(
   }
 
   return result;
+}
+
+/**
+ * Build the academy grant email — uses the unlock-success bridge with a
+ * signed grant token so the recipient's localStorage gets primed on
+ * click. Distinct from the Stripe-paid `buildAccessGrantedEmail` (which
+ * stays unchanged for the existing checkout flow).
+ */
+function buildAcademyGrantEmail({
+  program,
+  recipientEmail,
+  recipientName,
+  unlockedLevels,
+  reason,
+}: {
+  program: AcademyProgram;
+  recipientEmail: string;
+  recipientName?: string;
+  unlockedLevels: number[];
+  reason: GrantReason;
+}): BuiltEmail {
+  const firstName = (recipientName?.trim().split(/\s+/)[0]) || 'friend';
+  const programTitle = program.titleEn;
+  const opener = REASON_OPENERS[reason];
+  const levels = unlockedLevels.join(', ') || 'all paid levels';
+  const { token } = signGrantToken(recipientEmail);
+  const ref = `${program.slug}:level-${unlockedLevels[0] ?? 1}:${recipientEmail}`;
+  const startUrl =
+    `https://mamahala.ca/en/programs/unlock-success`
+    + `?ref=${encodeURIComponent(ref)}`
+    + `&grant=${encodeURIComponent(token)}`;
+
+  const html = emailWrapper(`
+    <div style="${emailStyles.card}">
+      <h1 style="${emailStyles.heading}">${opener}, ${firstName}</h1>
+      <p style="${emailStyles.text}">Full access to <strong>${programTitle}</strong> is yours — Levels ${levels} unlocked, lifetime access.</p>
+      <p style="${emailStyles.text}">The program is designed to work with your life, not against it. Start wherever you want; one module at a time is plenty.</p>
+      <div style="text-align:center;margin:22px 0 8px;">
+        <a href="${startUrl}" style="${emailStyles.button}">Open Your Program</a>
+      </div>
+      <p style="${emailStyles.muted};margin-top:16px;">— The Mama Hala Team</p>
+    </div>
+  `);
+
+  return {
+    subject: `${programTitle} is yours`,
+    html,
+    tag: 'access-granted',
+    // Distinct idempotency key so manual re-grants don't collide with
+    // the Stripe-flow access-granted send (which uses 'access-granted:{slug}').
+    idempotencyKey: `access-granted-grant:${program.slug}`,
+  };
 }
 
 export async function revokeAcademyAccess(
