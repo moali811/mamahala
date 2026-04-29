@@ -379,12 +379,18 @@ async function sendToolkitGrantEmail(
   try {
     const { Resend } = await import('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
+    // Route through /resources/toolkits/unlock-success so localStorage
+    // toolkit:paid:{slug} gets written on the recipient's device — that's
+    // the actual gate the toolkit page checks. The Stripe success_url
+    // takes the same path; without it, the link drops the recipient on
+    // a paywall even though the KV record is set.
+    const unlockUrl = `https://mamahala.ca/en/resources/toolkits/unlock-success?slug=${encodeURIComponent(input.toolkitSlug)}`;
     const html = emailWrapper(`
       <div style="${emailStyles.card}">
         <h1 style="${emailStyles.heading}">${opener}, ${firstName}</h1>
         <p style="${emailStyles.text}">We've unlocked <strong>${input.toolkitTitle}</strong> for you — every section, every exercise, yours to keep.</p>
         <div style="text-align:center;margin:24px 0 8px;">
-          <a href="https://mamahala.ca/en/resources/toolkits/${input.toolkitSlug}" style="${emailStyles.button}">Open Your Toolkit</a>
+          <a href="${unlockUrl}" style="${emailStyles.button}">Open Your Toolkit</a>
         </div>
         <p style="${emailStyles.muted};margin-top:16px;">— The Mama Hala Team</p>
       </div>
