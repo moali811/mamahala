@@ -85,6 +85,7 @@ export function getDefaultSettings(): InvoiceSettings {
 
     /* ── Recurring + Dry Run ── */
     recurringAutoSendDefault: false,
+    paymentRemindersEnabled: false,
     dryRun: false, // Live mode — invoices send real emails
     updatedAt: new Date().toISOString(),
   };
@@ -204,6 +205,17 @@ export async function listInvoiceRecords(
   } catch {
     return [];
   }
+}
+
+/**
+ * List invoices that are still chase-able by the payment-reminders cron.
+ * Filters to status `sent` or `overdue` — paid/void/draft are skipped.
+ * Scans the full recent index (RECENT_CAP) so older overdue invoices
+ * aren't missed; pre-filtering happens server-side after mget.
+ */
+export async function listOpenInvoiceRecords(): Promise<StoredInvoice[]> {
+  const all = await listInvoiceRecords(RECENT_CAP);
+  return all.filter((inv) => inv.status === 'sent' || inv.status === 'overdue');
 }
 
 export async function updateInvoiceStatus(

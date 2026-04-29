@@ -20,6 +20,29 @@ export type TaxMode = 'manual-hst' | 'none';
 
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'void';
 
+export type ReminderKind =
+  | 'pre-due'
+  | 'overdue+1'
+  | 'overdue+7'
+  | 'overdue+14'
+  | 'overdue+30';
+
+export type ReminderTone = 'gentle' | 'warm' | 'firm';
+
+export type ReminderTrigger = 'cron' | 'manual';
+
+export interface ReminderHistoryEntry {
+  kind: ReminderKind;
+  sentAt: string;
+  /** Days from due date — negative = before due, positive = past due. */
+  daysOffset: number;
+  tone: ReminderTone;
+  trigger: ReminderTrigger;
+  messageId?: string;
+  /** Snapshot of the subject line used — handy for admin transparency. */
+  subject?: string;
+}
+
 export type PaymentMethodRecord =
   | 'e-transfer'
   | 'wire'
@@ -259,6 +282,15 @@ export interface StoredInvoice {
   /** Email delivery tracking. */
   emailMessageId?: string;
   emailSentAt?: string;
+  /**
+   * Payment-reminder send history. Each entry represents one reminder email
+   * (pre-due nudge or overdue chase) dispatched by the payment-reminders
+   * cron OR by the admin manual-reminder flow. The cron uses this list as
+   * the primary idempotency guard — any window already represented is skipped.
+   */
+  reminderHistory?: ReminderHistoryEntry[];
+  /** Most recent reminder timestamp (any kind) — fast-path filter for the cron. */
+  lastReminderSentAt?: string;
   /** True if created in Dry Run mode (skips email send). */
   dryRun: boolean;
   /** Dynamic Stripe Checkout URL with the exact invoice amount. */
@@ -367,6 +399,14 @@ export interface InvoiceSettings {
   /* ── Recurring defaults ── */
   /** When new recurring schedules default to auto-send (vs draft-only). */
   recurringAutoSendDefault: boolean;
+
+  /* ── Payment reminders ── */
+  /**
+   * Master toggle for the /api/cron/payment-reminders cron. When false,
+   * the cron returns immediately without scanning. Defaults to false so
+   * Mo can ship-then-flip after smoke-testing in production.
+   */
+  paymentRemindersEnabled: boolean;
 
   /* ── Dry Run mode ── */
   /** When ON, create invoice + generate PDF + store KV, but skip the email send. */

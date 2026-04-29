@@ -168,6 +168,7 @@ function placeholderSettings(): InvoiceSettings {
     },
     /* Recurring + Dry Run */
     recurringAutoSendDefault: false,
+    paymentRemindersEnabled: false,
     dryRun: true,
     updatedAt: new Date().toISOString(),
   };
@@ -3385,12 +3386,10 @@ function ReminderModal({
   const send = async () => {
     setSending(true);
     try {
-      // For now, we use the existing resend endpoint with no body customization.
-      // A future iteration could add a body-override field to the resend route.
-      // The reminder is delivered via a fresh invoice email send.
-      const res = await fetch(`/api/admin/invoices/resend/${invoice.invoiceId}`, {
+      const res = await fetch(`/api/admin/invoices/send-reminder/${invoice.invoiceId}`, {
         method: 'POST',
         headers: bearerHeaders,
+        body: JSON.stringify({ subject, body }),
       });
       if (!res.ok) {
         const data = await res.json();
@@ -3696,6 +3695,21 @@ function SettingsDrawer({
               <div className="text-sm font-semibold text-amber-900">Dry Run mode</div>
               <div className="text-[11px] text-amber-800">
                 When ON, invoices are saved to KV and PDFs are generated, but no emails are sent. Use this to practice safely before going live.
+              </div>
+            </div>
+          </label>
+
+          <label className="flex items-start gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+            <input
+              type="checkbox"
+              checked={local.paymentRemindersEnabled ?? false}
+              onChange={(e) => setLocal({ ...local, paymentRemindersEnabled: e.target.checked })}
+              className="mt-0.5 w-4 h-4 accent-emerald-600"
+            />
+            <div>
+              <div className="text-sm font-semibold text-emerald-900">Auto payment reminders</div>
+              <div className="text-[11px] text-emerald-800">
+                Daily cron sends a soft pre-due nudge (3 days before due) and overdue chases at +1, +7, +14, +30 days. Each window fires only once. Disabled while Dry Run is on.
               </div>
             </div>
           </label>

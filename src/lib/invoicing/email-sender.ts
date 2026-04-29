@@ -282,6 +282,87 @@ export async function sendInvoiceEmail(
 }
 
 /**
+ * Send a payment-reminder email (pre-due nudge or overdue chase) with the
+ * original invoice PDF re-attached. Subject is prefixed with "[Reminder]"
+ * so the client + admin can filter. Body is a thin branded wrapper around
+ * the AI-generated plain-text reminder copy.
+ */
+export async function sendPaymentReminderEmail(
+  invoice: StoredInvoice,
+  pdfBuffer: Buffer,
+  settings: InvoiceSettings,
+  reminder: { subject: string; bodyText: string },
+): Promise<{ messageId: string }> {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('RESEND_API_KEY is not configured');
+  }
+
+  const client = invoice.draft.client;
+  if (isSyntheticEmail(client.email)) {
+    throw new Error(
+      'This client has no email on file. Add a real email address to their customer profile before sending.',
+    );
+  }
+
+  const { Resend } = await import('resend');
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const businessName = settings.businessName || 'Mama Hala Consulting Group';
+  const fromAddress = process.env.RESEND_FROM_EMAIL || `${businessName} <onboarding@resend.dev>`;
+  const bccList = [...new Set([...ADMIN_BCC, settings.issuerBlock.email])];
+  const locale: EmailLocale = invoice.draft.preferredLanguage === 'ar' ? 'ar' : 'en';
+
+  const subjectWithPrefix = reminder.subject.toLowerCase().startsWith('[reminder]')
+    ? reminder.subject
+    : `[Reminder] ${reminder.subject}`;
+
+  // Plain-text body → branded HTML. Preserve paragraph breaks (\n\n) and
+  // inline newlines (single \n inside a paragraph become <br>).
+  const paragraphsHtml = reminder.bodyText
+    .split(/\n{2,}/)
+    .map(
+      (para) =>
+        `<p style="margin:0 0 14px;color:#2D2A33;font-size:15px;line-height:1.7;">${escapeHtml(para.trim()).replace(/\n/g, '<br>')}</p>`,
+    )
+    .join('');
+
+  const innerContent = `
+      <div style="padding:4px 0 16px;">
+        ${paragraphsHtml}
+      </div>
+      <div style="margin-top:18px;padding:12px 14px;background:#F3EFE8;border-radius:8px;">
+        <p style="margin:0;color:#4A4A5C;font-size:13px;line-height:1.6;">
+          ${locale === 'ar'
+            ? `يمكنك الاطلاع على نسخة كاملة من الفاتورة <strong>${escapeHtml(invoice.invoiceNumber)}</strong> المرفقة بهذه الرسالة.`
+            : `A copy of invoice <strong>${escapeHtml(invoice.invoiceNumber)}</strong> is attached for your reference.`}
+        </p>
+      </div>`;
+
+  const html = emailWrapper(innerContent, { locale });
+
+  const { data, error } = await resend.emails.send({
+    from: fromAddress,
+    to: client.email,
+    bcc: bccList,
+    replyTo: settings.issuerBlock.email,
+    subject: subjectWithPrefix,
+    html,
+    attachments: [
+      {
+        filename: `${invoice.invoiceNumber}.pdf`,
+        content: pdfBuffer.toString('base64'),
+      },
+    ],
+  });
+
+  if (error) {
+    const errDetail = (error as any).message || (error as any).name || JSON.stringify(error);
+    throw new Error(`Resend error: ${errDetail}`);
+  }
+
+  return { messageId: data?.id ?? '' };
+}
+
+/**
  * Send a receipt email — celebratory copy + receipt PDF attachment.
  * Auto-fired by the mark-paid route.
  */
