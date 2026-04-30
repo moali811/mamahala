@@ -27,12 +27,16 @@ export function QuickActions({ onSwitchModule }: { onSwitchModule: ModuleSwitche
   function handleClick(target: PillAction['target']) {
     switch (target) {
       case 'bookings-pending':
+        onSwitchModule('bookings', { bookingsFilter: 'pending_approval' });
+        return;
       case 'bookings':
-      case 'bookings-new':
         onSwitchModule('bookings');
         return;
+      case 'bookings-new':
+        onSwitchModule('bookings', { bookingsOpenNew: true });
+        return;
       case 'invoices-unpaid':
-        onSwitchModule('invoices');
+        onSwitchModule('invoices', { invoicesTab: 'history', invoicesFilter: 'unpaid' });
         return;
       case 'gift-external':
         // Open the public gift page in a new tab

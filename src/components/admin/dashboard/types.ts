@@ -53,5 +53,30 @@ export type DashboardModule =
   | 'dashboard'
   | 'analytics';
 
-/** Callback wired by the parent admin page to switch the active tab. */
-export type ModuleSwitcher = (target: DashboardModule) => void;
+/** Optional intent attached to a tab switch — e.g. "land on Bookings with
+ *  the pending filter applied" or "go to Invoices History → unpaid". The
+ *  parent page reads these and forwards them as initial* props to the
+ *  destination module so the click delivers on what the CTA promised. */
+export interface ModuleIntent {
+  /** BookingsModule: pre-apply this filter on mount. */
+  bookingsFilter?:
+    | 'all'
+    | 'pending_approval'
+    | 'pending-review'
+    | 'approved'
+    | 'confirmed'
+    | 'completed'
+    | 'cancelled'
+    | 'declined'
+    | 'series';
+  /** BookingsModule: open NewBookingModal on mount. */
+  bookingsOpenNew?: boolean;
+  /** InvoicesModule: mount on this tab. */
+  invoicesTab?: 'dashboard' | 'compose' | 'scheduled' | 'history' | 'customers' | 'recurring' | 'reports';
+  /** InvoicesModule: pre-apply this status filter on mount (only meaningful with invoicesTab='history'). */
+  invoicesFilter?: 'all' | 'draft' | 'sent' | 'paid' | 'overdue' | 'void' | 'unpaid';
+}
+
+/** Callback wired by the parent admin page to switch the active tab,
+ *  optionally with intent that the destination module honours on mount. */
+export type ModuleSwitcher = (target: DashboardModule, intent?: ModuleIntent) => void;

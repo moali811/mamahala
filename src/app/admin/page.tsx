@@ -269,8 +269,19 @@ export default function AdminCommandCenter() {
     return () => clearInterval(interval);
   }, [authenticated, fetchData]);
 
+  // Optional intent attached to the next module render — Dashboard CTAs
+  // pass these so e.g. "Triage pending" lands on Bookings filtered to
+  // pending instead of the default inbox view. Cleared on every switch.
+  const [moduleIntent, setModuleIntent] = useState<{
+    bookingsFilter?: 'all' | 'pending_approval' | 'pending-review' | 'approved' | 'confirmed' | 'completed' | 'cancelled' | 'declined' | 'series';
+    bookingsOpenNew?: boolean;
+    invoicesTab?: 'dashboard' | 'compose' | 'scheduled' | 'history' | 'customers' | 'recurring' | 'reports';
+    invoicesFilter?: 'all' | 'draft' | 'sent' | 'paid' | 'overdue' | 'void' | 'unpaid';
+  }>({});
+
   // Close sidebar on module change (mobile)
-  const handleModuleChange = (mod: Module) => {
+  const handleModuleChange = (mod: Module, intent?: typeof moduleIntent) => {
+    setModuleIntent(intent ?? {});
     setActiveModule(mod);
     setSidebarOpen(false);
   };
@@ -581,8 +592,22 @@ export default function AdminCommandCenter() {
           {activeModule === 'testimonials' && <TestimonialsModule password={password} />}
           {activeModule === 'faqs' && <FAQsModule password={password} />}
           {activeModule === 'resources' && <ResourcesModule password={password} />}
-          {activeModule === 'bookings' && <BookingsModule password={password} />}
-          {activeModule === 'invoices' && <InvoicesModule password={password} />}
+          {activeModule === 'bookings' && (
+            <BookingsModule
+              key={`bookings:${moduleIntent.bookingsFilter ?? ''}:${moduleIntent.bookingsOpenNew ? 'new' : ''}`}
+              password={password}
+              initialFilter={moduleIntent.bookingsFilter}
+              openNewOnMount={moduleIntent.bookingsOpenNew}
+            />
+          )}
+          {activeModule === 'invoices' && (
+            <InvoicesModule
+              key={`invoices:${moduleIntent.invoicesTab ?? ''}:${moduleIntent.invoicesFilter ?? ''}`}
+              password={password}
+              initialTab={moduleIntent.invoicesTab}
+              initialFilter={moduleIntent.invoicesFilter}
+            />
+          )}
           {activeModule === 'quiz-results' && <QuizResultsModule quizResults={quizResults} />}
           {activeModule === 'settings' && <SettingsModule password={password} />}
         </main>

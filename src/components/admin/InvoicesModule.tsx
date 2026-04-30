@@ -64,6 +64,12 @@ import {
 
 interface Props {
   password: string;
+  /** When set, the module mounts on this tab (used by Dashboard CTAs that
+   *  jump straight to History → unpaid, etc.). */
+  initialTab?: Tab;
+  /** When set together with a History-pointing initialTab, pre-applies
+   *  this status filter on mount. */
+  initialFilter?: StatusFilter;
 }
 
 type Tab = 'dashboard' | 'compose' | 'scheduled' | 'history' | 'customers' | 'recurring' | 'reports';
@@ -174,8 +180,8 @@ function placeholderSettings(): InvoiceSettings {
   };
 }
 
-export default function InvoicesModule({ password }: Props) {
-  const [tab, setTab] = useState<Tab>('dashboard');
+export default function InvoicesModule({ password, initialTab, initialFilter }: Props) {
+  const [tab, setTab] = useState<Tab>(initialTab ?? 'dashboard');
   const [settings, setSettings] = useState<InvoiceSettings>(placeholderSettings());
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [invoices, setInvoices] = useState<StoredInvoice[]>([]);
@@ -389,6 +395,7 @@ export default function InvoicesModule({ password }: Props) {
           onRefresh={() => refreshHistory({ silent: true })}
           onBanner={setBanner}
           onOpenClientProfile={setProfileEmail}
+          initialFilter={initialFilter}
         />
       )}
       {tab === 'customers' && (
@@ -2244,6 +2251,7 @@ function HistoryTab({
   onRefresh,
   onBanner,
   onOpenClientProfile,
+  initialFilter,
 }: {
   invoices: StoredInvoice[];
   loading: boolean;
@@ -2251,9 +2259,10 @@ function HistoryTab({
   onRefresh: () => void;
   onBanner: (b: { kind: 'success' | 'error' | 'info'; text: string }) => void;
   onOpenClientProfile?: (email: string) => void;
+  initialFilter?: StatusFilter;
 }) {
   const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(initialFilter ?? 'all');
   type InvSort = 'date' | 'amount' | 'status' | 'client';
   const [sortBy, setSortBy] = useState<InvSort>('date');
   const [reminderFor, setReminderFor] = useState<StoredInvoice | null>(null);

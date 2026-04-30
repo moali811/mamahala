@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, Inbox, Receipt, Sparkles, X } from 'lucide-react';
-import type { DashboardBooking, DashboardInvoice, ModuleSwitcher } from './types';
+import type { DashboardBooking, DashboardInvoice, ModuleIntent, ModuleSwitcher } from './types';
 
 interface ActionItem {
   id: string;
@@ -10,6 +10,7 @@ interface ActionItem {
   icon: React.ReactNode;
   title: string;
   target: 'bookings' | 'invoices';
+  intent?: ModuleIntent;
   cta: string;
 }
 
@@ -78,6 +79,7 @@ export function ActionInbox({
         icon: <AlertCircle size={16} />,
         title: `${pending.length} pending ${pending.length === 1 ? 'booking needs' : 'bookings need'} review`,
         target: 'bookings',
+        intent: { bookingsFilter: 'pending_approval' },
         cta: 'Triage',
       });
     }
@@ -96,6 +98,7 @@ export function ActionInbox({
         icon: <Receipt size={16} />,
         title: `${overdue.length} overdue ${overdue.length === 1 ? 'invoice' : 'invoices'}`,
         target: 'invoices',
+        intent: { invoicesTab: 'history', invoicesFilter: 'overdue' },
         cta: 'Send reminder',
       });
     }
@@ -113,6 +116,7 @@ export function ActionInbox({
           icon: <Sparkles size={16} />,
           title: `${nextSession.clientName} in ${minutes < 1 ? '<1' : minutes} min — ${nextSession.serviceName ?? nextSession.serviceSlug}`,
           target: 'bookings',
+          intent: { bookingsFilter: nextSession.status === 'confirmed' ? 'confirmed' : 'approved' },
           cta: 'Open',
         });
       }
@@ -135,6 +139,7 @@ export function ActionInbox({
         icon: <Receipt size={16} />,
         title: `${aging.length} ${aging.length === 1 ? 'invoice has' : 'invoices have'} been sent over a week`,
         target: 'invoices',
+        intent: { invoicesTab: 'history', invoicesFilter: 'unpaid' },
         cta: 'Review',
       });
     }
@@ -148,6 +153,7 @@ export function ActionInbox({
         icon: <Inbox size={16} />,
         title: `${intakes.length} intake ${intakes.length === 1 ? 'note' : 'notes'} ready to read before sessions`,
         target: 'bookings',
+        intent: { bookingsFilter: 'approved' },
         cta: 'Open',
       });
     }
@@ -192,7 +198,7 @@ export function ActionInbox({
                 {it.icon}
               </span>
               <button
-                onClick={() => onSwitchModule(it.target)}
+                onClick={() => onSwitchModule(it.target, it.intent)}
                 className="min-w-0 flex-1 text-left"
               >
                 <p className="truncate text-sm" style={{ color: 'var(--color-charcoal)' }}>{it.title}</p>

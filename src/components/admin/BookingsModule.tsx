@@ -21,6 +21,13 @@ import { toISO2 } from '@/config/countries';
 
 interface Props {
   password: string;
+  /** When set, the module mounts with this filter pre-applied (used by
+   *  Dashboard QuickActions / ActionInbox so "Triage pending" actually
+   *  lands on a filtered view, not the full inbox). */
+  initialFilter?: FilterStatus;
+  /** When true, opens the New Booking modal on mount (used by the
+   *  Dashboard "Add booking" pill). */
+  openNewOnMount?: boolean;
 }
 
 type FilterStatus = 'all' | 'pending_approval' | 'pending-review' | 'approved' | 'confirmed' | 'completed' | 'cancelled' | 'declined' | 'series';
@@ -39,7 +46,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; label: string; b
 
 type TopTab = 'bookings' | 'calendar' | 'recurring' | 'availability';
 
-export default function BookingsModule({ password }: Props) {
+export default function BookingsModule({ password, initialFilter, openNewOnMount }: Props) {
   const [topTab, setTopTab] = useState<TopTab>('bookings');
 
   // Listen for an external request to switch sub-tab — fired by the
@@ -58,7 +65,7 @@ export default function BookingsModule({ password }: Props) {
   }, []);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<FilterStatus>('pending_approval');
+  const [filter, setFilter] = useState<FilterStatus>(initialFilter ?? 'pending_approval');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -69,8 +76,9 @@ export default function BookingsModule({ password }: Props) {
   // Invoice review sheet state
   const [invoiceSheet, setInvoiceSheet] = useState<{ booking: Booking; draft: InvoiceDraft } | null>(null);
 
-  // "New Booking" modal — admin manually books a client
-  const [newBookingOpen, setNewBookingOpen] = useState(false);
+  // "New Booking" modal — admin manually books a client. Opens on mount
+  // when the parent passes openNewOnMount (e.g. Dashboard "Add booking").
+  const [newBookingOpen, setNewBookingOpen] = useState(!!openNewOnMount);
 
   // Reschedule modal — admin moves a booking to a new slot, with fee + override.
   const [rescheduleTarget, setRescheduleTarget] = useState<Booking | null>(null);
