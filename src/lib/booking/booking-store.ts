@@ -356,6 +356,11 @@ export async function getCachedBusySlots(date: string): Promise<CachedBusySlot[]
   return kv.get<CachedBusySlot[]>(KEY.busyCache(date));
 }
 
+export async function invalidateBusyCache(date: string): Promise<void> {
+  if (!KV_AVAILABLE) return;
+  await kv.del(KEY.busyCache(date));
+}
+
 export async function setCachedBusySlots(
   date: string,
   slots: CachedBusySlot[],

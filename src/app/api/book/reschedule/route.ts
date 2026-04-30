@@ -22,6 +22,7 @@ import {
   createManageToken,
   generateBookingId,
   getAvailabilityRules,
+  invalidateBusyCache,
 } from '@/lib/booking/booking-store';
 import { isSlotAvailable } from '@/lib/booking/availability';
 import { fetchBusySlots, updateCalendarEvent } from '@/lib/booking/google-calendar';
@@ -140,12 +141,23 @@ export async function POST(request: NextRequest) {
       rescheduledTo: newBookingId,
     });
 
-    // Update Google Calendar event
+    // Update Google Calendar event (preserves Meet link & attendees) + invalidate
+    // freeBusy cache for both old and new dates so the slot frees up immediately
+    // instead of waiting on the 10-min cache TTL.
     updateCalendarEvent(
       oldBooking.bookingId,
       newStartTime,
       newEndTime,
     ).catch(err => console.error('[Reschedule] GCal update failed:', err));
+
+    const oldDate = oldBooking.startTime.slice(0, 10);
+    const newDate = newStartTime.slice(0, 10);
+    await Promise.all([
+      invalidateBusyCache(oldDate).catch(err => console.error('[Reschedule] Old-date cache invalidate failed:', err)),
+      ...(newDate !== oldDate
+        ? [invalidateBusyCache(newDate).catch(err => console.error('[Reschedule] New-date cache invalidate failed:', err))]
+        : []),
+    ]);
 
     // ─── Audit ──────────────────────────────────────────────
     await appendAudit({

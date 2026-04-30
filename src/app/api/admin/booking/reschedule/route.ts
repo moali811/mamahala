@@ -22,6 +22,7 @@ import {
   createManageToken,
   generateBookingId,
   getAvailabilityRules,
+  invalidateBusyCache,
 } from '@/lib/booking/booking-store';
 import { isSlotAvailable } from '@/lib/booking/availability';
 import { fetchBusySlots, updateCalendarEvent } from '@/lib/booking/google-calendar';
@@ -137,6 +138,15 @@ export async function POST(request: NextRequest) {
       body.newStartTime,
       body.newEndTime,
     ).catch(err => console.error('[Admin Reschedule] GCal update failed:', err));
+
+    const oldDate = oldBooking.startTime.slice(0, 10);
+    const newDate = body.newStartTime.slice(0, 10);
+    await Promise.all([
+      invalidateBusyCache(oldDate).catch(err => console.error('[Admin Reschedule] Old-date cache invalidate failed:', err)),
+      ...(newDate !== oldDate
+        ? [invalidateBusyCache(newDate).catch(err => console.error('[Admin Reschedule] New-date cache invalidate failed:', err))]
+        : []),
+    ]);
 
     const newManageToken = await createManageToken(newBookingId);
 

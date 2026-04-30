@@ -112,6 +112,7 @@ export default function GiftPage() {
           serviceSlug: selectedService || null,
           occasion: occasionLabel?.en || '',
           occasionAr: occasionLabel?.ar || '',
+          occasionKey: occasion,
           message: personalMessage || '',
           locale,
           _hp: hpField?.value || '',

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getServiceBySlug, getCategoryInfo } from '@/data/services';
-import { generateGiftEmail } from '@/lib/email/gift-template';
+import { generateGiftEmail, pickGiftSubject } from '@/lib/email/gift-template';
 import { emailWrapper, emailStyles } from '@/lib/email/shared-email-components';
 import { limitGift, getClientIp } from '@/lib/rate-limit';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
@@ -21,6 +21,7 @@ interface GiftRequest {
   serviceSlug?: string;
   occasion: string;
   occasionAr: string;
+  occasionKey?: string;
   message?: string;
   locale: 'en' | 'ar';
 }
@@ -35,7 +36,7 @@ export async function POST(request: Request) {
 
     const body = await request.json() as GiftRequest & Record<string, unknown>;
 
-    const { gifterName, gifterEmail, recipientName, recipientEmail, category, serviceSlug, occasion, occasionAr, message, locale } = body;
+    const { gifterName, gifterEmail, recipientName, recipientEmail, category, serviceSlug, occasion, occasionAr, occasionKey, message, locale } = body;
 
     // Validate required fields
     if (!gifterName || !gifterEmail || !recipientName || !recipientEmail || !category || !occasion) {
@@ -86,15 +87,19 @@ export async function POST(request: Request) {
       serviceDuration,
       occasion,
       occasionAr,
+      occasionKey,
       personalMessage: cleanMessage,
       schedulingUrl,
       locale,
     });
 
-    const isAr = locale === 'ar';
-    const subject = isAr
-      ? `${gifterName} أهداكَ هديّةَ رعايةٍ من ماما هالة`
-      : `${gifterName} sent you a gift of care from Mama Hala`;
+    const subject = headerSafe(pickGiftSubject({
+      occasionKey,
+      recipientEmail,
+      recipientName,
+      gifterName,
+      locale,
+    }));
 
     // Try to send via Resend, fall back to logging
     let emailSent = false;

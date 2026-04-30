@@ -326,7 +326,10 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
             know what they need. Mirrors to top-left in RTL via logical `end-0`. */}
         <button
           type="button"
-          onClick={() => wizard.goToStep('service')}
+          onClick={() => {
+            try { sessionStorage.setItem('mh:skip_consult', '1'); } catch {}
+            wizard.goToStep('service');
+          }}
           data-cta="intake-skip-top"
           className="absolute top-0 end-0 inline-flex items-center gap-1 text-xs font-medium text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
         >
@@ -415,7 +418,10 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
             </p>
           </div>
           <button
-            onClick={() => wizard.goToStep('service')}
+            onClick={() => {
+              try { sessionStorage.setItem('mh:skip_consult', '1'); } catch {}
+              wizard.goToStep('service');
+            }}
             data-cta="intake-skip-card"
             className="shrink-0 px-4 py-2 rounded-lg border border-[#7A3B5E]/30 text-[#7A3B5E] text-sm font-semibold hover:bg-[#7A3B5E] hover:text-white hover:border-[#7A3B5E] transition-colors"
           >
@@ -431,11 +437,20 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
 
 function ServiceStep({ wizard, locale, isRTL }: StepProps) {
   const [activeCategory, setActiveCategory] = useState<ServiceCategory>('youth');
+  // When the user explicitly skipped intake via "Browse services", treat the
+  // free consultation as opt-in (small link below the grid) rather than the
+  // headline tile. They've already declined; respect that without removing
+  // the option entirely.
+  const [skippedConsult, setSkippedConsult] = useState(false);
+  useEffect(() => {
+    try { setSkippedConsult(sessionStorage.getItem('mh:skip_consult') === '1'); } catch {}
+  }, []);
   const { recommendations } = wizard.formData;
 
   const selectService = (service: Service) => {
     const tier = service.pricingTierKey;
     const duration = PRICING_TIERS[tier]?.durationMinutes ?? 50;
+    try { sessionStorage.removeItem('mh:skip_consult'); } catch {}
     wizard.updateForm({
       serviceSlug: service.slug,
       serviceName: service.name,
@@ -499,8 +514,10 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
         </div>
       )}
 
-      {/* Free Discovery Call — standalone above categories */}
-      {(() => {
+      {/* Free Discovery Call — prominent tile above categories, UNLESS the
+          user explicitly skipped intake to browse services. In that case it's
+          rendered as a subtle link below the grid (see end of ServiceStep). */}
+      {!skippedConsult && (() => {
         const freeConsult = getFreeConsultation();
         if (!freeConsult) return null;
         return (
@@ -568,6 +585,27 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
           );
         })}
       </div>
+
+      {/* Demoted free-consultation link — only shown when the user explicitly
+          skipped intake. Keeps the option discoverable without re-pitching it
+          as the headline. */}
+      {skippedConsult && (() => {
+        const freeConsult = getFreeConsultation();
+        if (!freeConsult) return null;
+        return (
+          <div className="text-center pt-2">
+            <button
+              onClick={() => selectService(freeConsult)}
+              className="text-xs text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors underline decoration-dotted underline-offset-4"
+            >
+              {isRTL
+                ? 'هل تفضّل مكالمة تعارف مجانية مدّتها 30 دقيقة؟ ابدأ من هنا'
+                : 'Prefer a free 30-min intro call instead? Start here'}
+              <ChevronRight className={`inline w-3 h-3 ms-1 ${isRTL ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -1230,6 +1268,10 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
   const [consentRememberMe, setConsentRememberMe] = useState(
     wizard.formData.consentRememberMe || isAuthed,
   );
+  // WhatsApp opt-in: unchecked by default per PIPEDA + WhatsApp Business
+  // policy. Even authenticated returning clients see it unchecked unless
+  // they previously opted in (consent persists on the customer record).
+  const [consentWhatsapp, setConsentWhatsapp] = useState(wizard.formData.consentWhatsapp);
   // Debounced recognition probe — runs once email looks valid.
   useEffect(() => {
     if (isAuthed) return; // already known, no need to probe
@@ -1343,6 +1385,7 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
       sessionMode: mode,
       notes: notes.trim(),
       consentRememberMe,
+      consentWhatsapp,
     });
     wizard.goNext();
   };
@@ -1712,6 +1755,30 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
               <Link href={`/${locale}/privacy-policy#returning-clients`} className="text-[#7A3B5E] hover:underline">
                 How we protect your data
               </Link>
+            </>
+          )}
+        </span>
+      </label>
+
+      {/* ─── WhatsApp opt-in (unchecked by default per PIPEDA + WhatsApp policy) ─── */}
+      <label className="flex items-start gap-2.5 px-1 py-1 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={consentWhatsapp}
+          onChange={e => setConsentWhatsapp(e.target.checked)}
+          className="mt-0.5 w-4 h-4 rounded border-[#C0B8B0] text-[#7A3B5E] focus:ring-2 focus:ring-[#7A3B5E]/20"
+        />
+        <span className="text-xs text-[#8E8E9F] leading-relaxed">
+          {isRTL ? (
+            <>
+              أرسل التأكيدات والتذكيرات عبر واتساب أيضاً إلى هذا الرقم. سنرسل
+              فقط رسائل متعلقة بجلستك. أرسل STOP في أي وقت لإلغاء الاشتراك.
+            </>
+          ) : (
+            <>
+              Also send confirmations and reminders via WhatsApp to this number.
+              We&apos;ll only message you about your session and rebooking. Reply
+              STOP anytime to opt out.
             </>
           )}
         </span>
