@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 
 // Module imports
-import DashboardModule from '@/components/admin/DashboardModule';
+import DashboardHome from '@/components/admin/dashboard/DashboardHome';
 import EventsModule from '@/components/admin/EventsModule';
 import LeadsModule from '@/components/admin/LeadsModule';
 import ClientsModule from '@/components/admin/ClientsModule';
@@ -130,11 +130,11 @@ export default function AdminCommandCenter() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [quizResults, setQuizResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  // Default to 'bookings' so the app always opens to the Pending booking
-  // requests view — that's what Mo wants to see first whenever the PWA
-  // launches (most actionable surface). The deep-link block below honours
-  // ?tab= overrides for explicit links.
-  const [activeModule, setActiveModule] = useState<Module>('bookings');
+  // Default to 'dashboard' — the new operational home (greeting, today's
+  // spine, action inbox, pulse, quick actions, activity, wisdom) is the
+  // first thing Dr. Hala sees on load. The deep-link block below still
+  // honours ?tab= for explicit links from emails.
+  const [activeModule, setActiveModule] = useState<Module>('dashboard');
   const [error, setError] = useState('');
 
   // Deep-link: ?tab=bookings (from admin email links)
@@ -568,7 +568,7 @@ export default function AdminCommandCenter() {
 
         {/* Module Content */}
         <main className="p-4 sm:p-6">
-          {activeModule === 'dashboard' && <DashboardModule stats={stats} leads={leads} />}
+          {activeModule === 'dashboard' && <DashboardHome password={password} onSwitchModule={handleModuleChange} />}
           {activeModule === 'events' && <EventsModule password={password} />}
           {activeModule === 'clients' && <ClientsModule password={password} />}
           {activeModule === 'leads' && <LeadsModule leads={leads} password={password} searchQuery={searchQuery} onSearchChange={setSearchQuery} />}
