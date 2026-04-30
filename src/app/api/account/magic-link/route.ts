@@ -54,6 +54,25 @@ export async function POST(request: NextRequest) {
         console.error('[Magic Link] Email failed');
         void err;
       }
+
+      // ─── WhatsApp parity for magic links (opt-in only) ───────
+      // Auth-category template; sends only when the customer has
+      // opted in AND has not opted out via STOP. Skipped silently
+      // otherwise — email remains the canonical delivery channel.
+      try {
+        const { sendWhatsapp } = await import('@/lib/whatsapp/send');
+        const firstName = (customer.name || '').split(' ')[0] || 'there';
+        const waResult = await sendWhatsapp({
+          email: normalizedEmail,
+          template: 'magic_link',
+          vars: { first_name: firstName, login_url: magicUrl },
+        });
+        if (!waResult.sent) {
+          console.log('[Magic Link WA] skipped:', waResult.reason);
+        }
+      } catch (waErr) {
+        console.error('[Magic Link WA] threw (ignored):', waErr);
+      }
     }
 
     return NextResponse.json({

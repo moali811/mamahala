@@ -202,6 +202,49 @@ export async function POST(req: NextRequest) {
               html,
               icsContent,
             });
+
+            // ─── WhatsApp parity (opt-in only) ──────────────────────────
+            // Fires after the email so a WhatsApp failure can never block
+            // the booking lock-in. sendWhatsapp returns a result, never
+            // throws — log the result for visibility but never bubble.
+            try {
+              const { sendWhatsapp } = await import('@/lib/whatsapp/send');
+              const tz = updatedBooking.clientTimezone || 'America/Toronto';
+              const start = new Date(updatedBooking.startTime);
+              const sessionDate = start.toLocaleString('en-US', {
+                timeZone: tz,
+                weekday: 'long',
+                month: 'long',
+                day: 'numeric',
+              });
+              const sessionTimeLocal = start.toLocaleString('en-US', {
+                timeZone: tz,
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true,
+              });
+              const { SITE_URL } = await import('@/lib/site-url');
+              const localePath = updatedBooking.preferredLanguage === 'ar' ? 'ar' : 'en';
+              const manageUrl = `${SITE_URL}/${localePath}/book/manage?token=${manageToken}`;
+              const firstName = (updatedBooking.clientName || '').split(' ')[0] || 'there';
+              const waResult = await sendWhatsapp({
+                email: updatedBooking.clientEmail,
+                template: 'booking_confirmation',
+                locale: updatedBooking.preferredLanguage === 'ar' ? 'ar' : 'en',
+                vars: {
+                  first_name: firstName,
+                  session_date: sessionDate,
+                  session_time_local: sessionTimeLocal,
+                  meet_link: updatedBooking.meetLink || manageUrl,
+                  manage_url: manageUrl,
+                },
+              });
+              if (!waResult.sent) {
+                console.log('[mark-paid] WhatsApp confirmation skipped:', waResult.reason);
+              }
+            } catch (waErr) {
+              console.error('[mark-paid] WhatsApp confirmation threw (ignored):', waErr);
+            }
           }
           bookingLockedIn = true;
         }

@@ -91,6 +91,29 @@ export async function GET(request: NextRequest) {
             await updateBooking(booking.bookingId, { reminder1hSentAt: new Date().toISOString() });
             sent1h++;
           }
+
+          // ─── WhatsApp parity for 1h reminder (opt-in only) ───
+          // Wrapped + awaited but failure-tolerant; the email is the
+          // source of truth and a WhatsApp issue must not block the
+          // cron from advancing to the next booking.
+          try {
+            const { sendWhatsapp } = await import('@/lib/whatsapp/send');
+            const firstName = (booking.clientName || '').split(' ')[0] || 'there';
+            const waResult = await sendWhatsapp({
+              email: booking.clientEmail,
+              template: 'session_reminder_1h',
+              locale: booking.preferredLanguage === 'ar' ? 'ar' : 'en',
+              vars: {
+                first_name: firstName,
+                meet_link: booking.meetLink || '',
+              },
+            });
+            if (!waResult.sent) {
+              console.log(`[Reminder 1h WA] skipped for ${booking.bookingId}: ${waResult.reason}`);
+            }
+          } catch (waErr) {
+            console.error(`[Reminder 1h WA] threw for ${booking.bookingId}:`, waErr);
+          }
         } catch (err) {
           console.error(`[Reminder 1h] Failed for ${booking.bookingId}:`, err);
         }

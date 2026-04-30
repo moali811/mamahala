@@ -512,6 +512,33 @@ export interface Customer {
    * have one.
    */
   creditCents?: number;
+  /**
+   * WhatsApp opt-in record. Set when the client actively ticks the
+   * "Also send via WhatsApp" checkbox at booking. Absence means we
+   * use email-only and never send a WhatsApp message to this customer.
+   * Pre-checked-default is intentionally not used — PIPEDA + WhatsApp
+   * Business policy require explicit opt-in.
+   */
+  consentWhatsapp?: {
+    acceptedAt: string;
+    ipHash: string;
+    /** Privacy policy version at time of consent (semver-like). */
+    policyVersion?: string;
+  };
+  /**
+   * Hard opt-out flag set by the inbound STOP webhook. Overrides
+   * `consentWhatsapp` — once true, no template ever fires for this
+   * customer until they re-opt-in via a new booking.
+   */
+  whatsappOptOut?: boolean;
+  /** ISO timestamp when STOP was processed. Auditable + debuggable. */
+  whatsappOptOutAt?: string;
+  /**
+   * Last time we sent a rebook nudge to this customer. Used by the
+   * cadence cron's 14-day cooldown so a stalled cron run doesn't
+   * fire two nudges in quick succession.
+   */
+  lastRebookNudgeAt?: string;
 }
 
 /* ════════════════════════════════════════════════════════════

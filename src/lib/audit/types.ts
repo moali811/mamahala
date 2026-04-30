@@ -22,7 +22,9 @@ export type AuditAction =
   | 'customer.consent-given'
   | 'customer.consent-revoked'
   | 'customer.forgot-me'
-  | 'customer.exported';
+  | 'customer.exported'
+  | 'customer.whatsapp-opt-in'
+  | 'customer.whatsapp-opt-out';
 
 export interface AuditEntry {
   /** ULID-style id (timestamp-prefixed). */

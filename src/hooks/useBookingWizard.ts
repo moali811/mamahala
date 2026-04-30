@@ -44,6 +44,13 @@ export interface BookingFormData {
   /** Whether they consented to "remember me" for next time. Defaults true once authenticated. */
   consentRememberMe: boolean;
   /**
+   * Explicit opt-in to WhatsApp transactional messages (booking confirmation,
+   * reminders, payment nudges, rebook nudges). PIPEDA + WhatsApp Business
+   * policy require active opt-in — this stays false unless the client
+   * actively ticks the unchecked box in step 4.
+   */
+  consentWhatsapp: boolean;
+  /**
    * Soft recognition: a non-PII `last_visit` cookie was set on a prior
    * booking confirmation, so we know the device has visited before even
    * if the user isn't currently authenticated. Used to render
@@ -89,6 +96,7 @@ function buildInitialFormData(locale: 'en' | 'ar' = 'en'): BookingFormData {
     isNewClient: true,
     isAuthenticatedReturning: false,
     consentRememberMe: false,
+    consentWhatsapp: false,
     isSoftRecognized: false,
     recognizedFirstName: null,
     recognizedLastServiceSlug: null,
@@ -241,6 +249,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
           notes: formData.notes || undefined,
           aiIntakeNotes: formData.intakeText || undefined,
           consentRememberMe: formData.consentRememberMe,
+          consentWhatsapp: formData.consentWhatsapp,
           _hp: '',
           _t: mountTime.current,
         }),

@@ -48,6 +48,8 @@ interface ConfirmRequest {
   aiIntakeNotes?: string;
   /** PIPEDA-opt-in flag — when true, persist customer recognition prefs. */
   consentRememberMe?: boolean;
+  /** WhatsApp Business opt-in — when true, store consent on the customer record. */
+  consentWhatsapp?: boolean;
 }
 
 export async function POST(request: NextRequest) {
@@ -227,6 +229,8 @@ export async function POST(request: NextRequest) {
       const consent = body.consentRememberMe === true;
       const updates: Record<string, unknown> = {
         email: booking.clientEmail,
+        name: booking.clientName,
+        phone: booking.clientPhone,
         lastBookedServiceSlug: booking.serviceSlug,
         preferredSessionMode: booking.sessionMode,
       };
@@ -246,6 +250,30 @@ export async function POST(request: NextRequest) {
           action: 'customer.consent-given',
           entityId: booking.clientEmail,
           details: { feature: 'remember-me' },
+        });
+      }
+
+      // ─── WhatsApp opt-in (separate consent, separate audit trail) ───
+      // Independent of remember-me: the client may opt into WhatsApp
+      // without opting into device-level memory, or vice versa. We
+      // upsert the customer first so recordWhatsappOptIn has something
+      // to merge into.
+      const wa = body.consentWhatsapp === true;
+      if (wa) {
+        const { recordWhatsappOptIn } = await import('@/lib/whatsapp/consent');
+        await recordWhatsappOptIn({
+          email: booking.clientEmail,
+          phone: booking.clientPhone,
+          ipHash: hashIp(ip),
+          policyVersion: '2026-04',
+        });
+        await appendAudit({
+          actor: 'client',
+          actorId: booking.clientEmail,
+          ip,
+          action: 'customer.whatsapp-opt-in',
+          entityId: booking.clientEmail,
+          details: { source: 'booking-form', bookingId: booking.bookingId },
         });
       }
     } catch (consentErr) {

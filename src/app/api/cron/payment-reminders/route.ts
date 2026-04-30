@@ -164,6 +164,57 @@ async function processInvoice(
         { subject: reminder.subject, bodyText: reminder.body },
       );
       messageId = result.messageId;
+
+      // ─── WhatsApp parity (opt-in only) ────────────────────────
+      // Pre-due → payment_reminder_pre_due. Overdue (any window) →
+      // payment_reminder_overdue. Always non-blocking; the email is
+      // the system of record for dunning.
+      try {
+        const { sendWhatsapp } = await import('@/lib/whatsapp/send');
+        const { buildPaymentConciergeUrl } = await import(
+          '@/lib/invoicing/stripe-checkout'
+        );
+        const firstName = (invoice.draft.client.name || '').split(' ')[0] || 'there';
+        const payUrl = invoice.stripeCheckoutUrl || buildPaymentConciergeUrl(invoice);
+        const amount = invoice.breakdown.formattedTotal || '';
+        if (window.kind === 'pre-due') {
+          const dueDate = new Date(invoice.dueDate).toLocaleString('en-US', {
+            month: 'long',
+            day: 'numeric',
+          });
+          const waResult = await sendWhatsapp({
+            email: invoice.draft.client.email,
+            template: 'payment_reminder_pre_due',
+            locale,
+            vars: {
+              first_name: firstName,
+              amount,
+              due_date: dueDate,
+              pay_url: payUrl,
+            },
+          });
+          if (!waResult.sent) {
+            console.log(`[Payment Reminder WA pre-due] skipped for ${invoice.invoiceNumber}: ${waResult.reason}`);
+          }
+        } else {
+          const waResult = await sendWhatsapp({
+            email: invoice.draft.client.email,
+            template: 'payment_reminder_overdue',
+            locale,
+            vars: {
+              first_name: firstName,
+              amount,
+              days_overdue: String(Math.max(0, window.daysOffset)),
+              pay_url: payUrl,
+            },
+          });
+          if (!waResult.sent) {
+            console.log(`[Payment Reminder WA overdue] skipped for ${invoice.invoiceNumber}: ${waResult.reason}`);
+          }
+        }
+      } catch (waErr) {
+        console.error(`[Payment Reminder WA] threw for ${invoice.invoiceNumber}:`, waErr);
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'unknown';
       // Synthetic-email block is expected for Zoho-imported records with no email.

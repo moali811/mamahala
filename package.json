@@ -10,7 +10,8 @@
     "remotion:studio": "remotion studio",
     "remotion:render": "remotion render remotion/index.ts",
     "remotion:upgrade": "remotion upgrade",
-    "generate-pdfs": "node scripts/generate-pdfs.mjs"
+    "generate-pdfs": "node scripts/generate-pdfs.mjs",
+    "whatsapp:setup": "node scripts/whatsapp-setup.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.82.0",
