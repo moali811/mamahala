@@ -277,6 +277,7 @@ export default function AdminCommandCenter() {
     bookingsOpenNew?: boolean;
     invoicesTab?: 'dashboard' | 'compose' | 'scheduled' | 'history' | 'customers' | 'recurring' | 'reports';
     invoicesFilter?: 'all' | 'draft' | 'sent' | 'paid' | 'overdue' | 'void' | 'unpaid';
+    resourcesOpenGrant?: boolean;
   }>({});
 
   // Close sidebar on module change (mobile)
@@ -591,7 +592,13 @@ export default function AdminCommandCenter() {
           {activeModule === 'services' && <ServicesModule password={password} />}
           {activeModule === 'testimonials' && <TestimonialsModule password={password} />}
           {activeModule === 'faqs' && <FAQsModule password={password} />}
-          {activeModule === 'resources' && <ResourcesModule password={password} />}
+          {activeModule === 'resources' && (
+            <ResourcesModule
+              key={`resources:${moduleIntent.resourcesOpenGrant ? 'grant' : ''}`}
+              password={password}
+              openGrantOnMount={moduleIntent.resourcesOpenGrant}
+            />
+          )}
           {activeModule === 'bookings' && (
             <BookingsModule
               key={`bookings:${moduleIntent.bookingsFilter ?? ''}:${moduleIntent.bookingsOpenNew ? 'new' : ''}`}

@@ -1,21 +1,20 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Calendar, Receipt, Gift, BellRing, Plus } from 'lucide-react';
+import { Calendar, Receipt, KeyRound, BellRing, Plus } from 'lucide-react';
 import type { ModuleSwitcher } from './types';
 
 interface PillAction {
   label: string;
   icon: ReactNode;
-  /** Either switch to a tab, or open an external URL. */
-  target: 'bookings-pending' | 'bookings' | 'invoices-unpaid' | 'gift-external' | 'bookings-new';
+  target: 'bookings-pending' | 'bookings' | 'invoices-unpaid' | 'grant-access' | 'bookings-new';
 }
 
 const ACTIONS: PillAction[] = [
   { label: 'Triage pending', icon: <BellRing size={16} />, target: 'bookings-pending' },
   { label: 'All bookings', icon: <Calendar size={16} />, target: 'bookings' },
   { label: 'Unpaid invoices', icon: <Receipt size={16} />, target: 'invoices-unpaid' },
-  { label: 'Send a gift', icon: <Gift size={16} />, target: 'gift-external' },
+  { label: 'Grant access', icon: <KeyRound size={16} />, target: 'grant-access' },
   { label: 'Add booking', icon: <Plus size={16} />, target: 'bookings-new' },
 ];
 
@@ -38,9 +37,8 @@ export function QuickActions({ onSwitchModule }: { onSwitchModule: ModuleSwitche
       case 'invoices-unpaid':
         onSwitchModule('invoices', { invoicesTab: 'history', invoicesFilter: 'unpaid' });
         return;
-      case 'gift-external':
-        // Open the public gift page in a new tab
-        window.open('/en/gift', '_blank', 'noreferrer');
+      case 'grant-access':
+        onSwitchModule('resources', { resourcesOpenGrant: true });
         return;
     }
   }

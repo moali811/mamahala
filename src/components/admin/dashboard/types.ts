@@ -75,6 +75,8 @@ export interface ModuleIntent {
   invoicesTab?: 'dashboard' | 'compose' | 'scheduled' | 'history' | 'customers' | 'recurring' | 'reports';
   /** InvoicesModule: pre-apply this status filter on mount (only meaningful with invoicesTab='history'). */
   invoicesFilter?: 'all' | 'draft' | 'sent' | 'paid' | 'overdue' | 'void' | 'unpaid';
+  /** ResourcesModule: open the Grant Access modal on mount. */
+  resourcesOpenGrant?: boolean;
 }
 
 /** Callback wired by the parent admin page to switch the active tab,

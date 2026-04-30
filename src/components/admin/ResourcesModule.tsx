@@ -102,6 +102,10 @@ interface StatsResponse {
 
 interface Props {
   password: string;
+  /** When true, opens the Grant Access modal on mount (used by the
+   *  Dashboard "Grant Access" pill so the click lands directly on the
+   *  modal instead of just the Resources tab). */
+  openGrantOnMount?: boolean;
 }
 
 function fmtCAD(n: number): string {
@@ -139,11 +143,11 @@ function fmtDate(iso: string | null): string {
   return `${Math.floor(diffDays / 365)}y ago`;
 }
 
-export default function ResourcesModule({ password }: Props) {
+export default function ResourcesModule({ password, openGrantOnMount }: Props) {
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [grantOpen, setGrantOpen] = useState(false);
+  const [grantOpen, setGrantOpen] = useState(!!openGrantOnMount);
 
   const loadStats = async () => {
     setLoading(true);

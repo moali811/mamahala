@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 /** Time-aware hero. Greets by name + date with a subtle gradient that
  *  shifts through the day (dawn rose → midday linen → dusk plum). The
  *  "MH" monogram floats on the right at low opacity as a brand watermark. */
-export function GreetingHero({ name = 'Hala' }: { name?: string }) {
+export function GreetingHero({ name = 'Mama Hala' }: { name?: string }) {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 60_000);
@@ -86,7 +86,7 @@ export function GreetingHero({ name = 'Hala' }: { name?: string }) {
         {greeting}, {name}.
       </h1>
       <p className="mt-0.5 text-sm" style={{ color: subColor, fontFamily: "'Tajawal', sans-serif" }} dir="rtl">
-        {greetingAr}، د. هالة
+        {greetingAr}، ماما هلا
       </p>
     </section>
   );
