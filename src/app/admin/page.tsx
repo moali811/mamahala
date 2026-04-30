@@ -12,6 +12,7 @@ import {
 
 // Module imports
 import DashboardHome from '@/components/admin/dashboard/DashboardHome';
+import DashboardModule from '@/components/admin/DashboardModule';
 import EventsModule from '@/components/admin/EventsModule';
 import LeadsModule from '@/components/admin/LeadsModule';
 import ClientsModule from '@/components/admin/ClientsModule';
@@ -52,6 +53,7 @@ interface Lead {
 
 type Module =
   | 'dashboard'
+  | 'analytics'
   | 'events'
   | 'clients'
   | 'leads'
@@ -69,7 +71,8 @@ const NAV_ITEMS: { key: Module; label: string; icon: React.ReactNode; group: str
   // Primary — revenue actions
   { key: 'bookings', label: 'Bookings', icon: <Calendar className="w-4.5 h-4.5" />, group: 'primary' },
   { key: 'invoices', label: 'Invoices', icon: <Receipt className="w-4.5 h-4.5" />, group: 'primary' },
-  { key: 'dashboard', label: 'Dashboard', icon: <BarChart3 className="w-4.5 h-4.5" />, group: 'primary' },
+  { key: 'dashboard', label: 'Dashboard', icon: <LayoutGrid className="w-4.5 h-4.5" />, group: 'primary' },
+  { key: 'analytics', label: 'Analytics', icon: <BarChart3 className="w-4.5 h-4.5" />, group: 'primary' },
   { key: 'clients', label: 'Clients', icon: <Users className="w-4.5 h-4.5" />, group: 'primary' },
   // Manage
   { key: 'events', label: 'Events', icon: <Calendar className="w-4.5 h-4.5" />, group: 'Manage' },
@@ -569,6 +572,7 @@ export default function AdminCommandCenter() {
         {/* Module Content */}
         <main className="p-4 sm:p-6">
           {activeModule === 'dashboard' && <DashboardHome password={password} onSwitchModule={handleModuleChange} />}
+          {activeModule === 'analytics' && <DashboardModule stats={stats} leads={leads} />}
           {activeModule === 'events' && <EventsModule password={password} />}
           {activeModule === 'clients' && <ClientsModule password={password} />}
           {activeModule === 'leads' && <LeadsModule leads={leads} password={password} searchQuery={searchQuery} onSearchChange={setSearchQuery} />}

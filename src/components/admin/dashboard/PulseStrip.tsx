@@ -30,15 +30,29 @@ export function PulseStrip({
 
   const weekTotal = revenue7.reduce((s, n) => s + n, 0);
 
-  // Funnel: leads → intakes → confirmed → paid (last 30 days)
+  // Booking lifecycle for bookings created in the last 30 days. Each stage
+  // is a strict subset of the prior — Inquiry → Approved → Paid → Completed.
+  // The widget intentionally tracks bookings (the workflow that drives
+  // revenue), not anonymous page-view leads (those live in Analytics).
   const funnel = useMemo(() => {
     const monthAgo = Date.now() - 30 * 86_400_000;
-    const recent = bookings.filter((b) => new Date(b.startTime).getTime() > monthAgo);
+    const recent = bookings.filter((b) => {
+      const t = b.createdAt ? new Date(b.createdAt).getTime() : new Date(b.startTime).getTime();
+      return t > monthAgo;
+    });
+    const approved = recent.filter((b) =>
+      !!b.approvedAt
+      || b.status === 'approved'
+      || b.status === 'confirmed'
+      || b.status === 'completed',
+    );
+    const paid = approved.filter((b) => !!b.paidAt);
+    const completed = paid.filter((b) => b.status === 'completed');
     return [
-      { label: 'Leads', value: recent.length },
-      { label: 'Intake', value: recent.filter((b) => !!b.aiIntakeNotes).length },
-      { label: 'Confirmed', value: recent.filter((b) => b.status === 'confirmed' || b.status === 'approved').length },
-      { label: 'Paid', value: recent.filter((b) => !!b.paidAt).length },
+      { label: 'Inquiries', value: recent.length },
+      { label: 'Approved', value: approved.length },
+      { label: 'Paid', value: paid.length },
+      { label: 'Completed', value: completed.length },
     ];
   }, [bookings]);
 
@@ -73,7 +87,7 @@ export function PulseStrip({
 
         {/* Funnel */}
         <div className="rounded-2xl bg-white p-4" style={{ boxShadow: 'var(--shadow-subtle)' }}>
-          <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--color-mist)' }}>Funnel · 30 days</p>
+          <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--color-mist)' }}>Bookings · 30 days</p>
           <div className="mt-3"><Funnel stages={funnel} /></div>
         </div>
 

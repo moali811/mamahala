@@ -18,6 +18,8 @@ export interface DashboardBooking {
   aiIntakeNotes?: string;
   approvedAt?: string;
   paidAt?: string;
+  /** When the booking record was created — used as the funnel entry timestamp. */
+  createdAt?: string;
 }
 
 export interface DashboardInvoice {
@@ -48,7 +50,8 @@ export type DashboardModule =
   | 'resources'
   | 'quiz-results'
   | 'settings'
-  | 'dashboard';
+  | 'dashboard'
+  | 'analytics';
 
 /** Callback wired by the parent admin page to switch the active tab. */
 export type ModuleSwitcher = (target: DashboardModule) => void;

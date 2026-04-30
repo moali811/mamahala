@@ -48,6 +48,7 @@ export default function DashboardHome({ password, onSwitchModule }: Props) {
           aiIntakeNotes: b.aiIntakeNotes,
           approvedAt: b.approvedAt,
           paidAt: b.paidAt,
+          createdAt: b.createdAt,
         }));
         setBookings(projected);
       }
@@ -94,12 +95,17 @@ export default function DashboardHome({ password, onSwitchModule }: Props) {
       {/* Pulse strip — three charts, full width */}
       <PulseStrip bookings={bookings} invoices={invoices} />
 
-      {/* Two-column grid below: actions+inbox on left, activity+wisdom on right.
-          Mobile: one column. Desktop: 5/7 split (left wider since action inbox cards
-          are wide; right column houses denser content). */}
+      {/* QuickActions appears on mobile/tablet only — on lg+ the sidebar
+          already exposes Bookings / Invoices / etc., so the pill row would
+          just duplicate the nav. */}
+      <div className="lg:hidden">
+        <QuickActions onSwitchModule={onSwitchModule} />
+      </div>
+
+      {/* Two-column grid: ActionInbox on the wider left (it carries the
+          most-actionable items), ActivityFeed + WisdomCard on the right. */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4">
         <div className="lg:col-span-7 space-y-3 sm:space-y-4 min-w-0">
-          <QuickActions onSwitchModule={onSwitchModule} />
           <ActionInbox bookings={bookings} invoices={invoices} onSwitchModule={onSwitchModule} />
         </div>
         <div className="lg:col-span-5 space-y-3 sm:space-y-4 min-w-0">
