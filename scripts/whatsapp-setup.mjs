@@ -90,9 +90,12 @@ const TEMPLATES = [
     },
     sampleVars: ['Sara', 'CAD 250.00', '7', 'https://mamahala.ca/pay/demo'],
   },
+  // All four rebook nudges submit as MARKETING — Meta auto-classifies
+  // any "rebook"/"come back" framing as win-back regardless of tone.
+  // See src/lib/whatsapp/templates.ts for the cost/category notes.
   {
     name: 'rebook_nudge_warm',
-    category: 'UTILITY',
+    category: 'MARKETING',
     bodies: {
       en: 'Hi {{1}}, friendly reminder — when you are ready, you can rebook with Dr. Hala Ali | Mama Hala in one tap: {{2}}. Reply STOP to opt out.',
       ar: 'مرحباً {{1}}، تذكير ودّي — عندما تكونين مستعدة، يمكنك إعادة الحجز مع د. هلا علي | مما هلا بضغطة واحدة: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
@@ -101,7 +104,7 @@ const TEMPLATES = [
   },
   {
     name: 'rebook_nudge_cadence',
-    category: 'UTILITY',
+    category: 'MARKETING',
     bodies: {
       en: 'Hi {{1}}, in case it slipped your list — about {{2}} weeks since your last session. Rebook with Dr. Hala Ali | Mama Hala in one tap: {{3}}. Reply STOP to opt out.',
       ar: 'مرحباً {{1}}، في حال نسيتِ — مرّت حوالي {{2}} أسبوعاً منذ آخر جلسة. أعيدي الحجز مع د. هلا علي | مما هلا بضغطة واحدة: {{3}}. أرسلي STOP لإلغاء الاشتراك.',
@@ -110,7 +113,7 @@ const TEMPLATES = [
   },
   {
     name: 'rebook_nudge_long_gap',
-    category: 'UTILITY',
+    category: 'MARKETING',
     bodies: {
       en: 'Hi {{1}}, life gets busy. Whenever you would like to come back, rebook with Dr. Hala Ali | Mama Hala in one tap: {{2}}. Reply STOP to opt out.',
       ar: 'مرحباً {{1}}، الحياة مشغولة. متى ما أردتِ العودة، يمكنك إعادة الحجز مع د. هلا علي | مما هلا بضغطة واحدة: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
@@ -119,7 +122,7 @@ const TEMPLATES = [
   },
   {
     name: 'rebook_nudge_seasonal',
-    category: 'UTILITY',
+    category: 'MARKETING',
     bodies: {
       en: 'Hi {{1}}, around this time of year you usually book a session. Rebook with Dr. Hala Ali | Mama Hala in one tap: {{2}}. Reply STOP to opt out.',
       ar: 'مرحباً {{1}}، عادة تحجزين جلسة في مثل هذا الوقت من السنة. أعيدي الحجز مع د. هلا علي | مما هلا بضغطة واحدة: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
@@ -178,6 +181,23 @@ async function submitTemplate(wabaId, accessToken, payload) {
   return { status: res.status, json };
 }
 
+/* List existing templates so we can skip them without resubmitting.
+   Resubmits with mismatched category fail noisily, and Meta's classifier
+   flaps between IN_REVIEW iterations — pre-fetching is the only way to
+   make this script idempotent. */
+async function fetchExistingTemplates(wabaId, accessToken) {
+  const url = `https://graph.facebook.com/${GRAPH_VERSION}/${wabaId}/message_templates?fields=name,language,status,category&limit=1000`;
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) {
+    const msg = json?.error?.message || `HTTP ${res.status}`;
+    throw new Error(msg);
+  }
+  return json?.data || [];
+}
+
 /* ─── Main ──────────────────────────────────────────────────── */
 
 async function main() {
@@ -208,6 +228,23 @@ async function main() {
   // Generate webhook verify token
   const webhookVerifyToken = randomBytes(24).toString('base64url');
 
+  // Pre-fetch existing templates so we skip by name+locale rather than
+  // resubmitting and tripping over Meta's category-mismatch errors.
+  const existingByKey = new Map();
+  if (!DRY_RUN) {
+    try {
+      console.log(dim('\nFetching existing templates from Meta...'));
+      const existing = await fetchExistingTemplates(wabaId, accessToken);
+      for (const t of existing) {
+        existingByKey.set(`${t.name}__${t.language}`, t);
+      }
+      console.log(dim(`  Found ${existing.length} existing template entries.`));
+    } catch (err) {
+      console.log(yellow(`  Could not pre-fetch existing templates (${err.message}).`));
+      console.log(yellow(`  Proceeding without pre-fetch — duplicates may surface as errors.`));
+    }
+  }
+
   console.log(bold(`\nSubmitting templates ${DRY_RUN ? '(DRY RUN — nothing sent to Meta)' : ''}\n`));
 
   const locales = EN_ONLY ? ['en'] : ['en', 'ar'];
@@ -222,21 +259,34 @@ async function main() {
         results.push({ name: tpl.name, locale, ok: true, status: 'dry-run' });
         continue;
       }
+      const langCode = locale === 'ar' ? 'ar' : 'en';
+      const existing = existingByKey.get(`${tpl.name}__${langCode}`);
+      if (existing) {
+        console.log(yellow(`  ◌ ${label.padEnd(40)} exists at Meta (${existing.status}, ${existing.category})`));
+        results.push({ name: tpl.name, locale, ok: true, status: 'duplicate' });
+        continue;
+      }
       try {
         const { status, json } = await submitTemplate(wabaId, accessToken, payload);
         if (status >= 200 && status < 300) {
           console.log(green(`  ✓ ${label.padEnd(40)} ${json?.status ?? 'submitted'}`));
           results.push({ name: tpl.name, locale, ok: true, status: json?.status });
         } else {
-          // Common cases: duplicate (already exists) → not a failure
+          // Common cases: duplicate (already exists) → not a failure.
+          // Meta returns several phrasings: "already exists", or
+          // "There is already English content for this template"
+          // (subcode 2388024). Match by subcode where we know it.
           const errMsg = json?.error?.message || `HTTP ${status}`;
-          const isDuplicate = /already exists|duplicate/i.test(errMsg);
+          const errSubcode = json?.error?.error_subcode;
+          const errUserMsg = json?.error?.error_user_msg;
+          const errDetail = [errMsg, errSubcode && `subcode ${errSubcode}`, errUserMsg].filter(Boolean).join(' — ');
+          const isDuplicate = errSubcode === 2388024 || /already exists|duplicate|already \w+ content/i.test(`${errMsg} ${errUserMsg ?? ''}`);
           if (isDuplicate) {
             console.log(yellow(`  ◌ ${label.padEnd(40)} already exists (skipped)`));
             results.push({ name: tpl.name, locale, ok: true, status: 'duplicate' });
           } else {
-            console.log(red(`  ✗ ${label.padEnd(40)} ${errMsg}`));
-            results.push({ name: tpl.name, locale, ok: false, error: errMsg });
+            console.log(red(`  ✗ ${label.padEnd(40)} ${errDetail}`));
+            results.push({ name: tpl.name, locale, ok: false, error: errDetail });
           }
         }
       } catch (err) {

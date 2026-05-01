@@ -124,24 +124,28 @@ export const TEMPLATES = {
     category: 'UTILITY' as const,
     locales: ['en', 'ar'] as WhatsappLocale[],
   },
+  // All four rebook nudges classified by Meta as MARKETING — the
+  // "rebook"/"come back" framing reads as win-back regardless of tone.
+  // Pricing tier is ~2.4× UTILITY but volume is tiny (~$0.20–0.50/mo
+  // across all rebook variants combined).
   rebook_nudge_warm: {
     name: 'rebook_nudge_warm',
-    category: 'UTILITY' as const,
+    category: 'MARKETING' as const,
     locales: ['en', 'ar'] as WhatsappLocale[],
   },
   rebook_nudge_cadence: {
     name: 'rebook_nudge_cadence',
-    category: 'UTILITY' as const,
+    category: 'MARKETING' as const,
     locales: ['en', 'ar'] as WhatsappLocale[],
   },
   rebook_nudge_long_gap: {
     name: 'rebook_nudge_long_gap',
-    category: 'UTILITY' as const,
+    category: 'MARKETING' as const,
     locales: ['en', 'ar'] as WhatsappLocale[],
   },
   rebook_nudge_seasonal: {
     name: 'rebook_nudge_seasonal',
-    category: 'UTILITY' as const,
+    category: 'MARKETING' as const,
     locales: ['en', 'ar'] as WhatsappLocale[],
   },
 } as const;
