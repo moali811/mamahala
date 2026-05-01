@@ -178,6 +178,35 @@ h1, h2, h3, h4, h5, h6 {
   animation: action-pulse 2s ease-in-out infinite;
 }
 
+/* --- Attention Pulse (3 cycles, then settles) ---
+   Used by the mobile-header Get Support pill: a soft plum ring expands
+   outward 3× to draw the eye on first paint, then quiets down. */
+@keyframes attention-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(122, 59, 94, 0.45); }
+  70%  { box-shadow: 0 0 0 10px rgba(122, 59, 94, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(122, 59, 94, 0); }
+}
+.animate-attention-pulse {
+  animation: attention-pulse 1.8s ease-out 3;
+}
+
+/* --- Twinkle (gentle ambient sparkle) ---
+   Slow, infinite, low-amplitude — used on inline icons that should feel
+   alive but never flashy. Pairs with the AI-recommendation pill. */
+@keyframes twinkle {
+  0%, 100% { opacity: 1;   transform: scale(1)    rotate(0deg); }
+  50%      { opacity: 0.55; transform: scale(1.18) rotate(12deg); }
+}
+.animate-twinkle {
+  animation: twinkle 3.2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-attention-pulse,
+  .animate-twinkle { animation: none; }
+}
+
 /* --- Focus Styles --- */
 *:focus-visible {
   outline: 2px solid var(--color-rose);

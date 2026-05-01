@@ -92,9 +92,6 @@ export default function DashboardHome({ password, onSwitchModule }: Props) {
       <GreetingHero />
       <TodaysSpine bookings={bookings} onSwitchModule={onSwitchModule} />
 
-      {/* Pulse strip — three charts, full width */}
-      <PulseStrip bookings={bookings} invoices={invoices} />
-
       {/* QuickActions appears on mobile/tablet only — on lg+ the sidebar
           already exposes Bookings / Invoices / etc., so the pill row would
           just duplicate the nav. */}
@@ -113,6 +110,10 @@ export default function DashboardHome({ password, onSwitchModule }: Props) {
           <WisdomCard />
         </div>
       </div>
+
+      {/* Pulse strip — three charts, full width. Sits below actions so
+          the actionable surface is what loads above the fold. */}
+      <PulseStrip bookings={bookings} invoices={invoices} />
 
       {loading && bookings.length === 0 && invoices.length === 0 && (
         <p className="text-center text-xs" style={{ color: 'var(--color-mist)' }}>

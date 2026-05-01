@@ -28,6 +28,7 @@ import PageTracker from '@/components/analytics/PageTracker';
 import ReturningClientBanner from '@/components/booking/ReturningClientBanner';
 import SoftWelcomeBanner from '@/components/booking/SoftWelcomeBanner';
 import SelfServeRecurringStep from '@/components/booking/SelfServeRecurringStep';
+import FirstTimeEligibilityModal from '@/components/booking/FirstTimeEligibilityModal';
 import type { SelfServeEligibility } from '@/lib/booking/self-serve-eligibility';
 import { scrollToElement } from '@/lib/scroll';
 
@@ -317,118 +318,168 @@ export default function BookPage() {
 
 function IntakeStep({ wizard, locale, isRTL }: StepProps) {
   const [text, setText] = useState(wizard.formData.intakeText);
-  const [isFirstTime, setIsFirstTime] = useState(true);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [eligibilityOpen, setEligibilityOpen] = useState(false);
+  const isReturning = wizard.formData.isAuthenticatedReturning;
+
+  const ForwardArrow = isRTL ? ArrowLeft : ArrowRight;
+
+  const goToServices = () => {
+    try { sessionStorage.setItem('mh:skip_consult', '1'); } catch {}
+    wizard.goToStep('service');
+  };
+
+  const startDiscoveryCall = () => {
+    wizard.updateForm({
+      serviceSlug: 'initial-consultation',
+      serviceName: 'Free Consultation',
+      serviceNameAr: 'استشارة مجانية',
+      serviceCategory: 'adults',
+      pricingTierKey: 'discoveryCall30min',
+      durationMinutes: 30,
+      isNewClient: true,
+    });
+    wizard.goToStep('datetime');
+  };
 
   return (
-    <div className="space-y-6">
-      <div className="relative text-center space-y-3">
-        {/* Top-end escape hatch — visible before scroll for clients who already
-            know what they need. Mirrors to top-left in RTL via logical `end-0`. */}
-        <button
-          type="button"
-          onClick={() => {
-            try { sessionStorage.setItem('mh:skip_consult', '1'); } catch {}
-            wizard.goToStep('service');
-          }}
-          data-cta="intake-skip-top"
-          className="absolute top-0 end-0 inline-flex items-center gap-1 text-xs font-medium text-[#8E8E9F] hover:text-[#7A3B5E] transition-colors"
-        >
-          {isRTL
-            ? <><ArrowLeft className="w-3.5 h-3.5" /> تخطي إلى الخدمات</>
-            : <>Skip to services <ArrowRight className="w-3.5 h-3.5" /></>}
-        </button>
-        <div className="w-14 h-14 rounded-2xl bg-[#7A3B5E]/10 flex items-center justify-center mx-auto">
-          <Sparkles className="w-7 h-7 text-[#7A3B5E]" />
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#4A4A5C]" style={{ fontFamily: 'DM Serif Display, serif' }}>
-          {isRTL ? 'كيف يمكننا مساعدتك؟' : 'How Can We Help?'}
+    <div className="space-y-4">
+      <div className="text-center space-y-2">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#2D2A33]" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>
+          {isRTL ? 'لنجد الجلسة المناسبة لك' : "Let's find the right session for you"}
         </h1>
         <p className="text-sm text-[#8E8E9F] max-w-md mx-auto">
           {isRTL
-            ? 'صِف ما يشغل بالك وسيوصي مساعدنا الذكي بأنسب خدمة لك.'
-            : 'Describe what\'s on your mind and our AI assistant will recommend the best service for you.'}
+            ? 'اختر الطريقة التي تناسبك للبدء.'
+            : 'Choose how you\'d like to start.'}
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#F0ECE8]">
-        <textarea
-          value={text}
-          onChange={e => setText(e.target.value)}
-          placeholder={isRTL ? 'أخبرنا بما تمر به...' : 'Tell us what you\'re going through...'}
-          className="w-full h-32 resize-none text-[15px] text-[#4A4A5C] placeholder-[#C0B8B0] bg-transparent outline-none leading-relaxed"
-          dir={isRTL ? 'rtl' : 'ltr'}
-        />
-        <div className="flex items-center justify-between mt-3 pt-3 border-t border-[#F0ECE8]">
-          <span className="text-xs text-[#C0B8B0]">{text.length}/2000</span>
-          <button
-            onClick={() => wizard.submitIntake(text, locale)}
-            disabled={text.trim().length < 3 || wizard.isLoading}
-            className="px-6 py-2.5 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#6A2E4E] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
-          >
-            {wizard.isLoading ? (
-              <><Loader2 className="w-4 h-4 animate-spin" /> {isRTL ? 'جارٍ التحليل...' : 'Analyzing...'}</>
-            ) : (
-              <><Sparkles className="w-4 h-4" /> {isRTL ? 'أوصِ بخدمة' : 'Get Recommendations'}</>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Two-path card: balanced first-timer vs. returning entry points */}
-      <div className="bg-white rounded-xl p-4 border border-[#F0ECE8]">
-        {/* Row 1 — First time? */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-[#4A4A5C]">
-              {isRTL ? 'هل هذه أول جلسة لك معنا؟' : 'First time booking with us?'}
+      {/* PRIMARY — Browse services (filled plum, dominant) */}
+      <button
+        type="button"
+        onClick={goToServices}
+        data-cta="intake-skip-card"
+        className="w-full text-start group bg-[#7A3B5E] hover:bg-[#69304F] active:scale-[0.995] rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-all"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <p className="text-base sm:text-lg font-semibold text-white">
+              {isRTL ? 'تصفّح خدماتنا' : 'Browse our services'}
             </p>
-            <p className="text-xs text-[#8E8E9F] mt-0.5">
-              {isRTL ? 'ابدأ باستشارة مجانية' : 'Start with a free consultation'}
+            <p className="text-sm text-white/80 mt-1 leading-relaxed">
+              {isRTL
+                ? 'اختر الجلسة التي تناسب احتياجك.'
+                : 'Pick the session that fits what you need.'}
             </p>
           </div>
-          <button
-            onClick={() => {
-              wizard.updateForm({
-                serviceSlug: 'initial-consultation',
-                serviceName: 'Free Consultation',
-                serviceNameAr: 'استشارة مجانية',
-                serviceCategory: 'adults',
-                pricingTierKey: 'discoveryCall30min',
-                durationMinutes: 30,
-                isNewClient: true,
-              });
-              wizard.goToStep('datetime');
-            }}
-            className="shrink-0 px-4 py-2 rounded-lg bg-[#F5F0EB] text-[#7A3B5E] text-sm font-semibold hover:bg-[#EDE6DF] transition-colors"
-          >
-            {isRTL ? 'نعم، احجز استشارة' : 'Yes, Book Consultation'}
-          </button>
-        </div>
-
-        <div className="h-px bg-[#F0ECE8] my-3" />
-
-        {/* Row 2 — Returning / knows what they need */}
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-[#4A4A5C]">
-              {isRTL ? 'هل تعرف ما تحتاج؟' : 'Already know what you need?'}
-            </p>
-            <p className="text-xs text-[#8E8E9F] mt-0.5">
-              {isRTL ? 'تصفّح خدماتنا مباشرة' : 'Jump straight to our services'}
-            </p>
+          <div className="shrink-0 w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center group-hover:bg-white/25 transition-colors">
+            <ForwardArrow className="w-5 h-5 text-white" />
           </div>
-          <button
-            onClick={() => {
-              try { sessionStorage.setItem('mh:skip_consult', '1'); } catch {}
-              wizard.goToStep('service');
-            }}
-            data-cta="intake-skip-card"
-            className="shrink-0 px-4 py-2 rounded-lg border border-[#7A3B5E]/30 text-[#7A3B5E] text-sm font-semibold hover:bg-[#7A3B5E] hover:text-white hover:border-[#7A3B5E] transition-colors"
-          >
-            {isRTL ? 'تصفّح الخدمات' : 'Browse services'}
-          </button>
         </div>
+      </button>
+
+      {/* SECONDARY — Free discovery call (cream tile, hidden for returning clients) */}
+      {!isReturning && (
+        <button
+          type="button"
+          onClick={() => setEligibilityOpen(true)}
+          data-cta="discovery-call-card"
+          className="w-full text-start bg-[#FAF7F2] hover:bg-[#F5F0EB] active:scale-[0.995] rounded-2xl p-5 border border-[#E8E0D8] transition-all"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <p className="text-sm font-semibold text-[#4A4A5C]">
+                  {isRTL ? 'جديد مع ماما هلا؟' : 'New to Mama Hala?'}
+                </p>
+                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#7A3B5E]/10 text-[#7A3B5E]">
+                  {isRTL ? 'للعملاء الجدد' : 'For first-time clients'}
+                </span>
+              </div>
+              <p className="text-xs text-[#8E8E9F] mt-1 leading-relaxed">
+                {isRTL
+                  ? 'مكالمة تعارف مجانية ٣٠ دقيقة لنرى إن كنا الأنسب لك.'
+                  : 'Free 30-min discovery call to see if we\'re the right fit.'}
+              </p>
+            </div>
+            <div className="shrink-0 w-9 h-9 rounded-xl bg-[#7A3B5E]/10 flex items-center justify-center">
+              <Heart className="w-4 h-4 text-[#7A3B5E]" />
+            </div>
+          </div>
+        </button>
+      )}
+
+      {/* TERTIARY — AI recommendation: a small magical pill (centered) that
+          expands a textarea when tapped. Visual weight is intentionally
+          minimal so it doesn't compete with the two primary cards above. */}
+      <div className="flex flex-col items-center gap-3 pt-1">
+        <button
+          type="button"
+          onClick={() => setAiOpen(o => !o)}
+          aria-expanded={aiOpen}
+          className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#7A3B5E]/8 via-[#C8A97D]/12 to-[#7A3B5E]/8 hover:from-[#7A3B5E]/14 hover:via-[#C8A97D]/16 hover:to-[#7A3B5E]/14 text-[11px] font-medium text-[#7A3B5E] border border-[#7A3B5E]/15 shadow-sm hover:shadow transition-all active:scale-[0.97]"
+        >
+          <Sparkles className="w-3 h-3 animate-twinkle" />
+          <span>
+            {isRTL
+              ? (aiOpen ? 'إخفاء التوصية الذكية' : 'لست متأكداً؟ اسأل الذكاء الاصطناعي')
+              : (aiOpen ? 'Hide AI helper' : 'Not sure? Ask our AI')}
+          </span>
+          <ChevronDown className={`w-3 h-3 opacity-60 transition-transform ${aiOpen ? 'rotate-180' : ''}`} />
+        </button>
+
+        <AnimatePresence initial={false}>
+          {aiOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="overflow-hidden w-full"
+            >
+              <div className="rounded-2xl border border-[#F0ECE8] bg-white px-5 py-4">
+                <textarea
+                  value={text}
+                  onChange={e => setText(e.target.value)}
+                  placeholder={isRTL ? 'أخبرنا بما تمر به...' : 'Tell us what you\'re going through...'}
+                  className="w-full h-24 resize-none text-[15px] text-[#4A4A5C] placeholder-[#C0B8B0] bg-transparent outline-none leading-relaxed"
+                  dir={isRTL ? 'rtl' : 'ltr'}
+                  autoFocus
+                />
+                <div className="flex items-center justify-between mt-2 pt-3 border-t border-[#F0ECE8]">
+                  <span className="text-xs text-[#C0B8B0]">{text.length}/2000</span>
+                  <button
+                    onClick={() => wizard.submitIntake(text, locale)}
+                    disabled={text.trim().length < 3 || wizard.isLoading}
+                    className="px-5 py-2 rounded-xl bg-[#7A3B5E] text-white text-sm font-semibold hover:bg-[#6A2E4E] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                  >
+                    {wizard.isLoading ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /> {isRTL ? 'جارٍ التحليل...' : 'Analyzing...'}</>
+                    ) : (
+                      <><Sparkles className="w-4 h-4" /> {isRTL ? 'أوصِ بخدمة' : 'Get Recommendations'}</>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+
+      <FirstTimeEligibilityModal
+        open={eligibilityOpen}
+        isRTL={isRTL}
+        onClose={() => setEligibilityOpen(false)}
+        onConfirmNew={() => {
+          setEligibilityOpen(false);
+          startDiscoveryCall();
+        }}
+        onRedirectToServices={() => {
+          setEligibilityOpen(false);
+          goToServices();
+        }}
+      />
     </div>
   );
 }
@@ -1475,8 +1526,50 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
             />
           </SmartField>
 
-          {/* Returning-client recognition — soft hint only, no PII shown */}
-          {recognized && !isAuthed && !magicSent && (
+          {/* Returning-client recognition — soft hint only, no PII shown.
+              On the free-discovery-call flow, prefer redirecting to services
+              (the call is for new clients only). Otherwise, offer magic-link
+              prefill. Either way, "Continue anyway" is always available — the
+              recognition can be wrong (shared family email, etc.). */}
+          {recognized && !isAuthed && !magicSent && wizard.formData.serviceSlug === 'initial-consultation' && (
+            <motion.div
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="px-3 py-3 rounded-xl bg-[#7A3B5E]/5 border border-[#7A3B5E]/20"
+            >
+              <div className="flex items-start gap-2">
+                <Heart className="w-4 h-4 text-[#7A3B5E] mt-0.5 shrink-0" />
+                <p className="text-xs text-[#4A4A5C] leading-relaxed">
+                  {isRTL
+                    ? 'مرحباً بعودتك! المكالمة المجانية للعملاء الجدد — هل تود الاختيار من خدماتنا؟'
+                    : "Welcome back! The free discovery call is for new clients — would you like to pick from our services?"}
+                </p>
+              </div>
+              <div className="flex items-center gap-2 mt-2.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    try { sessionStorage.setItem('mh:skip_consult', '1'); } catch {}
+                    wizard.goToStep('service');
+                  }}
+                  data-cta="info-recognize-redirect"
+                  className="px-3 py-1.5 rounded-lg bg-[#7A3B5E] text-white text-[11px] font-semibold hover:bg-[#69304F] transition-colors"
+                >
+                  {isRTL ? 'تصفّح الخدمات' : 'Browse services'}
+                </button>
+                <button
+                  type="button"
+                  onClick={sendMagicLink}
+                  disabled={magicSending}
+                  data-cta="info-recognize-continue-discovery"
+                  className="text-[11px] font-medium text-[#8E8E9F] hover:text-[#4A4A5C] disabled:opacity-50"
+                >
+                  {isRTL ? 'متابعة المكالمة المجانية' : 'Continue with discovery call anyway'}
+                </button>
+              </div>
+            </motion.div>
+          )}
+          {recognized && !isAuthed && !magicSent && wizard.formData.serviceSlug !== 'initial-consultation' && (
             <motion.div
               initial={{ opacity: 0, y: -4 }}
               animate={{ opacity: 1, y: 0 }}

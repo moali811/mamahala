@@ -423,6 +423,20 @@ export default function Header({ locale, messages }: HeaderProps) {
               </Link>
             </div>
 
+            {/* Mobile Get Support pill — visible only when mobile menu is closed.
+                Pulses 3× on first paint (then settles via finite iteration count),
+                respects prefers-reduced-motion. Hidden on lg+ where the desktop
+                right cluster already shows it. */}
+            {!mobileOpen && (
+              <Link
+                href={getBookingUrl(locale as string)}
+                className="animate-attention-pulse me-1 inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-[#7A3B5E] px-2.5 py-1.5 text-[11px] font-semibold text-white transition-all duration-200 hover:bg-[#5E2D48] active:scale-[0.97] lg:hidden"
+              >
+                <Calendar size={12} />
+                {nav.bookNow}
+              </Link>
+            )}
+
             {/* Mobile Hamburger */}
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
