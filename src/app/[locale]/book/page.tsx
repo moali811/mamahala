@@ -391,7 +391,7 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <p className="text-sm font-semibold text-[#4A4A5C]">
-                  {isRTL ? 'جديد مع ماما هلا؟' : 'New to Mama Hala?'}
+                  {isRTL ? 'جديد مع ماما هالة؟' : 'New to Mama Hala?'}
                 </p>
                 <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#7A3B5E]/10 text-[#7A3B5E]">
                   {isRTL ? 'للعملاء الجدد' : 'For first-time clients'}

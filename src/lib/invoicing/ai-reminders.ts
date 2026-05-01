@@ -82,7 +82,7 @@ export async function generatePaymentReminder(args: {
   };
 
   const signoffEn = '"Warmly, The Mama Hala Team"';
-  const signoffAr = '"بكل ود، فريق ماما هلا"';
+  const signoffAr = '"بكل ود، فريق ماما هالة"';
 
   const systemPrompt = `You are writing on behalf of the Mama Hala Consulting team, a warm and professional family counseling practice. Your tone is ALWAYS:
 - Compassionate, never demanding or guilt-inducing

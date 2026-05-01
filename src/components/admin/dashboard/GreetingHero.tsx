@@ -86,7 +86,7 @@ export function GreetingHero({ name = 'Mama Hala' }: { name?: string }) {
         {greeting}, {name}.
       </h1>
       <p className="mt-0.5 text-sm" style={{ color: subColor, fontFamily: "'Tajawal', sans-serif" }} dir="rtl">
-        {greetingAr}، ماما هلا
+        {greetingAr}، ماما هالة
       </p>
     </section>
   );

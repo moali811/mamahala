@@ -50,7 +50,7 @@ const TEMPLATES = [
     category: 'UTILITY',
     bodies: {
       en: 'Hi {{1}} 🌿 Your session with Dr. Hala Ali | Mama Hala is confirmed for {{2}} at {{3}}. Join on Google Meet: {{4}}. Need to reschedule? {{5}}. Reply STOP to opt out.',
-      ar: 'مرحباً {{1}} 🌿 تم تأكيد جلستك مع د. هلا علي | مما هلا في {{2}} الساعة {{3}}. انضمي عبر Google Meet: {{4}}. لإعادة الجدولة: {{5}}. أرسلي STOP لإلغاء الاشتراك.',
+      ar: 'مرحباً {{1}} 🌿 تم تأكيد جلستك مع د. هالة علي | ماما هالة في {{2}} الساعة {{3}}. انضمي عبر Google Meet: {{4}}. لإعادة الجدولة: {{5}}. أرسلي STOP لإلغاء الاشتراك.',
     },
     sampleVars: ['Sara', 'Monday, May 5', '2:00 PM', 'https://meet.google.com/abc-defg-hij', 'https://mamahala.ca/en/book/manage?token=demo'],
   },
@@ -59,7 +59,7 @@ const TEMPLATES = [
     category: 'UTILITY',
     bodies: {
       en: 'Hi {{1}}, your session with Dr. Hala Ali | Mama Hala starts in one hour. Join on Google Meet: {{2}}. Reply STOP to opt out.',
-      ar: 'مرحباً {{1}}، جلستك مع د. هلا علي | مما هلا تبدأ خلال ساعة. انضمي عبر Google Meet: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
+      ar: 'مرحباً {{1}}، جلستك مع د. هالة علي | ماما هالة تبدأ خلال ساعة. انضمي عبر Google Meet: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
     },
     sampleVars: ['Sara', 'https://meet.google.com/abc-defg-hij'],
   },
@@ -68,7 +68,7 @@ const TEMPLATES = [
     category: 'UTILITY',
     bodies: {
       en: 'Hi {{1}}, here is your one-time sign-in link for your Mama Hala account: {{2}}. It expires in 15 minutes. If this was not you, please ignore this message.',
-      ar: 'مرحباً {{1}}، هذا رابط تسجيل الدخول لمرة واحدة لحسابك في مما هلا: {{2}}. ينتهي خلال 15 دقيقة. إذا لم تطلبي هذا، يرجى تجاهل الرسالة.',
+      ar: 'مرحباً {{1}}، هذا رابط تسجيل الدخول لمرة واحدة لحسابك في ماما هالة: {{2}}. ينتهي خلال 15 دقيقة. إذا لم تطلبي هذا، يرجى تجاهل الرسالة.',
     },
     sampleVars: ['Sara', 'https://mamahala.ca/api/account/magic-link?token=demo'],
   },
@@ -98,7 +98,7 @@ const TEMPLATES = [
     category: 'MARKETING',
     bodies: {
       en: 'Hi {{1}}, friendly reminder — when you are ready, you can rebook with Dr. Hala Ali | Mama Hala in one tap: {{2}}. Reply STOP to opt out.',
-      ar: 'مرحباً {{1}}، تذكير ودّي — عندما تكونين مستعدة، يمكنك إعادة الحجز مع د. هلا علي | مما هلا بضغطة واحدة: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
+      ar: 'مرحباً {{1}}، تذكير ودّي — عندما تكونين مستعدة، يمكنك إعادة الحجز مع د. هالة علي | ماما هالة بضغطة واحدة: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
     },
     sampleVars: ['Sara', 'https://mamahala.ca/en/book/rebook/demo'],
   },
@@ -107,7 +107,7 @@ const TEMPLATES = [
     category: 'MARKETING',
     bodies: {
       en: 'Hi {{1}}, in case it slipped your list — about {{2}} weeks since your last session. Rebook with Dr. Hala Ali | Mama Hala in one tap: {{3}}. Reply STOP to opt out.',
-      ar: 'مرحباً {{1}}، في حال نسيتِ — مرّت حوالي {{2}} أسبوعاً منذ آخر جلسة. أعيدي الحجز مع د. هلا علي | مما هلا بضغطة واحدة: {{3}}. أرسلي STOP لإلغاء الاشتراك.',
+      ar: 'مرحباً {{1}}، في حال نسيتِ — مرّت حوالي {{2}} أسبوعاً منذ آخر جلسة. أعيدي الحجز مع د. هالة علي | ماما هالة بضغطة واحدة: {{3}}. أرسلي STOP لإلغاء الاشتراك.',
     },
     sampleVars: ['Sara', '4', 'https://mamahala.ca/en/book/rebook/demo'],
   },
@@ -116,7 +116,7 @@ const TEMPLATES = [
     category: 'MARKETING',
     bodies: {
       en: 'Hi {{1}}, life gets busy. Whenever you would like to come back, rebook with Dr. Hala Ali | Mama Hala in one tap: {{2}}. Reply STOP to opt out.',
-      ar: 'مرحباً {{1}}، الحياة مشغولة. متى ما أردتِ العودة، يمكنك إعادة الحجز مع د. هلا علي | مما هلا بضغطة واحدة: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
+      ar: 'مرحباً {{1}}، الحياة مشغولة. متى ما أردتِ العودة، يمكنك إعادة الحجز مع د. هالة علي | ماما هالة بضغطة واحدة: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
     },
     sampleVars: ['Sara', 'https://mamahala.ca/en/book/rebook/demo'],
   },
@@ -125,7 +125,7 @@ const TEMPLATES = [
     category: 'MARKETING',
     bodies: {
       en: 'Hi {{1}}, around this time of year you usually book a session. Rebook with Dr. Hala Ali | Mama Hala in one tap: {{2}}. Reply STOP to opt out.',
-      ar: 'مرحباً {{1}}، عادة تحجزين جلسة في مثل هذا الوقت من السنة. أعيدي الحجز مع د. هلا علي | مما هلا بضغطة واحدة: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
+      ar: 'مرحباً {{1}}، عادة تحجزين جلسة في مثل هذا الوقت من السنة. أعيدي الحجز مع د. هالة علي | ماما هالة بضغطة واحدة: {{2}}. أرسلي STOP لإلغاء الاشتراك.',
     },
     sampleVars: ['Sara', 'https://mamahala.ca/en/book/rebook/demo'],
   },
