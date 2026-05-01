@@ -39,7 +39,12 @@ let configured = false;
 function configureOnce(): boolean {
   if (configured) return true;
   if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) return false;
-  webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
+  // web-push requires URL-safe base64 *without* padding; strip trailing "="
+  // defensively so a malformed env (standard base64 with padding) doesn't
+  // silently no-op every booking notification. See test/route.ts for context.
+  const pub = VAPID_PUBLIC_KEY.replace(/=+$/, '');
+  const priv = VAPID_PRIVATE_KEY.replace(/=+$/, '');
+  webpush.setVapidDetails(VAPID_SUBJECT, pub, priv);
   configured = true;
   return true;
 }
