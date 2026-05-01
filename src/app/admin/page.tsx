@@ -149,11 +149,16 @@ export default function AdminCommandCenter() {
 
   // Register the admin PWA Service Worker once on mount. Scoped to /admin so
   // marketing pages aren't intercepted. Also listens for push-driven nav
-  // (notification tap → switch active module without a full reload).
+  // (notification tap → switch active module without a full reload) AND for
+  // SW-emitted `push-resubscribe` events when iOS rotates the subscription
+  // — without re-registering the new endpoint server-side, the dispatcher
+  // keeps firing into the void.
   useEffect(() => {
     registerServiceWorker();
     function onSwMessage(event: MessageEvent) {
-      const data = event.data as { kind?: string; url?: string } | undefined;
+      const data = event.data as
+        | { kind?: string; url?: string; subscription?: PushSubscriptionJSON }
+        | undefined;
       if (data?.kind === 'navigate' && data.url) {
         try {
           const u = new URL(data.url, window.location.origin);
@@ -166,6 +171,22 @@ export default function AdminCommandCenter() {
         } catch {
           window.location.href = data.url;
         }
+        return;
+      }
+      if (data?.kind === 'push-resubscribe' && data.subscription) {
+        // Read bearer at message time (not from useEffect closure) so the
+        // value stays fresh across remember-me / sign-out cycles.
+        const bearer = localStorage.getItem('mh_admin_key') || sessionStorage.getItem('mh_admin_key') || '';
+        if (!bearer) return;
+        fetch('/api/admin/devices/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearer}` },
+          body: JSON.stringify({
+            subscription: data.subscription,
+            deviceLabel: /iPhone|iPad/.test(navigator.userAgent) ? 'iPhone' : 'Browser',
+            userAgent: navigator.userAgent,
+          }),
+        }).catch(() => null);
       }
     }
     if ('serviceWorker' in navigator) {

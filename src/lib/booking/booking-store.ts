@@ -191,6 +191,34 @@ export async function countConfirmedForDate(date: string): Promise<number> {
   return bookings.length;
 }
 
+/**
+ * Count bookings currently in `pending_approval` status across all dates.
+ * Used by the push dispatcher to thread a numeric badge into the
+ * iOS PWA notification payload (so the home-screen icon shows the
+ * actual count, not a generic dot).
+ */
+export async function countPendingApprovalBookings(): Promise<number> {
+  if (!KV_AVAILABLE) return 0;
+  try {
+    const upcomingIds = (await kv.get<string[]>('bookings:upcoming')) ?? [];
+    const allKeys = await kv.keys('booking:bk_*');
+    const ids = new Set<string>();
+    for (const id of upcomingIds) ids.add(id);
+    for (const key of allKeys) {
+      const id = key.replace('booking:', '');
+      if (id.startsWith('bk_')) ids.add(id);
+    }
+    let count = 0;
+    for (const id of ids) {
+      const booking = await kv.get<Booking>(`booking:${id}`);
+      if (booking?.status === 'pending_approval') count++;
+    }
+    return count;
+  } catch {
+    return 0;
+  }
+}
+
 // ─── Booking Lookup by Draft ID ─────────────────────────────────
 
 export async function findBookingByDraftId(draftId: string): Promise<Booking | null> {

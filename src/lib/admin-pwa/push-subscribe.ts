@@ -118,3 +118,28 @@ export async function ensureServerRegistered(bearer: string): Promise<PushSubscr
   await registerOnServer(sub.toJSON(), bearer).catch(() => false);
   return sub;
 }
+
+export interface TestPushResult {
+  ok: boolean;
+  /** HTTP status from APNs/FCM via the web-push library — surfaces "410 expired" etc. */
+  statusCode?: number;
+  error?: string;
+}
+
+/* Trigger a single test push aimed at the supplied endpoint. The server
+ * looks the endpoint up in KV; if it isn't registered, returns 404 here
+ * (which the UI can present as "subscription missing — re-subscribe"). */
+export async function testOnServer(endpoint: string, bearer: string): Promise<TestPushResult> {
+  try {
+    const res = await fetch('/api/admin/devices/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${bearer}` },
+      body: JSON.stringify({ endpoint }),
+    });
+    const json = (await res.json().catch(() => ({}))) as Partial<TestPushResult> & { error?: string };
+    if (res.ok && json.ok) return { ok: true };
+    return { ok: false, statusCode: json.statusCode ?? res.status, error: json.error || `HTTP ${res.status}` };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : String(err) };
+  }
+}

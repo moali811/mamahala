@@ -14,9 +14,9 @@
  * ================================================================ */
 
 import { useEffect, useState } from 'react';
-import { Bell, Fingerprint, Share, Smartphone, CheckCircle2, AlertCircle, Loader2, LogOut } from 'lucide-react';
+import { Bell, Fingerprint, Share, Smartphone, CheckCircle2, AlertCircle, Loader2, LogOut, Send } from 'lucide-react';
 import { isStandalone, isIOS, supportsPush, supportsWebAuthn } from '@/lib/admin-pwa/pwa';
-import { subscribeToPush, unsubscribeFromPush, getCurrentPushSubscription, ensureServerRegistered } from '@/lib/admin-pwa/push-subscribe';
+import { subscribeToPush, unsubscribeFromPush, getCurrentPushSubscription, ensureServerRegistered, testOnServer } from '@/lib/admin-pwa/push-subscribe';
 import { enrollPasskey } from '@/lib/admin-pwa/webauthn';
 import { storeEncrypted, storeBiometricGated, readVault, clearVault, type VaultRecord } from '@/lib/admin-pwa/token-vault';
 
@@ -29,6 +29,8 @@ export default function AdminPwaCard({ password }: Props) {
   const [pushOn, setPushOn] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);
   const [pushMsg, setPushMsg] = useState<string | null>(null);
+  const [testBusy, setTestBusy] = useState(false);
+  const [testMsg, setTestMsg] = useState<{ text: string; kind: 'ok' | 'info' | 'error' } | null>(null);
   const [vault, setVault] = useState<VaultRecord | null>(null);
   const [faceIdBusy, setFaceIdBusy] = useState(false);
   const [faceIdMsg, setFaceIdMsg] = useState<string | null>(null);
@@ -89,6 +91,32 @@ export default function AdminPwaCard({ password }: Props) {
       }
     } finally {
       setPushBusy(false);
+    }
+  }
+
+  async function handleTestPush() {
+    if (testBusy) return;
+    setTestBusy(true);
+    setTestMsg(null);
+    try {
+      const sub = await getCurrentPushSubscription();
+      if (!sub) {
+        setTestMsg({ text: 'No subscription on this device. Toggle Notifications on first.', kind: 'info' });
+        return;
+      }
+      const result = await testOnServer(sub.endpoint, password);
+      if (result.ok) {
+        setTestMsg({ text: 'Sent — you should see the notification within a few seconds.', kind: 'ok' });
+      } else if (result.statusCode === 410 || result.statusCode === 404) {
+        setTestMsg({ text: 'This subscription expired. Toggle Notifications off then on to refresh.', kind: 'error' });
+      } else {
+        setTestMsg({
+          text: `Test failed${result.statusCode ? ` (HTTP ${result.statusCode})` : ''}: ${result.error ?? 'unknown error'}`,
+          kind: 'error',
+        });
+      }
+    } finally {
+      setTestBusy(false);
     }
   }
 
@@ -171,6 +199,31 @@ export default function AdminPwaCard({ password }: Props) {
           }
         />
         {pushMsg && <RowMessage text={pushMsg} kind={pushOn ? 'ok' : 'info'} />}
+
+        {/* Send test notification — verifies the full chain (sub → server →
+            APNs → SW → notification) without requiring a real booking. */}
+        <Row
+          icon={<Send className="w-5 h-5" />}
+          iconBg="bg-[#F5F0EB]"
+          iconFg="text-[#8E8E9F]"
+          title="Send test notification"
+          subtitle={
+            !pushOn
+              ? 'Turn Notifications on first'
+              : 'Pings this device with a sample notification'
+          }
+          right={
+            <button
+              onClick={handleTestPush}
+              disabled={!pushOn || testBusy}
+              className="text-xs font-medium text-white bg-[#7A3B5E] hover:bg-[#5E2D48] px-3 py-1.5 rounded-lg disabled:opacity-50 inline-flex items-center gap-1.5"
+            >
+              {testBusy && <Loader2 className="w-3 h-3 animate-spin" />}
+              {testBusy ? 'Sending' : 'Send test'}
+            </button>
+          }
+        />
+        {testMsg && <RowMessage text={testMsg.text} kind={testMsg.kind} />}
 
         {/* Face ID */}
         {supportsWebAuthn() && (
