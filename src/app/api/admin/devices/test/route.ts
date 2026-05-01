@@ -35,16 +35,17 @@ const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY;
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:admin@mamahala.ca';
 
 let configured = false;
+/** Normalize a base64 string to RFC 4648 §5 URL-safe form *without* padding,
+ *  which is what web-push's setVapidDetails() requires. Handles env values
+ *  that were pasted as standard base64 (+ /), padded (=), or whitespace-
+ *  surrounded — any of which would otherwise throw and 500 the endpoint. */
+function normalizeVapidKey(key: string): string {
+  return key.trim().replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
 function configureOnce(): boolean {
   if (configured) return true;
   if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) return false;
-  // web-push requires URL-safe base64 *without* padding. If the env value
-  // was pasted with trailing "=" (standard base64 padding), setVapidDetails
-  // throws "Vapid public key must be a URL safe Base 64 (without "=")".
-  // Strip defensively so a malformed env doesn't take down the push chain.
-  const pub = VAPID_PUBLIC_KEY.replace(/=+$/, '');
-  const priv = VAPID_PRIVATE_KEY.replace(/=+$/, '');
-  webpush.setVapidDetails(VAPID_SUBJECT, pub, priv);
+  webpush.setVapidDetails(VAPID_SUBJECT, normalizeVapidKey(VAPID_PUBLIC_KEY), normalizeVapidKey(VAPID_PRIVATE_KEY));
   configured = true;
   return true;
 }

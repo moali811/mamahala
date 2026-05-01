@@ -36,15 +36,17 @@ const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:admin@mamahala.ca';
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
 let configured = false;
+/** Normalize a base64 string to RFC 4648 §5 URL-safe form *without* padding,
+ *  which is what web-push's setVapidDetails() requires. Mirrors the helper
+ *  in test/route.ts — see there for the full context on why this defensive
+ *  scrubbing exists. */
+function normalizeVapidKey(key: string): string {
+  return key.trim().replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
 function configureOnce(): boolean {
   if (configured) return true;
   if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) return false;
-  // web-push requires URL-safe base64 *without* padding; strip trailing "="
-  // defensively so a malformed env (standard base64 with padding) doesn't
-  // silently no-op every booking notification. See test/route.ts for context.
-  const pub = VAPID_PUBLIC_KEY.replace(/=+$/, '');
-  const priv = VAPID_PRIVATE_KEY.replace(/=+$/, '');
-  webpush.setVapidDetails(VAPID_SUBJECT, pub, priv);
+  webpush.setVapidDetails(VAPID_SUBJECT, normalizeVapidKey(VAPID_PUBLIC_KEY), normalizeVapidKey(VAPID_PRIVATE_KEY));
   configured = true;
   return true;
 }
