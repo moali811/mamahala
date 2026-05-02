@@ -6,7 +6,10 @@
    must complete a magic-link round-trip (sets booking_session cookie).
    ================================================================
    Body: { email }
-   Response: { recognized: boolean }
+   Response: { recognized: boolean, freeConsultUsed?: boolean }
+     - freeConsultUsed only set when recognized=true (no extra leak)
+     - lets the UI hide the free-consult tile pre-emptively; the
+       server gate in /api/book/confirm is the actual safety net.
    Rate-limited per IP. Always 200 to prevent enumeration via timing.
    ================================================================ */
 
@@ -14,6 +17,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getCustomer } from '@/lib/invoicing/customer-store';
 import { isValidEmail } from '@/lib/spam-guard';
 import { getClientIp } from '@/lib/rate-limit';
+import { getBookingsByCustomer, consumesFreeConsultEligibility } from '@/lib/booking/booking-store';
+import { services } from '@/data/services';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 const RECOGNIZE_LIMIT = 30;          // requests per window per IP
@@ -46,8 +51,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ recognized: false });
     }
 
-    const customer = await getCustomer(email.toLowerCase().trim());
-    return NextResponse.json({ recognized: !!customer });
+    const normalized = email.toLowerCase().trim();
+    const customer = await getCustomer(normalized);
+    if (!customer) {
+      return NextResponse.json({ recognized: false });
+    }
+
+    // Compute free-consult-used flag for any service flagged oncePerClient.
+    // Only attached when recognized=true so we don't widen the enumeration
+    // surface beyond what `recognized` already discloses.
+    let freeConsultUsed = false;
+    try {
+      const oncePerClientSlugs = services
+        .filter(s => s.oncePerClient)
+        .map(s => s.slug);
+      if (oncePerClientSlugs.length > 0) {
+        const prior = await getBookingsByCustomer(normalized);
+        freeConsultUsed = prior.some(
+          b => oncePerClientSlugs.includes(b.serviceSlug) && consumesFreeConsultEligibility(b),
+        );
+      }
+    } catch {
+      // Non-fatal — degrade to "we don't know"; the server gate still protects.
+    }
+
+    return NextResponse.json({ recognized: true, freeConsultUsed });
   } catch {
     return NextResponse.json({ recognized: false });
   }

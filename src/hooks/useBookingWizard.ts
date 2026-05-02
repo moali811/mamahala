@@ -62,6 +62,13 @@ export interface BookingFormData {
   recognizedLastServiceSlug: string | null;
   /** Tracks self-serve eligibility for Phase C. Populated from /api/account/session. */
   paidSessionsCount: number;
+  /**
+   * True if this client has already consumed the once-per-client free
+   * discovery consultation (attended, no-showed, or has one in-flight).
+   * Hides the free-consult tile in the UI; the /api/book/confirm gate
+   * is the actual enforcement layer.
+   */
+  freeConsultUsed: boolean;
 
   // Step 5: Result
   confirmationResult: BookingConfirmationResult | null;
@@ -101,6 +108,7 @@ function buildInitialFormData(locale: 'en' | 'ar' = 'en'): BookingFormData {
     recognizedFirstName: null,
     recognizedLastServiceSlug: null,
     paidSessionsCount: 0,
+    freeConsultUsed: false,
     confirmationResult: null,
   };
 }
@@ -113,11 +121,21 @@ function readCookie(name: string): string | null {
 
 const STEP_ORDER: BookingStep[] = ['intake', 'service', 'datetime', 'info', 'confirm', 'success'];
 
+export interface GateError {
+  code: string;
+  message: string;
+  suggestedServiceSlug?: string;
+}
+
 export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
   const [step, setStep] = useState<BookingStep>('intake');
   const [formData, setFormData] = useState<BookingFormData>(() => buildInitialFormData(locale));
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Structured error for once-per-client gate rejections, etc. — lets the
+  // UI render an inline "switch to suggested service" CTA instead of a
+  // generic red banner.
+  const [gateError, setGateError] = useState<GateError | null>(null);
 
   // Honeypot: record mount time for timing-based bot detection
   const mountTime = useRef(Date.now());
@@ -162,6 +180,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
           recognizedFirstName: data.firstName ?? null,
           recognizedLastServiceSlug: data.lastBookedServiceSlug ?? null,
           paidSessionsCount: typeof data.paidSessionsCount === 'number' ? data.paidSessionsCount : 0,
+          freeConsultUsed: data.freeConsultUsed === true,
         }));
       })
       .catch(() => {
@@ -256,7 +275,23 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
       });
 
       if (!res.ok) {
-        const errData = await res.json();
+        const errData = await res.json().catch(() => ({} as Record<string, unknown>)) as {
+          error?: string;
+          message?: string;
+          suggestedServiceSlug?: string;
+        };
+        // Humane handling for the once-per-client gate: surface the
+        // friendly message via gateError (renders the "book paid instead"
+        // inline CTA) and remember that this email used it.
+        if (res.status === 403 && errData?.error === 'free_consult_already_used') {
+          updateForm({ freeConsultUsed: true });
+          setGateError({
+            code: 'free_consult_already_used',
+            message: errData.message || "You've already had your complimentary discovery session.",
+            suggestedServiceSlug: errData.suggestedServiceSlug,
+          });
+          return;
+        }
         throw new Error(errData.error || 'Failed to confirm booking');
       }
 
@@ -322,8 +357,11 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
     setFormData(buildInitialFormData(locale));
     setStep('intake');
     setError(null);
+    setGateError(null);
     setIsLoading(false);
   }, [locale]);
+
+  const clearGateError = useCallback(() => setGateError(null), []);
 
   return {
     step,
@@ -331,6 +369,8 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
     formData,
     isLoading,
     error,
+    gateError,
+    clearGateError,
     updateForm,
     goToStep,
     goNext,

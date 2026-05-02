@@ -131,6 +131,59 @@ export async function getBookingsByCustomer(email: string): Promise<Booking[]> {
   return bookings.filter((b): b is Booking => b !== null);
 }
 
+/**
+ * Whether a prior booking consumes the client's once-per-client eligibility
+ * (e.g. for the free discovery consultation). The "forgiving" policy:
+ *
+ *   CONSUMES — completed | no-show | pending-review | pending_approval | approved | confirmed
+ *   DOES NOT — cancelled | declined | rescheduled
+ *
+ * Rationale: if the client actually attended (completed) or held the slot
+ * and didn't show, the freebie is spent. If they cancelled with notice or
+ * Dr. Hala declined, they get another shot. Active/upcoming bookings count
+ * as "in flight" so a client can't double-book the freebie.
+ */
+export function consumesFreeConsultEligibility(b: Booking): boolean {
+  switch (b.status) {
+    case 'completed':
+    case 'no-show':
+    case 'pending-review':
+    case 'pending_approval':
+    case 'approved':
+    case 'confirmed':
+      return true;
+    case 'cancelled':
+    case 'declined':
+    case 'rescheduled':
+      return false;
+  }
+}
+
+/**
+ * Compute admin-facing warnings for a booking — e.g. detect a free-consult
+ * booking where the same client has a prior attended/no-show free consult.
+ * Defense-in-depth: the /api/book/confirm gate should prevent this, but
+ * legacy bookings or admin-created edge cases can still show up here.
+ *
+ * Caller passes the full set of the client's prior bookings so the same
+ * KV scan isn't repeated per call. Returns plain-English warnings safe
+ * to render in the admin app.
+ */
+export function getBookingEligibilityWarnings(
+  booking: Booking,
+  priorBookingsForCustomer: readonly Booking[],
+  oncePerClientSlugs: readonly string[],
+): string[] {
+  const warnings: string[] = [];
+  if (oncePerClientSlugs.includes(booking.serviceSlug)) {
+    const others = priorBookingsForCustomer.filter(b => b.bookingId !== booking.bookingId);
+    if (others.some(b => b.serviceSlug === booking.serviceSlug && consumesFreeConsultEligibility(b))) {
+      warnings.push('Prior attended free consult — eligibility already consumed');
+    }
+  }
+  return warnings;
+}
+
 export async function getUpcomingBookings(limit = 50): Promise<Booking[]> {
   if (!KV_AVAILABLE) return [];
   const ids = await kv.get<string[]>(KEY.upcoming) ?? [];

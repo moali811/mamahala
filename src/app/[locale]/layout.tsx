@@ -8,6 +8,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { RegionProvider } from '@/components/region/RegionProvider';
 import { getGeoFromHeaders } from '@/lib/region';
+import TalkNowFab from '@/components/marketing/TalkNowFab';
 
 // ---- Metadata (template for child pages) ----
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
@@ -91,6 +92,7 @@ export default async function LocaleLayout({
         </main>
 
         <Footer locale={locale as Locale} messages={messages} />
+        <TalkNowFab locale={locale as 'en' | 'ar'} />
       </RegionProvider>
 
     </div>

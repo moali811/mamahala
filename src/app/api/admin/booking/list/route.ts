@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authorizeWithLimit } from '@/lib/invoicing/auth';
 import { kv } from '@vercel/kv';
 import type { Booking } from '@/lib/booking/types';
+import { getBookingsByCustomer, getBookingEligibilityWarnings } from '@/lib/booking/booking-store';
+import { services } from '@/data/services';
 
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 
@@ -45,7 +47,27 @@ export async function GET(request: NextRequest) {
     // Sort by creation date (newest first)
     bookings.sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''));
 
-    return NextResponse.json({ bookings });
+    // Eligibility warnings (sidecar map keyed by bookingId). Only computed
+    // for bookings whose service has the oncePerClient flag, to keep the
+    // KV scan cost bounded. Admin UI can render a chip when present.
+    const oncePerClientSlugs = services.filter(s => s.oncePerClient).map(s => s.slug);
+    const candidateBookings = oncePerClientSlugs.length > 0
+      ? bookings.filter(b => oncePerClientSlugs.includes(b.serviceSlug))
+      : [];
+    const warnings: Record<string, string[]> = {};
+    if (candidateBookings.length > 0) {
+      const byEmail = new Map<string, Booking[]>();
+      for (const b of candidateBookings) {
+        const e = b.clientEmail.toLowerCase();
+        if (!byEmail.has(e)) {
+          byEmail.set(e, await getBookingsByCustomer(e));
+        }
+        const w = getBookingEligibilityWarnings(b, byEmail.get(e)!, oncePerClientSlugs);
+        if (w.length > 0) warnings[b.bookingId] = w;
+      }
+    }
+
+    return NextResponse.json({ bookings, warnings });
   } catch (err) {
     console.error('[Admin Booking List] Error:', err);
     return NextResponse.json({ error: 'Failed to list bookings' }, { status: 500 });

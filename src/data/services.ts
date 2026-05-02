@@ -98,6 +98,11 @@ export const services: Service[] = [
     approach: 'A relaxed conversation to understand your needs and how we can best support you.',
     approachAr: 'محادثةٌ مريحةٌ لفهمِ احتياجاتِك وكيف يمكنُ لنا أن ندعمَك بأفضلِ طريقة.',
     faqs: [],
+    oncePerClient: true,
+    oncePerClientMessage: {
+      en: "You've already had your complimentary discovery session with us — welcome back. Would you like to book a 45-min Online/Phone Consultation instead?",
+      ar: 'لقد حصلتَ بالفعل على جلسةِ التّعارفِ المجّانيّة معنا — مرحبًا بعودتك. هل تودُّ حجزَ استشارةٍ عبرَ الإنترنت أو الهاتف لمدّةِ 45 دقيقة بدلًا من ذلك؟',
+    },
   },
   // ---- FLEXIBLE PAID CONSULTATION (returning clients, quick check-ins) ----
   {

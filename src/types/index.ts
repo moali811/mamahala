@@ -37,6 +37,16 @@ export interface Service {
   approach: string;
   approachAr: string;
   faqs: FAQ[];
+  /**
+   * When true, a single client (keyed by lowercased email) may only book this
+   * service once. Enforced server-side in /api/book/confirm. Eligibility is
+   * "consumed" only by an attended/no-show booking or a currently active one
+   * (pending/approved/confirmed) — cancellations and declines do not count.
+   * See consumesFreeConsultEligibility() in src/lib/booking/booking-store.ts.
+   */
+  oncePerClient?: boolean;
+  /** Bilingual message shown when oncePerClient gating rejects a booking. */
+  oncePerClientMessage?: { en: string; ar: string };
 }
 
 export interface ServiceCategoryInfo {

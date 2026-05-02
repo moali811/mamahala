@@ -29,6 +29,9 @@ import ReturningClientBanner from '@/components/booking/ReturningClientBanner';
 import SoftWelcomeBanner from '@/components/booking/SoftWelcomeBanner';
 import SelfServeRecurringStep from '@/components/booking/SelfServeRecurringStep';
 import FirstTimeEligibilityModal from '@/components/booking/FirstTimeEligibilityModal';
+import SmartFrontDoor from '@/components/booking/SmartFrontDoor';
+import SoonestAvailableCard from '@/components/booking/SoonestAvailableCard';
+import MobileCarousel from '@/components/ui/MobileCarousel';
 import type { SelfServeEligibility } from '@/lib/booking/self-serve-eligibility';
 import { scrollToElement } from '@/lib/scroll';
 
@@ -160,9 +163,10 @@ export default function BookPage() {
         />
       </div>
 
-      {/* Recognition banners — render only on early steps so they don't
-          distract from the active task once the user is mid-flow. */}
-      {step !== 'success' && (step === 'intake' || step === 'service') && (
+      {/* Recognition banners — only on the service step; the intake step
+          delegates the welcome to SmartFrontDoor, which already greets by
+          name and offers the rebook CTA as one of its primary cards. */}
+      {step === 'service' && (
         <>
           {formData.isAuthenticatedReturning && (
             <ReturningClientBanner
@@ -242,25 +246,74 @@ export default function BookPage() {
 
       {/* Step Content — wider for datetime step's two-column layout */}
       <div className={`mx-auto px-4 pb-8 sm:pb-16 ${step === 'datetime' ? 'max-w-5xl' : 'max-w-3xl'}`}>
-        <AnimatePresence mode="wait">
+        {/* Per-step motion wrapper. Intentionally NOT wrapped in
+            AnimatePresence — with React 19 + framer-motion v12, the
+            mode="wait" exit-animation never resolved, leaving the
+            previous step's content frozen on screen. The simple
+            per-step motion.div still gets the soft fade-in. */}
+        <motion.div
+          key={step}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+        >
+          {step === 'intake' ? <IntakeStep wizard={wizard} locale={locale} isRTL={isRTL} /> :
+           step === 'service' ? <ServiceStep wizard={wizard} locale={locale} isRTL={isRTL} /> :
+           step === 'datetime' ? <DateTimeStep wizard={wizard} locale={locale} isRTL={isRTL} onProviderTimezone={setProviderTimezone} onInPersonEnabled={setInPersonEnabled} /> :
+           step === 'info' ? <InfoStep wizard={wizard} locale={locale} isRTL={isRTL} providerTimezone={providerTimezone} inPersonEnabled={inPersonEnabled} /> :
+           step === 'confirm' ? <ConfirmStep wizard={wizard} locale={locale} isRTL={isRTL} /> :
+           step === 'success' ? <SuccessStep wizard={wizard} locale={locale} isRTL={isRTL} /> : null}
+        </motion.div>
+
+        {/* Gate Error — humane: not a red banner, offers a one-tap path forward */}
+        {wizard.gateError && (
           <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.3, ease: 'easeOut' }}
+            className="mt-4 p-5 rounded-2xl bg-[#FFFAF5] border border-[#7A3B5E]/20"
           >
-            {step === 'intake' && <IntakeStep wizard={wizard} locale={locale} isRTL={isRTL} />}
-            {step === 'service' && <ServiceStep wizard={wizard} locale={locale} isRTL={isRTL} />}
-            {step === 'datetime' && <DateTimeStep wizard={wizard} locale={locale} isRTL={isRTL} onProviderTimezone={setProviderTimezone} onInPersonEnabled={setInPersonEnabled} />}
-            {step === 'info' && <InfoStep wizard={wizard} locale={locale} isRTL={isRTL} providerTimezone={providerTimezone} inPersonEnabled={inPersonEnabled} />}
-            {step === 'confirm' && <ConfirmStep wizard={wizard} locale={locale} isRTL={isRTL} />}
-            {step === 'success' && <SuccessStep wizard={wizard} locale={locale} isRTL={isRTL} />}
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-full bg-[#7A3B5E]/10 flex items-center justify-center shrink-0">
+                <Heart className="w-4 h-4 text-[#7A3B5E]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-[#4A4A5C] leading-relaxed">{wizard.gateError.message}</p>
+                {wizard.gateError.suggestedServiceSlug && (() => {
+                  const suggested = services.find(s => s.slug === wizard.gateError!.suggestedServiceSlug);
+                  if (!suggested) return null;
+                  return (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const tier = suggested.pricingTierKey;
+                        const dur = PRICING_TIERS[tier]?.durationMinutes ?? 45;
+                        wizard.updateForm({
+                          serviceSlug: suggested.slug,
+                          serviceName: suggested.name,
+                          serviceNameAr: suggested.nameAr,
+                          serviceCategory: suggested.category,
+                          pricingTierKey: tier,
+                          durationMinutes: dur,
+                        });
+                        wizard.clearGateError();
+                        wizard.goToStep('datetime');
+                      }}
+                      className="mt-3 inline-flex items-center gap-2 rounded-xl bg-[#7A3B5E] hover:bg-[#69304F] text-white px-4 py-2 text-sm font-semibold transition-colors"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      {isRTL
+                        ? `حجز ${suggested.nameAr}`
+                        : `Book ${suggested.name} instead`}
+                    </button>
+                  );
+                })()}
+              </div>
+            </div>
           </motion.div>
-        </AnimatePresence>
+        )}
 
         {/* Error Banner */}
-        {error && (
+        {error && !wizard.gateError && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -317,10 +370,24 @@ export default function BookPage() {
 // ─── Step 1: AI Intake ──────────────────────────────────────────
 
 function IntakeStep({ wizard, locale, isRTL }: StepProps) {
+  const sp = useSearchParams();
+  const fast = sp.get('fast') === '1';
   const [text, setText] = useState(wizard.formData.intakeText);
   const [aiOpen, setAiOpen] = useState(false);
   const [eligibilityOpen, setEligibilityOpen] = useState(false);
   const isReturning = wizard.formData.isAuthenticatedReturning;
+  const isSoftRecognized = wizard.formData.isSoftRecognized;
+  // Hide the discovery-call tile both for authed returning clients AND
+  // for any client whose email recognition surfaced a prior free consult.
+  // Server gate in /api/book/confirm is the actual enforcement.
+  const hideDiscoveryTile = isReturning || wizard.formData.freeConsultUsed;
+  // Sub-view inside the intake step. 'door' = SmartFrontDoor; 'soonest'
+  // = inline SoonestAvailableCard (panic / on-the-go); 'classic' = the
+  // legacy intake tiles (browse + free + AI). Defaults to door for
+  // recognised + brand-new alike — only fast=1 forces soonest.
+  const [view, setView] = useState<'door' | 'soonest' | 'classic'>(
+    fast ? 'soonest' : 'door',
+  );
 
   const ForwardArrow = isRTL ? ArrowLeft : ArrowRight;
 
@@ -341,6 +408,121 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
     });
     wizard.goToStep('datetime');
   };
+
+  const pickService = (svc: typeof services[number]) => {
+    const tier = svc.pricingTierKey;
+    const duration = PRICING_TIERS[tier]?.durationMinutes ?? 50;
+    wizard.updateForm({
+      serviceSlug: svc.slug,
+      serviceName: svc.name,
+      serviceNameAr: svc.nameAr,
+      serviceCategory: svc.category,
+      pricingTierKey: tier,
+      durationMinutes: duration,
+    });
+  };
+
+  // Soonest pick: route based on whether the wizard already has the
+  // client's contact info. Recognized → confirm in one tap. Anonymous →
+  // info step to collect name/email, then confirm.
+  const handlePickSoonest = (picked: {
+    serviceSlug: string;
+    serviceName: string;
+    serviceNameAr: string;
+    durationMinutes: number;
+    startTime: string;
+    endTime: string;
+    sessionMode: 'online' | 'inPerson';
+  }) => {
+    const svc = services.find(s => s.slug === picked.serviceSlug);
+    if (svc) pickService(svc);
+    wizard.updateForm({
+      selectedDate: picked.startTime.slice(0, 10),
+      selectedStartTime: picked.startTime,
+      selectedEndTime: picked.endTime,
+      sessionMode: picked.sessionMode,
+    });
+    const hasContact = !!(wizard.formData.clientEmail && wizard.formData.clientName);
+    wizard.goToStep(hasContact ? 'confirm' : 'info');
+  };
+
+  const handleRebookFromDoor = (slug: string) => {
+    const svc = services.find(s => s.slug === slug);
+    if (!svc) return;
+    pickService(svc);
+    wizard.goToStep('datetime');
+  };
+
+  const handleIntent = (intent: 'soon' | 'explore' | 'browse') => {
+    if (intent === 'soon') {
+      setView('soonest');
+    } else if (intent === 'explore') {
+      setView('classic');
+      // Open the AI textarea on the classic view so the intent is honoured.
+      setTimeout(() => setAiOpen(true), 0);
+    } else {
+      goToServices();
+    }
+  };
+
+  // ─── View: SmartFrontDoor ──────────────────────────────────────
+  if (view === 'door' && !fast) {
+    return (
+      <SmartFrontDoor
+        locale={isRTL ? 'ar' : 'en'}
+        isRTL={isRTL}
+        fast={false}
+        isAuthenticatedReturning={isReturning}
+        isSoftRecognized={isSoftRecognized}
+        recognizedFirstName={wizard.formData.recognizedFirstName}
+        recognizedLastServiceSlug={wizard.formData.recognizedLastServiceSlug}
+        clientTimezone={wizard.formData.clientTimezone}
+        onRebookLast={handleRebookFromDoor}
+        onPickSoonest={handlePickSoonest}
+        onIntent={handleIntent}
+      />
+    );
+  }
+
+  // ─── View: Soonest (fast lane) ─────────────────────────────────
+  if (view === 'soonest') {
+    return (
+      <div className="space-y-4">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#2D2A33]" style={{ fontFamily: 'DM Serif Display, Georgia, serif' }}>
+            {isRTL ? 'تحدّث مع د. هالة — أقرب موعد' : 'Talk to Dr. Hala — soonest slot'}
+          </h1>
+          <p className="text-sm text-[#8E8E9F] max-w-md mx-auto">
+            {isRTL
+              ? 'سنبحث لك عن أقربِ فرصة. لن تُحجز إلّا بعد تأكيدك.'
+              : "We'll find the next opening. Nothing is booked until you confirm."}
+          </p>
+        </div>
+        <SoonestAvailableCard
+          locale={isRTL ? 'ar' : 'en'}
+          isRTL={isRTL}
+          clientTimezone={wizard.formData.clientTimezone}
+          empathyLine={isRTL
+            ? 'خذ نفسًا عميقًا. د. هالة هنا من أجلك.'
+            : 'Take a breath. Dr. Hala is here for you.'}
+          onConfirm={handlePickSoonest}
+        />
+        {!fast && (
+          <div className="text-center pt-2">
+            <button
+              type="button"
+              onClick={() => setView('door')}
+              className="text-xs text-[#7A3B5E] hover:underline"
+            >
+              {isRTL ? '← خياراتٌ أخرى' : '← Other options'}
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ─── View: Classic (the legacy intake tiles) ───────────────────
 
   return (
     <div className="space-y-4">
@@ -379,8 +561,9 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
         </div>
       </button>
 
-      {/* SECONDARY — Free discovery call (cream tile, hidden for returning clients) */}
-      {!isReturning && (
+      {/* SECONDARY — Free discovery call (cream tile, hidden for returning
+          clients and anyone who has already consumed the freebie). */}
+      {!hideDiscoveryTile && (
         <button
           type="button"
           onClick={() => setEligibilityOpen(true)}
@@ -488,6 +671,10 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
 
 function ServiceStep({ wizard, locale, isRTL }: StepProps) {
   const [activeCategory, setActiveCategory] = useState<ServiceCategory>('youth');
+  // Category-first browse: until the user taps a category tile, render
+  // 5 large tiles instead of 26 services. Reduces overwhelm. Skipped
+  // when AI recommendations are present (those become the headline).
+  const [categoryChosen, setCategoryChosen] = useState(false);
   // When the user explicitly skipped intake via "Browse services", treat the
   // free consultation as opt-in (small link below the grid) rather than the
   // headline tile. They've already declined; respect that without removing
@@ -497,6 +684,12 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
     try { setSkippedConsult(sessionStorage.getItem('mh:skip_consult') === '1'); } catch {}
   }, []);
   const { recommendations } = wizard.formData;
+  const hasRecommendations = recommendations.length > 0;
+  const hideFreeConsultTile = wizard.formData.freeConsultUsed
+    || wizard.formData.isAuthenticatedReturning;
+  // If we have AI recs, they replace the category carousel as the headline,
+  // and the user goes straight to category-tab navigation below.
+  const showCategoryGrid = !categoryChosen && !hasRecommendations;
 
   const selectService = (service: Service) => {
     const tier = service.pricingTierKey;
@@ -566,9 +759,10 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
       )}
 
       {/* Free Discovery Call — prominent tile above categories, UNLESS the
-          user explicitly skipped intake to browse services. In that case it's
-          rendered as a subtle link below the grid (see end of ServiceStep). */}
-      {!skippedConsult && (() => {
+          user explicitly skipped intake to browse services, OR they've
+          already used their freebie. In the skipped case it's rendered as
+          a subtle link below the grid (see end of ServiceStep). */}
+      {!skippedConsult && !hideFreeConsultTile && (() => {
         const freeConsult = getFreeConsultation();
         if (!freeConsult) return null;
         return (
@@ -593,24 +787,63 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
         );
       })()}
 
-      {/* Category Tabs */}
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        {serviceCategories.map(cat => (
-          <button
-            key={cat.key}
-            onClick={() => setActiveCategory(cat.key)}
-            className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 ${
-              activeCategory === cat.key
-                ? 'bg-[#7A3B5E] text-white shadow-sm'
-                : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
-            }`}
-          >
-            {isRTL ? cat.nameAr : cat.name}
-          </button>
-        ))}
-      </div>
+      {/* Category-first carousel — 5 large tiles. Hidden once a category
+          is chosen or when AI recs are leading the page. */}
+      {showCategoryGrid && (
+        <div className="space-y-3">
+          <p className="text-center text-sm text-[#8E8E9F]">
+            {isRTL ? 'ابدأ من فئة' : 'Start with a category'}
+          </p>
+          <MobileCarousel mobileWidth="70vw" gap={16} desktopGrid="sm:grid-cols-3 lg:grid-cols-5">
+            {serviceCategories.map(cat => {
+              const Icon = iconMap[cat.icon] ?? Heart;
+              return (
+                <button
+                  key={cat.key}
+                  type="button"
+                  onClick={() => { setActiveCategory(cat.key); setCategoryChosen(true); }}
+                  className="group w-full h-full text-start bg-white hover:bg-[#FAF7F2] rounded-2xl p-5 border-2 border-[#E8E0D8] hover:border-[#7A3B5E]/30 transition-all flex flex-col gap-3"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-[#7A3B5E]/10 flex items-center justify-center group-hover:bg-[#7A3B5E]/15 transition-colors">
+                    <Icon className="w-5 h-5 text-[#7A3B5E]" />
+                  </div>
+                  <div className="space-y-1">
+                    <p className="font-semibold text-[#4A4A5C] leading-tight">
+                      {isRTL ? cat.nameAr : cat.name}
+                    </p>
+                    <p className="text-xs text-[#8E8E9F] leading-snug line-clamp-2">
+                      {isRTL ? cat.subtitleAr : cat.subtitle}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </MobileCarousel>
+        </div>
+      )}
 
-      {/* Service List */}
+      {/* Category Tabs — shown after a category is chosen, or when AI recs
+          opened the page directly into category navigation. */}
+      {!showCategoryGrid && (
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          {serviceCategories.map(cat => (
+            <button
+              key={cat.key}
+              onClick={() => setActiveCategory(cat.key)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all duration-200 ${
+                activeCategory === cat.key
+                  ? 'bg-[#7A3B5E] text-white shadow-sm'
+                  : 'bg-white text-[#4A4A5C] border border-[#F3EFE8] hover:border-[#C4878A]/30 hover:text-[#7A3B5E]'
+              }`}
+            >
+              {isRTL ? cat.nameAr : cat.name}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Service List — only renders after category-first selection */}
+      {!showCategoryGrid && (
       <div className="space-y-2">
         {getServicesByCategory(activeCategory).map(svc => {
           const Icon = iconMap[svc.icon || ''] ?? Heart;
@@ -636,11 +869,12 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
           );
         })}
       </div>
+      )}
 
       {/* Demoted free-consultation link — only shown when the user explicitly
-          skipped intake. Keeps the option discoverable without re-pitching it
-          as the headline. */}
-      {skippedConsult && (() => {
+          skipped intake AND hasn't already used their freebie. Keeps the
+          option discoverable without re-pitching it as the headline. */}
+      {skippedConsult && !hideFreeConsultTile && (() => {
         const freeConsult = getFreeConsultation();
         if (!freeConsult) return null;
         return (
@@ -1338,11 +1572,19 @@ function InfoStep({ wizard, locale, isRTL, providerTimezone, inPersonEnabled = t
         body: JSON.stringify({ email: trimmed }),
       })
         .then(r => r.json())
-        .then(data => setRecognized(!!data?.recognized))
+        .then(data => {
+          setRecognized(!!data?.recognized);
+          // Pre-emptively flag if this email has already used the
+          // free consult — so the SmartFrontDoor / IntakeStep tile
+          // hides even before they verify via magic link.
+          if (data?.recognized && data?.freeConsultUsed) {
+            wizard.updateForm({ freeConsultUsed: true });
+          }
+        })
         .catch(() => setRecognized(false));
     }, 500);
     return () => clearTimeout(handle);
-  }, [email, isAuthed]);
+  }, [email, isAuthed]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sendMagicLink = async () => {
     if (!email.includes('@')) return;

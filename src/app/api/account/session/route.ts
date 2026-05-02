@@ -6,8 +6,9 @@
      - Self-serve eligibility (paidSessionsCount gate) */
 
 import { NextResponse } from 'next/server';
-import { getBookingSession, getBookingsByCustomer } from '@/lib/booking/booking-store';
+import { getBookingSession, getBookingsByCustomer, consumesFreeConsultEligibility } from '@/lib/booking/booking-store';
 import { getCustomer } from '@/lib/invoicing/customer-store';
+import { services } from '@/data/services';
 import { cookies } from 'next/headers';
 
 export async function GET() {
@@ -37,6 +38,14 @@ export async function GET() {
         && !b.refundedAmountCents,
     ).length;
 
+    // Free-consult-used flag — drives the SmartFrontDoor / IntakeStep tile
+    // visibility for authenticated returning clients. Server gate in
+    // /api/book/confirm is the actual enforcement.
+    const oncePerClientSlugs = services.filter(s => s.oncePerClient).map(s => s.slug);
+    const freeConsultUsed = oncePerClientSlugs.length > 0
+      ? bookings.some(b => oncePerClientSlugs.includes(b.serviceSlug) && consumesFreeConsultEligibility(b))
+      : false;
+
     const firstName = customer?.name?.split(' ')[0] ?? null;
 
     return NextResponse.json({
@@ -50,6 +59,7 @@ export async function GET() {
       preferredSessionMode: customer?.preferredSessionMode ?? null,
       creditCents: customer?.creditCents ?? 0,
       paidSessionsCount,
+      freeConsultUsed,
     });
   } catch {
     return NextResponse.json({ authenticated: false });

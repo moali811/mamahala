@@ -16,7 +16,7 @@
    ================================================================ */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { generateBookingId, saveBooking, createManageToken, getAvailabilityRules } from '@/lib/booking/booking-store';
+import { generateBookingId, saveBooking, createManageToken, getAvailabilityRules, getBookingsByCustomer, consumesFreeConsultEligibility } from '@/lib/booking/booking-store';
 import { isSlotAvailable } from '@/lib/booking/availability';
 import { fetchBusySlots } from '@/lib/booking/google-calendar';
 import { createCalendarEvent } from '@/lib/booking/google-calendar';
@@ -85,6 +85,29 @@ export async function POST(request: NextRequest) {
     const service = services.find(s => s.slug === body.serviceSlug);
     if (!service) {
       return NextResponse.json({ error: `Unknown service: ${body.serviceSlug}` }, { status: 400 });
+    }
+
+    // ─── Once-per-client gate (e.g. free discovery consultation) ───
+    // Server-side enforcement — the UI hides the tile for known returning
+    // clients, but anyone can POST a slug. This is the only gate that
+    // matters. Forgiving policy: cancellations and declines do not consume.
+    if (service.oncePerClient) {
+      const priorBookings = await getBookingsByCustomer(body.clientEmail);
+      const consumed = priorBookings.some(
+        b => b.serviceSlug === service.slug && consumesFreeConsultEligibility(b),
+      );
+      if (consumed) {
+        const lang: 'en' | 'ar' = body.preferredLanguage === 'ar' ? 'ar' : 'en';
+        return NextResponse.json(
+          {
+            error: 'free_consult_already_used',
+            message: service.oncePerClientMessage?.[lang]
+              ?? "You've already used this complimentary session. Please book a paid session instead.",
+            suggestedServiceSlug: 'online-phone-consultation',
+          },
+          { status: 403 },
+        );
+      }
     }
 
     // ─── Validate sessionMode against pricing tier ───────────
