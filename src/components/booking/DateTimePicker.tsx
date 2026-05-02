@@ -70,39 +70,89 @@ export default function DateTimePicker({
 
   const hasDateSelected = !!selectedDate;
 
-  // Fetch month availability
+  // Fetch month availability — with auto-refresh on focus / visibility
+  // / 60s poll so the calendar reflects bookings made on other devices
+  // without a manual page reload. Loading spinner only shows on the
+  // initial fetch; refreshes are silent so the user's view doesn't flicker.
   useEffect(() => {
-    setLoadingMonth(true);
-    fetch(`/api/book/availability/month?month=${currentMonth}&duration=${durationMinutes}`)
-      .then(r => r.json())
-      .then(data => {
-        setMonthData(data.dates ?? []);
-        if (data.timezone) { setProviderTimezone(data.timezone); onProviderTimezone?.(data.timezone); }
-      })
-      .catch(() => setMonthData([]))
-      .finally(() => setLoadingMonth(false));
-  }, [currentMonth, durationMinutes, onProviderTimezone]);
+    let cancelled = false;
+    let lastRun = 0;
+    let isInitial = true;
 
-  // Fetch day slots when date selected
+    const run = () => {
+      if (document.hidden) return;
+      const now = Date.now();
+      if (now - lastRun < 5000) return;
+      lastRun = now;
+      if (isInitial) setLoadingMonth(true);
+      fetch(`/api/book/availability/month?month=${currentMonth}&duration=${durationMinutes}`)
+        .then(r => r.json())
+        .then(data => {
+          if (cancelled) return;
+          setMonthData(data.dates ?? []);
+          if (data.timezone) { setProviderTimezone(data.timezone); onProviderTimezone?.(data.timezone); }
+        })
+        .catch(() => { if (!cancelled && isInitial) setMonthData([]); })
+        .finally(() => { if (!cancelled && isInitial) setLoadingMonth(false); isInitial = false; });
+    };
+
+    run();
+    const onFocus = () => { run(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    const interval = setInterval(run, 60_000);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentMonth, durationMinutes]);
+
+  // Fetch day slots when date selected — same auto-refresh pattern.
   useEffect(() => {
     if (!selectedDate) { setDaySlots([]); return; }
-    setLoadingDay(true);
+    let cancelled = false;
+    let lastRun = 0;
+    let isInitial = true;
     const tz = encodeURIComponent(clientTimezone);
-    fetch(`/api/book/availability?date=${selectedDate}&duration=${durationMinutes}&tz=${tz}`)
-      .then(r => r.json())
-      .then(data => {
-        setDaySlots(data.slots ?? []);
-        if (data.timezone) { setProviderTimezone(data.timezone); onProviderTimezone?.(data.timezone); }
-        if (typeof data.inPersonEnabled === 'boolean') onInPersonEnabled?.(data.inPersonEnabled);
-        // Scroll to slots on mobile. Layout-settle handles the AnimatePresence
-        // entrance animation, so we don't need a fixed-duration delay.
-        if (slotsRef.current) {
-          void scrollToElement(slotsRef.current);
-        }
-      })
-      .catch(() => setDaySlots([]))
-      .finally(() => setLoadingDay(false));
-  }, [selectedDate, durationMinutes, clientTimezone, onProviderTimezone, onInPersonEnabled]);
+    const url = `/api/book/availability?date=${selectedDate}&duration=${durationMinutes}&tz=${tz}`;
+
+    const run = () => {
+      if (document.hidden) return;
+      const now = Date.now();
+      if (now - lastRun < 5000) return;
+      lastRun = now;
+      if (isInitial) setLoadingDay(true);
+      fetch(url)
+        .then(r => r.json())
+        .then(data => {
+          if (cancelled) return;
+          setDaySlots(data.slots ?? []);
+          if (data.timezone) { setProviderTimezone(data.timezone); onProviderTimezone?.(data.timezone); }
+          if (typeof data.inPersonEnabled === 'boolean') onInPersonEnabled?.(data.inPersonEnabled);
+          // Scroll to slots on mobile only on the initial fetch — refreshes
+          // shouldn't yank the page down while the user is reading.
+          if (isInitial && slotsRef.current) void scrollToElement(slotsRef.current);
+        })
+        .catch(() => { if (!cancelled && isInitial) setDaySlots([]); })
+        .finally(() => { if (!cancelled && isInitial) setLoadingDay(false); isInitial = false; });
+    };
+
+    run();
+    const onFocus = () => { run(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    const interval = setInterval(run, 45_000);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDate, durationMinutes, clientTimezone]);
 
   const selectSlot = (slot: TimeSlot) => {
     onSlotSelect({ date: selectedDate, start: slot.start, end: slot.end });

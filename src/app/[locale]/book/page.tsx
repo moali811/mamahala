@@ -1798,35 +1798,53 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
         })
         .catch(() => { /* silent — single booking still works */ });
     }
-    // Tier 3 — proactive availability check. Only meaningful if we have a
-    // selected slot to verify; skip if state is incomplete (shouldn't happen
-    // by step 5 but defensive). Don't run if recovery is already active.
-    if (formData.selectedDate && formData.selectedStartTime && !inSlotRecovery) {
-      const tz = encodeURIComponent(formData.clientTimezone);
-      fetch(`/api/book/availability?date=${formData.selectedDate}&duration=${formData.durationMinutes}&tz=${tz}`)
+    // Tier 3 — proactive availability check. Re-runs on focus/visibility/
+    // 30s poll so that if someone else books the user's selected slot
+    // while they're reading the consent, the recovery card surfaces
+    // immediately instead of waiting for them to tap Confirm and 409.
+    // Only meaningful if we have a selected slot to verify; skips when
+    // recovery is already active so we don't loop the user.
+    if (!formData.selectedDate || !formData.selectedStartTime) {
+      return () => { cancelled = true; };
+    }
+    let lastRun = 0;
+    const tz = encodeURIComponent(formData.clientTimezone);
+    const url = `/api/book/availability?date=${formData.selectedDate}&duration=${formData.durationMinutes}&tz=${tz}`;
+    const run = () => {
+      if (document.hidden) return;
+      // Skip if recovery is active (cleared via gateError state read
+      // through the closure on each tick).
+      if (cancelled) return;
+      const now = Date.now();
+      if (now - lastRun < 5000) return;
+      lastRun = now;
+      fetch(url)
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
           if (cancelled || !data?.slots) return;
-          // Find the slot at the user's selected time and read its
-          // availability + reason. If not in the list at all, treat as
-          // unavailable with no reason (the listing changed underneath).
           const matched = (data.slots as TimeSlot[]).find(
             (s) => s.start === formData.selectedStartTime,
           );
           const stillAvailable = matched?.available === true;
           if (!stillAvailable) {
             // Slot is gone — surface the recovery card immediately via a
-            // direct gateError populate. NO POST to /api/book/confirm; the
-            // user will explicitly choose how to proceed (tap suggested
-            // slot, pick another time, or message us on WhatsApp). Pass
-            // through the API's reason ('busy' / 'buffer' / etc.) so the
-            // headline matches what actually happened.
+            // direct gateError populate. NO POST to /api/book/confirm.
             void triggerSlotConflictRecovery(matched?.reason);
           }
         })
         .catch(() => { /* silent — confirm tap will catch real conflicts */ });
-    }
-    return () => { cancelled = true; };
+    };
+    run();
+    const onFocus = () => { run(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    const interval = setInterval(run, 30_000);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+      clearInterval(interval);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // mount-only; intentionally not reactive to formData
 

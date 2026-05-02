@@ -114,16 +114,44 @@ export default function SoonestAvailableCard({
   const [error, setError] = useState<string | null>(null);
   const t = COPY[locale];
 
+  // Auto-refresh: fetch on mount, on tab focus / visibility regain, and
+  // on a 45s poll while the tab is visible. Booking availability changes
+  // continuously across clients (e.g. someone else books the slot from
+  // another device) — without auto-refresh, a stale Soonest card can
+  // suggest a slot that's no longer free. The throttle prevents hammering
+  // the API when focus events bounce in quick succession.
   useEffect(() => {
     let cancelled = false;
+    let lastRun = 0;
     const params = new URLSearchParams();
     if (serviceSlug) params.set('service', serviceSlug);
     if (clientTimezone) params.set('tz', clientTimezone);
-    fetch(`/api/book/soonest?${params.toString()}`)
-      .then(r => (r.ok ? r.json() : Promise.reject(new Error('lookup failed'))))
-      .then((d: SoonestResult) => { if (!cancelled) setData(d); })
-      .catch(() => { if (!cancelled) setError('lookup failed'); });
-    return () => { cancelled = true; };
+    const url = `/api/book/soonest?${params.toString()}`;
+
+    const run = () => {
+      if (document.hidden) return;
+      const now = Date.now();
+      if (now - lastRun < 5000) return;
+      lastRun = now;
+      fetch(url)
+        .then(r => (r.ok ? r.json() : Promise.reject(new Error('lookup failed'))))
+        .then((d: SoonestResult) => { if (!cancelled) { setData(d); setError(null); } })
+        .catch(() => { if (!cancelled && !data) setError('lookup failed'); });
+    };
+
+    run();
+    const onFocus = () => { run(); };
+    window.addEventListener('focus', onFocus);
+    document.addEventListener('visibilitychange', onFocus);
+    const interval = setInterval(run, 45_000);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('focus', onFocus);
+      document.removeEventListener('visibilitychange', onFocus);
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceSlug, clientTimezone]);
 
   if (error) {
