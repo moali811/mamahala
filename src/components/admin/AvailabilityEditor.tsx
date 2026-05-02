@@ -42,6 +42,12 @@ interface Props {
    * not threaded through (e.g. legacy callers).
    */
   bookings?: Booking[];
+  /**
+   * Refresh callback — invoked after the calendar performs a destructive
+   * action (e.g. deleting a stray booking inline) so the parent re-fetches
+   * the bookings list and the UI reflects the change without a manual reload.
+   */
+  onRefresh?: () => void;
 }
 
 const DAY_LABELS: Record<number, { short: string; full: string }> = {
@@ -64,7 +70,7 @@ const COMMON_TIMEZONES = [
   'Europe/London',
 ];
 
-export default function AvailabilityEditor({ password, bookings = [] }: Props) {
+export default function AvailabilityEditor({ password, bookings = [], onRefresh }: Props) {
   const [rules, setRules] = useState<AvailabilityRules | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -726,6 +732,7 @@ export default function AvailabilityEditor({ password, bookings = [] }: Props) {
             travelSchedule={travelSchedule}
             selectedDate={newBlockDate}
             onSelectDate={setNewBlockDate}
+            onRefresh={onRefresh}
           />
 
           <div className="bg-white rounded-xl border border-[#F0ECE8] p-4 space-y-3">

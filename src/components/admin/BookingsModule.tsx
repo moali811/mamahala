@@ -382,7 +382,13 @@ export default function BookingsModule({ password, initialFilter, openNewOnMount
       </div>
 
       {/* Availability editor */}
-      {topTab === 'availability' && <AvailabilityEditor password={password} bookings={bookings} />}
+      {topTab === 'availability' && (
+        <AvailabilityEditor
+          password={password}
+          bookings={bookings}
+          onRefresh={() => fetchBookings({ silent: true })}
+        />
+      )}
 
       {/* Live calendar view — month grid with bookings + GCal overlay */}
       {topTab === 'calendar' && (

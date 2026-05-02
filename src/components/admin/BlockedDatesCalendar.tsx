@@ -25,7 +25,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft, ChevronRight, AlertCircle, Plane, Lock,
-  CalendarX, X as XIcon, Sparkles,
+  CalendarX, X as XIcon, Sparkles, Trash2, Loader2,
 } from 'lucide-react';
 import type { Booking } from '@/lib/booking/types';
 import type { BlockedDate } from '@/lib/booking/types';
@@ -51,6 +51,12 @@ interface Props {
   travelSchedule: ProviderTravelSchedule | null;
   selectedDate: string;                // 'YYYY-MM-DD' | ''
   onSelectDate: (date: string) => void;
+  /**
+   * Optional refresh callback — invoked after the inline "Delete" action
+   * removes a stray booking so the parent re-fetches and the calendar
+   * stops showing the now-gone session.
+   */
+  onRefresh?: () => void;
 }
 
 // ─── Date helpers ───────────────────────────────────────────────
@@ -97,6 +103,7 @@ export default function BlockedDatesCalendar({
   travelSchedule,
   selectedDate,
   onSelectDate,
+  onRefresh,
 }: Props) {
   const today = useMemo(() => startOfDay(new Date()), []);
   const initialCursor = useMemo(() => {
@@ -108,6 +115,35 @@ export default function BlockedDatesCalendar({
   const [cursor, setCursor] = useState(initialCursor);
   const [gcalEvents, setGcalEvents] = useState<AdminCalendarEvent[]>([]);
   const [hoverDay, setHoverDay] = useState<string | null>(null);
+  // Per-booking delete state — Set of bookingIds currently being deleted (one
+  // at a time, but per-booking spinner so the UI stays responsive). The
+  // parent's onRefresh callback re-fetches bookings, after which the deleted
+  // entry naturally drops out of the list.
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  const handleDeleteBooking = useCallback(async (bookingId: string) => {
+    setDeleteError(null);
+    setDeletingIds(prev => { const next = new Set(prev); next.add(bookingId); return next; });
+    try {
+      const res = await fetch('/api/admin/booking/delete', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${password}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({})) as { error?: string };
+        throw new Error(err.error || `Delete failed (${res.status})`);
+      }
+      onRefresh?.();
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Delete failed');
+    } finally {
+      setDeletingIds(prev => { const next = new Set(prev); next.delete(bookingId); return next; });
+      setConfirmDeleteId(null);
+    }
+  }, [password, onRefresh]);
 
   const headers = useMemo(() => ({
     Authorization: `Bearer ${password}`,
@@ -500,7 +536,10 @@ export default function BlockedDatesCalendar({
         </div>
       </div>
 
-      {/* Selected-date conflict warning — surfaces above the form below */}
+      {/* Selected-date conflict warning — surfaces above the form below.
+          Now also exposes a per-session inline Delete so admin can clear out
+          stale/test bookings (e.g. abandoned pending_approval that auto-
+          approved into a phantom hold) without leaving this view. */}
       {(() => {
         const sel = parseYmd(selectedDate);
         if (!sel) return null;
@@ -516,39 +555,81 @@ export default function BlockedDatesCalendar({
                 <p className="text-xs font-semibold text-amber-900">
                   Heads up — {sel.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })} already has activity
                 </p>
-                <ul className="mt-1.5 space-y-0.5 text-[11px] text-amber-800">
-                  {sessionsOnDay.length > 0 && (
-                    <li className="flex items-center gap-1.5">
-                      <Sparkles className="w-3 h-3" />
-                      <span>
-                        <span className="font-semibold">{sessionsOnDay.length}</span> session{sessionsOnDay.length === 1 ? '' : 's'}
-                        {' — '}
-                        {sessionsOnDay.slice(0, 3).map(b => {
-                          const t = new Date(b.startTime);
-                          return `${pad(t.getHours())}:${pad(t.getMinutes())}`;
-                        }).join(', ')}
-                        {sessionsOnDay.length > 3 && '…'}
-                      </span>
-                    </li>
-                  )}
-                  {travelOnDay && (
-                    <li className="flex items-center gap-1.5">
-                      <Plane className="w-3 h-3" />
-                      Traveling: {travelOnDay.label}
-                    </li>
-                  )}
-                  {personalOnDay.length > 0 && (
-                    <li className="flex items-center gap-1.5">
-                      <Lock className="w-3 h-3" />
-                      {personalOnDay.length} personal event{personalOnDay.length === 1 ? '' : 's'} on Google Calendar
-                    </li>
-                  )}
-                </ul>
-                {sessionsOnDay.length > 0 && (
-                  <p className="mt-1.5 text-[10px] text-amber-700 italic">
-                    Blocking this day all-day won&apos;t cancel existing sessions, but new clients won&apos;t be able to book.
-                    Reschedule or cancel them first if you need the day fully clear.
+                {travelOnDay && (
+                  <p className="mt-1 flex items-center gap-1.5 text-[11px] text-amber-800">
+                    <Plane className="w-3 h-3" />
+                    Traveling: {travelOnDay.label}
                   </p>
+                )}
+                {personalOnDay.length > 0 && (
+                  <p className="mt-1 flex items-center gap-1.5 text-[11px] text-amber-800">
+                    <Lock className="w-3 h-3" />
+                    {personalOnDay.length} personal event{personalOnDay.length === 1 ? '' : 's'} on Google Calendar
+                  </p>
+                )}
+                {sessionsOnDay.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    <p className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-900">
+                      <Sparkles className="w-3 h-3" />
+                      {sessionsOnDay.length} session{sessionsOnDay.length === 1 ? '' : 's'}
+                    </p>
+                    <ul className="space-y-1">
+                      {sessionsOnDay.map(b => {
+                        const t = new Date(b.startTime);
+                        const time = `${pad(t.getHours())}:${pad(t.getMinutes())}`;
+                        const isDeleting = deletingIds.has(b.bookingId);
+                        const isConfirming = confirmDeleteId === b.bookingId;
+                        return (
+                          <li
+                            key={b.bookingId}
+                            className="flex items-center gap-2 px-2 py-1.5 rounded-lg bg-white/70 border border-amber-100 text-[11px]"
+                          >
+                            <span className="font-mono text-amber-900 tabular-nums">{time}</span>
+                            <span className="truncate text-[#2D2A33] flex-1 min-w-0">
+                              {b.clientName ?? 'Client'}
+                            </span>
+                            <span className="text-[9px] uppercase tracking-wider text-amber-700">
+                              {b.status}
+                            </span>
+                            {isConfirming ? (
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => handleDeleteBooking(b.bookingId)}
+                                  disabled={isDeleting}
+                                  className="px-2 py-0.5 rounded-md bg-red-600 text-white text-[10px] font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                  {isDeleting ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Delete'}
+                                </button>
+                                <button
+                                  onClick={() => setConfirmDeleteId(null)}
+                                  disabled={isDeleting}
+                                  className="px-2 py-0.5 rounded-md bg-white border border-amber-200 text-amber-900 text-[10px] font-semibold hover:bg-amber-50 transition-colors"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setConfirmDeleteId(b.bookingId)}
+                                aria-label={`Delete booking for ${b.clientName ?? 'client'}`}
+                                className="p-1 rounded-md text-amber-700 hover:text-red-600 hover:bg-red-50 transition-colors"
+                                title="Delete booking (use for test data / phantom holds)"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    {deleteError && (
+                      <p className="text-[10px] text-red-700 mt-1">{deleteError}</p>
+                    )}
+                    <p className="text-[10px] text-amber-700 italic">
+                      Blocking this day all-day won&apos;t cancel existing sessions, but new clients won&apos;t be able to book.
+                      Use Delete to remove a stale booking entirely, or open the Bookings tab to cancel/reschedule.
+                    </p>
+                  </div>
                 )}
               </div>
               <button
