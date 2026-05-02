@@ -155,8 +155,29 @@ export default function SmartFrontDoor(props: Props) {
 
         <MobileCarousel mobileWidth="85vw" gap={16} desktopGrid="sm:grid-cols-2">
           {[
-            // Same as last time — falls back to a quiet hint when we don't
-            // know their last service yet.
+            // Soonest — first card now (Mo's request: Soonest takes priority,
+            // Same-as-last is the secondary affordance below it).
+            <div key="soonest" className="rounded-2xl border-2 border-[#C8A97D]/30 bg-white p-5 h-full">
+              <div className="flex items-start gap-3 mb-3">
+                <div className="shrink-0 w-10 h-10 rounded-xl bg-[#C8A97D]/15 flex items-center justify-center">
+                  <Zap className="w-5 h-5 text-[#C8A97D]" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold text-[#4A4A5C]">{t.soonest}</p>
+                  <p className="text-xs text-[#8E8E9F] mt-1 leading-relaxed">{t.soonestSub}</p>
+                </div>
+              </div>
+              <SoonestAvailableCard
+                locale={locale}
+                isRTL={isRTL}
+                clientTimezone={clientTimezone}
+                embedded
+                onConfirm={onPickSoonest}
+                onPickAnotherTime={() => onIntent('browse')}
+              />
+            </div>,
+            // Same as last time — second card. Falls back to a quiet hint
+            // when we don't know their last service yet.
             <button
               key="last"
               type="button"
@@ -177,26 +198,6 @@ export default function SmartFrontDoor(props: Props) {
                 <ForwardArrow className="w-4 h-4 text-[#7A3B5E] opacity-60 group-hover:opacity-100 transition-opacity" />
               </div>
             </button>,
-            // Soonest — fetches its own slot
-            <div key="soonest" className="rounded-2xl border-2 border-[#C8A97D]/30 bg-white p-5 h-full">
-              <div className="flex items-start gap-3 mb-3">
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-[#C8A97D]/15 flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-[#C8A97D]" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-[#4A4A5C]">{t.soonest}</p>
-                  <p className="text-xs text-[#8E8E9F] mt-1 leading-relaxed">{t.soonestSub}</p>
-                </div>
-              </div>
-              <SoonestAvailableCard
-                locale={locale}
-                isRTL={isRTL}
-                clientTimezone={clientTimezone}
-                embedded
-                onConfirm={onPickSoonest}
-                onPickAnotherTime={() => onIntent('browse')}
-              />
-            </div>,
           ]}
         </MobileCarousel>
 
