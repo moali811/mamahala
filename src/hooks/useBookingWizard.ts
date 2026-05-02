@@ -418,6 +418,66 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
     }
   }, [updateForm, goToStep]);
 
+  // ─── Slot-conflict recovery: populate gateError without POSTing confirm ───
+  // Used by ConfirmStep's Tier 3 proactive guard: when /api/book/availability
+  // shows the user's selected slot is already taken on step-5 mount, we want
+  // to surface the warm recovery card immediately. The previous design fired
+  // confirmBooking() to trigger the same 409 path — that worked, but it ALSO
+  // showed the user a "Confirming..." spinner and POSTed their info to the
+  // server BEFORE they ticked consent. From the user's perspective, the
+  // booking looked like it was auto-completing without their explicit action,
+  // which is unacceptable.
+  // This helper does the same recovery setup (soonest fetch + setGateError)
+  // without any POST to /api/book/confirm. No spinner, no apparent
+  // auto-submit, no rate-limit budget burned, no bypassed consent.
+  const triggerSlotConflictRecovery = useCallback(async () => {
+    const fd = formDataRef.current;
+    slotConflictRetryRef.current += 1;
+    const retryCount = slotConflictRetryRef.current;
+    try {
+      const params = new URLSearchParams({
+        service: fd.serviceSlug,
+        from: fd.selectedStartTime,
+      });
+      if (fd.clientTimezone) params.set('tz', fd.clientTimezone);
+      const soonestRes = await fetch(`/api/book/soonest?${params.toString()}`);
+      if (!soonestRes.ok) throw new Error('soonest lookup failed');
+      const soonestData = await soonestRes.json() as
+        | {
+            slot: { startTime: string; endTime: string; durationMinutes: number; locationLabel: string };
+          }
+        | { noSlotAvailable: true };
+      if ('noSlotAvailable' in soonestData) {
+        setGateError({
+          code: 'slot_unavailable',
+          message: 'Time slot is no longer available',
+          noneInHorizon: true,
+          retryCount,
+        });
+      } else if (soonestData.slot.startTime === fd.selectedStartTime) {
+        setGateError({
+          code: 'slot_unavailable',
+          message: 'Time slot is no longer available',
+          retryCount: Math.max(retryCount, 3),
+        });
+      } else {
+        setGateError({
+          code: 'slot_unavailable',
+          message: 'Time slot is no longer available',
+          suggestedSlot: soonestData.slot,
+          retryCount,
+        });
+      }
+    } catch {
+      setGateError({
+        code: 'slot_unavailable',
+        message: 'Time slot is no longer available',
+        networkError: true,
+        retryCount,
+      });
+    }
+  }, []);
+
   // ─── Slot-conflict recovery: swap slot and re-fire confirm ───
   // One-tap recovery from the suggested-slot CTA or the inline picker.
   // Updates form state synchronously, mirrors it into formDataRef so
@@ -521,6 +581,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
     submitIntake,
     confirmBooking,
     swapSlotAndConfirm,
+    triggerSlotConflictRecovery,
     submitSeries,
     reset,
     setError,

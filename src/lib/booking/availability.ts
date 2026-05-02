@@ -217,7 +217,28 @@ export async function getAvailableSlots(
   //    Pending-review bookings hold their slot while an admin reviews
   //    the invoice; if the hold expires, the slot is freed without
   //    mutating the record (lazy sweep).
-  const existingBookings = await getHeldBookingsForDate(date);
+  //
+  //    TZ-BOUNDARY CORRECTNESS: held bookings are indexed under their
+  //    startTime's UTC date (see saveBooking in booking-store.ts), but
+  //    candidate slots above are generated for `date` interpreted as a
+  //    PROVIDER calendar day. When provider tz is east of UTC (Dubai =
+  //    UTC+4), provider-day N spans UTC days N-1 (last few hours) and N
+  //    (first 20 hours). A held booking at midnight Dubai May 4 has UTC
+  //    date 2026-05-03 — fetching only `getHeldBookingsForDate('2026-05-04')`
+  //    misses it entirely and the slot wrongly serves as available.
+  //    Fetch ±1 UTC day to cover the boundary; the rangesOverlap filter
+  //    below correctly drops bookings that don't actually overlap our
+  //    candidates, so the wider fetch is safe.
+  const baseDateMs = new Date(`${date}T12:00:00Z`).getTime();
+  const dayBeforeStr = new Date(baseDateMs - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const dayAfterStr = new Date(baseDateMs + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+  const [holdsBefore, holdsToday, holdsAfter] = await Promise.all([
+    getHeldBookingsForDate(dayBeforeStr),
+    getHeldBookingsForDate(date),
+    getHeldBookingsForDate(dayAfterStr),
+  ]);
+  const existingBookings = [...holdsBefore, ...holdsToday, ...holdsAfter];
+
   const bookedRanges: TimeRange[] = existingBookings.map(b => ({
     start: b.startTime,
     // Extend by buffer on both sides for gap enforcement
@@ -242,8 +263,17 @@ export async function getAvailableSlots(
     end: createSlotTime(date, s.end, timezone),
   }));
 
-  // 8. Check max sessions per day
-  const confirmedCount = existingBookings.length;
+  // 8. Check max sessions per day. existingBookings now spans ±1 UTC day
+  //    for tz-boundary correctness (see step 5), so filter to bookings
+  //    whose startTime falls within the PROVIDER day's UTC window before
+  //    counting. Otherwise a quiet today + busy tomorrow could falsely
+  //    trip the per-day limit.
+  const providerDayStartUtc = toUTC(date, '00:00', timezone).getTime();
+  const providerDayEndUtc = toUTC(dayAfterStr, '00:00', timezone).getTime();
+  const confirmedCount = existingBookings.filter(b => {
+    const startMs = new Date(b.startTime).getTime();
+    return startMs >= providerDayStartUtc && startMs < providerDayEndUtc;
+  }).length;
   const maxReached = confirmedCount >= effectiveRules.maxSessionsPerDay;
 
   // 9. Filter each candidate

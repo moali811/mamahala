@@ -1751,7 +1751,7 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
   const [consent, setConsent] = useState(false);
   const [recurringExpanded, setRecurringExpanded] = useState(false);
   const [eligibility, setEligibility] = useState<SelfServeEligibility | null>(null);
-  const { formData, confirmBooking, submitSeries, isLoading, gateError, swapSlotAndConfirm } = wizard;
+  const { formData, confirmBooking, submitSeries, isLoading, gateError, swapSlotAndConfirm, triggerSlotConflictRecovery } = wizard;
 
   // Slot-conflict recovery mode — controls whether the recovery card shows
   // the suggested-slot CTA (default) or the inline picker (after the user
@@ -1779,9 +1779,15 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
   // returning clients with the gate met see the "Make this recurring?"
   // expander; everyone else sees the standard single-booking confirm flow.
   // Also runs the Tier 3 proactive slot guard in parallel — if the user's
-  // selected slot has already been taken before they tap confirm, kick the
-  // recovery flow immediately by firing confirmBooking (which 409s and
-  // populates gateError). Single code path; no duplicated logic.
+  // selected slot has already been taken before they tap confirm, populate
+  // gateError DIRECTLY (via triggerSlotConflictRecovery, which fetches
+  // /api/book/soonest and surfaces the warm card) WITHOUT POSTing to
+  // /api/book/confirm. The earlier design fired confirmBooking() to trigger
+  // the same 409 path — but that showed a "Confirming..." spinner and
+  // posted the user's name/email/phone to the server before they ticked
+  // consent, which looked like the booking was auto-completing without
+  // their explicit action. Now: silent availability check → direct
+  // gateError population. No spinner, no unauthorized POST.
   useEffect(() => {
     let cancelled = false;
     if (formData.isAuthenticatedReturning) {
@@ -1805,10 +1811,11 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
             (s) => s.start === formData.selectedStartTime && s.available,
           );
           if (!stillAvailable) {
-            // Slot is gone — fire confirmBooking to surface the recovery card
-            // via the same 409 path. This way the user never wastes a tap on
-            // a doomed confirm attempt.
-            void confirmBooking();
+            // Slot is gone — surface the recovery card immediately via a
+            // direct gateError populate. NO POST to /api/book/confirm; the
+            // user will explicitly choose how to proceed (tap suggested
+            // slot, pick another time, or message us on WhatsApp).
+            void triggerSlotConflictRecovery();
           }
         })
         .catch(() => { /* silent — confirm tap will catch real conflicts */ });
