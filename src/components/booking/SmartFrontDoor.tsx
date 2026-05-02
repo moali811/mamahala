@@ -39,6 +39,15 @@ interface PickedSlot {
   sessionMode: 'online' | 'inPerson';
 }
 
+interface PickAnotherTimeSuggestion {
+  serviceSlug: string;
+  serviceName: string;
+  serviceNameAr: string;
+  durationMinutes: number;
+  sessionMode: 'online' | 'inPerson';
+  date: string;
+}
+
 interface Props {
   locale: 'en' | 'ar';
   isRTL: boolean;
@@ -54,6 +63,9 @@ interface Props {
   onPickSoonest: (picked: PickedSlot) => void;
   /** "Help me find" → existing AI intake flow */
   onIntent: (intent: Intent) => void;
+  /** "Or pick another time →" tap inside the Soonest card → wizard
+   *  pre-fills service + soonest date and jumps to the datetime step. */
+  onPickAnotherTime: (suggested: PickAnotherTimeSuggestion) => void;
 }
 
 const COPY = {
@@ -109,7 +121,7 @@ export default function SmartFrontDoor(props: Props) {
     isAuthenticatedReturning, isSoftRecognized,
     recognizedFirstName, recognizedLastServiceSlug,
     clientTimezone,
-    onRebookLast, onPickSoonest, onIntent,
+    onRebookLast, onPickSoonest, onIntent, onPickAnotherTime,
   } = props;
   const t = COPY[locale];
   const ForwardArrow = isRTL ? ArrowLeft : ArrowRight;
@@ -129,7 +141,7 @@ export default function SmartFrontDoor(props: Props) {
           clientTimezone={clientTimezone}
           empathyLine={t.fastEmpathyNoWhen}
           onConfirm={onPickSoonest}
-          onPickAnotherTime={() => onIntent('browse')}
+          onPickAnotherTime={onPickAnotherTime}
         />
       </div>
     );
@@ -173,7 +185,7 @@ export default function SmartFrontDoor(props: Props) {
                 clientTimezone={clientTimezone}
                 embedded
                 onConfirm={onPickSoonest}
-                onPickAnotherTime={() => onIntent('browse')}
+                onPickAnotherTime={onPickAnotherTime}
               />
             </div>,
             // Same as last time — second card. Falls back to a quiet hint

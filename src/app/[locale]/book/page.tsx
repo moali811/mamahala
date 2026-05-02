@@ -458,6 +458,28 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
     wizard.goToStep('datetime');
   };
 
+  // "Or pick another time →" inside the Soonest card. Pre-fills the
+  // service the card was showing and the soonest available date so the
+  // calendar in the datetime step opens at the first available day.
+  const handlePickAnotherTime = (suggested: {
+    serviceSlug: string;
+    serviceName: string;
+    serviceNameAr: string;
+    durationMinutes: number;
+    sessionMode: 'online' | 'inPerson';
+    date: string;
+  }) => {
+    const svc = services.find(s => s.slug === suggested.serviceSlug);
+    if (svc) pickService(svc);
+    wizard.updateForm({
+      selectedDate: suggested.date,
+      selectedStartTime: '',
+      selectedEndTime: '',
+      sessionMode: suggested.sessionMode,
+    });
+    wizard.goToStep('datetime');
+  };
+
   const handleIntent = (intent: 'soon' | 'explore' | 'browse') => {
     if (intent === 'soon') {
       setView('soonest');
@@ -485,6 +507,7 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
         onRebookLast={handleRebookFromDoor}
         onPickSoonest={handlePickSoonest}
         onIntent={handleIntent}
+        onPickAnotherTime={handlePickAnotherTime}
       />
     );
   }
@@ -511,6 +534,7 @@ function IntakeStep({ wizard, locale, isRTL }: StepProps) {
             ? 'خذ نفسًا عميقًا. د. هالة هنا من أجلك.'
             : 'Take a breath. Dr. Hala is here for you.'}
           onConfirm={handlePickSoonest}
+          onPickAnotherTime={handlePickAnotherTime}
         />
         {!fast && (
           <div className="text-center pt-2">

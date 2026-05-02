@@ -24,7 +24,7 @@ import { buildConfirmationEmail, sendBookingEmail, notifyAdmin } from '@/lib/boo
 import { dispatchToAllAdmins } from '@/lib/push/dispatch';
 import { generateSessionPrepTips } from '@/lib/booking/ai-session-prep';
 import { processBookingIntake } from '@/lib/invoicing/booking-intake';
-import { getCustomer } from '@/lib/invoicing/customer-store';
+import { getCustomer, type CustomerInput } from '@/lib/invoicing/customer-store';
 import { getEffectiveLocation } from '@/lib/booking/provider-location';
 import { services } from '@/data/services';
 import { PRICING_TIERS, tierOffersMode, type PricingTierKey } from '@/config/pricing';
@@ -275,7 +275,7 @@ export async function POST(request: NextRequest) {
       const { upsertCustomer } = await import('@/lib/invoicing/customer-store');
       const { appendAudit, hashIp } = await import('@/lib/audit/log');
       const consent = body.consentRememberMe === true;
-      const updates: Record<string, unknown> = {
+      const updates: CustomerInput = {
         email: booking.clientEmail,
         name: booking.clientName,
         phone: booking.clientPhone,
@@ -289,7 +289,7 @@ export async function POST(request: NextRequest) {
           policyVersion: '2026-04',
         };
       }
-      await upsertCustomer(updates as never, 'auto-from-invoice');
+      await upsertCustomer(updates, 'auto-from-invoice');
       if (consent) {
         await appendAudit({
           actor: 'client',

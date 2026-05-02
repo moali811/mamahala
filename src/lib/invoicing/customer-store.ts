@@ -82,6 +82,9 @@ export interface CustomerInput {
   zohoCustomerId?: string;
   effectiveInitials?: string;
   nextInvoiceSeq?: number;
+  lastBookedServiceSlug?: string;
+  preferredSessionMode?: 'online' | 'inPerson';
+  consentRememberMe?: Customer['consentRememberMe'];
 }
 
 /**
@@ -121,6 +124,12 @@ export async function upsertCustomer(
             input.effectiveInitials ?? existing.effectiveInitials,
           nextInvoiceSeq:
             input.nextInvoiceSeq ?? existing.nextInvoiceSeq,
+          lastBookedServiceSlug:
+            input.lastBookedServiceSlug ?? existing.lastBookedServiceSlug,
+          preferredSessionMode:
+            input.preferredSessionMode ?? existing.preferredSessionMode,
+          consentRememberMe:
+            input.consentRememberMe ?? existing.consentRememberMe,
           updatedAt: now,
         }
       : {
@@ -139,6 +148,9 @@ export async function upsertCustomer(
           zohoCustomerId: input.zohoCustomerId,
           effectiveInitials: input.effectiveInitials,
           nextInvoiceSeq: input.nextInvoiceSeq,
+          lastBookedServiceSlug: input.lastBookedServiceSlug,
+          preferredSessionMode: input.preferredSessionMode,
+          consentRememberMe: input.consentRememberMe,
           totalInvoices: 0,
           totalPaidCAD: 0,
           outstandingCAD: 0,

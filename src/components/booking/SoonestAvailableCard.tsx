@@ -56,8 +56,17 @@ interface Props {
   /** Optional escape hatch — when provided, renders a small secondary
    *  "Or pick another time →" link below the primary CTA. Lets users who
    *  don't like the soonest slot jump to the standard date/time picker
-   *  without having to back out and re-choose an intent. */
-  onPickAnotherTime?: () => void;
+   *  without having to back out and re-choose an intent. Receives the
+   *  service + soonest date so the parent can pre-fill the wizard and
+   *  open the calendar at the first available day. */
+  onPickAnotherTime?: (suggested: {
+    serviceSlug: string;
+    serviceName: string;
+    serviceNameAr: string;
+    durationMinutes: number;
+    sessionMode: 'online' | 'inPerson';
+    date: string;
+  }) => void;
 }
 
 const COPY = {
@@ -251,7 +260,20 @@ export default function SoonestAvailableCard({
       {onPickAnotherTime && (
         <button
           type="button"
-          onClick={onPickAnotherTime}
+          onClick={() => onPickAnotherTime({
+            serviceSlug: data.service.slug,
+            serviceName: data.service.name,
+            serviceNameAr: data.service.nameAr,
+            durationMinutes: data.service.durationMinutes,
+            sessionMode: data.service.sessionMode,
+            // Format YYYY-MM-DD in the client's timezone — slicing the UTC ISO
+            // string gets the wrong day when the slot is in a TZ ahead of UTC
+            // (e.g. an 8 PM UTC slot is "tomorrow" in Asia/Qostanay).
+            date: new Intl.DateTimeFormat('en-CA', {
+              timeZone: tz,
+              year: 'numeric', month: '2-digit', day: '2-digit',
+            }).format(new Date(data.slot.startTime)),
+          })}
           className="w-full mt-2 text-xs sm:text-sm text-[#7A3B5E] hover:underline font-medium transition-colors"
         >
           {t.pickAnother}
