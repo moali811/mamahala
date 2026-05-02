@@ -53,12 +53,18 @@ interface Props {
     endTime: string;
     sessionMode: 'online' | 'inPerson';
   }) => void;
+  /** Optional escape hatch — when provided, renders a small secondary
+   *  "Or pick another time →" link below the primary CTA. Lets users who
+   *  don't like the soonest slot jump to the standard date/time picker
+   *  without having to back out and re-choose an intent. */
+  onPickAnotherTime?: () => void;
 }
 
 const COPY = {
   en: {
     loading: 'Finding the next opening with Dr. Hala…',
     cta: 'Book this slot',
+    pickAnother: 'Or pick another time →',
     noneTitle: 'No slot in the next 2 weeks',
     noneBody: 'Send a quick message and we\'ll get back to you within 24 hours.',
     whatsappCta: 'Message us on WhatsApp',
@@ -71,6 +77,7 @@ const COPY = {
   ar: {
     loading: 'جارٍ إيجادُ أقربِ موعدٍ مع د. هالة…',
     cta: 'احجز هذا الموعد',
+    pickAnother: '← أو اختر وقتًا آخر',
     noneTitle: 'لا توجد مواعيدُ ضمنَ الأسبوعينِ القادمينِ',
     noneBody: 'أرسلْ رسالةً سريعةً وسنردُّ عليك خلالَ 24 ساعة.',
     whatsappCta: 'راسلنا عبر واتساب',
@@ -101,6 +108,7 @@ export default function SoonestAvailableCard({
   empathyLine,
   embedded = false,
   onConfirm,
+  onPickAnotherTime,
 }: Props) {
   const [data, setData] = useState<SoonestResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -206,11 +214,21 @@ export default function SoonestAvailableCard({
           endTime: data.slot.endTime,
           sessionMode: data.service.sessionMode,
         })}
-        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] hover:bg-[#69304F] active:scale-[0.99] text-white px-4 py-3 text-sm font-semibold transition-all"
+        className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] hover:bg-[#69304F] active:scale-[0.99] text-white px-4 py-2.5 sm:py-3 text-sm font-semibold transition-all"
       >
         <Calendar className="w-4 h-4" />
         {t.cta}
       </button>
+
+      {onPickAnotherTime && (
+        <button
+          type="button"
+          onClick={onPickAnotherTime}
+          className="w-full mt-2 text-xs sm:text-sm text-[#7A3B5E] hover:underline font-medium transition-colors"
+        >
+          {t.pickAnother}
+        </button>
+      )}
     </motion.div>
   );
 }

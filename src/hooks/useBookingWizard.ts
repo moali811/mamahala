@@ -140,6 +140,12 @@ export interface GateError {
   /** For slot_unavailable — how many times the recovery CTA itself has 409'd.
    *  When >= 2, the renderer falls through to the inline picker. */
   retryCount?: number;
+  /** For slot_unavailable — the underlying availability reason from the API
+   *  ('busy' / 'buffer' / 'max-reached' / 'blocked' / 'past' / 'outside-hours' /
+   *  'lock-contention'). Drives a reason-aware headline so we don't say
+   *  "That time was just booked" when actually it's a buffer conflict with
+   *  an adjacent session. */
+  reason?: string;
 }
 
 export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
@@ -313,6 +319,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
           error?: string;
           message?: string;
           suggestedServiceSlug?: string;
+          reason?: string;
         };
 
         // Rate-limit hit: warm message + WhatsApp escape hatch instead of
@@ -369,6 +376,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
                 message: errData.message || 'Time slot is no longer available',
                 noneInHorizon: true,
                 retryCount,
+                reason: errData.reason,
               });
             } else if (soonestData.slot.startTime === fd.selectedStartTime) {
               // Defensive: if soonest returned the EXACT slot we just tried
@@ -382,6 +390,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
                 code: 'slot_unavailable',
                 message: errData.message || 'Time slot is no longer available',
                 retryCount: Math.max(retryCount, 3),
+                reason: errData.reason,
               });
             } else {
               setGateError({
@@ -389,6 +398,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
                 message: errData.message || 'Time slot is no longer available',
                 suggestedSlot: soonestData.slot,
                 retryCount,
+                reason: errData.reason,
               });
             }
           } catch {
@@ -397,6 +407,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
               message: errData.message || 'Time slot is no longer available',
               networkError: true,
               retryCount,
+              reason: errData.reason,
             });
           }
           return;
@@ -430,7 +441,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
   // This helper does the same recovery setup (soonest fetch + setGateError)
   // without any POST to /api/book/confirm. No spinner, no apparent
   // auto-submit, no rate-limit budget burned, no bypassed consent.
-  const triggerSlotConflictRecovery = useCallback(async () => {
+  const triggerSlotConflictRecovery = useCallback(async (reason?: string) => {
     const fd = formDataRef.current;
     slotConflictRetryRef.current += 1;
     const retryCount = slotConflictRetryRef.current;
@@ -453,12 +464,14 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
           message: 'Time slot is no longer available',
           noneInHorizon: true,
           retryCount,
+          reason,
         });
       } else if (soonestData.slot.startTime === fd.selectedStartTime) {
         setGateError({
           code: 'slot_unavailable',
           message: 'Time slot is no longer available',
           retryCount: Math.max(retryCount, 3),
+          reason,
         });
       } else {
         setGateError({
@@ -466,6 +479,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
           message: 'Time slot is no longer available',
           suggestedSlot: soonestData.slot,
           retryCount,
+          reason,
         });
       }
     } catch {
@@ -474,21 +488,28 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
         message: 'Time slot is no longer available',
         networkError: true,
         retryCount,
+        reason,
       });
     }
   }, []);
 
-  // ─── Slot-conflict recovery: swap slot and re-fire confirm ───
-  // One-tap recovery from the suggested-slot CTA or the inline picker.
-  // Updates form state synchronously, mirrors it into formDataRef so
-  // confirmBooking sees the new slot immediately, then re-fires confirm.
+  // ─── Slot-conflict recovery: swap slot, NO auto-confirm ───
+  // The user has tapped a suggested-slot CTA (Tier 1) or picked a slot in
+  // the inline picker (Tier 2). We swap the slot in formData and clear the
+  // recovery card — but we DO NOT POST to /api/book/confirm. The user must
+  // explicitly tap the standard "Confirm Booking" button (which is gated by
+  // the consent checkbox, as always). This was previously `swapSlotAndConfirm`
+  // which auto-fired confirm — that bypassed the consent gate. Renamed and
+  // the auto-fire removed: swapping a slot is state, confirming is the
+  // contract.
   // Picker selections reset the retry counter — the user is making a fresh
   // choice, not racing against an automated retry.
-  const swapSlotAndConfirm = useCallback(
+  const swapSlot = useCallback(
     (start: string, end: string, date: string, fromPicker = false) => {
       if (fromPicker) slotConflictRetryRef.current = 0;
-      // Mirror into ref synchronously so confirmBooking (which reads via ref)
-      // sees the new slot on this same call, not after the next render.
+      // Mirror into ref synchronously so any subsequent fetch (e.g. the
+      // proactive Tier 3 check or a manual confirm tap) reads the new slot
+      // without waiting for the next render.
       formDataRef.current = {
         ...formDataRef.current,
         selectedDate: date,
@@ -501,9 +522,11 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
         selectedStartTime: start,
         selectedEndTime: end,
       }));
-      void confirmBooking();
+      // Clear the recovery card so the standard summary + Confirm Booking
+      // flow comes back, now reflecting the swapped slot.
+      setGateError(null);
     },
-    [confirmBooking],
+    [],
   );
 
   // ─── Self-serve series submit (Phase C) ────────────────────
@@ -580,7 +603,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
     canGoNext,
     submitIntake,
     confirmBooking,
-    swapSlotAndConfirm,
+    swapSlot,
     triggerSlotConflictRecovery,
     submitSeries,
     reset,

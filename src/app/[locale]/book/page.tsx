@@ -1751,7 +1751,7 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
   const [consent, setConsent] = useState(false);
   const [recurringExpanded, setRecurringExpanded] = useState(false);
   const [eligibility, setEligibility] = useState<SelfServeEligibility | null>(null);
-  const { formData, confirmBooking, submitSeries, isLoading, gateError, swapSlotAndConfirm, triggerSlotConflictRecovery } = wizard;
+  const { formData, confirmBooking, submitSeries, isLoading, gateError, swapSlot, triggerSlotConflictRecovery } = wizard;
 
   // Slot-conflict recovery mode — controls whether the recovery card shows
   // the suggested-slot CTA (default) or the inline picker (after the user
@@ -1807,15 +1807,21 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
         .then((r) => (r.ok ? r.json() : null))
         .then((data) => {
           if (cancelled || !data?.slots) return;
-          const stillAvailable = (data.slots as TimeSlot[]).some(
-            (s) => s.start === formData.selectedStartTime && s.available,
+          // Find the slot at the user's selected time and read its
+          // availability + reason. If not in the list at all, treat as
+          // unavailable with no reason (the listing changed underneath).
+          const matched = (data.slots as TimeSlot[]).find(
+            (s) => s.start === formData.selectedStartTime,
           );
+          const stillAvailable = matched?.available === true;
           if (!stillAvailable) {
             // Slot is gone — surface the recovery card immediately via a
             // direct gateError populate. NO POST to /api/book/confirm; the
             // user will explicitly choose how to proceed (tap suggested
-            // slot, pick another time, or message us on WhatsApp).
-            void triggerSlotConflictRecovery();
+            // slot, pick another time, or message us on WhatsApp). Pass
+            // through the API's reason ('busy' / 'buffer' / etc.) so the
+            // headline matches what actually happened.
+            void triggerSlotConflictRecovery(matched?.reason);
           }
         })
         .catch(() => { /* silent — confirm tap will catch real conflicts */ });
@@ -1836,14 +1842,39 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
   // Recovery card copy — these live close to the component to avoid an
   // i18n round-trip for what is a single namespace; if it grows, lift to
   // the message bundles.
+  // Reason-aware headline: the API returns slotCheck.reason ('busy' / 'buffer'
+  // / 'max-reached' / 'blocked' / 'past' / 'outside-hours' / 'lock-contention')
+  // so we can be honest about WHY the slot didn't go through. Default ('busy'
+  // and lock-contention) keeps the warm "just booked" framing.
+  const reasonHeadline = (reason: string | undefined): string => {
+    if (isRTL) {
+      switch (reason) {
+        case 'buffer':       return 'يقعُ هذا الوقتُ قريبًا جدًّا من جلسةٍ أخرى';
+        case 'max-reached':  return 'لدى د. هالة جدولٌ مكتملٌ في ذلك اليوم';
+        case 'blocked':      return 'هذا الوقتُ غيرُ متاحٍ في ذلك اليوم';
+        case 'past':         return 'لقد مضى ذلك الوقت';
+        case 'outside-hours':return 'يقعُ هذا الوقتُ خارجَ ساعاتِ العمل';
+        default:             return 'للأسف، حُجز هذا الوقت للتو';
+      }
+    }
+    switch (reason) {
+      case 'buffer':        return 'That time is too close to another session';
+      case 'max-reached':   return 'Dr. Hala has a full day on that date';
+      case 'blocked':       return 'That time is on hold for the day';
+      case 'past':          return 'That time has already passed';
+      case 'outside-hours': return 'That time is outside our working hours';
+      default:              return 'That time was just booked';
+    }
+  };
+
   const recoveryCopy = isRTL
     ? {
-        headline: 'للأسف، حُجز هذا الوقت للتو',
-        subline: 'حجزه شخصٌ آخرُ قبل لحظات. إليك أقربَ موعدٍ متاح — معلوماتُك محفوظة.',
+        headline: reasonHeadline(gateError?.reason),
+        subline: 'إليك أقربَ موعدٍ متاح — معلوماتُك محفوظة.',
         findingNext: 'جارٍ إيجادُ الموعدِ التالي…',
-        primaryCtaPrefix: 'احجز',
+        primaryCtaPrefix: 'استخدم',
         primaryCtaInfix: 'الساعة',
-        primaryCtaSuffix: 'بدلاً من ذلك',
+        primaryCtaSuffix: '',
         secondaryCta: 'اختر وقتًا آخر',
         pickerPrompt: 'اختر وقتًا جديدًا',
         retryFailed: 'حُجز هذا أيضًا للتو — إليك التالي المتاح.',
@@ -1852,12 +1883,12 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
         networkError: 'تعذّر الاتصال بالتقويم. اختر وقتًا من الأسفل.',
       }
     : {
-        headline: 'That time was just booked',
-        subline: "Someone reserved it a moment before you. Here's the next opening — your details are saved.",
+        headline: reasonHeadline(gateError?.reason),
+        subline: "Here's the next opening — your details are saved.",
         findingNext: 'Finding the next opening…',
-        primaryCtaPrefix: 'Book',
+        primaryCtaPrefix: 'Use',
         primaryCtaInfix: 'at',
-        primaryCtaSuffix: 'instead',
+        primaryCtaSuffix: '',
         secondaryCta: 'Pick another time',
         pickerPrompt: 'Choose a new time',
         retryFailed: 'That one was just taken too — here\'s the next available.',
@@ -1963,15 +1994,15 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-2xl bg-[#FFFAF5] border border-[#7A3B5E]/20 p-5 sm:p-6 space-y-4"
+          className="rounded-2xl bg-[#FFFAF5] border border-[#7A3B5E]/20 p-4 sm:p-6 space-y-3 sm:space-y-4"
         >
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-[#7A3B5E]/10 flex items-center justify-center shrink-0">
-              <Heart className="w-5 h-5 text-[#7A3B5E]" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#7A3B5E]/10 flex items-center justify-center shrink-0">
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-[#7A3B5E]" />
             </div>
             <div className="flex-1 min-w-0 space-y-1">
-              <p className="font-semibold text-[#4A4A5C]">{recoveryCopy.headline}</p>
-              <p className="text-sm text-[#6B6580] leading-relaxed">{recoveryCopy.subline}</p>
+              <p className="font-semibold text-[#4A4A5C] text-sm sm:text-base leading-snug">{recoveryCopy.headline}</p>
+              <p className="text-xs sm:text-sm text-[#6B6580] leading-relaxed">{recoveryCopy.subline}</p>
             </div>
           </div>
 
@@ -2007,11 +2038,16 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
                   }
                 })();
                 return (
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     <button
                       type="button"
                       onClick={() => {
-                        swapSlotAndConfirm(
+                        // SWAP ONLY — does not POST to /api/book/confirm.
+                        // After swap, the recovery card hides and the
+                        // standard summary + Confirm Booking button reappear
+                        // with the new time. User must explicitly tick
+                        // consent (if not already) and tap Confirm Booking.
+                        swapSlot(
                           gateError.suggestedSlot!.startTime,
                           gateError.suggestedSlot!.endTime,
                           sDateOnly,
@@ -2019,22 +2055,19 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
                         );
                       }}
                       disabled={isLoading}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] hover:bg-[#69304F] active:scale-[0.99] text-white px-4 py-3 text-sm font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] hover:bg-[#69304F] active:scale-[0.99] text-white px-4 py-2.5 sm:py-3 text-sm font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      {isLoading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Calendar className="w-4 h-4" />
-                      )}
+                      <Calendar className="w-4 h-4" />
                       <span>
-                        {recoveryCopy.primaryCtaPrefix} {sDate} {recoveryCopy.primaryCtaInfix} {sTime} {recoveryCopy.primaryCtaSuffix}
+                        {recoveryCopy.primaryCtaPrefix} {sDate} {recoveryCopy.primaryCtaInfix} {sTime}
+                        {recoveryCopy.primaryCtaSuffix ? ` ${recoveryCopy.primaryCtaSuffix}` : ''}
                       </span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setRecoveryMode('picker')}
                       disabled={isLoading}
-                      className="w-full text-sm text-[#7A3B5E] hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full text-xs sm:text-sm text-[#7A3B5E] hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {recoveryCopy.secondaryCta}
                     </button>
@@ -2066,7 +2099,10 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
           )}
 
           {/* Tier 2 — Inline picker. Auto-rendered on network error, after
-              retry exhaustion, or when the user taps "Pick another time". */}
+              retry exhaustion, or when the user taps "Pick another time".
+              Picking a slot here SWAPS the slot in the summary and clears
+              the recovery card; it does NOT POST to /api/book/confirm. The
+              user must still tick consent + tap Confirm Booking explicitly. */}
           {recoveryMode === 'picker' && !gateError?.noneInHorizon && (
             <div className="pt-2 border-t border-[#7A3B5E]/10">
               <p className="text-xs font-semibold uppercase tracking-wider text-[#7A3B5E]/70 mb-3">
@@ -2080,7 +2116,7 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
                 isRTL={isRTL}
                 variant="inline"
                 onSlotSelect={(slot) => {
-                  swapSlotAndConfirm(slot.start, slot.end, slot.date, true);
+                  swapSlot(slot.start, slot.end, slot.date, true);
                 }}
               />
             </div>

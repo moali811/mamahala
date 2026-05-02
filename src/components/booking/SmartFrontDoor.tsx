@@ -129,6 +129,7 @@ export default function SmartFrontDoor(props: Props) {
           clientTimezone={clientTimezone}
           empathyLine={t.fastEmpathyNoWhen}
           onConfirm={onPickSoonest}
+          onPickAnotherTime={() => onIntent('browse')}
         />
       </div>
     );
@@ -193,6 +194,7 @@ export default function SmartFrontDoor(props: Props) {
                 clientTimezone={clientTimezone}
                 embedded
                 onConfirm={onPickSoonest}
+                onPickAnotherTime={() => onIntent('browse')}
               />
             </div>,
           ]}
