@@ -151,21 +151,33 @@ export async function POST(request: NextRequest) {
     }
 
     // ─── Verify slot availability for every requested slot ──────
-    // De-dupe by date to minimize GCal busy fetches.
-    const datesNeeded = Array.from(new Set(slots.map((s) => s.startTime.slice(0, 10))));
+    // Fetch GCal busy with a ±1-day window per slot to handle timezone
+    // boundaries (e.g. midnight Dubai = 8 PM UTC the prior day). De-dupe
+    // by UTC date to minimize fetches.
+    const datesNeeded = new Set<string>();
+    for (const s of slots) {
+      const startMs = new Date(s.startTime).getTime();
+      const endMs = new Date(s.endTime).getTime();
+      datesNeeded.add(new Date(startMs - 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+      datesNeeded.add(new Date(startMs).toISOString().slice(0, 10));
+      datesNeeded.add(new Date(endMs + 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+    }
     const busyByDate = new Map<string, Awaited<ReturnType<typeof fetchBusySlots>>>();
     for (const date of datesNeeded) {
       const busy = await fetchBusySlots(date, date).catch(() => []);
       busyByDate.set(date, busy);
     }
     for (const slot of slots) {
-      const date = slot.startTime.slice(0, 10);
-      const result = await isSlotAvailable(
-        date,
-        slot.startTime,
-        slot.endTime,
-        busyByDate.get(date) ?? [],
-      );
+      const startMs = new Date(slot.startTime).getTime();
+      const endMs = new Date(slot.endTime).getTime();
+      // Merge busy events from the surrounding ±1 day window for this slot.
+      const surroundingDates = [
+        new Date(startMs - 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+        new Date(startMs).toISOString().slice(0, 10),
+        new Date(endMs + 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
+      ];
+      const busy = surroundingDates.flatMap((d) => busyByDate.get(d) ?? []);
+      const result = await isSlotAvailable(null, slot.startTime, slot.endTime, busy);
       if (!result.available) {
         return NextResponse.json(
           { error: `Slot ${slot.startTime} is no longer available: ${result.reason ?? 'unavailable'}` },

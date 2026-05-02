@@ -151,8 +151,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const busySlots = await fetchBusySlots(date, date);
-    const slotCheck = await isSlotAvailable(date, body.startTime, body.endTime, busySlots);
+    // Fetch GCal busy for both UTC days the slot might span. A slot near
+    // a timezone boundary (e.g. midnight Dubai = 8 PM UTC the prior day)
+    // can have its UTC start and end land on different days; fetching
+    // [date-1, date+1] covers any 1-day spread without missing busy events.
+    const startDateObj = new Date(body.startTime);
+    const endDateObj = new Date(body.endTime);
+    const busyStart = new Date(startDateObj.getTime() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const busyEnd = new Date(endDateObj.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const busySlots = await fetchBusySlots(busyStart, busyEnd);
+    const slotCheck = await isSlotAvailable(null, body.startTime, body.endTime, busySlots);
 
     if (!slotCheck.available) {
       // Release lock if we acquired one

@@ -359,17 +359,36 @@ export async function getMonthAvailability(
 /**
  * Verify that a specific time slot is still available at confirmation time.
  * This is the critical check that prevents double-bookings.
+ *
+ * The `date` parameter is IGNORED (kept for signature stability) — we derive
+ * the correct day-of-the-schedule from `startTime` in the provider's
+ * timezone. Callers historically passed `startTime.slice(0, 10)` (UTC date),
+ * which produced false negatives at timezone boundaries: a slot at midnight
+ * in the provider tz (e.g. 2026-05-03T20:00Z = midnight Dubai May 4) has
+ * UTC date = "2026-05-03" but belongs to the May-4 provider schedule. The
+ * UTC-date hint then made `getAvailableSlots` generate the wrong day's
+ * candidates and `find()` returned undefined → bogus 409 on a legitimately
+ * available slot.
  */
 export async function isSlotAvailable(
-  date: string,
+  _date: string | null,
   startTime: string,
   endTime: string,
   busySlots?: CachedBusySlot[],
 ): Promise<{ available: boolean; reason?: string }> {
-  const durationMs = new Date(endTime).getTime() - new Date(startTime).getTime();
+  const startDate = new Date(startTime);
+  const providerTz = await getEffectiveTimezone(startDate);
+  const providerDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: providerTz,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(startDate);
+
+  const durationMs = new Date(endTime).getTime() - startDate.getTime();
   const durationMinutes = Math.round(durationMs / 60_000);
 
-  const slots = await getAvailableSlots(date, durationMinutes, busySlots);
+  const slots = await getAvailableSlots(providerDate, durationMinutes, busySlots);
 
   // Find a slot that matches the requested time
   const matchingSlot = slots.find(

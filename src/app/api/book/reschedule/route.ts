@@ -88,9 +88,14 @@ export async function POST(request: NextRequest) {
     }
 
     // ─── Validate new slot ──────────────────────────────────
-    const date = newStartTime.slice(0, 10);
-    const busySlots = await fetchBusySlots(date, date);
-    const slotCheck = await isSlotAvailable(date, newStartTime, newEndTime, busySlots);
+    // Fetch a ±1-day window so slots near timezone boundaries (e.g. midnight
+    // Dubai = 8 PM UTC the prior day) get their busy events correctly checked.
+    const newStartDate = new Date(newStartTime);
+    const newEndDate = new Date(newEndTime);
+    const busyStart = new Date(newStartDate.getTime() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const busyEnd = new Date(newEndDate.getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const busySlots = await fetchBusySlots(busyStart, busyEnd);
+    const slotCheck = await isSlotAvailable(null, newStartTime, newEndTime, busySlots);
     if (!slotCheck.available) {
       return NextResponse.json(
         { error: 'New time slot is not available', reason: slotCheck.reason },
