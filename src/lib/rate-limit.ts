@@ -89,10 +89,33 @@ export function limitMagicLink(ip: string) {
   return check(`rl:magic-link:${ip}:${hour}`, 5, 3600);
 }
 
-/** Booking confirm: 5 per hour per IP */
+/** Booking confirm: 15 per hour per IP. Higher than gift/contact because
+ *  the booking recovery flow legitimately re-fires confirm on each
+ *  swap-and-retry (Tier 1 suggested-slot tap, Tier 3 mount-time guard,
+ *  inline-picker re-pick). Pair with `refundBookingLimit()` on 409 paths
+ *  so a failed slot check doesn't burn budget — only successful saves
+ *  (and validation failures past spamCheck) consume the limit. */
 export function limitBooking(ip: string) {
   const hour = Math.floor(Date.now() / 3_600_000);
-  return check(`rl:booking:${ip}:${hour}`, 5, 3600);
+  return check(`rl:booking:${ip}:${hour}`, 15, 3600);
+}
+
+/** Refund a single booking-limit hit. Called when /api/book/confirm
+ *  rejects with 409 slot_unavailable (lock contention, calendar conflict)
+ *  or 403 once-per-client gate — those outcomes don't create a booking,
+ *  so the legitimate "try a different slot" or "switch service" retry
+ *  shouldn't be punished. Idempotent enough for our needs: kv.decr can
+ *  briefly go negative under racing refunds, which still satisfies
+ *  `count <= limit`. */
+export async function refundBookingLimit(ip: string): Promise<void> {
+  if (!KV_AVAILABLE) return;
+  const hour = Math.floor(Date.now() / 3_600_000);
+  try {
+    await kv.decr(`rl:booking:${ip}:${hour}`);
+  } catch {
+    // KV down → silently skip the refund. The user will eat one limit
+    // slot for an unsuccessful attempt, which is acceptable.
+  }
 }
 
 /** Pay-concierge token lookup: 60 per hour per IP. Tokens are 122-bit

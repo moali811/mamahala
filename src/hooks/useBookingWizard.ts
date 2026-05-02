@@ -314,6 +314,21 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
           message?: string;
           suggestedServiceSlug?: string;
         };
+
+        // Rate-limit hit: warm message + WhatsApp escape hatch instead of
+        // the cold red banner. The /api/book/confirm 429 path now refunds
+        // budget on 409s, but a real spam attack or extreme stress-testing
+        // can still hit this — give the user a path forward instead of a
+        // dead end.
+        if (res.status === 429) {
+          const lang = fd.preferredLanguage === 'ar' ? 'ar' : 'en';
+          throw new Error(
+            lang === 'ar'
+              ? 'تلقّينا الكثير من الطلبات. يُرجى الانتظارُ بضعَ دقائقَ والمحاولةُ مرّةً أخرى — أو التواصلُ معنا عبر واتساب وسنُساعدُك على إتمامِ الحجزِ مباشرةً.'
+              : 'We received a lot of requests in a short time. Please wait a couple of minutes and try again — or message us on WhatsApp and we\'ll get you booked directly.',
+          );
+        }
+
         // Humane handling for the once-per-client gate: surface the
         // friendly message via gateError (renders the "book paid instead"
         // inline CTA) and remember that this email used it.

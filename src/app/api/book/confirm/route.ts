@@ -30,7 +30,7 @@ import { services } from '@/data/services';
 import { PRICING_TIERS, tierOffersMode, type PricingTierKey } from '@/config/pricing';
 import type { Booking, BookingConfirmationResult, SessionMode } from '@/lib/booking/types';
 import { spamCheck, isValidEmail } from '@/lib/spam-guard';
-import { getClientIp, limitBooking } from '@/lib/rate-limit';
+import { getClientIp, limitBooking, refundBookingLimit } from '@/lib/rate-limit';
 import { SITE_URL } from '@/lib/site-url';
 
 interface ConfirmRequest {
@@ -98,6 +98,9 @@ export async function POST(request: NextRequest) {
       );
       if (consumed) {
         const lang: 'en' | 'ar' = body.preferredLanguage === 'ar' ? 'ar' : 'en';
+        // No booking created — refund the rate-limit budget so the user
+        // can switch to the suggested paid service without burning a slot.
+        await refundBookingLimit(ip);
         return NextResponse.json(
           {
             error: 'free_consult_already_used',
@@ -136,6 +139,9 @@ export async function POST(request: NextRequest) {
         // NX = only set if key doesn't exist; EX = auto-expire after 30 seconds
         const result = await kv.set(lockKey, '1', { nx: true, ex: 30 });
         if (!result) {
+          // No booking created — refund the rate-limit budget so the
+          // recovery flow's swap-and-retry doesn't burn it.
+          await refundBookingLimit(ip);
           return NextResponse.json(
             {
               error: 'slot_unavailable',
@@ -170,6 +176,9 @@ export async function POST(request: NextRequest) {
           await kv.del(lockKey);
         } catch {}
       }
+      // No booking created — refund the rate-limit budget so the recovery
+      // flow's swap-and-retry doesn't burn it.
+      await refundBookingLimit(ip);
       return NextResponse.json(
         {
           error: 'slot_unavailable',

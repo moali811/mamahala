@@ -20,7 +20,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { spamCheck } from '@/lib/spam-guard';
-import { getClientIp, limitBooking } from '@/lib/rate-limit';
+import { getClientIp, limitBooking, refundBookingLimit } from '@/lib/rate-limit';
 import {
   getBookingSession,
   getBookingsByCustomer,
@@ -179,6 +179,8 @@ export async function POST(request: NextRequest) {
       const busy = surroundingDates.flatMap((d) => busyByDate.get(d) ?? []);
       const result = await isSlotAvailable(null, slot.startTime, slot.endTime, busy);
       if (!result.available) {
+        // No booking created — refund the rate-limit budget.
+        await refundBookingLimit(ip);
         return NextResponse.json(
           { error: `Slot ${slot.startTime} is no longer available: ${result.reason ?? 'unavailable'}` },
           { status: 409 },
