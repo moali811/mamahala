@@ -122,9 +122,24 @@ function readCookie(name: string): string | null {
 const STEP_ORDER: BookingStep[] = ['intake', 'service', 'datetime', 'info', 'confirm', 'success'];
 
 export interface GateError {
-  code: string;
+  code: 'free_consult_already_used' | 'slot_unavailable';
   message: string;
+  /** For free_consult_already_used — service to switch to. */
   suggestedServiceSlug?: string;
+  /** For slot_unavailable — next slot at-or-after the user's original time. */
+  suggestedSlot?: {
+    startTime: string;
+    endTime: string;
+    durationMinutes: number;
+    locationLabel: string;
+  };
+  /** For slot_unavailable — soonest endpoint returned nothing in 30 days. */
+  noneInHorizon?: boolean;
+  /** For slot_unavailable — soonest fetch failed (network). Picker should auto-render. */
+  networkError?: boolean;
+  /** For slot_unavailable — how many times the recovery CTA itself has 409'd.
+   *  When >= 2, the renderer falls through to the inline picker. */
+  retryCount?: number;
 }
 
 export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
@@ -139,6 +154,18 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
 
   // Honeypot: record mount time for timing-based bot detection
   const mountTime = useRef(Date.now());
+  // Slot-conflict recovery retry counter. Increments each time the recovery
+  // CTA re-fires confirm and gets 409 back. At >= 2 the renderer falls
+  // through to the inline picker (Tier 2). Reset whenever a non-409 outcome
+  // occurs (success, navigation away, picker selection) — see swapSlotAndConfirm.
+  const slotConflictRetryRef = useRef(0);
+  // Live mirror of formData. The recovery flow's swapSlotAndConfirm calls
+  // setFormData then schedules confirmBooking via setTimeout — by the time
+  // the timeout fires, React has flushed the state update, but the captured
+  // confirmBooking closure may still hold the OLD formData. Reading through
+  // this ref inside confirmBooking sidesteps the stale-closure issue.
+  const formDataRef = useRef<BookingFormData>(formData);
+  useEffect(() => { formDataRef.current = formData; }, [formData]);
 
   // ─── Hydrate from existing session ───────────────────────────
   // PIPEDA-friendly: only auto-fills personal fields when the client is
@@ -199,6 +226,8 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
 
   const goToStep = useCallback((newStep: BookingStep) => {
     setError(null);
+    setGateError(null);
+    slotConflictRetryRef.current = 0;
     setStep(newStep);
   }, []);
 
@@ -214,6 +243,8 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
     const prevIdx = stepIndex - 1;
     if (prevIdx >= 0) {
       setError(null);
+      setGateError(null);
+      slotConflictRetryRef.current = 0;
       setStep(STEP_ORDER[prevIdx]);
     }
   }, [stepIndex]);
@@ -247,28 +278,31 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
   }, [updateForm, goToStep]);
 
   // ─── Step 5: Confirm Booking ───────────────────────────────
+  // Reads formData via formDataRef (not the closure) so swapSlotAndConfirm
+  // can update state and call this immediately without stale data.
   const confirmBooking = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
+      const fd = formDataRef.current;
       const res = await fetch('/api/book/confirm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          serviceSlug: formData.serviceSlug,
-          startTime: formData.selectedStartTime,
-          endTime: formData.selectedEndTime,
-          clientName: formData.clientName,
-          clientEmail: formData.clientEmail,
-          clientPhone: formData.clientPhone || undefined,
-          clientTimezone: formData.clientTimezone,
-          clientCountry: formData.clientCountry || undefined,
-          preferredLanguage: formData.preferredLanguage,
-          sessionMode: formData.sessionMode,
-          notes: formData.notes || undefined,
-          aiIntakeNotes: formData.intakeText || undefined,
-          consentRememberMe: formData.consentRememberMe,
-          consentWhatsapp: formData.consentWhatsapp,
+          serviceSlug: fd.serviceSlug,
+          startTime: fd.selectedStartTime,
+          endTime: fd.selectedEndTime,
+          clientName: fd.clientName,
+          clientEmail: fd.clientEmail,
+          clientPhone: fd.clientPhone || undefined,
+          clientTimezone: fd.clientTimezone,
+          clientCountry: fd.clientCountry || undefined,
+          preferredLanguage: fd.preferredLanguage,
+          sessionMode: fd.sessionMode,
+          notes: fd.notes || undefined,
+          aiIntakeNotes: fd.intakeText || undefined,
+          consentRememberMe: fd.consentRememberMe,
+          consentWhatsapp: fd.consentWhatsapp,
           _hp: '',
           _t: mountTime.current,
         }),
@@ -292,18 +326,97 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
           });
           return;
         }
+
+        // Slot-conflict recovery: someone else booked the slot, or the lock
+        // was held by a parallel request. Don't show a red banner — fetch
+        // the next available slot at-or-after the user's original time and
+        // surface the warm "That time was just booked" recovery card.
+        // ConfirmStep renders the recovery UI; this hook just populates state.
+        if (res.status === 409 && errData?.error === 'slot_unavailable') {
+          slotConflictRetryRef.current += 1;
+          const retryCount = slotConflictRetryRef.current;
+          try {
+            const params = new URLSearchParams({
+              service: fd.serviceSlug,
+              from: fd.selectedStartTime,
+            });
+            if (fd.clientTimezone) params.set('tz', fd.clientTimezone);
+            const soonestRes = await fetch(`/api/book/soonest?${params.toString()}`);
+            if (!soonestRes.ok) throw new Error('soonest lookup failed');
+            const soonestData = await soonestRes.json() as
+              | {
+                  slot: { startTime: string; endTime: string; durationMinutes: number; locationLabel: string };
+                }
+              | { noSlotAvailable: true };
+            if ('noSlotAvailable' in soonestData) {
+              setGateError({
+                code: 'slot_unavailable',
+                message: errData.message || 'Time slot is no longer available',
+                noneInHorizon: true,
+                retryCount,
+              });
+            } else {
+              setGateError({
+                code: 'slot_unavailable',
+                message: errData.message || 'Time slot is no longer available',
+                suggestedSlot: soonestData.slot,
+                retryCount,
+              });
+            }
+          } catch {
+            setGateError({
+              code: 'slot_unavailable',
+              message: errData.message || 'Time slot is no longer available',
+              networkError: true,
+              retryCount,
+            });
+          }
+          return;
+        }
+
         throw new Error(errData.error || 'Failed to confirm booking');
       }
 
+      // Success — clear any prior recovery state.
+      slotConflictRetryRef.current = 0;
       const result: BookingConfirmationResult = await res.json();
       updateForm({ confirmationResult: result });
+      setGateError(null);
       goToStep('success');
     } catch (err: any) {
       setError(err.message || 'Something went wrong');
     } finally {
       setIsLoading(false);
     }
-  }, [formData, updateForm, goToStep]);
+  }, [updateForm, goToStep]);
+
+  // ─── Slot-conflict recovery: swap slot and re-fire confirm ───
+  // One-tap recovery from the suggested-slot CTA or the inline picker.
+  // Updates form state synchronously, mirrors it into formDataRef so
+  // confirmBooking sees the new slot immediately, then re-fires confirm.
+  // Picker selections reset the retry counter — the user is making a fresh
+  // choice, not racing against an automated retry.
+  const swapSlotAndConfirm = useCallback(
+    (start: string, end: string, date: string, fromPicker = false) => {
+      if (fromPicker) slotConflictRetryRef.current = 0;
+      // Mirror into ref synchronously so confirmBooking (which reads via ref)
+      // sees the new slot on this same call, not after the next render.
+      formDataRef.current = {
+        ...formDataRef.current,
+        selectedDate: date,
+        selectedStartTime: start,
+        selectedEndTime: end,
+      };
+      setFormData(prev => ({
+        ...prev,
+        selectedDate: date,
+        selectedStartTime: start,
+        selectedEndTime: end,
+      }));
+      void confirmBooking();
+    },
+    [confirmBooking],
+  );
 
   // ─── Self-serve series submit (Phase C) ────────────────────
   // Posts to /api/book/confirm-series and redirects the browser
@@ -379,6 +492,7 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
     canGoNext,
     submitIntake,
     confirmBooking,
+    swapSlotAndConfirm,
     submitSeries,
     reset,
     setError,

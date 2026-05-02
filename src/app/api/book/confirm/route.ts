@@ -137,7 +137,11 @@ export async function POST(request: NextRequest) {
         const result = await kv.set(lockKey, '1', { nx: true, ex: 30 });
         if (!result) {
           return NextResponse.json(
-            { error: 'This time slot is being booked by another client. Please try again.' },
+            {
+              error: 'slot_unavailable',
+              message: 'This time slot is being booked by another client. Please try again.',
+              reason: 'lock-contention',
+            },
             { status: 409 },
           );
         }
@@ -159,7 +163,11 @@ export async function POST(request: NextRequest) {
         } catch {}
       }
       return NextResponse.json(
-        { error: 'Time slot is no longer available', reason: slotCheck.reason },
+        {
+          error: 'slot_unavailable',
+          message: 'Time slot is no longer available',
+          reason: slotCheck.reason,
+        },
         { status: 409 },
       );
     }

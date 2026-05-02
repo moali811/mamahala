@@ -8,6 +8,10 @@
      service?  service slug (default: online-phone-consultation)
      tz?       client IANA timezone (display only — slot is provider tz)
      within?   horizon in days, max 30 (default: 14)
+     from?     ISO 8601 timestamp — walk forward from this date instead
+               of today. Used by step-5 slot-conflict recovery to find
+               the next opening AT OR AFTER the user's originally chosen
+               time, not "soonest from now" which could go backwards.
 
    Response:
      {
@@ -60,20 +64,33 @@ export async function GET(request: NextRequest) {
   const tier = PRICING_TIERS[service.pricingTierKey as PricingTierKey];
   const durationMinutes = tier?.durationMinutes ?? 50;
 
+  // Optional `from` — recovery flow asks for "next slot at-or-after my
+  // original time" so the suggested slot doesn't go BACKWARDS in time.
+  // Reject anything more than 30 days out (matches the horizon ceiling)
+  // and silently fall back to "now" if the value can't be parsed.
+  const fromRaw = searchParams.get('from');
+  let baseDate = new Date();
+  if (fromRaw) {
+    const parsed = new Date(fromRaw);
+    const thirtyDaysOut = Date.now() + MAX_HORIZON_DAYS * 24 * 60 * 60 * 1000;
+    if (!isNaN(parsed.getTime()) && parsed.getTime() <= thirtyDaysOut) {
+      baseDate = parsed > new Date() ? parsed : new Date();
+    }
+  }
+
   try {
     const rules = await getAvailabilityRules();
-    const today = new Date();
 
-    // Walk forward day-by-day. Stop at the first available slot, or after
-    // exhausting the horizon. Each day pulls its own GCal busy + held
-    // bookings via getAvailableSlots — costs N × KV reads for N days, but
-    // typical cases land within 1-3 days so amortised cost is small. The
-    // 60s edge cache below absorbs repeat hits while a client thinks.
+    // Walk forward day-by-day from baseDate. Stop at the first available
+    // slot, or after exhausting the horizon. When `from` was provided,
+    // skip slots whose start time is strictly before `from` on that first
+    // day (we want at-or-after, not earlier-the-same-day).
+    const fromMs = fromRaw ? baseDate.getTime() : 0;
     for (let i = 0; i < horizonDays; i++) {
-      const date = addDaysIso(today, i);
+      const date = addDaysIso(baseDate, i);
       const busySlots = await fetchBusySlots(date, date);
       const slots = await getAvailableSlots(date, durationMinutes, busySlots, rules);
-      const firstAvailable = slots.find(s => s.available);
+      const firstAvailable = slots.find(s => s.available && (i > 0 || new Date(s.start).getTime() >= fromMs));
       if (firstAvailable) {
         const midday = new Date(`${date}T12:00:00Z`);
         const effectiveLoc = await getEffectiveLocation(midday);

@@ -31,6 +31,7 @@ import SelfServeRecurringStep from '@/components/booking/SelfServeRecurringStep'
 import FirstTimeEligibilityModal from '@/components/booking/FirstTimeEligibilityModal';
 import SmartFrontDoor from '@/components/booking/SmartFrontDoor';
 import SoonestAvailableCard from '@/components/booking/SoonestAvailableCard';
+import DateTimePicker from '@/components/booking/DateTimePicker';
 import MobileCarousel from '@/components/ui/MobileCarousel';
 import type { SelfServeEligibility } from '@/lib/booking/self-serve-eligibility';
 import { scrollToElement } from '@/lib/scroll';
@@ -265,8 +266,12 @@ export default function BookPage() {
            step === 'success' ? <SuccessStep wizard={wizard} locale={locale} isRTL={isRTL} /> : null}
         </motion.div>
 
-        {/* Gate Error — humane: not a red banner, offers a one-tap path forward */}
-        {wizard.gateError && (
+        {/* Gate Error — humane: not a red banner, offers a one-tap path forward.
+            Slot-conflict (slot_unavailable) renders inline inside ConfirmStep
+            instead of here, so the recovery card stays anchored next to the
+            booking summary. Only the once-per-client gate renders at this
+            page level. */}
+        {wizard.gateError && wizard.gateError.code !== 'slot_unavailable' && (
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
@@ -900,147 +905,6 @@ function ServiceStep({ wizard, locale, isRTL }: StepProps) {
 // to the left when a date is selected, revealing time slots on the right.
 
 function DateTimeStep({ wizard, locale, isRTL, onProviderTimezone, onInPersonEnabled }: StepProps & { onProviderTimezone?: (tz: string) => void; onInPersonEnabled?: (v: boolean) => void }) {
-  const [currentMonth, setCurrentMonth] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-  });
-  const [monthData, setMonthData] = useState<DayAvailability[]>([]);
-  const [daySlots, setDaySlots] = useState<TimeSlot[]>([]);
-  const [selectedDate, setSelectedDate] = useState(wizard.formData.selectedDate);
-  const [loadingMonth, setLoadingMonth] = useState(false);
-  const [loadingDay, setLoadingDay] = useState(false);
-  // Provider timezone comes from the availability API (admin-editable in KV).
-  // Fallback to Toronto is only used for the very first render before the
-  // month fetch resolves. Once the API responds, this updates to whatever
-  // Dr. Hala has set in the admin Availability editor (e.g. 'Asia/Dubai').
-  const [providerTimezone, setProviderTimezone] = useState<string>('America/Toronto');
-  const slotsRef = useRef<HTMLDivElement>(null);
-
-  const hasDateSelected = !!selectedDate;
-
-  // Fetch month availability
-  useEffect(() => {
-    setLoadingMonth(true);
-    fetch(`/api/book/availability/month?month=${currentMonth}&duration=${wizard.formData.durationMinutes}`)
-      .then(r => r.json())
-      .then(data => {
-        setMonthData(data.dates ?? []);
-        if (data.timezone) { setProviderTimezone(data.timezone); onProviderTimezone?.(data.timezone); }
-      })
-      .catch(() => setMonthData([]))
-      .finally(() => setLoadingMonth(false));
-  }, [currentMonth, wizard.formData.durationMinutes]);
-
-  // Fetch day slots when date selected
-  useEffect(() => {
-    if (!selectedDate) { setDaySlots([]); return; }
-    setLoadingDay(true);
-    const tz = encodeURIComponent(wizard.formData.clientTimezone);
-    fetch(`/api/book/availability?date=${selectedDate}&duration=${wizard.formData.durationMinutes}&tz=${tz}`)
-      .then(r => r.json())
-      .then(data => {
-        setDaySlots(data.slots ?? []);
-        // Also refresh the provider timezone from the day fetch — in case
-        // the admin changed it between month and day loads.
-        if (data.timezone) { setProviderTimezone(data.timezone); onProviderTimezone?.(data.timezone); }
-        if (typeof data.inPersonEnabled === 'boolean') onInPersonEnabled?.(data.inPersonEnabled);
-        // Scroll to slots on mobile. Layout-settle handles the AnimatePresence
-        // entrance animation, so we don't need a fixed-duration delay.
-        if (slotsRef.current) {
-          void scrollToElement(slotsRef.current);
-        }
-      })
-      .catch(() => setDaySlots([]))
-      .finally(() => setLoadingDay(false));
-  }, [selectedDate, wizard.formData.durationMinutes, wizard.formData.clientTimezone]);
-
-  const selectSlot = (slot: TimeSlot) => {
-    wizard.updateForm({
-      selectedDate,
-      selectedStartTime: slot.start,
-      selectedEndTime: slot.end,
-    });
-    wizard.goNext();
-  };
-
-  const [year, monthNum] = currentMonth.split('-').map(Number);
-  const daysInMonth = new Date(year, monthNum, 0).getDate();
-  const firstDayOfWeek = new Date(year, monthNum - 1, 1).getDay();
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const prevMonth = () => {
-    const d = new Date(year, monthNum - 2, 1);
-    setCurrentMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
-    setSelectedDate('');
-  };
-  const nextMonth = () => {
-    const d = new Date(year, monthNum, 1);
-    setCurrentMonth(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`);
-    setSelectedDate('');
-  };
-
-  const dayNames = isRTL
-    ? ['أحد', 'إثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة', 'سبت']
-    : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-  const monthLabel = new Date(year, monthNum - 1).toLocaleDateString(isRTL ? 'ar' : 'en-US', { month: 'long', year: 'numeric' });
-
-  // Group available slots by period — in the CLIENT's local timezone,
-  // not UTC. Historical bug: getUTCHours() put 9am Toronto slots into
-  // "Afternoon" because 13:00 UTC >= 12, and 2pm Toronto into "Evening"
-  // because 18:00 UTC >= 17. This made the labels (Morning/Afternoon/
-  // Evening) not match the displayed times — exactly the calendar bug
-  // Mo reported.
-  const getLocalHour = (iso: string, tz: string): number => {
-    try {
-      const fmt = new Intl.DateTimeFormat('en-US', {
-        timeZone: tz,
-        hour: 'numeric',
-        hour12: false,
-      });
-      // Intl returns "0"-"23" — occasionally "24" for midnight, normalize.
-      const h = parseInt(fmt.format(new Date(iso)), 10);
-      return h === 24 ? 0 : h;
-    } catch {
-      return new Date(iso).getHours(); // fallback to browser-local
-    }
-  };
-
-  // Detect when a slot crosses the day boundary in the client's timezone.
-  // E.g. Dr. Hala's 11 PM Dubai = 12 AM Qostanay (next day).
-  const getLocalDateStr = (iso: string, tz: string): string => {
-    try {
-      const fmt = new Intl.DateTimeFormat('en-CA', {
-        timeZone: tz,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      });
-      return fmt.format(new Date(iso)); // returns YYYY-MM-DD
-    } catch {
-      return new Date(iso).toISOString().slice(0, 10);
-    }
-  };
-
-  const clientTz = wizard.formData.clientTimezone;
-  const availableSlots = daySlots.filter(s => s.available);
-
-  // Separate same-day slots from cross-midnight (next-day) slots
-  const sameDaySlots = availableSlots.filter(s => getLocalDateStr(s.start, clientTz) === selectedDate);
-  const nextDaySlots = availableSlots.filter(s => getLocalDateStr(s.start, clientTz) !== selectedDate);
-
-  const morningSlots = sameDaySlots.filter(s => getLocalHour(s.start, clientTz) < 12);
-  const afternoonSlots = sameDaySlots.filter(s => {
-    const h = getLocalHour(s.start, clientTz);
-    return h >= 12 && h < 17;
-  });
-  const eveningSlots = sameDaySlots.filter(s => getLocalHour(s.start, clientTz) >= 17);
-
-  const selectedDateLabel = selectedDate
-    ? new Date(`${selectedDate}T12:00:00`).toLocaleDateString(isRTL ? 'ar' : 'en-US', { weekday: 'long', month: 'long', day: 'numeric' })
-    : '';
-
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
@@ -1053,292 +917,24 @@ function DateTimeStep({ wizard, locale, isRTL, onProviderTimezone, onInPersonEna
         </p>
       </div>
 
-      {/* Timezones — show BOTH the client's and Dr. Hala's so neither
-           party gets confused about session times. Dr. Hala's TZ comes
-           from the availability API response (admin-editable in KV). */}
-      {(() => {
-        const formatTZName = (tz: string) => tz.replace(/_/g, ' ');
-        const getOffset = (tz: string): string => {
-          try {
-            const now = new Date();
-            const fmt = new Intl.DateTimeFormat('en-US', {
-              timeZone: tz,
-              timeZoneName: 'shortOffset',
-            });
-            const parts = fmt.formatToParts(now);
-            const off = parts.find(p => p.type === 'timeZoneName')?.value || '';
-            return off.replace('GMT', '').trim() || '±0';
-          } catch {
-            return '';
-          }
-        };
-        const providerTz = providerTimezone;
-        const clientOffset = getOffset(wizard.formData.clientTimezone);
-        const providerOffset = getOffset(providerTz);
-        const sameTz = wizard.formData.clientTimezone === providerTz;
-        return (
-          <div className="flex flex-col items-center gap-1">
-            <div className="flex items-center justify-center gap-2 text-xs text-[#8E8E9F]">
-              <Globe className="w-3.5 h-3.5" />
-              <span>
-                {isRTL ? 'المنطقة الزمنية لديك' : 'Your time zone'}:{' '}
-                <span className="font-medium text-[#4A4A5C]">
-                  {formatTZName(wizard.formData.clientTimezone)}
-                </span>
-                {clientOffset && <span className="text-[#C0B8B0]"> (GMT{clientOffset})</span>}
-              </span>
-            </div>
-            {!sameTz && (
-              <div className="flex items-center justify-center gap-2 text-[10px] text-[#8E8E9F]">
-                <span className="opacity-60">•</span>
-                <span>
-                  {isRTL ? 'حاليًّا في' : 'Currently in'}{' '}
-                  <span className="font-medium text-[#4A4A5C]">
-                    {formatTZName(providerTz)}
-                  </span>
-                  {providerOffset && <span className="text-[#C0B8B0]"> (GMT{providerOffset})</span>}
-                </span>
-              </div>
-            )}
-          </div>
-        );
-      })()}
-
-      {/* ─── Dynamic Layout: full → split on date select ─── */}
-      <div className="flex flex-col lg:flex-row lg:gap-6 lg:items-start">
-
-        {/* Calendar — animates from full-width centered to left-aligned */}
-        <motion.div
-          layout
-          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className={`${
-            hasDateSelected
-              ? 'lg:w-[420px] lg:shrink-0'
-              : 'lg:w-full lg:max-w-[520px] lg:mx-auto'
-          }`}
-        >
-          <motion.div layout className="bg-white rounded-2xl border border-[#F0ECE8] shadow-sm overflow-hidden">
-            {/* Month Navigation */}
-            <div className="flex items-center justify-between px-5 py-4 bg-[#7A3B5E]">
-              <button onClick={prevMonth} className="p-2 rounded-full hover:bg-white/15 transition-colors">
-                {isRTL ? <ChevronRight className="w-5 h-5 text-white/80" /> : <ChevronLeft className="w-5 h-5 text-white/80" />}
-              </button>
-              <h3 className="font-semibold text-white text-[15px]">{monthLabel}</h3>
-              <button onClick={nextMonth} className="p-2 rounded-full hover:bg-white/15 transition-colors">
-                {isRTL ? <ChevronLeft className="w-5 h-5 text-white/80" /> : <ChevronRight className="w-5 h-5 text-white/80" />}
-              </button>
-            </div>
-
-            <div className="p-4 sm:p-5">
-              {/* Day Headers */}
-              <div className="grid grid-cols-7 gap-1 mb-3">
-                {dayNames.map(d => (
-                  <div key={d} className="text-center text-[11px] font-semibold text-[#7A3B5E]/50 uppercase tracking-wider py-1">{d}</div>
-                ))}
-              </div>
-
-              {/* Day Cells */}
-              <div className="grid grid-cols-7 gap-1.5">
-                {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-                  <div key={`empty-${i}`} />
-                ))}
-                {Array.from({ length: daysInMonth }).map((_, i) => {
-                  const day = i + 1;
-                  const dateStr = `${currentMonth}-${String(day).padStart(2, '0')}`;
-                  const dayInfo = monthData.find(d => d.date === dateStr);
-                  const isSelected = dateStr === selectedDate;
-                  const isPast = new Date(year, monthNum - 1, day) < today;
-                  const hasSlots = dayInfo?.hasSlots ?? false;
-                  const isBlocked = dayInfo?.isBlocked ?? false;
-                  const isToday = new Date(year, monthNum - 1, day).toDateString() === new Date().toDateString();
-
-                  return (
-                    <button
-                      key={day}
-                      onClick={() => { if (hasSlots && !isPast) setSelectedDate(dateStr); }}
-                      disabled={isPast || !hasSlots || isBlocked}
-                      className={`relative aspect-square rounded-xl flex flex-col items-center justify-center text-sm transition-all ${
-                        isSelected
-                          ? 'bg-[#7A3B5E] text-white font-bold shadow-[var(--shadow-card)] scale-105'
-                          : isToday && hasSlots
-                            ? 'bg-[#C8A97D]/10 text-[#7A3B5E] font-semibold ring-2 ring-[#C8A97D]/30 hover:bg-[#C8A97D]/20'
-                            : hasSlots && !isPast
-                              ? 'text-[#4A4A5C] font-medium hover:bg-[#F9E8E2] hover:scale-[1.02] cursor-pointer'
-                              : 'text-[#D4CFC8] cursor-not-allowed'
-                      }`}
-                    >
-                      {day}
-                      {hasSlots && !isPast && !isSelected && (
-                        <span className="absolute bottom-1 w-1 h-1 rounded-full bg-[#3B8A6E]" />
-                      )}
-                      {isToday && (
-                        <span className="absolute top-0.5 text-[7px] font-bold text-[#C8A97D] uppercase">
-                          {isRTL ? 'اليوم' : 'today'}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-              {loadingMonth && (
-                <div className="flex justify-center py-4">
-                  <Loader2 className="w-5 h-5 text-[#C8A97D] animate-spin" />
-                </div>
-              )}
-
-              {/* Legend */}
-              <div className="flex items-center justify-center gap-4 mt-4 pt-3 border-t border-[#F0ECE8]">
-                <div className="flex items-center gap-1.5 text-[10px] text-[#8E8E9F]">
-                  <span className="w-2 h-2 rounded-full bg-[#3B8A6E]" /> {isRTL ? 'متاح' : 'Available'}
-                </div>
-                <div className="flex items-center gap-1.5 text-[10px] text-[#8E8E9F]">
-                  <span className="w-2 h-2 rounded-full bg-[#D4CFC8]" /> {isRTL ? 'غير متاح' : 'Unavailable'}
-                </div>
-              </div>
-
-              {/* Prompt text when no date selected (desktop only) */}
-              {!hasDateSelected && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="hidden lg:block text-center text-xs text-[#8E8E9F] mt-3"
-                >
-                  {isRTL ? 'اختر يوماً لعرض المواعيد المتاحة' : 'Select a day to see available times'}
-                </motion.p>
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* Time Slots — slides in from the right when date selected */}
-        <AnimatePresence mode="wait">
-          {hasDateSelected && (
-            <motion.div
-              key="slots-panel"
-              ref={slotsRef}
-              className="flex-1 min-w-0 mt-6 lg:mt-0 lg:sticky lg:top-24 scroll-anchor"
-              initial={{ opacity: 0, x: 40, scale: 0.97 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 40, scale: 0.97 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-            >
-              {loadingDay ? (
-                <div className="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-[#F0ECE8]">
-                  <Loader2 className="w-6 h-6 text-[#C8A97D] animate-spin" />
-                  <p className="text-xs text-[#8E8E9F] mt-3">{isRTL ? 'جارٍ تحميل المواعيد...' : 'Loading times...'}</p>
-                </div>
-              ) : availableSlots.length === 0 ? (
-                <div className="text-center py-12 bg-white rounded-2xl border border-[#F0ECE8]">
-                  <Clock className="w-8 h-8 text-[#E8E0D8] mx-auto mb-2" />
-                  <p className="text-sm text-[#8E8E9F]">
-                    {isRTL ? 'لا توجد مواعيد متاحة في هذا اليوم' : 'No available slots for this day'}
-                  </p>
-                  <p className="text-xs text-[#C0B8B0] mt-1">{isRTL ? 'جرب يوماً آخر' : 'Try another day'}</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {/* Selected date header */}
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-7 h-7 rounded-lg bg-[#7A3B5E]/10 flex items-center justify-center">
-                      <Calendar className="w-3.5 h-3.5 text-[#7A3B5E]" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-[#4A4A5C]">{selectedDateLabel}</p>
-                      <p className="text-[10px] text-[#8E8E9F]">{isRTL ? 'اختر الوقت' : 'Choose a time'}</p>
-                    </div>
-                  </div>
-
-                  {(() => {
-                    // Dynamic sublabel: show the actual first-to-last available
-                    // time in each bucket (client-local), rounded to whole-hour
-                    // strings. Empty buckets are filtered out below so they
-                    // never render.
-                    //
-                    // Why dynamic: previously the labels were hardcoded
-                    // ("9 AM – 12 PM", "12 – 5 PM", "5 – 8 PM") which didn't
-                    // match reality when Dr. Hala sets custom hours or the
-                    // minimum-notice filter eats the earliest slots.
-                    const fmtTime = (iso: string) =>
-                      new Date(iso).toLocaleTimeString(isRTL ? 'ar' : 'en-US', {
-                        timeZone: wizard.formData.clientTimezone,
-                        hour: 'numeric',
-                        minute: '2-digit',
-                      });
-                    const slotRange = (slots: TimeSlot[]): string => {
-                      if (slots.length === 0) return '';
-                      if (slots.length === 1) return fmtTime(slots[0].start);
-                      const first = fmtTime(slots[0].start);
-                      const last = fmtTime(slots[slots.length - 1].start);
-                      return `${first} – ${last}`;
-                    };
-                    return [
-                      { label: isRTL ? 'صباحاً' : 'Morning', sublabel: slotRange(morningSlots), slots: morningSlots, bg: 'bg-amber-50', accent: 'text-amber-600', icon: '☀️' },
-                      { label: isRTL ? 'بعد الظهر' : 'Afternoon', sublabel: slotRange(afternoonSlots), slots: afternoonSlots, bg: 'bg-sky-50', accent: 'text-sky-600', icon: '🌤' },
-                      { label: isRTL ? 'مساءً' : 'Evening', sublabel: slotRange(eveningSlots), slots: eveningSlots, bg: 'bg-indigo-50', accent: 'text-indigo-600', icon: '🌙' },
-                      ...(nextDaySlots.length > 0 ? [{ label: isRTL ? 'متأخّر (اليوم التالي)' : 'Late Night (next day)', sublabel: slotRange(nextDaySlots), slots: nextDaySlots, bg: 'bg-violet-50', accent: 'text-violet-600', icon: '🌛' }] : []),
-                    ];
-                  })().filter(group => group.slots.length > 0).map((group, gi) => (
-                    <motion.div
-                      key={group.label}
-                      initial={{ opacity: 0, y: 12 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.15 + gi * 0.08 }}
-                      className="bg-white rounded-xl border border-[#F0ECE8] overflow-hidden"
-                    >
-                      <div className={`px-3 py-2 ${group.bg} flex items-center justify-between`}>
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm">{group.icon}</span>
-                          <span className={`text-xs font-semibold ${group.accent}`}>{group.label}</span>
-                        </div>
-                        <span className="text-[10px] text-[#8E8E9F]">{group.sublabel}</span>
-                      </div>
-                      <div className="p-2.5 flex flex-wrap gap-1.5">
-                        {group.slots.map((slot, si) => {
-                          const slotDate = new Date(slot.start);
-                          const clientTimeLabel = slotDate.toLocaleTimeString(isRTL ? 'ar' : 'en-US', {
-                            timeZone: wizard.formData.clientTimezone,
-                            hour: 'numeric',
-                            minute: '2-digit',
-                          });
-                          // Secondary line: same moment rendered in Dr. Hala's
-                          // actual working timezone (from the availability API).
-                          // Hidden when the client shares her timezone, to keep
-                          // the button lean.
-                          const sameTz = wizard.formData.clientTimezone === providerTimezone;
-                          const providerTimeLabel = sameTz
-                            ? null
-                            : slotDate.toLocaleTimeString(isRTL ? 'ar' : 'en-US', {
-                                timeZone: providerTimezone,
-                                hour: 'numeric',
-                                minute: '2-digit',
-                              });
-                          return (
-                            <motion.button
-                              key={slot.start}
-                              initial={{ opacity: 0, scale: 0.9 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ duration: 0.2, delay: 0.2 + gi * 0.08 + si * 0.02 }}
-                              onClick={() => selectSlot(slot)}
-                              className="group px-3.5 py-2 rounded-lg border border-[#E8E0D8] text-sm text-[#4A4A5C] font-semibold hover:border-[#7A3B5E] hover:text-white hover:bg-[#7A3B5E] hover:shadow-md transition-all active:scale-95 flex flex-col items-center leading-tight"
-                            >
-                              <span>{clientTimeLabel}</span>
-                              {providerTimeLabel && (
-                                <span className="text-[9px] font-normal text-[#8E8E9F] group-hover:text-white/75 mt-0.5">
-                                  {isRTL ? 'محليًّا: ' : 'Local: '}{providerTimeLabel}
-                                </span>
-                              )}
-                            </motion.button>
-                          );
-                        })}
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      <DateTimePicker
+        durationMinutes={wizard.formData.durationMinutes}
+        clientTimezone={wizard.formData.clientTimezone}
+        initialDate={wizard.formData.selectedDate}
+        locale={locale as 'en' | 'ar'}
+        isRTL={isRTL}
+        variant="standalone"
+        onSlotSelect={(slot) => {
+          wizard.updateForm({
+            selectedDate: slot.date,
+            selectedStartTime: slot.start,
+            selectedEndTime: slot.end,
+          });
+          wizard.goNext();
+        }}
+        onProviderTimezone={onProviderTimezone}
+        onInPersonEnabled={onInPersonEnabled}
+      />
     </div>
   );
 }
@@ -2155,22 +1751,72 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
   const [consent, setConsent] = useState(false);
   const [recurringExpanded, setRecurringExpanded] = useState(false);
   const [eligibility, setEligibility] = useState<SelfServeEligibility | null>(null);
-  const { formData, confirmBooking, submitSeries, isLoading } = wizard;
+  const { formData, confirmBooking, submitSeries, isLoading, gateError, swapSlotAndConfirm } = wizard;
+
+  // Slot-conflict recovery mode — controls whether the recovery card shows
+  // the suggested-slot CTA (default) or the inline picker (after the user
+  // taps "Pick another time" or after retries exhausted).
+  const [recoveryMode, setRecoveryMode] = useState<'suggestion' | 'picker'>('suggestion');
+
+  // When the recovery error appears with networkError or retryCount >= 3,
+  // jump straight to the picker (Tier 2). The first 409 shows a suggestion,
+  // a second silent re-suggest acknowledges the double race with the
+  // retryFailed notice, and a third 409 finally escalates to the picker.
+  // Resets back to suggestion when the error clears (after a successful re-confirm).
+  useEffect(() => {
+    if (!gateError || gateError.code !== 'slot_unavailable') {
+      setRecoveryMode('suggestion');
+      return;
+    }
+    if (gateError.networkError || (gateError.retryCount ?? 0) >= 3) {
+      setRecoveryMode('picker');
+    }
+  }, [gateError]);
+
+  const inSlotRecovery = gateError?.code === 'slot_unavailable';
 
   // Fetch self-serve eligibility once when this step mounts. Authenticated
   // returning clients with the gate met see the "Make this recurring?"
   // expander; everyone else sees the standard single-booking confirm flow.
+  // Also runs the Tier 3 proactive slot guard in parallel — if the user's
+  // selected slot has already been taken before they tap confirm, kick the
+  // recovery flow immediately by firing confirmBooking (which 409s and
+  // populates gateError). Single code path; no duplicated logic.
   useEffect(() => {
-    if (!formData.isAuthenticatedReturning) return;
     let cancelled = false;
-    fetch('/api/account/eligibility')
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (!cancelled && data) setEligibility(data as SelfServeEligibility);
-      })
-      .catch(() => { /* silent — single booking still works */ });
+    if (formData.isAuthenticatedReturning) {
+      fetch('/api/account/eligibility')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (!cancelled && data) setEligibility(data as SelfServeEligibility);
+        })
+        .catch(() => { /* silent — single booking still works */ });
+    }
+    // Tier 3 — proactive availability check. Only meaningful if we have a
+    // selected slot to verify; skip if state is incomplete (shouldn't happen
+    // by step 5 but defensive). Don't run if recovery is already active.
+    if (formData.selectedDate && formData.selectedStartTime && !inSlotRecovery) {
+      const tz = encodeURIComponent(formData.clientTimezone);
+      fetch(`/api/book/availability?date=${formData.selectedDate}&duration=${formData.durationMinutes}&tz=${tz}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (cancelled || !data?.slots) return;
+          const stillAvailable = (data.slots as TimeSlot[]).some(
+            (s) => s.start === formData.selectedStartTime && s.available,
+          );
+          if (!stillAvailable) {
+            // Slot is gone — fire confirmBooking to surface the recovery card
+            // via the same 409 path. This way the user never wastes a tap on
+            // a doomed confirm attempt.
+            void confirmBooking();
+          }
+        })
+        .catch(() => { /* silent — confirm tap will catch real conflicts */ });
+    }
     return () => { cancelled = true; };
-  }, [formData.isAuthenticatedReturning]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // mount-only; intentionally not reactive to formData
+
   const dateStr = new Date(formData.selectedStartTime).toLocaleDateString(
     isRTL ? 'ar' : 'en-US',
     { timeZone: formData.clientTimezone, weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' },
@@ -2179,6 +1825,39 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
     isRTL ? 'ar' : 'en-US',
     { timeZone: formData.clientTimezone, hour: 'numeric', minute: '2-digit' },
   );
+
+  // Recovery card copy — these live close to the component to avoid an
+  // i18n round-trip for what is a single namespace; if it grows, lift to
+  // the message bundles.
+  const recoveryCopy = isRTL
+    ? {
+        headline: 'للأسف، حُجز هذا الوقت للتو',
+        subline: 'حجزه شخصٌ آخرُ قبل لحظات. إليك أقربَ موعدٍ متاح — معلوماتُك محفوظة.',
+        findingNext: 'جارٍ إيجادُ الموعدِ التالي…',
+        primaryCtaPrefix: 'احجز',
+        primaryCtaInfix: 'الساعة',
+        primaryCtaSuffix: 'بدلاً من ذلك',
+        secondaryCta: 'اختر وقتًا آخر',
+        pickerPrompt: 'اختر وقتًا جديدًا',
+        retryFailed: 'حُجز هذا أيضًا للتو — إليك التالي المتاح.',
+        noneInHorizon: 'لا توجدُ مواعيدُ ضمنَ الثلاثينَ يومًا القادمة. أرسلْ رسالةً للدكتورة هالة وستتواصلُ معك خلالَ 24 ساعة.',
+        whatsappCta: 'راسلنا عبر واتساب',
+        networkError: 'تعذّر الاتصال بالتقويم. اختر وقتًا من الأسفل.',
+      }
+    : {
+        headline: 'That time was just booked',
+        subline: "Someone reserved it a moment before you. Here's the next opening — your details are saved.",
+        findingNext: 'Finding the next opening…',
+        primaryCtaPrefix: 'Book',
+        primaryCtaInfix: 'at',
+        primaryCtaSuffix: 'instead',
+        secondaryCta: 'Pick another time',
+        pickerPrompt: 'Choose a new time',
+        retryFailed: 'That one was just taken too — here\'s the next available.',
+        noneInHorizon: 'No openings in the next 30 days. Send Dr. Hala a message and she\'ll reach out within 24 hours.',
+        whatsappCta: 'Message us on WhatsApp',
+        networkError: "Couldn't reach the calendar. Pick a time below.",
+      };
 
   return (
     <div className="space-y-6">
@@ -2269,32 +1948,167 @@ function ConfirmStep({ wizard, locale, isRTL }: StepProps) {
         </div>
       )}
 
-      {/* Consent */}
-      <label className="flex items-start gap-3 cursor-pointer bg-[#FAF7F2] rounded-xl p-4 border border-[#F0ECE8]">
-        <input
-          type="checkbox"
-          checked={consent}
-          onChange={(e) => setConsent(e.target.checked)}
-          className="mt-0.5 w-4 h-4 rounded border-[#D4ADA8] accent-[#7A3B5E] flex-shrink-0"
-        />
-        <span className="text-[11px] text-[#6B6580] leading-relaxed">
-          {isRTL
-            ? 'أوافقُ على أنّ المعلوماتِ المقدَّمةَ دقيقةٌ وأنّني أفهمُ أنّ هذا الطلبَ يخضعُ لمراجعةِ فريقنا. أوافقُ على سياسة الخصوصيّة وشروط الحجز.'
-            : 'I confirm that the information provided is accurate and understand this request is subject to our team\'s review. I agree to the Privacy Policy and Booking Policy.'}
-        </span>
-      </label>
+      {/* Slot-conflict recovery — replaces consent + confirm button when active.
+          Warm, non-alarmist framing. Summary card above stays visible so the
+          user sees their info is intact. Suggested slot loads via gateError;
+          inline picker auto-renders on network error or after retry exhaustion. */}
+      {inSlotRecovery ? (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl bg-[#FFFAF5] border border-[#7A3B5E]/20 p-5 sm:p-6 space-y-4"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#7A3B5E]/10 flex items-center justify-center shrink-0">
+              <Heart className="w-5 h-5 text-[#7A3B5E]" />
+            </div>
+            <div className="flex-1 min-w-0 space-y-1">
+              <p className="font-semibold text-[#4A4A5C]">{recoveryCopy.headline}</p>
+              <p className="text-sm text-[#6B6580] leading-relaxed">{recoveryCopy.subline}</p>
+            </div>
+          </div>
 
-      <button
-        onClick={confirmBooking}
-        disabled={isLoading || !consent || recurringExpanded}
-        className="w-full py-3.5 rounded-xl bg-[#7A3B5E] text-white font-semibold hover:bg-[#6A2E4E] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
-      >
-        {isLoading ? (
-          <><Loader2 className="w-5 h-5 animate-spin" /> {isRTL ? 'جارٍ التأكيد...' : 'Confirming...'}</>
-        ) : (
-          <><Check className="w-5 h-5" /> {isRTL ? 'تأكيد الحجز' : 'Confirm Booking'}</>
-        )}
-      </button>
+          {(gateError?.retryCount ?? 0) >= 2 && !gateError?.noneInHorizon && (
+            <p className="text-xs text-[#7A3B5E] italic">{recoveryCopy.retryFailed}</p>
+          )}
+
+          {gateError?.networkError && recoveryMode === 'picker' && (
+            <p className="text-xs text-[#8E8E9F]">{recoveryCopy.networkError}</p>
+          )}
+
+          {/* Tier 1 — Suggested slot CTA */}
+          {recoveryMode === 'suggestion' && !gateError?.noneInHorizon && !gateError?.networkError && (
+            <>
+              {gateError?.suggestedSlot ? (() => {
+                const sd = new Date(gateError.suggestedSlot.startTime);
+                const sDate = sd.toLocaleDateString(isRTL ? 'ar' : 'en-US', {
+                  timeZone: formData.clientTimezone,
+                  weekday: 'long', month: 'long', day: 'numeric',
+                });
+                const sTime = sd.toLocaleTimeString(isRTL ? 'ar' : 'en-US', {
+                  timeZone: formData.clientTimezone,
+                  hour: 'numeric', minute: '2-digit',
+                });
+                const sDateOnly = (() => {
+                  try {
+                    return new Intl.DateTimeFormat('en-CA', {
+                      timeZone: formData.clientTimezone,
+                      year: 'numeric', month: '2-digit', day: '2-digit',
+                    }).format(sd);
+                  } catch {
+                    return gateError.suggestedSlot!.startTime.slice(0, 10);
+                  }
+                })();
+                return (
+                  <div className="space-y-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        swapSlotAndConfirm(
+                          gateError.suggestedSlot!.startTime,
+                          gateError.suggestedSlot!.endTime,
+                          sDateOnly,
+                          false, // automated swap, not a fresh user pick
+                        );
+                      }}
+                      disabled={isLoading}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#7A3B5E] hover:bg-[#69304F] active:scale-[0.99] text-white px-4 py-3 text-sm font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Calendar className="w-4 h-4" />
+                      )}
+                      <span>
+                        {recoveryCopy.primaryCtaPrefix} {sDate} {recoveryCopy.primaryCtaInfix} {sTime} {recoveryCopy.primaryCtaSuffix}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setRecoveryMode('picker')}
+                      disabled={isLoading}
+                      className="w-full text-sm text-[#7A3B5E] hover:underline font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {recoveryCopy.secondaryCta}
+                    </button>
+                  </div>
+                );
+              })() : (
+                <div className="flex items-center gap-2 text-sm text-[#8E8E9F]">
+                  <Loader2 className="w-4 h-4 animate-spin text-[#7A3B5E]" />
+                  <span>{recoveryCopy.findingNext}</span>
+                </div>
+              )}
+            </>
+          )}
+
+          {/* No slots within 30 days — WhatsApp escape hatch */}
+          {gateError?.noneInHorizon && (
+            <div className="space-y-3">
+              <p className="text-sm text-[#6B6580] leading-relaxed">{recoveryCopy.noneInHorizon}</p>
+              <a
+                href={BUSINESS.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] hover:bg-[#1DA851] text-white px-4 py-2.5 text-sm font-semibold transition-colors"
+              >
+                <MessageCircle className="w-4 h-4" />
+                {recoveryCopy.whatsappCta}
+              </a>
+            </div>
+          )}
+
+          {/* Tier 2 — Inline picker. Auto-rendered on network error, after
+              retry exhaustion, or when the user taps "Pick another time". */}
+          {recoveryMode === 'picker' && !gateError?.noneInHorizon && (
+            <div className="pt-2 border-t border-[#7A3B5E]/10">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#7A3B5E]/70 mb-3">
+                {recoveryCopy.pickerPrompt}
+              </p>
+              <DateTimePicker
+                durationMinutes={formData.durationMinutes}
+                clientTimezone={formData.clientTimezone}
+                initialDate={formData.selectedDate}
+                locale={locale as 'en' | 'ar'}
+                isRTL={isRTL}
+                variant="inline"
+                onSlotSelect={(slot) => {
+                  swapSlotAndConfirm(slot.start, slot.end, slot.date, true);
+                }}
+              />
+            </div>
+          )}
+        </motion.div>
+      ) : (
+        <>
+          {/* Consent */}
+          <label className="flex items-start gap-3 cursor-pointer bg-[#FAF7F2] rounded-xl p-4 border border-[#F0ECE8]">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              className="mt-0.5 w-4 h-4 rounded border-[#D4ADA8] accent-[#7A3B5E] flex-shrink-0"
+            />
+            <span className="text-[11px] text-[#6B6580] leading-relaxed">
+              {isRTL
+                ? 'أوافقُ على أنّ المعلوماتِ المقدَّمةَ دقيقةٌ وأنّني أفهمُ أنّ هذا الطلبَ يخضعُ لمراجعةِ فريقنا. أوافقُ على سياسة الخصوصيّة وشروط الحجز.'
+                : 'I confirm that the information provided is accurate and understand this request is subject to our team\'s review. I agree to the Privacy Policy and Booking Policy.'}
+            </span>
+          </label>
+
+          <button
+            onClick={confirmBooking}
+            disabled={isLoading || !consent || recurringExpanded}
+            className="w-full py-3.5 rounded-xl bg-[#7A3B5E] text-white font-semibold hover:bg-[#6A2E4E] disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2"
+          >
+            {isLoading ? (
+              <><Loader2 className="w-5 h-5 animate-spin" /> {isRTL ? 'جارٍ التأكيد...' : 'Confirming...'}</>
+            ) : (
+              <><Check className="w-5 h-5" /> {isRTL ? 'تأكيد الحجز' : 'Confirm Booking'}</>
+            )}
+          </button>
+        </>
+      )}
     </div>
   );
 }
