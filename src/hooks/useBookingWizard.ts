@@ -355,6 +355,19 @@ export function useBookingWizard(locale: 'en' | 'ar' = 'en') {
                 noneInHorizon: true,
                 retryCount,
               });
+            } else if (soonestData.slot.startTime === fd.selectedStartTime) {
+              // Defensive: if soonest returned the EXACT slot we just tried
+              // (server-side stale cache, GCal busy-cache miss, etc.), don't
+              // surface it — that would loop the user back into the same 409.
+              // Force-escalate retryCount past the picker threshold (3) so the
+              // ConfirmStep useEffect auto-switches to inline picker mode.
+              // The retryFailed notice still renders (retryCount >= 2) but the
+              // misleading networkError copy doesn't (flag not set).
+              setGateError({
+                code: 'slot_unavailable',
+                message: errData.message || 'Time slot is no longer available',
+                retryCount: Math.max(retryCount, 3),
+              });
             } else {
               setGateError({
                 code: 'slot_unavailable',

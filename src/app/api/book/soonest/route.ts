@@ -83,14 +83,17 @@ export async function GET(request: NextRequest) {
 
     // Walk forward day-by-day from baseDate. Stop at the first available
     // slot, or after exhausting the horizon. When `from` was provided,
-    // skip slots whose start time is strictly before `from` on that first
-    // day (we want at-or-after, not earlier-the-same-day).
+    // skip slots whose start time is at-or-before `from` on that first
+    // day. STRICTLY AFTER, not at-or-after — the recovery flow asks
+    // "what's next AFTER the slot I just got rejected on?" so returning
+    // the exact same slot would loop the user back into the same 409.
+    // Subsequent days (i > 0) consider any available slot.
     const fromMs = fromRaw ? baseDate.getTime() : 0;
     for (let i = 0; i < horizonDays; i++) {
       const date = addDaysIso(baseDate, i);
       const busySlots = await fetchBusySlots(date, date);
       const slots = await getAvailableSlots(date, durationMinutes, busySlots, rules);
-      const firstAvailable = slots.find(s => s.available && (i > 0 || new Date(s.start).getTime() >= fromMs));
+      const firstAvailable = slots.find(s => s.available && (i > 0 || new Date(s.start).getTime() > fromMs));
       if (firstAvailable) {
         const midday = new Date(`${date}T12:00:00Z`);
         const effectiveLoc = await getEffectiveLocation(midday);
